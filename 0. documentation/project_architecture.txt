@@ -1,0 +1,66 @@
+from: https://chatgpt.com/c/6a77fc1e-26c8-83ea-ba6a-00d25a713fd3
+
+                 ┌─────────────────────┐
+                 │   React Frontend    │
+                 └──────────┬──────────┘
+                            │ REST
+                            ▼
+                 ┌─────────────────────┐
+                 │     REST API        │
+                 │  Booking Service    │
+                 └───────┬─────┬───────┘
+                         │     │
+                   SQL   │     │ Events
+                         ▼     ▼
+                 ┌──────────┐  ┌──────────┐
+                 │PostgreSQL│  │  Kafka   │
+                 └──────────┘  └────┬─────┘
+                                    │
+                              Events│
+                                    ▼
+                         ┌──────────────────┐
+                         │ Notification /   │
+                         │ Analytics Service│
+                         └──────────────────┘
+
+                 Everything containerized
+                         ↓
+                   Docker → Kubernetes
+
+React → frontend/state/API integration
+REST API → backend architecture
+PostgreSQL → relational modeling + transactions
+Kafka → asynchronous event-driven architecture
+Notification service → event consumers
+Analytics → eventual consistency / event processing
+Docker → reproducible deployment
+Kubernetes → orchestration/scaling
+Testing → unit + integration + API tests
+
+
+POST /bookings
+       │
+       ▼
+Booking Service
+       │
+       ├── BEGIN TRANSACTION
+       │      ├── validate availability
+       │      ├── create booking
+       │      └── COMMIT
+       │
+       ▼
+     booking.created
+           │
+           ▼
+         Kafka
+      /        \
+     /          \
+    ▼            ▼
+Notification    Analytics
+ Service          Service
+
+
+The key architectural idea I'd preserve is:
+
+The booking API owns the booking transaction;
+Kafka distributes the resulting business events to independent consumers.
