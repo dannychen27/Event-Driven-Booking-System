@@ -1,0 +1,42 @@
+source: https://chatgpt.com/c/6a78f04e-a004-83ea-9ba5-47d215edf9d2
+
+
+Step 1 — Write your data model on paper
+
+Keep it stupidly small initially:
+
+    users
+      id
+      name
+      email
+
+    events
+      id
+      name
+      venue
+      start_time
+      capacity
+
+    bookings
+      id
+      user_id
+      event_id
+      created_at
+
+Then ask yourself:
+
+    "What REST endpoints would I need to make this work?"
+
+For example:
+
+    GET  /events
+    GET  /events/:id
+
+    GET  /users/:id/bookings
+
+    POST /events/:id/book
+
+    DELETE /bookings/:id
+
+Don't Google implementation yet.
+Try to figure out what each endpoint should receive and return yourself.
