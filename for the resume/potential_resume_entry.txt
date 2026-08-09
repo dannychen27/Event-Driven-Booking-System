@@ -1,0 +1,19 @@
+from: https://chatgpt.com/c/6a77fc1e-26c8-83ea-ba6a-00d25a713fd3
+
+Event-Driven Booking System | React, REST, PostgreSQL, Kafka, Docker, Kubernetes
+
+Designed an asynchronous Kafka event pipeline (X)
+to decouple booking operations from downstream services (Y),
+enabling independent notification and analytics processing (Z).
+
+
+Once we actually implement it, we can make these much stronger by replacing
+generic claims with measurable results —
+
+e.g. test coverage, throughput, latency, number of services, Kafka processing rate,
+or Kubernetes replicas.
+
+
+That'll make the project feel like a real engineering system rather than a
+tech-stack checklist.
+
