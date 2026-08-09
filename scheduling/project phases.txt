@@ -1,0 +1,15 @@
+from: https://chatgpt.com/c/6a77fc1e-26c8-83ea-ba6a-00d25a713fd3
+
+We should not start by throwing Kubernetes at it lol.
+That's how a manageable project becomes a DevOps side quest.
+
+I'd build it in this order:
+
+Phase 1: PostgreSQL schema + booking domain
+Phase 2: REST API
+Phase 3: React frontend
+Phase 4: Kafka + domain events
+Phase 5: notification/analytics consumers
+Phase 6: Docker Compose
+Phase 7: Kubernetes deployment
+Phase 8: tests, observability, README, architecture diagram
