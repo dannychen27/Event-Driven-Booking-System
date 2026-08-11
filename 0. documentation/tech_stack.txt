@@ -1,0 +1,97 @@
+source: https://chatgpt.com/c/6a79499b-329c-83ea-baf6-07047b2d3882
+
+
+summary:
+
+Core:
+TypeScript → Angular → Next.js → REST → PostgreSQL → Prisma
+
+Infrastructure:
+Redis → Docker
+
+Advanced:
+Kubernetes → testing/CI/CD/observability
+
+
+Week 1/2 stack:
+
+| Layer        | Technology             | Role                          |
+| ------------ | ---------------------- | ----------------------------- |
+| Language     |   TypeScript           | Main programming language     |
+| Frontend     |   Angular              | UI                            |
+| Backend      |   Next.js              | Server/API layer              |
+| API          |   REST                 | Client ↔ server communication |
+| Database     |   PostgreSQL           | Persistent relational data    |
+| ORM          |   Prisma               | TypeScript ↔ PostgreSQL       |
+| Architecture |   Full-stack web app   | Overall application           |
+
+Angular
+   │
+   │ REST
+   ↓
+Next.js
+   │
+   │ Prisma
+   ↓
+PostgreSQL
+
+
+For a backend project, I'd introduce basic tests while you're implementing the endpoints:
+
+Week 1–2: build endpoints + basic tests
+Week 3: Redis + Docker
+Week 4+: Kubernetes + more sophisticated testing
+
+
+week 3: infrastructure
+
+    Redis
+      ↓
+    Caching layer
+
+    Docker
+      ↓
+    Containerization
+
+So your application becomes:
+
+    Angular
+        ↓
+    Next.js REST API
+        ↓
+    Prisma
+        ↓
+    PostgreSQL
+
+    Redis ← caching
+
+    Docker ← packages/runs the services
+
+Week 4+ — Scaling + testing
+
+| Technology      | Role                       |
+| --------------- | -------------------------- |
+|   Kubernetes    | Container orchestration    |
+|   Vitest/Jest   | Unit/integration testing   |
+|   Playwright    | End-to-end/browser testing |
+
+
+                   ┌── Redis
+                   │
+Angular → Next.js → Prisma → PostgreSQL
+                   │
+                   └── Docker
+                         ↓
+                    Kubernetes
+
+And testing sits across the whole application,
+rather than being another layer in the request path:
+
+    Vitest/Jest
+        ↓
+    unit + integration tests
+
+    Playwright
+        ↓
+    end-to-end tests
+
