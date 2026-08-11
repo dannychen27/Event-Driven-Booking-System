@@ -1,0 +1,127 @@
+source: https://chatgpt.com/c/6a78f816-df5c-83ea-bbaa-66edeb75c3d3
+
+
+Purpose:
+
+Here, we're essentially doing the database design
+backwards from what the application needs.
+
+The flow is:
+
+    What does the app need to do?
+            ↓
+    What API endpoints expose those operations?
+            ↓
+    What data must each endpoint read/write?
+            ↓
+    What database tables/relationships support that data?
+
+For example, take:
+
+POST /events/:id/book
+
+Your endpoint checklist might produce:
+
+SEND:
+    event_id → URL
+    user_id → authenticated user
+
+DO:
+    find event
+    check capacity
+    create booking
+
+RETURN:
+    booking
+
+FAIL:
+    event doesn't exist
+    event is full
+    user already booked
+
+Now when you get to database schema design, you've already discovered
+requirements that the schema needs to support:
+
+
+1. You need a bookings table
+
+Because the endpoint needs to create a booking.
+
+    bookings
+    ---------
+    id
+    user_id
+    event_id
+    created_at
+
+2. You need relationships
+
+Because the endpoint needs to answer:
+
+"Which user booked which event?"
+
+So:
+    users  1 ──────── * bookings * ──────── 1 events
+
+
+3. You need constraints
+
+Your API reasoning revealed:
+
+    "A user shouldn't be able to book the same event twice."
+
+That suggests a database constraint:
+
+    UNIQUE(user_id, event_id)
+
+That's a pretty important insight that you might miss if you just start
+designing tables from the nouns.
+
+
+4. Capacity becomes a database/business-logic consideration
+
+You discovered:
+
+   "Booking can fail because the event is full."
+
+Now you have to ask:
+
+How do I determine how many people have booked?
+
+    COUNT(bookings WHERE event_id = X)
+
+compared against:
+
+    events.capacity
+
+So your endpoint design is revealing what queries your
+database must support.
+
+
+
+That's why I wouldn't think of Step 1 as:
+
+    "Let's randomly design some REST endpoints before we design the database."
+
+It's more like:
+
+    "Let's define what our application actually needs to do,
+     then derive the data model that makes those operations possible."
+
+And this is a really useful software-engineering habit.
+
+You don't want to start with:
+
+    "Here's a users table because users are nouns."
+    "Here's an events table because events are nouns."
+
+You want to eventually be able to say:
+
+    "The application needs to support these operations,
+    therefore it needs these pieces of data, relationships,
+    queries, and constraints."
+
+Then Step 2 becomes much less mysterious.
+You're deriving the schema from requirements, rather than
+guessing what tables seem reasonable.
+
