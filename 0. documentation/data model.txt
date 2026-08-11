@@ -1,0 +1,18 @@
+users
+  id
+  name
+  email
+
+events
+  id
+  name
+  venue
+  start_time
+  end_time
+  capacity
+
+bookings
+  id
+  user_id
+  event_id
+  created_at
