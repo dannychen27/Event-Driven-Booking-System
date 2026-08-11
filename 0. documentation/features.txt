@@ -1,0 +1,10 @@
+source: https://chatgpt.com/c/6a78f480-33f0-83ea-af9a-37d5f6944a1c
+
+
+users
+events/venues
+availability
+create/cancel booking
+booking history
+double-booking protection
+basic frontend
