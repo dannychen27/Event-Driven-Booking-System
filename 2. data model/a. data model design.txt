@@ -89,10 +89,10 @@ additional comments:
     └── Waitlist promotion after cancellation
 
 
-if one user should only be able to book an event once:
+- if one user should only be able to book an event once:
     UNIQUE (user_id, event_id)
 
-- multiple events can absolutely have the same venue_id:
+multiple events can absolutely have the same venue_id:
 
     Venue 7
      ├── Event 101
@@ -110,17 +110,16 @@ CARDINALITY
 
     users 1 ──────── * bookings * ──────── 1 events
 
-USER
- │
- │ has many
- ▼
-BOOKING
- │
- │ belongs to
- ▼
-EVENT
- │
- │ occurs at
- ▼
-VENUE
-
+      has many
+users ───────┐
+             │
+             ▼
+          bookings
+             ▲
+             │ belongs to
+events ──────┘
+   │
+   │ occurs at
+   │
+   ▼
+venues
