@@ -1,18 +1,76 @@
+data model: https://chatgpt.com/c/6a87cd67-acc4-83ea-b191-9b9dbcb7d50a
+
+3. Then comes the fun part: implement the API
+
+At that point, your endpoint descriptions stop being theoretical.
+
+You implement:
+
+    POST   /users
+    GET    /events
+    GET    /events/:id
+    GET    /events/:id/availability
+
+    POST   /bookings
+    DELETE /bookings/:id
+    GET    /users/:id/bookings
+
+
+And your booking transaction becomes the first genuinely interesting
+backend piece:
+
+    BEGIN
+       ↓
+    check availability
+       ↓
+    reserve capacity / create booking
+       ↓
+    COMMIT
+
+with the database constraints doing the heavy lifting against
+concurrent requests.
+
+
+------------------------------------------------------------------------
+
+
+PRELIMINARY TABLE DESIGN
+
+
 users
-  id
-  name
-  email
+  id            PRIMARY KEY
+  name          NOT NULL
+  email         NOT NULL, UNIQUE
+
+
+venues
+  id            PRIMARY KEY
+  name          NOT NULL
+  address       NOT NULL
+
 
 events
-  id
-  name
-  venue
-  start_time
-  end_time
-  capacity
+  id            PRIMARY KEY
+  name          NOT NULL
+  venue_id      NOT NULL REFERENCES (foreign key) venues(id)
+  start_time    NOT NULL
+  end_time      NOT NULL
+  capacity      NOT NULL CHECK (capacity > 0)
+CHECK (start_time < end_time)
+
 
 bookings
+  id            PRIMARY KEY
+  user_id       NOT NULL REFERENCES (foreign key) venues(id) (index)
+  event_id      NOT NULL REFERENCES (foreign key) events(id) (index)
+  created_at    NOT NULL
+UNIQUE (user_id, event_id)
+
+
+REDUNDANT TABLES:
+
+availability
   id
-  user_id
   event_id
-  created_at
+(table not necessary, can compute availability
+from even capacity - event occupants)
