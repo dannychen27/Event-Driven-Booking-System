@@ -1,0 +1,126 @@
+source: https://chatgpt.com/c/6a87cd67-acc4-83ea-b191-9b9dbcb7d50a
+
+"What tables and relationships must exist for these endpoints to work?"
+
+Hint:
+Don't just start writing SQL yet.
+The useful engineering exercise is to derive the schema systematically.
+
+
+1. For each endpoint, identify:
+
+| Question                     | Example                             |
+| ---------------------------- | ----------------------------------- |
+| What entities does it touch? | `users`, `events`, `bookings`       |
+| What fields does it need?    | `user_id`, `event_id`, `created_at` |
+| What relationships exist?    | User → many bookings                |
+| What constraints exist?      | One booking per user/event          |
+| What needs an index?         | `bookings.user_id`                  |
+| What must be transactional?  | Creating a booking                  |
+
+Then you consolidate those requirements into one coherent
+relational model.
+
+
+USERS
+
+    GET     /users                          (get all users)
+    GET     /users/:id                      (gel a specific user)
+
+EVENTS
+
+    GET     /events                         (get all events)
+    GET     /events/:id                     (get a specific event)
+
+AVAILABILITY
+
+    GET     /events/:id/availability        (get availability of a specific event)
+
+BOOKINGS
+
+    GET     /users/:id/bookings             (what bookings the user already has)
+    POST    /events/:id/book                (create a booking for a user)
+    DELETE  /bookings/:id                   (cancel a booking for a user)
+
+
+------------------------------------------------------------------------------------
+
+
+CONSTRAINTS
+
+| Column                | Question                                     |
+| --------------------- | -------------------------------------------- |-------------------------
+| `users.email`         | Should it be unique?                         | yes (no reuse)
+| `events.venue_id`     | Should it be a foreign key?                  | yes (many events at same venue ok)
+| `events.capacity`     | Can it be `0` or negative?                   | >= 0, not < 0.
+| `events.end_time`     | Must it be after `start_time`?               | start_time < end_time
+| `bookings.user_id`    | Must reference an existing user?             | no user-less bookings!
+| `bookings.event_id`   | Must reference an existing event?            | no event-less bookings!
+| `(user_id, event_id)` | Can the same user book the same event twice? | no! double booking is wrong!
+| `created_at`          | Should PostgreSQL provide the default?       | yes. dont want custom timestamps
+
+
+additional comments:
+- users cannot finalize conflicting events.
+
+--> (chatGPT) Two events conflict iff
+    event_A.start_time < event_B.end_time
+    AND
+    event_B.start_time < event_A.end_time
+
+---> perhaps introduce a waitlist / event going priority?
+    (chatGPT: maybe introduce later, not in week 1)
+
+(chatGPT) I'd put it in your future requirements bucket:
+
+    Week 1
+    ├── Users
+    ├── Venues
+    ├── Events
+    ├── Availability
+    ├── Booking
+    ├── Cancellation
+    └── Double-booking protection
+
+    Future
+    ├── Conflicting event detection
+    ├── Waitlists
+    ├── Priority
+    └── Waitlist promotion after cancellation
+
+
+if one user should only be able to book an event once:
+    UNIQUE (user_id, event_id)
+
+- multiple events can absolutely have the same venue_id:
+
+    Venue 7
+     ├── Event 101
+     ├── Event 205
+     └── Event 381
+
+
+CARDINALITY
+
+- one venue can host many events.
+
+    venues 1 ──────── * events
+
+- one event can associate with many bookings.
+
+    users 1 ──────── * bookings * ──────── 1 events
+
+USER
+ │
+ │ has many
+ ▼
+BOOKING
+ │
+ │ belongs to
+ ▼
+EVENT
+ │
+ │ occurs at
+ ▼
+VENUE
+
