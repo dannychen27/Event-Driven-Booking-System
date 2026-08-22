@@ -1,0 +1,14 @@
+source: https://chatgpt.com/c/6a78f04e-a004-83ea-9ba5-47d215edf9d2
+
+
+Step 2 — Build the database
+
+Create the PostgreSQL database and tables.
+
+Your goal is simply:
+
+    INSERT event
+    INSERT user
+    SELECT events
+    SELECT users
+    INSERT booking

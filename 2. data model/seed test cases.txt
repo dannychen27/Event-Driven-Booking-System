@@ -1,0 +1,25 @@
+users
+├── valid inserts
+├── duplicate PK → reject
+├── NULL name → reject
+├── NULL email → reject
+└── duplicate email → reject
+
+venues
+├── valid inserts
+├── duplicate PK → reject
+├── NULL name → reject
+├── NULL address → reject
+└── duplicate address → reject
+
+events
+├── valid insert
+├── nonexistent venue_id → reject
+├── invalid timestamps → reject (if constrained)
+└── invalid capacity → reject (if constrained)
+
+bookings
+├── valid insert
+├── nonexistent user_id → reject
+├── nonexistent event_id → reject
+└── duplicate user/event → reject (if that's your business rule)

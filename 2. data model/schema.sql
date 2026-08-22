@@ -1,10 +1,10 @@
 -- So I'd say your next mini-milestone is:
 --
--- Turn this conceptual schema into a proper relational schema with PKs, FKs, UNIQUE constraints,
--- CHECK constraints, and indexes.
+-- Turn this conceptual schema into a proper relational schema with PKs, FKs,
+-- UNIQUE constraints, CHECK constraints, and indexes.
 --
--- You're actually at a nice transition point: the entities are mostly settled; now we're
--- designing the invariants.
+-- You're actually at a nice transition point: the entities are mostly settled;
+-- now we're designing the invariants.
 
 
 CREATE TABLE users (
