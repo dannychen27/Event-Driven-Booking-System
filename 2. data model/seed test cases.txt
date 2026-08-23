@@ -1,25 +1,34 @@
 users
-├── valid inserts
-├── duplicate PK → reject
-├── NULL name → reject
-├── NULL email → reject
-└── duplicate email → reject
+├── valid inserts ---------- DONE!
+├── duplicate email → reject ---- allowed.
+├── duplicate PK → reject ---------- DONE!
+├── NULL name → reject ---------- DONE!
+└── NULL email → reject ---------- DONE!
 
 venues
-├── valid inserts
-├── duplicate PK → reject
-├── NULL name → reject
-├── NULL address → reject
-└── duplicate address → reject
+├── valid inserts ---------- DONE!
+├── duplicate address → reject ---- allowed.
+├── duplicate PK → reject ---------- DONE!
+├── NULL name → reject ---------- DONE!
+└── NULL address → reject ---------- DONE!
 
 events
-├── valid insert
-├── nonexistent venue_id → reject
-├── invalid timestamps → reject (if constrained)
-└── invalid capacity → reject (if constrained)
+✅ valid event
+✅ duplicate event attributes allowed
+✅ duplicate PK rejected
+✅ NULL name rejected
+✅ NULL venue_id rejected
+✅ NULL start_time rejected
+✅ NULL end_time rejected
+✅ NULL capacity rejected
+✅ capacity < 1 rejected
+✅ nonexistent venue rejected
+✅ end_time < start_time rejected
+✅ end_time = start_time rejected
 
 bookings
 ├── valid insert
 ├── nonexistent user_id → reject
 ├── nonexistent event_id → reject
-└── duplicate user/event → reject (if that's your business rule)
+└── duplicate user/event → reject
+(if that's your business rule)
