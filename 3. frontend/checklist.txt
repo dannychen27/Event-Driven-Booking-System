@@ -41,12 +41,12 @@ Disable/enable submit button based on state
 
 React effects / asynchronous behavior
 
-useEffect
-Understand when an effect runs
-Fetch data from an API
-Loading state
-Success state
-Error state
+✅useEffect
+✅Understand when an effect runs
+✅Fetch data from an API
+✅Loading state
+✅Success state
+✅Error state
 Retry after an error
 Understand cleanup/dependencies at a basic level
 
@@ -73,7 +73,7 @@ Union types
 Optional properties
 Function types
 Generics
-Promise<T>
+✅Promise<T>
 Type narrowing
 unknown vs any
 Runtime validation vs TypeScript
@@ -82,33 +82,33 @@ Understand that TypeScript doesn't validate API JSON at runtime
 
 API integration
 
-Create frontend API/service functions
-GET /events
+✅Create frontend API/service functions
+✅GET /events
 GET /events/:id
 POST /bookings
-Handle HTTP 2xx responses
-Handle HTTP 4xx/5xx responses
-Parse JSON responses
-Type API responses
-Keep API logic separate from UI components
+✅Handle HTTP 2xx success responses
+✅Handle HTTP 4xx/5xx failure responses
+✅Parse JSON responses
+✅Type API responses
+✅Keep API logic separate from UI components
 
 
 Booking flow
 
-Events list
+✅Events list
 Event details
 Availability display
-Booking form
+✅Booking form
 Submit booking
 Booking confirmation
 View existing bookings
 Handle booking failure
 Basic frontend architecture
-Separate pages from reusable components
-Separate types from UI
-Separate API calls from components
+✅Separate pages from reusable components
+✅Separate types from UI
+✅Separate API calls from components
 Reuse components where appropriate
-Avoid putting the whole application in App.tsx
+✅Avoid putting the whole application in App.tsx
 Understand what belongs in state vs derived values
 
 
@@ -117,18 +117,215 @@ Interview-specific concepts
 By the end of Phase 1, you should be able to
 explain:
 
-What React is doing when state changes
-Props vs state
-Controlled vs uncontrolled inputs
-Why React uses key
-What useEffect is for
-What happens when fetch() is called
-How frontend errors are handled
-How a React app communicates with NestJS
-Where TypeScript helps and where it doesn't
+✅What React is doing when state changes
+
+    When state changes, React schedules a re-render of the
+    component that owns that state. It evaluates the component
+    again with the new state, determines what the UI should
+    look like, and updates the necessary parts of the DOM.
+
+    For example, in my BookingForm, when setSubmitted(true)
+    runs, React re-renders the component, and the success
+    message becomes part of the rendered UI.
+
+        setSubmitted(true);
+
+
+✅Props vs state
+
+Props are inputs passed into a component by its parent,
+while state is data managed by the component itself.
+
+In my project, EventCard receives an event prop from EventsPage:
+
+    <EventCard event={event} />
+
+but showDetails is state owned by EventCard itself:
+
+    const [showDetails, setShowDetails] = useState(false);
+
+The parent controls the prop;
+the component controls its own state.
+
+
+✅Controlled vs uncontrolled inputs
+
+A controlled input gets its value from React state,
+and changes to the input update that state.
+An uncontrolled input lets the DOM manage its current value.
+
+My booking form uses controlled inputs:
+
+    const [name, setName] = useState("");
+
+and:
+
+    <input
+      value={name}
+      onChange={(event) => setName(event.target.value)}
+    />
+
+So React is the source of truth for the input value.
+
+
+This is useful when I need validation or want to use the
+input value elsewhere in the component.
+
+
+✅Why React uses key?
+
+React uses key to identify which list item corresponds to
+which component between renders. That helps React efficiently
+determine what changed, rather than treating the entire list
+as new.
+
+In my events page:
+
+    events.map((event) => (
+      <EventCard key={event.id} event={event} />
+    ))
+
+I use the event's database ID because it's a stable
+identifier for that event.
+
+
+✅What useEffect is for?
+
+useEffect is used to synchronize a component with something
+outside of React's rendering process, such as an API,
+browser API, subscription, or timer.
+
+In my project, I use it to fetch events after EventsPage
+renders:
+
+    useEffect(() => {
+      // fetch events
+    }, []);
+
+The empty dependency array means the effect runs after
+the initial mount.
+
+Stronger answer:
+
+I wouldn't use useEffect just to calculate derived values.
+I'd use it when the component needs to interact with an
+external system.
+
+
+
+✅What happens when fetch() is called?
+
+fetch() starts an asynchronous HTTP request and returns a
+Promise. Once the server responds, the Promise resolves to a
+Response object. I then check response.ok, parse the body
+with response.json(), and use the resulting data.
+
+In my project:
+
+    const response = await fetch("http://localhost:3000/events");
+
+then:
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch events");
+    }
+
+and:
+
+    return response.json();
+
+The parsed events are then stored in React state, which causes the UI to update.
+
+One particularly useful detail:
+- fetch() does not reject its Promise just because the server
+returns a 404 or 500.
+- That's why you explicitly check response.ok.
+
+
+✅How frontend errors are handled?
+
+I represent the error as React state and render an appropriate UI when the request fails.
+
+In EventsPage, I have:
+
+const [error, setError] = useState("");
+
+Then my API call is wrapped in try/catch:
+
+    try {
+      const events = await getEvents();
+      setEvents(events);
+    } catch {
+      setError("Failed to load events");
+    }
+
+Then the component conditionally renders an error message:
+
+    if (error) {
+      return <p>{error}</p>;
+    }
+
+You can also mention that you handle form-validation errors
+separately from network/API errors.
+
+That distinction is nice:
+    validation error ≠ server error ≠ network error.
+
+
+✅How a React app communicates with NestJS
+
+    1. The React frontend communicates with NestJS over HTTP.
+    2. React calls a REST endpoint using fetch,
+    3. NestJS routes the request through a controller to a service,
+    4. and the service gets the required data and returns it as JSON.
+    5. React then stores that response in state and re-renders the UI.
+
+In my project:
+
+    React
+      ↓ GET /events
+    NestJS controller
+      ↓
+    Events service
+      ↓
+    JSON response
+      ↓
+    React state
+      ↓
+    EventCard components
+
+I also had to configure CORS because the frontend and backend
+were running on different origins during development.
+
+
+✅Where TypeScript helps and where it doesn't?
+
+HELPFUL?
+TypeScript helps catch type errors at development and compile time.
+It gives me safer component props, state, function parameters, and
+API return types.
+
+For example:
+
+    export async function getEvents(): Promise<Event[]> {
+
+tells the rest of my application that the function is expected to
+return an array of Event objects.
+
+
+NOT HELPFUL?
+But TypeScript DOES NOT validate external data at runtime.
+If an API sends malformed JSON, TypeScript doesn't magically inspect
+that response and reject it.
+
+That's why production applications often use runtime validation as well.
+
 Why API responses need runtime validation in serious applications
 How your booking flow moves from UI → API → database → UI
 
+
+Bonus concepts:
+✅ What CORS is and why it can block a frontend request
 
 The actual stopping point
 
