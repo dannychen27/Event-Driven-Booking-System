@@ -1,6 +1,7 @@
 import type { Event } from "../types/Event";
 import "../styles/events.css";
 import EventCard from "../components/EventCard";
+import BookingForm from "../components/BookingForm";
 
 const events: Event[] = [
     {
@@ -25,6 +26,8 @@ export default function EventsPage() {
             {events.map((event) => (
                 <EventCard key={event.id} event={event} />
             ))}
+
+            <BookingForm eventId={1} />
         </div>
     );
 }
