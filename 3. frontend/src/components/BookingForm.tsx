@@ -33,9 +33,11 @@ export default function BookingForm({ eventId }: BookingFormProps) {
         const errors = validateForm();
         if (Object.keys(errors).length > 0) {
             setErrors(errors);
+            setSubmitted(false);
             return;
         }
 
+        setErrors({});
         setSubmitted(true);
 
         console.log({
@@ -46,7 +48,11 @@ export default function BookingForm({ eventId }: BookingFormProps) {
     }
 
     return (
-        <form className="booking-form" onSubmit={handleSubmit}>
+        <form
+            className="booking-form"
+            onSubmit={handleSubmit}
+            noValidate
+        >
             <h2>Book This Event</h2>
 
             <div className="form-group">
@@ -56,8 +62,11 @@ export default function BookingForm({ eventId }: BookingFormProps) {
                     type="text"
                     value={name}
                     onChange={(event) => setName(event.target.value)}
+                    className={errors.name ? "input-error" : ""}
                 />
-                {errors.name && <p>{errors.name}</p>}
+                {errors.name && (
+                    <p className="form-error">{errors.name}</p>
+                )}
             </div>
 
             <div className="form-group">
@@ -68,14 +77,21 @@ export default function BookingForm({ eventId }: BookingFormProps) {
                     min="1"
                     value={guests}
                     onChange={(event) => setGuests(Number(event.target.value))}
+                    className={errors.guests ? "input-error" : ""}
                 />
-                {errors.guests && <p>{errors.guests}</p>}
+                {errors.guests && (
+                    <p className="form-error">{errors.guests}</p>
+                )}
             </div>
 
             <button className="booking-button" type="submit">
                 Book Event
             </button>
-            {submitted && <p>Booking submitted successfully!</p>}
+            {submitted && (
+                <p className="form-success">
+                    Booking submitted successfully!
+                </p>
+            )}
         </form>
     );
 }

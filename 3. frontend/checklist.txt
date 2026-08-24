@@ -28,14 +28,14 @@ React fundamentals
 
 Forms
 
-Create BookingForm
-Controlled inputs
-onChange
-onSubmit
-Form event typing in TypeScript
-Multiple pieces of form state
-Basic client-side validation
-Display validation errors
+✅Create BookingForm
+✅Controlled inputs
+✅onChange
+✅onSubmit
+✅Form event typing in TypeScript
+✅Multiple pieces of form state
+✅Basic client-side validation
+✅Display validation errors
 Disable/enable submit button based on state
 
 
@@ -67,6 +67,8 @@ TypeScript
 ✅Interfaces
 ✅Typed component props
 ✅Typed arrays
+✅ Form event typing
+✅ TypeScript state inference
 Union types
 Optional properties
 Function types
@@ -74,6 +76,7 @@ Generics
 Promise<T>
 Type narrowing
 unknown vs any
+Runtime validation vs TypeScript
 Understand that TypeScript doesn't validate API JSON at runtime
 
 

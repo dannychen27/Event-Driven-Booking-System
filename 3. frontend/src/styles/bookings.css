@@ -18,11 +18,16 @@
     margin-bottom: 1.25rem;
 }
 
+/* make all inputs consistent */
 .form-group input {
     padding: 0.75rem;
     border: 1px solid #ccc;
     border-radius: 6px;
     font-size: 1rem;
+
+    width: 100%;
+    font-family: inherit;
+    box-sizing: border-box;
 }
 
 .booking-button {
@@ -31,4 +36,32 @@
     border-radius: 6px;
     font-size: 1rem;
     cursor: pointer;
+}
+
+/* Remove the browser's default number-input spinner controls */
+.form-group input[type="number"]::-webkit-inner-spin-button,
+.form-group input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Use text-field appearance instead of the native number-input UI */
+.form-group input[type="number"] {
+    appearance: textfield;
+}
+
+.input-error {
+    border: 1px solid #d32f2f;
+}
+
+.form-error {
+    color: red;
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+}
+
+.form-success {
+    margin-top: 1rem;
+    color: #2e7d32;
+    font-weight: 500;
 }
