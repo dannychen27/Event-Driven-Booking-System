@@ -1,0 +1,156 @@
+source: https://chatgpt.com/c/6a8c8dbf-0bbc-83ea-8285-6bd9ee771c56
+
+Phase 1 — React + TypeScript frontend
+
+
+Foundation
+
+✅Create Vite + React + TypeScript project
+✅Clean out Vite starter boilerplate
+✅Set up basic project structure
+✅Define Event TypeScript interface
+✅Create EventCard component
+✅Create EventsPage
+✅Connect components through App.tsx
+
+
+React fundamentals
+
+✅Pass typed props
+✅Render arrays with .map()
+✅Use key correctly
+✅useState
+✅onClick event handling
+✅Conditional rendering
+✅Component re-rendering from state changes
+✅Basic CSS styling
+
+
+Forms
+
+Create BookingForm
+Controlled inputs
+onChange
+onSubmit
+Form event typing in TypeScript
+Multiple pieces of form state
+Basic client-side validation
+Display validation errors
+Disable/enable submit button based on state
+
+
+React effects / asynchronous behavior
+
+useEffect
+Understand when an effect runs
+Fetch data from an API
+Loading state
+Success state
+Error state
+Retry after an error
+Understand cleanup/dependencies at a basic level
+
+
+Routing
+
+Install React Router
+/events
+/events/:id
+/bookings
+Navigate with links/buttons
+Read URL parameters
+Handle nonexistent routes
+
+
+TypeScript
+
+✅Interfaces
+✅Typed component props
+✅Typed arrays
+Union types
+Optional properties
+Function types
+Generics
+Promise<T>
+Type narrowing
+unknown vs any
+Understand that TypeScript doesn't validate API JSON at runtime
+
+
+API integration
+
+Create frontend API/service functions
+GET /events
+GET /events/:id
+POST /bookings
+Handle HTTP 2xx responses
+Handle HTTP 4xx/5xx responses
+Parse JSON responses
+Type API responses
+Keep API logic separate from UI components
+
+
+Booking flow
+
+Events list
+Event details
+Availability display
+Booking form
+Submit booking
+Booking confirmation
+View existing bookings
+Handle booking failure
+Basic frontend architecture
+Separate pages from reusable components
+Separate types from UI
+Separate API calls from components
+Reuse components where appropriate
+Avoid putting the whole application in App.tsx
+Understand what belongs in state vs derived values
+
+
+Interview-specific concepts
+
+By the end of Phase 1, you should be able to
+explain:
+
+What React is doing when state changes
+Props vs state
+Controlled vs uncontrolled inputs
+Why React uses key
+What useEffect is for
+What happens when fetch() is called
+How frontend errors are handled
+How a React app communicates with NestJS
+Where TypeScript helps and where it doesn't
+Why API responses need runtime validation in serious applications
+How your booking flow moves from UI → API → database → UI
+
+
+The actual stopping point
+
+I would call Phase 1 frontend complete when you can demonstrate this:
+
+    Events page
+        ↓
+    GET /events
+        ↓
+    Event cards
+        ↓
+    Click event
+        ↓
+    Event details
+        ↓
+    Booking form
+        ↓
+    POST /bookings
+        ↓
+    Loading / error handling
+        ↓
+    Booking confirmation
+
+At that point you've gone from "I know React syntax" to
+"I've built a real React client for a REST application."
+
+And you're already about 8 items into the checklist,
+so you're not starting from zero anymore. 😎
