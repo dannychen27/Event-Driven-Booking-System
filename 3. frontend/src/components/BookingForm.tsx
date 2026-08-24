@@ -11,9 +11,30 @@ export default function BookingForm({ eventId }: BookingFormProps) {
     const [name, setName] = useState("");
     const [guests, setGuests] = useState(1);
     const [submitted, setSubmitted] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
+
+    function validateForm() {
+        const errors: Record<string, string> = {};
+
+        if (!name.trim()) {
+            errors.name = "Name is required";
+        }
+
+        if (guests < 1) {
+            errors.guests = "Number of guests must be at least 1";
+        }
+
+        return errors;
+    }
 
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
+
+        const errors = validateForm();
+        if (Object.keys(errors).length > 0) {
+            setErrors(errors);
+            return;
+        }
 
         setSubmitted(true);
 
@@ -36,6 +57,7 @@ export default function BookingForm({ eventId }: BookingFormProps) {
                     value={name}
                     onChange={(event) => setName(event.target.value)}
                 />
+                {errors.name && <p>{errors.name}</p>}
             </div>
 
             <div className="form-group">
@@ -47,6 +69,7 @@ export default function BookingForm({ eventId }: BookingFormProps) {
                     value={guests}
                     onChange={(event) => setGuests(Number(event.target.value))}
                 />
+                {errors.guests && <p>{errors.guests}</p>}
             </div>
 
             <button className="booking-button" type="submit">
