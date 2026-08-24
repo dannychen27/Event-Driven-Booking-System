@@ -6,6 +6,13 @@ USERS
     GET     /users                          (get all users)
     GET     /users/:id                      (gel a specific user)
 
+
+VENUES
+
+    GET     /venues
+    GET     /venues/:id
+
+
 EVENTS
 
     GET     /events                         (get all events)
@@ -15,6 +22,7 @@ EVENTS
 AVAILABILITY
     
     GET     /events/:id/availability        (get availability of a specific event)
+
 
 BOOKINGS
 
