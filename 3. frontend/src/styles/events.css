@@ -1,0 +1,29 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+.events-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.events-page h1 {
+    margin-bottom: 1.5rem;
+}
+
+.event-card {
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+}
+
+.event-card h2 {
+    margin-top: 0;
+}

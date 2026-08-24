@@ -9,10 +9,10 @@ REST API
 PostgreSQL
 
 Build:
-- users
-- events/venues
-- availability
-- create/cancel booking
-- booking history
-- transactional protection against double-booking
+- users DONE!
+- events/venues DONE!
+- availability DONE!
+- create/cancel booking DONE!
+- booking history DONE!
+- transactional protection against double-booking DONE!
 - basic frontend
