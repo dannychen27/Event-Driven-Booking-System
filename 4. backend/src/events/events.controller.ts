@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { EventsService } from './events.service';
 
 @Controller('events')
@@ -8,5 +8,10 @@ export class EventsController {
     @Get()
     getAllEvents() {
         return this.eventsService.getAllEvents();
+    }
+
+    @Get(':id')
+    getEvent(@Param('id') id: string) {
+        return this.eventsService.getEvent(Number(id));
     }
 }
