@@ -10,6 +10,11 @@ export class EventsController {
         return this.eventsService.getAllEvents();
     }
 
+    @Get(':id/availability')
+    getAvailability(@Param('id') id: string) {
+        return this.eventsService.getAvailability(Number(id));
+    }
+
     @Get(':id')
     getEvent(@Param('id') id: string) {
         return this.eventsService.getEvent(Number(id));
