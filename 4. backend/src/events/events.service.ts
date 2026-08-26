@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 
 @Injectable()
@@ -10,17 +10,25 @@ export class EventsService {
 
     async getAllEvents() {
         const result = await this.db.query(`
-          SELECT *
-          FROM events;
-        `
-        );
-
+            SELECT *
+            FROM events;
+        `);
         return result.rows;
     }
 
     async getAvailability(event_id: number) {
-        const result = await this.db.query(
-            `
+        const eventResult = await this.db.query(`
+            SELECT id, start_time, end_time, capacity
+            FROM events
+            WHERE id = $1;
+        `,
+            [event_id],
+        );
+        if (eventResult.rows.length === 0) {
+            throw new NotFoundException(`Event ${event_id} not found`);
+        }
+
+        const availabilityResult = await this.db.query(`
             SELECT
                 e.capacity,
                 COUNT(b.id)::int AS booked,
@@ -33,22 +41,21 @@ export class EventsService {
         `,
             [event_id],
         );
-
-        // TODO: What if this event does not exist?
-        return result.rows[0];
+        // if event has no bookings, all spots are available
+        return availabilityResult.rows[0];
     }
 
-    async getEvent(id: number) {
-        const result = await this.db.query(
-            `
-                SELECT *
-                FROM events
-                WHERE id = $1;
-            `,
-            [id],
+    async getEvent(event_id: number) {
+        const eventResult = await this.db.query(`
+            SELECT id, start_time, end_time, capacity
+            FROM events
+            WHERE id = $1;
+        `,
+            [event_id],
         );
-
-        // TODO: What if there is no matching event_id?
-        return result.rows[0];
+        if (eventResult.rows.length === 0) {
+            throw new NotFoundException(`Event ${event_id} not found`);
+        }
+        return eventResult.rows[0];
     }
 }
