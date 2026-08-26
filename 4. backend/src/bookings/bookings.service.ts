@@ -91,4 +91,28 @@ export class BookingsService {
             return result.rows[0];
         });
     }
+
+    async getBookingHistory(user_id: number) {
+        const userResult = await this.db.query(`
+            SELECT id
+            FROM users
+            WHERE id = $1;
+        `,
+            [user_id]);
+        if (userResult.rows.length === 0) {
+            throw new NotFoundException(`User ${user_id} does not exist`)
+        }
+
+        // display user bookings in reverse chronological order
+        // (most recent at the top -> least recent at the bottom)
+        const userBookingResult = await this.db.query(`
+            SELECT id, user_id, event_id, created_at
+            FROM bookings
+            WHERE user_id = $1
+            ORDER BY created_at DESC;
+        `,
+            [user_id]);
+        return userBookingResult.rows;
+        // if user has no bookings, the booking history should be [].
+    }
 }
