@@ -92,6 +92,61 @@ export class BookingsService {
         });
     }
 
+    async cancelBooking(user_id: number, booking_id: number) {
+        return this.db.transaction(async (client) => {
+            // check if booking exists
+            const bookingResult = await client.query(`
+                SELECT id, user_id, event_id, created_at
+                FROM bookings
+                WHERE id = $1;
+            `,
+                [booking_id],
+            );
+            if (bookingResult.rows.length === 0) {
+                throw new NotFoundException(`Booking ${booking_id} not found`);
+            }
+
+            // check user
+            const userResult = await client.query(`
+                SELECT id
+                FROM users
+                WHERE id = $1;
+            `,
+                [user_id],
+            );
+            if (userResult.rows.length === 0) {
+                throw new NotFoundException(`User ${user_id} not found`);
+            }
+
+            // TODO: in week 2, add an authorization check -- make sure only the
+            // TODO: original booking author can delete this booking, not other users.
+
+            // get and lock event
+            const event_id = bookingResult.rows[0].event_id;
+            const eventResult = await client.query(`
+                SELECT id, start_time, end_time, capacity
+                FROM events
+                WHERE id = $1
+                FOR UPDATE;
+            `,
+                [event_id],
+            );
+            if (eventResult.rows.length === 0) {
+                throw new NotFoundException(`Event ${event_id} not found`);
+            }
+
+            // delete booking
+            const oldBookingResult = await client.query(`
+                DELETE FROM bookings
+                WHERE id = $1
+                RETURNING *;
+            `,
+                [booking_id],
+            );
+            return oldBookingResult.rows[0];
+        });
+    }
+
     async getBookingHistory(user_id: number) {
         const userResult = await this.db.query(`
             SELECT id

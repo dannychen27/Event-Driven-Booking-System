@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 
 @Controller()
@@ -13,6 +13,17 @@ export class BookingsController {
         return this.bookingsService.createBooking(
             body.user_id,
             Number(event_id),
+        );
+    }
+
+    @Delete('bookings/:id')
+    cancelBooking(
+        @Param('id') booking_id: string,
+        @Body() body: { user_id: number },
+    ) {
+        return this.bookingsService.cancelBooking(
+            body.user_id,
+            Number(booking_id)
         );
     }
 
