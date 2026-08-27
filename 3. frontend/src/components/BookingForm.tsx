@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../styles/bookings.css";
+import "../styles/booking-form.css";
 
 
 interface BookingFormProps {

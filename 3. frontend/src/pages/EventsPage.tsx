@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Event } from "../types/Event";
-import "../styles/events.css";
-import "../styles/venues.css";
+import "../styles/events-page.css";
 import { getEvents } from "../api/events";
 import EventCard from "../components/EventCard";
 

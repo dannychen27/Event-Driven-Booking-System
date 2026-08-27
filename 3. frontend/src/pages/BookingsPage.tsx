@@ -3,6 +3,7 @@ import type { Booking } from "../types/Booking.ts";
 import { getBookingHistory } from "../api/bookings.ts";
 import BookingCard from "../components/BookingCard.tsx";
 import BookingForm from "../components/BookingForm.tsx";
+import "../styles/booking-page.css";
 
 
 export default function BookingsPage() {

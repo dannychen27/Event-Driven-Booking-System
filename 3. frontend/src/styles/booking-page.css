@@ -1,0 +1,15 @@
+.bookings-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.bookings-page h1 {
+    margin-bottom: 1.5rem;
+}
+
+.bookings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}

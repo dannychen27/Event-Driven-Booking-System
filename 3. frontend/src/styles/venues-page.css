@@ -1,0 +1,18 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+.venues-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.venues-page h1 {
+    margin-bottom: 1.5rem;
+}

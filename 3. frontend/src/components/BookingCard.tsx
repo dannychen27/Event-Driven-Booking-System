@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Booking } from "../types/Booking.ts";
 import { formatDate } from "../utils/Dates.ts";
-import "../styles/booking-card.css"
+import "../styles/booking-card.css";
 
 
 interface BookingCardProps {

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Venue } from "../types/Venue.ts";
+import "../styles/venue-card.css";
 
 
 interface VenueCardProps {

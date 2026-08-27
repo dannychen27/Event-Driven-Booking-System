@@ -3,7 +3,6 @@ import EventsPage from "./pages/EventsPage";
 import VenuesPage from "./pages/VenuesPage";
 import BookingsPage from "./pages/BookingsPage";
 import NavigationBar from "./components/NavigationBar";
-import "./styles/navbar.css";
 
 
 function App() {
