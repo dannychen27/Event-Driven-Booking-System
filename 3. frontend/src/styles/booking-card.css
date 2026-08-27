@@ -1,0 +1,32 @@
+.bookings-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.bookings-page h1 {
+    margin-bottom: 1.5rem;
+}
+
+.bookings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.booking-card {
+    padding: 1.25rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.booking-card h3 {
+    margin: 0 0 0.5rem;
+}
+
+.booking-card p {
+    margin: 0.25rem 0;
+    color: #555;
+}

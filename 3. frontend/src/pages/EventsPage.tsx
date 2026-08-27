@@ -4,7 +4,6 @@ import "../styles/events.css";
 import "../styles/venues.css";
 import { getEvents } from "../api/events";
 import EventCard from "../components/EventCard";
-import BookingForm from "../components/BookingForm";
 
 
 export default function EventsPage() {
@@ -42,8 +41,6 @@ export default function EventsPage() {
             {events.map((event) => (
                 <EventCard key={event.id} event={event} />
             ))}
-
-            <BookingForm eventId={1} />
         </div>
     );
 }
