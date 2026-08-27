@@ -16,14 +16,3 @@ body {
 .events-page h1 {
     margin-bottom: 1.5rem;
 }
-
-.event-card {
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-}
-
-.event-card h2 {
-    margin-top: 0;
-}

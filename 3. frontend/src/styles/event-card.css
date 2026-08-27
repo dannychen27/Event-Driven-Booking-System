@@ -1,0 +1,30 @@
+.event-card {
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+}
+
+.event-card h2 {
+    margin-top: 0;
+}
+
+.booking-success {
+    margin-top: 12px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.booking-error {
+    margin-top: 12px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: #ffebee;
+    color: #c62828;
+    font-size: 14px;
+    font-weight: 500;
+}
