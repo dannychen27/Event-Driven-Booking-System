@@ -4,6 +4,7 @@ function NavigationBar() {
     return (
         <nav>
             <Link to="/events">Events</Link>
+            <Link to="/venues">Venues</Link>
         </nav>
     );
 }

@@ -1,5 +1,6 @@
 import { Navigate, Routes, Route } from "react-router-dom";
 import EventsPage from "./pages/EventsPage";
+import VenuesPage from "./pages/VenuesPage";
 import NavigationBar from "./components/NavigationBar";
 import "./styles/navbar.css";
 
@@ -10,6 +11,7 @@ function App() {
     <Routes>
       <Route path="/" element={ <Navigate to="/events" /> } />
       <Route path="/events" element={ <EventsPage /> } />
+      <Route path="/venues" element={ <VenuesPage /> } />
     </Routes>
   </>;
 }
