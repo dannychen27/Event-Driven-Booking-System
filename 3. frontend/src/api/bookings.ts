@@ -42,3 +42,22 @@ export async function createBooking(user_id: number,event_id: number): Promise<B
     }
     return createBookingsResponse.json();
 }
+
+export async function cancelBooking(user_id: number, booking_id: number): Promise<Booking> {
+    const cancelBookingResponse = await fetch(`http://localhost:3000/bookings/${booking_id}`,
+        {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user_id: user_id,
+            }),
+        }
+    );
+
+    if (!cancelBookingResponse.ok) {
+        throw new Error("Failed to cancel booking");
+    }
+    return cancelBookingResponse.json();
+}

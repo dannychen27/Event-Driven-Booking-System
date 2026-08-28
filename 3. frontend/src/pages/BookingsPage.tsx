@@ -45,7 +45,17 @@ export default function BookingsPage() {
             <BookingForm eventId={event_id} />
 
             <h2>Booking History</h2>
-            {bookings.map((booking) => <BookingCard key={booking.id} booking={booking} />)}
+            {bookings.length === 0
+                ? <p>No bookings right now.</p>
+                : bookings.map((booking) => (
+                    <BookingCard
+                        key={booking.id}
+                        booking={booking}
+                        onBookingCancelled={() => {
+                            setBookings(bookings.filter(b => b.id !== booking.id));
+                        }}
+                    />
+                ))}
         </div>
     );
 }
