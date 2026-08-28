@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import "../styles/modal.css";
 
 
 interface ModalAction {
@@ -14,10 +15,10 @@ interface ModalProps {
 
 export function Modal({ children, actions }: ModalProps) {
     return (
-        <div className="modal">
-            <div className="modal-content">
-                {children}
+        <div className="modal-content">
+            {children}
 
+            <div className="modal-actions">
                 {actions.map((action) => (
                     <button key={action.label} onClick={action.onClick}>
                         {action.label}

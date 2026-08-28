@@ -1,4 +1,6 @@
 .booking-card {
+    position: relative;
+
     padding: 1.25rem;
     border: 1px solid #ddd;
     border-radius: 8px;
