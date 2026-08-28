@@ -1,10 +1,20 @@
 .venue-card {
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--text);
+
     padding: 1.5rem;
     margin-bottom: 1rem;
-    border: 1px solid #ddd;
+    border: 1px solid;
     border-radius: 12px;
 }
 
 .venue-card h2 {
-    margin-top: 0;
+    margin: 0 0 0.5rem;
+}
+
+.venue-card p {
+    color: var(--secondary-text);
+
+    margin: 0.25rem 0;
 }

@@ -1,14 +1,25 @@
 .booking-form {
+    background: var(--surface);
+    color: var(--text);
+    border: var(--border);
+
+    max-width: 500px;
+    border: 1px solid;
+    border-radius: 12px;
+
     margin-top: 2rem;
     padding: 1.5rem;
-    max-width: 500px;
-    border: 1px solid #ddd;
-    border-radius: 12px;
 }
 
 .booking-form h2 {
     margin-top: 0;
     margin-bottom: 1.5rem;
+}
+
+.booking-form input {
+    background: var(--background);
+    color: var(--text);
+    border-color: var(--border);
 }
 
 .form-group {
@@ -20,8 +31,10 @@
 
 /* make all inputs consistent */
 .form-group input {
+    border-color: var(--border);
+
     padding: 0.75rem;
-    border: 1px solid #ccc;
+    border: 1px solid;
     border-radius: 6px;
     font-size: 1rem;
 
@@ -31,8 +44,10 @@
 }
 
 .booking-form button {
+    border-color: var(--border);
+
     padding: 0.75rem 1.25rem;
-    border: 1px solid #ccc;
+    border: 1px solid;
     border-radius: 6px;
     margin-top: 1rem;
     margin-right: 0.5rem;

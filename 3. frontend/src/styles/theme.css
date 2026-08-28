@@ -1,0 +1,30 @@
+#app {
+    min-height: 100vh;
+
+    --background: #fff;
+    --surface: #fff;
+    --text: #222;
+    --secondary-text: #555;
+    --border: #ddd;
+
+    background: var(--background);
+    color: var(--text);
+}
+
+#app.dark-mode {
+    --background: #222;
+    --surface: #333;
+    --text: #fff;
+    --secondary-text: #ccc;
+    --border: #888;
+}
+
+body {
+    margin: 0;
+}
+
+h1,
+h2,
+h3 {
+    color: var(--text);
+}
