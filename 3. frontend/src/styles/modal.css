@@ -52,32 +52,3 @@ and overlays the card */
     border: 1px solid;
     border-radius: 6px;
 }
-
-/* individual buttons */
-.modal-actions .keep-booking-button {
-    border-color: #28a745;
-    color: #28a745;
-}
-
-.modal-actions .keep-booking-button:hover {
-    background: #28a745;
-    color: white;
-}
-
-.modal-actions .cancel-button {
-    border-color: #dc3545;
-    color: #dc3545;
-}
-
-.modal-actions .cancel-button:hover {
-    background: #dc3545;
-    color: white;
-}
-
-.modal-actions .cancellation-error {
-    color: #dc3545;
-    font-size: 0.9rem;
-    font-weight: 500;
-
-    margin-top: 1rem;
-}

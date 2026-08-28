@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { Booking } from "../types/Booking.ts";
 import { formatDate } from "../utils/Dates.ts";
 import "../styles/booking-card.css";
+import "../styles/booking-card-modal.css";
 import { cancelBooking } from "../api/bookings.ts";
 import { Modal } from "./Modal.tsx";
 

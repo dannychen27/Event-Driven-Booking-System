@@ -1,0 +1,27 @@
+.booking-card .keep-booking-button {
+    border-color: #28a745;
+    color: #28a745;
+}
+
+.booking-card .keep-booking-button:hover {
+    background: #28a745;
+    color: white;
+}
+
+.booking-card .cancel-button {
+    border-color: #dc3545;
+    color: #dc3545;
+}
+
+.booking-card .cancel-button:hover {
+    background: #dc3545;
+    color: white;
+}
+
+.booking-card .cancellation-error {
+    color: #dc3545;
+    font-size: 0.9rem;
+    font-weight: 500;
+
+    margin-top: 1rem;
+}
