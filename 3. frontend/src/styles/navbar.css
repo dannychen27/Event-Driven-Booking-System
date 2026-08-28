@@ -9,8 +9,15 @@ nav a {
     text-decoration: none;
     color: #333;
     font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.2s ease;
 }
 
 nav a:hover {
-    text-decoration: underline;
+    border-bottom-color: #333;
+}
+
+nav a.active {
+    color: #666;
+    font-weight: 700;
 }

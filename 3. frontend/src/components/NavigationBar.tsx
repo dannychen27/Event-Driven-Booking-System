@@ -1,13 +1,13 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import "../styles/navbar.css";
 
 
 function NavigationBar() {
     return (
         <nav>
-            <Link to="/events">Events</Link>
-            <Link to="/venues">Venues</Link>
-            <Link to="/bookings">My Bookings</Link>
+            <NavLink to="/events">Events</NavLink>
+            <NavLink to="/venues">Venues</NavLink>
+            <NavLink to="/bookings">My Bookings</NavLink>
         </nav>
     );
 }
