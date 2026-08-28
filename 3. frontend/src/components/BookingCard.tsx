@@ -30,10 +30,12 @@ export default function BookingCard({ booking }: BookingCardProps) {
         return [
             {
                 label: "Keep Booking",
+                className: "keep-booking-button",
                 onClick: () => setShowCancelModal(false),
             },
             {
                 label: "Cancel Booking",
+                className: "cancel-button",
                 onClick: async () => {
                     try {
                         await cancelBooking(booking.user_id, booking.id);

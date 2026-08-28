@@ -5,6 +5,7 @@ import "../styles/modal.css";
 interface ModalAction {
     label: string;
     onClick: () => void | Promise<void>;
+    className?: string;
 }
 
 interface ModalProps {
@@ -20,7 +21,11 @@ export function Modal({ children, actions }: ModalProps) {
 
             <div className="modal-actions">
                 {actions.map((action) => (
-                    <button key={action.label} onClick={action.onClick}>
+                    <button
+                        key={action.label}
+                        className={action.className}
+                        onClick={action.onClick}
+                    >
                         {action.label}
                     </button>
                 ))}
