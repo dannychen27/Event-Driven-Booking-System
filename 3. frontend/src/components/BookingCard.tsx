@@ -3,6 +3,7 @@ import type { Booking } from "../types/Booking.ts";
 import { formatDate } from "../utils/Dates.ts";
 import "../styles/booking-card.css";
 import { cancelBooking } from "../api/bookings.ts";
+import { Modal } from "./Modal.tsx";
 
 
 interface BookingCardProps {
@@ -26,6 +27,26 @@ export default function BookingCard({ booking }: BookingCardProps) {
         )
     }
 
+    function getCancelModalButtons() {
+        return [
+            {
+                label: "Keep Booking",
+                onClick: () => setShowCancelModal(false),
+            },
+            {
+                label: "Cancel Booking",
+                onClick: async () => {
+                    try {
+                        await cancelBooking(booking.user_id, booking.id);
+                        setShowCancelModal(false);
+                    } catch (error) {
+                        // display cancellation error
+                    }
+                },
+            },
+        ];
+    }
+
     return (
         <div className="booking-card">
             <h2>Booking Id: {booking.id}</h2>   {/* TODO: replace with booking name? */}
@@ -36,26 +57,11 @@ export default function BookingCard({ booking }: BookingCardProps) {
             </button>
             {showDetails && <p>Created at: {getFormattedDate()}</p>}
             <button onClick={() => setShowCancelModal(true)}>Cancel Booking</button>
-            {showCancelModal && (
-                <div className="cancel-modal">
-                    <div className="cancel-modal-content">
-                        <p>Are you sure you want to cancel this booking?</p>
-
-                        <button onClick={() => setShowCancelModal(false)}>Keep Booking</button>
-                        <button onClick={async () => {
-                                try {
-                                    await cancelBooking(booking.user_id, booking.id);
-                                    setShowCancelModal(false);
-                                } catch (error) {
-                                    // display cancellation error
-                                }
-                            }}
-                        >
-                            Cancel Booking
-                        </button>
-                    </div>
-                </div>
-            )}
+            {showCancelModal &&
+                <Modal actions={getCancelModalButtons()}>
+                    <h2>Cancel Booking?</h2>
+                    <p>This action cannot be undone.</p>
+                </Modal>}
         </div>
     );
 }
