@@ -30,12 +30,36 @@
     box-sizing: border-box;
 }
 
-.booking-button {
+.booking-form button {
     padding: 0.75rem 1.25rem;
-    border: none;
+    border: 1px solid #ccc;
     border-radius: 6px;
+    margin-top: 1rem;
+    margin-right: 0.5rem;
     font-size: 1rem;
     cursor: pointer;
+}
+
+.booking-form .cancel-button {
+    border-color: #dc3545;
+    color: #dc3545;
+    background: white;
+}
+
+.booking-form .cancel-button:hover {
+    background: #dc3545;
+    color: white;
+}
+
+.booking-form .booking-button {
+    border-color: #28a745;
+    color: #28a745;
+    background: white;
+}
+
+.booking-form .booking-button:hover {
+    background: #28a745;
+    color: white;
 }
 
 /* Remove the browser's default number-input spinner controls */
