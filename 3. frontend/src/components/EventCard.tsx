@@ -10,7 +10,6 @@ interface EventCardProps {
 
 
 export default function EventCard({ event }: EventCardProps) {
-    const [showDetails, setShowDetails] = useState(false);
     const [bookingStatus, setBookingStatus] = useState<
         "idle" | "creating" | "success" | "error"
     >("idle");
@@ -41,11 +40,10 @@ export default function EventCard({ event }: EventCardProps) {
         <div className="event-card">
             <h2>{event.name}</h2>
             <p>Venue: {event.venue}</p>
-            <button onClick={() => setShowDetails(!showDetails)}>
-                {showDetails ? "Hide Details" : "View Details"}
-            </button>
-            {showDetails && <p>Capacity: {event.capacity}</p>}
-
+            {/* TODO: event.venue is undefined.
+            TODO: figure out how to convert Event's venue_id's into venue objects
+            TODO: to extract the venue name. */}
+            <p>Capacity: {event.capacity}</p>
             <button
                 onClick={handleCreateBooking}
                 disabled={bookingStatus === "creating"}
