@@ -1,7 +1,9 @@
 import { useState } from "react";
 import type { Event } from "../types/Event";
-import { createBooking } from "../api/bookings.ts";
+import { createBooking, getBookingHistory } from "../api/bookings.ts";
 import "../styles/event-card.css";
+import { Modal } from "./Modal.tsx";
+import BookingForm from "./BookingForm.tsx";
 
 
 interface EventCardProps {
@@ -14,9 +16,27 @@ export default function EventCard({ event }: EventCardProps) {
         "idle" | "creating" | "success" | "error"
     >("idle");
     const [bookingMessage, setBookingMessage] = useState("");
+    const [showBookingForm, setShowBookingForm] = useState(false);
+    const [alreadyBooked, setAlreadyBooked] = useState(false);
 
     // hardcoded constants for now...
-    const user_id = 1;
+    const user_id = 1;  // hardcoded for now...
+    // TODO: when we create accounts, we can load that specific user's
+    // TODO: bookings (using their own user_id instead of a hardcoded one).
+
+    async function handleOpenBookingForm() {
+        const bookings = await getBookingHistory(user_id);
+        const userHasBooking = bookings.some(
+            booking => booking.event_id === event.id
+        );
+
+        if (userHasBooking) {
+            setAlreadyBooked(true);
+            return;
+        } else {
+            setShowBookingForm(true);
+        }
+    }
 
     async function handleCreateBooking() {
         setBookingStatus("creating");
@@ -36,6 +56,22 @@ export default function EventCard({ event }: EventCardProps) {
         }
     }
 
+    function getBookingModalActions() {
+        return [
+            {
+                label: "Cancel",
+                onClick: () => setShowBookingForm(false),
+            },
+            {
+                label: "Create Booking",
+                onClick: () => {
+                    handleCreateBooking();
+                    setShowBookingForm(false);
+                },
+            },
+        ];
+    }
+
     return (
         <div className="event-card">
             <h2>{event.name}</h2>
@@ -46,11 +82,25 @@ export default function EventCard({ event }: EventCardProps) {
             <p>Capacity: {event.capacity}</p>
             <button
                 className="create-booking-button"
-                onClick={handleCreateBooking}
+                onClick={handleOpenBookingForm}
                 disabled={bookingStatus === "creating"}
             >
                 Create Booking
             </button>
+            {alreadyBooked && (
+                <p className="booking-error">
+                    You already booked this event.
+                </p>
+            )}
+
+            {showBookingForm &&
+                <Modal actions={getBookingModalActions()}>
+                    <BookingForm
+                        eventId={event.id}
+                        onBookingCreated={() => setShowBookingForm(false)}
+                    />
+                </Modal>
+            }
             {bookingStatus === "creating" && <p>{bookingMessage}</p>}
             {bookingStatus === "success" && <p className="booking-success">{bookingMessage}</p>}
             {bookingStatus === "error" && <p className="booking-error">{bookingMessage}</p>}

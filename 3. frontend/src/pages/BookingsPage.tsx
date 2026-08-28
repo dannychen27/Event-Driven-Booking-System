@@ -42,7 +42,7 @@ export default function BookingsPage() {
     return (
         <div className="bookings-page">
             <h1>My Bookings</h1>
-            <BookingForm eventId={event_id} />
+            <BookingForm eventId={event_id} onBookingCreated={() => {}} />
 
             <h2>Booking History</h2>
             {bookings.length === 0

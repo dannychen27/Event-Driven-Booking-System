@@ -4,10 +4,11 @@ import "../styles/booking-form.css";
 
 interface BookingFormProps {
     eventId: number;
+    onBookingCreated: () => void;
 }
 
 
-export default function BookingForm({ eventId }: BookingFormProps) {
+export default function BookingForm({ eventId, onBookingCreated }: BookingFormProps) {
     const [name, setName] = useState("");
     const [guests, setGuests] = useState(1);
     const [submitted, setSubmitted] = useState(false);
@@ -45,6 +46,8 @@ export default function BookingForm({ eventId }: BookingFormProps) {
             name,
             guests,
         });
+
+        onBookingCreated();
     }
 
     return (
