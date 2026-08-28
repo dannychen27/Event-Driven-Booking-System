@@ -32,9 +32,14 @@ nav a.active {
 .theme-toggle {
     color: var(--text);
     background: none;
-
     border: none;
     cursor: pointer;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 2rem;
+    height: 2rem;
     font-size: 1.25rem;
 }
