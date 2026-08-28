@@ -12,7 +12,10 @@ interface BookingCardProps {
 }
 
 
-export default function BookingCard({ booking }: BookingCardProps) {
+export default function BookingCard({
+    booking,
+    onBookingCancelled,
+}: BookingCardProps) {
     const [showCancelModal, setShowCancelModal] = useState(false);
 
     function getFormattedDate() {
@@ -40,6 +43,7 @@ export default function BookingCard({ booking }: BookingCardProps) {
                     try {
                         await cancelBooking(booking.user_id, booking.id);
                         setShowCancelModal(false);
+                        onBookingCancelled();
                     } catch (error) {
                         // display cancellation error
                     }
