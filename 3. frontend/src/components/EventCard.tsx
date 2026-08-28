@@ -45,6 +45,7 @@ export default function EventCard({ event }: EventCardProps) {
             TODO: to extract the venue name. */}
             <p>Capacity: {event.capacity}</p>
             <button
+                className="create-booking-button"
                 onClick={handleCreateBooking}
                 disabled={bookingStatus === "creating"}
             >
