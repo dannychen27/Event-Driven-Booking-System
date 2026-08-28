@@ -39,8 +39,7 @@ export default function BookingsPage() {
 
     return (
         <div className="bookings-page">
-            <h1>My Bookings</h1>
-            <h2>Booking History</h2>
+            <h1>Booking History</h1>
             {bookings.length === 0
                 ? <p>No bookings right now.</p>
                 : bookings.map((booking) => (
