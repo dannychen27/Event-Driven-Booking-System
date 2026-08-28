@@ -56,7 +56,12 @@ export default function BookingCard({ booking }: BookingCardProps) {
                 {showDetails ? "Hide Details" : "View Details"}
             </button>
             {showDetails && <p>Created at: {getFormattedDate()}</p>}
-            <button onClick={() => setShowCancelModal(true)}>Cancel Booking</button>
+            <button
+                className="cancel-button"
+                onClick={() => setShowCancelModal(true)}
+            >
+                Cancel Booking
+            </button>
             {showCancelModal &&
                 <Modal actions={getCancelModalButtons()}>
                     <h2>Cancel Booking?</h2>
