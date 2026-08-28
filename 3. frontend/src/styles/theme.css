@@ -28,3 +28,13 @@ h2,
 h3 {
     color: var(--text);
 }
+
+.dark-mode .event-card,
+.dark-mode .booking-card {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.dark-mode .modal-content,
+.dark-mode .booking-form {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
