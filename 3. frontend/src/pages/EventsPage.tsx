@@ -36,9 +36,12 @@ export default function EventsPage() {
     return (
         <div className="events-page">
             <h1>Events</h1>
-            {events.map((event) => (
-                <EventCard key={event.id} event={event} />
-            ))}
+            {events.length === 0
+                ? <p>No available events right now.</p>
+                : events.map((event) => (
+                    <EventCard key={event.id} event={event} />
+                ))
+            }
         </div>
     );
 }
