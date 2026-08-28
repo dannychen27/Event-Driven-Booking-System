@@ -13,7 +13,6 @@ interface BookingCardProps {
 
 
 export default function BookingCard({ booking }: BookingCardProps) {
-    const [showDetails, setShowDetails] = useState(false);
     const [showCancelModal, setShowCancelModal] = useState(false);
 
     function getFormattedDate() {
@@ -52,10 +51,7 @@ export default function BookingCard({ booking }: BookingCardProps) {
             <h2>Booking Id: {booking.id}</h2>   {/* TODO: replace with booking name? */}
             <p>Event Id: {booking.event_id}</p>   {/* TODO: replace with event's name and address? */}
             <p>User Id: {booking.user_id}</p>   {/* TODO: replace with user's name? */}
-            <button onClick={() => setShowDetails(!showDetails)}>
-                {showDetails ? "Hide Details" : "View Details"}
-            </button>
-            {showDetails && <p>Created at: {getFormattedDate()}</p>}
+            <p>Created at: {getFormattedDate()}</p>
             <button
                 className="cancel-button"
                 onClick={() => setShowCancelModal(true)}
