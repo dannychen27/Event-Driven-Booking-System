@@ -56,22 +56,6 @@ export default function EventCard({ event }: EventCardProps) {
         }
     }
 
-    function getBookingModalActions() {
-        return [
-            {
-                label: "Cancel",
-                onClick: () => setShowBookingForm(false),
-            },
-            {
-                label: "Create Booking",
-                onClick: () => {
-                    handleCreateBooking();
-                    setShowBookingForm(false);
-                },
-            },
-        ];
-    }
-
     return (
         <div className="event-card">
             <h2>{event.name}</h2>
@@ -94,11 +78,15 @@ export default function EventCard({ event }: EventCardProps) {
             )}
 
             {showBookingForm &&
-                <Modal actions={getBookingModalActions()}>
+                <Modal actions={[]}>
                     <BookingForm
                         eventId={event.id}
                         onCancel={() => setShowBookingForm(false)}
-                        onBookingCreated={() => setShowBookingForm(false)}
+                        onBookingCreated={() => {
+                            handleCreateBooking();
+                            setAlreadyBooked(true);
+                            setShowBookingForm(false);
+                        }}
                     />
                 </Modal>
             }
