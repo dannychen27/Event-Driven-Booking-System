@@ -97,6 +97,7 @@ export default function EventCard({ event }: EventCardProps) {
                 <Modal actions={getBookingModalActions()}>
                     <BookingForm
                         eventId={event.id}
+                        onCancel={() => setShowBookingForm(false)}
                         onBookingCreated={() => setShowBookingForm(false)}
                     />
                 </Modal>

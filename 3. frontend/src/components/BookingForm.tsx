@@ -4,11 +4,12 @@ import "../styles/booking-form.css";
 
 interface BookingFormProps {
     eventId: number;
+    onCancel: () => void;
     onBookingCreated: () => void;
 }
 
 
-export default function BookingForm({ eventId, onBookingCreated }: BookingFormProps) {
+export default function BookingForm({ eventId, onCancel, onBookingCreated }: BookingFormProps) {
     const [name, setName] = useState("");
     const [guests, setGuests] = useState(1);
     const [submitted, setSubmitted] = useState(false);
@@ -82,6 +83,9 @@ export default function BookingForm({ eventId, onBookingCreated }: BookingFormPr
                 />
                 {errors.guests && <p className="form-error">{errors.guests}</p>}
             </div>
+
+            {/* type="button" prevents a button inside a <form> from defaulting to submit. */}
+            <button className="cancel-button" type="button" onClick={onCancel}>Cancel</button>
 
             <button className="booking-button" type="submit">Book Event</button>
             {submitted && <p className="form-success">Booking submitted successfully!</p>}
