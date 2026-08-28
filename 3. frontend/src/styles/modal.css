@@ -73,3 +73,11 @@ and overlays the card */
     background: #dc3545;
     color: white;
 }
+
+.modal-actions .cancellation-error {
+    color: #dc3545;
+    font-size: 0.9rem;
+    font-weight: 500;
+
+    margin-top: 1rem;
+}

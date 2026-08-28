@@ -17,6 +17,7 @@ export default function BookingCard({
     onBookingCancelled,
 }: BookingCardProps) {
     const [showCancelModal, setShowCancelModal] = useState(false);
+    const [cancellationError, setCancellationError] = useState("");
 
     function getFormattedDate() {
         return formatDate(
@@ -46,6 +47,11 @@ export default function BookingCard({
                         onBookingCancelled();
                     } catch (error) {
                         // display cancellation error
+                        if (error instanceof Error) {
+                            setCancellationError(error.message);
+                        } else {
+                            setCancellationError("Failed to cancel booking.");
+                        }
                     }
                 },
             },
@@ -68,6 +74,8 @@ export default function BookingCard({
                 <Modal actions={getCancelModalButtons()}>
                     <h2>Cancel Booking?</h2>
                     <p>This action cannot be undone.</p>
+
+                    {cancellationError && <p className="cancellation-error">{cancellationError}</p>}
                 </Modal>}
         </div>
     );
