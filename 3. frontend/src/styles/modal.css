@@ -46,7 +46,6 @@ and overlays the card */
     white-space: nowrap;
     cursor: pointer;
 
-    background: white;
     font-size: 1rem;
 
     padding: 0.75rem 1.25rem;
@@ -55,16 +54,22 @@ and overlays the card */
 }
 
 /* individual buttons */
-.keep-booking-button {
-    color: #333;
+.modal-actions .keep-booking-button {
+    border-color: #28a745;
+    color: #28a745;
 }
 
-.cancel-button {
+.modal-actions .keep-booking-button:hover {
+    background: #28a745;
+    color: white;
+}
+
+.modal-actions .cancel-button {
     border-color: #dc3545;
     color: #dc3545;
 }
 
-.cancel-button:hover {
+.modal-actions .cancel-button:hover {
     background: #dc3545;
     color: white;
 }
