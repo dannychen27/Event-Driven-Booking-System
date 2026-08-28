@@ -8,6 +8,7 @@ interface EventCardProps {
     event: Event;
 }
 
+
 export default function EventCard({ event }: EventCardProps) {
     const [showDetails, setShowDetails] = useState(false);
     const [bookingStatus, setBookingStatus] = useState<
@@ -43,13 +44,11 @@ export default function EventCard({ event }: EventCardProps) {
             <button onClick={() => setShowDetails(!showDetails)}>
                 {showDetails ? "Hide Details" : "View Details"}
             </button>
-            {showDetails && (
-                <p>Capacity: {event.capacity}</p>
-            )}
+            {showDetails && <p>Capacity: {event.capacity}</p>}
 
             <button
-                onClick={ handleCreateBooking }
-                disabled={ bookingStatus === "creating" }
+                onClick={handleCreateBooking}
+                disabled={bookingStatus === "creating"}
             >
                 Create Booking
             </button>

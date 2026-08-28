@@ -36,7 +36,6 @@ export default function VenuesPage() {
     return (
         <div className="venues-page">
             <h1>Venues</h1>
-
             {venues.map((venue) => (
                 <VenueCard key={venue.id} venue={venue} />
             ))}

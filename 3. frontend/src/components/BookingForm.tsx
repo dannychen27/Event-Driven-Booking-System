@@ -64,9 +64,7 @@ export default function BookingForm({ eventId }: BookingFormProps) {
                     onChange={(event) => setName(event.target.value)}
                     className={errors.name ? "input-error" : ""}
                 />
-                {errors.name && (
-                    <p className="form-error">{errors.name}</p>
-                )}
+                {errors.name && <p className="form-error">{errors.name}</p>}
             </div>
 
             <div className="form-group">
@@ -79,19 +77,11 @@ export default function BookingForm({ eventId }: BookingFormProps) {
                     onChange={(event) => setGuests(Number(event.target.value))}
                     className={errors.guests ? "input-error" : ""}
                 />
-                {errors.guests && (
-                    <p className="form-error">{errors.guests}</p>
-                )}
+                {errors.guests && <p className="form-error">{errors.guests}</p>}
             </div>
 
-            <button className="booking-button" type="submit">
-                Book Event
-            </button>
-            {submitted && (
-                <p className="form-success">
-                    Booking submitted successfully!
-                </p>
-            )}
+            <button className="booking-button" type="submit">Book Event</button>
+            {submitted && <p className="form-success">Booking submitted successfully!</p>}
         </form>
     );
 }

@@ -1,11 +1,10 @@
-import type { Event } from "../types/Event";
+import type { Event } from "../types/Event.ts";
+
 
 export async function getEvents(): Promise<Event[]> {
-    const response = await fetch("http://localhost:3000/events");
-
-    if (!response.ok) {
+    const getEventsResponse = await fetch("http://localhost:3000/events");
+    if (!getEventsResponse.ok) {
         throw new Error("Failed to fetch events");
     }
-
-    return response.json();
+    return getEventsResponse.json();
 }

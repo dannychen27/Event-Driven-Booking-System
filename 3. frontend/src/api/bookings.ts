@@ -1,29 +1,29 @@
 import type { Booking } from "../types/Booking.ts"
 
+
 export async function getBookingHistory(user_id: number): Promise<Booking[]> {
-    const bookingsResponse = await fetch(`http://localhost:3000/users/${user_id}/bookings`);
-    if (!bookingsResponse.ok) {
+    const getBookingsResponse = await fetch(`http://localhost:3000/users/${user_id}/bookings`);
+    if (!getBookingsResponse.ok) {
         throw new Error(`Failed to fetch bookings for user ${user_id}`);
     }
-    return bookingsResponse.json();
+    return getBookingsResponse.json();
 }
 
-export async function createBooking(
-    user_id: number,
-    event_id: number
-): Promise<Booking> {
-    const createBookingResponse = await fetch(`http://localhost:3000/events/${event_id}/book`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            user_id: user_id
-        }),
-    });
+export async function createBooking(user_id: number,event_id: number): Promise<Booking> {
+    const createBookingsResponse = await fetch(`http://localhost:3000/events/${event_id}/book`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user_id: user_id
+            }),
+        }
+    );
 
-    if (!createBookingResponse.ok) {
-        const errorBody = await createBookingResponse.json();
+    if (!createBookingsResponse.ok) {
+        const errorBody = await createBookingsResponse.json();
         const errorMessage = errorBody.message;
 
         if (errorMessage.includes("already booked")) {
@@ -40,5 +40,5 @@ export async function createBooking(
             throw new Error(errorMessage);
         }
     }
-    return createBookingResponse.json();
+    return createBookingsResponse.json();
 }

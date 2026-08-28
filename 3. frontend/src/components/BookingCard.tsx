@@ -11,6 +11,18 @@ interface BookingCardProps {
 
 export default function BookingCard({ booking }: BookingCardProps) {
     const [showDetails, setShowDetails] = useState(false);
+
+    function getFormattedDate() {
+        return formatDate(
+            booking.created_at,
+            {
+                dateStyle: "long",
+                timeStyle: "medium",
+                is12HourFormat: false,
+            }
+        )
+    }
+
     return (
         <div className="booking-card">
             <h2>Booking Id: {booking.id}</h2>   {/* TODO: replace with booking name? */}
@@ -19,19 +31,7 @@ export default function BookingCard({ booking }: BookingCardProps) {
             <button onClick={() => setShowDetails(!showDetails)}>
                 {showDetails ? "Hide Details" : "View Details"}
             </button>
-            {showDetails && (
-                <p>Created at: {
-                    formatDate(
-                        booking.created_at,
-                        {
-                            dateStyle: "long",
-                            timeStyle: "medium",
-                            hour12: false,
-                        }
-                    )
-                }
-                </p>
-            )}
+            {showDetails && <p>Created at: {getFormattedDate()}</p>}
         </div>
     );
 }

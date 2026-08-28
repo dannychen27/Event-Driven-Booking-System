@@ -42,13 +42,10 @@ export default function BookingsPage() {
     return (
         <div className="bookings-page">
             <h1>My Bookings</h1>
-
             <BookingForm eventId={event_id} />
 
             <h2>Booking History</h2>
-            {bookings.map((booking) => (
-                <BookingCard key={booking.id} booking={booking} />
-            ))}
+            {bookings.map((booking) => <BookingCard key={booking.id} booking={booking} />)}
         </div>
     );
 }

@@ -7,6 +7,7 @@ interface VenueCardProps {
     venue: Venue;
 }
 
+
 export default function VenueCard({ venue }: VenueCardProps) {
     const [showDetails, setShowDetails] = useState(false);
     return (
@@ -15,9 +16,7 @@ export default function VenueCard({ venue }: VenueCardProps) {
             <button onClick={() => setShowDetails(!showDetails)}>
                 {showDetails ? "Hide Details" : "View Details"}
             </button>
-            {showDetails && (
-                <p>Address: {venue.address}</p>
-            )}
+            {showDetails && <p>Address: {venue.address}</p>}
         </div>
     );
 }
