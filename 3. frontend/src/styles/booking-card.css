@@ -1,14 +1,11 @@
 .booking-card {
     background: var(--surface);
-    border-color: var(--border);
     color: var(--text);
 
-    position: relative;
-
-    padding: 1.25rem;
-    border: 1px solid;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-radius: 12px;
 }
 
 .booking-card h3 {
