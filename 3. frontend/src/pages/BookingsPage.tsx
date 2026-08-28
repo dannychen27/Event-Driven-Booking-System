@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import type { Booking } from "../types/Booking.ts";
 import { getBookingHistory } from "../api/bookings.ts";
 import BookingCard from "../components/BookingCard.tsx";
-import BookingForm from "../components/BookingForm.tsx";
 import "../styles/booking-page.css";
 
 
@@ -12,7 +11,6 @@ export default function BookingsPage() {
     const [error, setError] = useState("");
 
     const user_id = 1;  // hardcoded for now...
-    const event_id = 1;  // hardcoded for now...
     // TODO: when we create accounts, we can load that specific user's
     // TODO: bookings (using their own user_id instead of a hardcoded one).
 
@@ -42,8 +40,6 @@ export default function BookingsPage() {
     return (
         <div className="bookings-page">
             <h1>My Bookings</h1>
-            <BookingForm eventId={event_id} onBookingCreated={() => {}} />
-
             <h2>Booking History</h2>
             {bookings.length === 0
                 ? <p>No bookings right now.</p>
