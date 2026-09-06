@@ -138,6 +138,39 @@ cd ..
 After installation, configure the environment variables and database before running the application.
 
 
+## Environment Configuration
+
+I use environment variables to configure the PostgreSQL database connection.
+
+Copy the example environment file:
+
+```
+cp .env.example .env
+```
+
+Then update `.env` with the PostgreSQL credentials for your local database:
+
+```
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=booking_system
+DB_USER=<your-postgresql-username>
+DB_PASSWORD=<your-postgresql-password>
+```
+
+The environment variables control the following database connection settings:
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `DB_HOST` | PostgreSQL server host | `localhost` |
+| `DB_PORT` | PostgreSQL server port | `5432` |
+| `DB_NAME` | Application database name | `booking_system` |
+| `DB_USER` | PostgreSQL username | — |
+| `DB_PASSWORD` | PostgreSQL password | — |
+
+
+I keep `.env` out of version control and use `.env.example` as the template for local configuration.
+
 
 ## Database Setup
 
