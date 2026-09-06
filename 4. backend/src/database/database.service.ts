@@ -9,7 +9,7 @@ export class DatabaseService implements OnModuleDestroy {
         this.pool = new Pool({
             host: 'localhost',
             port: 5432,
-            database: 'booking_system',
+            database: process.env.DB_NAME || "booking_system",
             user: 'dannychen',
         });
     }
