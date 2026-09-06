@@ -42,12 +42,6 @@ export default function BookingForm({ eventId, onCancel, onBookingCreated }: Boo
         setErrors({});
         setSubmitted(true);
 
-        console.log({
-            eventId,
-            name,
-            guests,
-        });
-
         onBookingCreated();
     }
 
