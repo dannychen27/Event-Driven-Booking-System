@@ -40,9 +40,6 @@ The project is being developed incrementally, with automated frontend, backend, 
 
 ## Project Structure
 
-```
-## Project Structure
-
 ```text
 Event-Driven Booking System/
 ├── frontend/
@@ -108,20 +105,20 @@ Prisma currently recommends Node.js 22.x for Prisma 7.
 
 Clone the repository and navigate to the project directory:
 
-```
+```bash
 git clone <repository-url>
 cd <project-directory>
 ```
 
 Install the root project dependencies:
 
-```
+```bash
 npm install
 ```
 
 Install the frontend dependencies:
 
-```
+```bash
 cd "3. frontend"
 npm install
 cd ..
@@ -129,7 +126,7 @@ cd ..
 
 Install the backend dependencies:
 
-```
+```bash
 cd "4. backend"
 npm install
 cd ..
@@ -144,13 +141,13 @@ I use environment variables to configure the PostgreSQL database connection.
 
 Copy the example environment file:
 
-```
+```bash
 cp .env.example .env
 ```
 
 Then update `.env` with the PostgreSQL credentials for your local database:
 
-```
+```env
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=booking_system
