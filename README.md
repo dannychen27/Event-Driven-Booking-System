@@ -226,4 +226,41 @@ After the database has been initialized, the application can connect to PostgreS
 using the credentials configured in `.env`.
 
 
+## Running the Application
+
+I run the frontend and backend separately during development.
+
+
+### Start the Backend
+
+From the project root, run:
+
+```bash
+npm run start --prefix "4. backend"
+```
+
+For development mode with automatic reload:
+
+```bash
+npm run start:dev --prefix "4. backend"
+```
+
+The backend runs on `http://localhost:3000`.
+
+
+### Start the Frontend
+
+From the project root, run:
+
+```bash
+npm run dev --prefix "3. frontend"
+```
+
+The frontend runs on the URL provided by Vite,
+typically `http://localhost:5173`.
+
+Once both servers are running, open the frontend URL in 
+a browser to use the application.
+
+
 
