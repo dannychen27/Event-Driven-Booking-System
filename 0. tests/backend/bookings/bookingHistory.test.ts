@@ -1,8 +1,6 @@
 import { BookingsService } from "../../../4. backend/src/bookings/bookings.service";
-import {
-    mockUserExists, mockUserDoesNotExist,
-    mockBookingHistory
-} from "../helpers/bookingTestHelpers";
+import { mockBookingHistory } from "../helpers/bookingTestHelpers";
+import { mockUserExists, mockUserDoesNotExist } from "../helpers/usersTestHelpers";
 
 
 describe("BookingsService.getBookingHistory", () => {

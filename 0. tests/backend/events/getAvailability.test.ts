@@ -1,5 +1,8 @@
 import { EventsService } from "../../../4. backend/src/events/events.service";
-import { mockEventLookupExists, mockAvailability } from "../helpers/eventsTestHelpers"
+import {
+    mockEventExists, mockEventDoesNotExist,
+    mockAvailability
+} from "../helpers/eventsTestHelpers"
 import { expectNthQuery } from "../../utils/testHelpers";
 
 
@@ -16,7 +19,7 @@ describe("EventsService.getAvailability", () => {
     });
 
     it("should return availability for an event", async () => {
-        mockEventLookupExists(db, 1);
+        mockEventExists(db, 1);
         mockAvailability(db, 10, 3, 7);
 
         const result = await service.getAvailability(1);
@@ -34,7 +37,7 @@ describe("EventsService.getAvailability", () => {
     });
 
     it("should return all spots as available when the event has no bookings", async () => {
-        mockEventLookupExists(db, 1);
+        mockEventExists(db, 1);
         mockAvailability(db, 10, 0, 10);
 
         const result = await service.getAvailability(1);
@@ -52,9 +55,7 @@ describe("EventsService.getAvailability", () => {
     });
 
     it("should reject the request when the event does not exist", async () => {
-        db.query.mockResolvedValueOnce({
-            rows: [],
-        });
+        mockEventDoesNotExist(db);
 
         await expect(service.getAvailability(999))
             .rejects.toThrow("Event 999 not found");

@@ -1,8 +1,10 @@
 import { BookingsService } from "../../../4. backend/src/bookings/bookings.service";
 import {
-    mockUserExists, mockEventExists, mockBookingExists, mockBookingDoesNotExist,
-    mockDeletedBooking,
+    mockBookingExists, mockBookingDoesNotExist,
+    mockDeletedBooking
 } from "../helpers/bookingTestHelpers";
+import { mockUserDoesNotExist, mockUserExists } from "../helpers/usersTestHelpers";
+import { mockEventExists, mockEventDoesNotExist } from "../helpers/eventsTestHelpers";
 import { expectNthQuery, mockTransaction } from "../../utils/testHelpers";
 
 
@@ -66,10 +68,7 @@ describe("BookingsService.cancelBooking", () => {
 
     it("should reject the cancellation when the user does not exist", async () => {
         mockBookingExists(client, 123, 1, 1);
-
-        client.query.mockResolvedValueOnce({
-            rows: [],
-        });
+        mockUserDoesNotExist(client);
 
         await expect(service.cancelBooking(999, 123))
             .rejects.toThrow("User 999 not found");
@@ -83,10 +82,7 @@ describe("BookingsService.cancelBooking", () => {
     it("should reject the cancellation when the event does not exist", async () => {
         mockBookingExists(client, 123, 1, 999);
         mockUserExists(client, 1);
-
-        client.query.mockResolvedValueOnce({
-            rows: [],
-        });
+        mockEventDoesNotExist(client);
 
         await expect(service.cancelBooking(1, 123))
             .rejects.toThrow("Event 999 not found");

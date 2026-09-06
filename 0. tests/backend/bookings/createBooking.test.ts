@@ -1,9 +1,12 @@
 import { BookingsService } from "../../../4. backend/src/bookings/bookings.service";
 import {
-    mockUserExists, mockEventExists, mockNoDuplicateBooking, mockDuplicateBooking,
-    mockBookingCount, mockNoScheduleConflict, mockScheduleConflict,
+    mockNoDuplicateBooking, mockDuplicateBooking,
+    mockBookingCount,
+    mockNoScheduleConflict, mockScheduleConflict,
     mockInsertedBooking,
 } from "../helpers/bookingTestHelpers";
+import { mockUserExists, mockUserDoesNotExist } from "../helpers/usersTestHelpers";
+import { mockEventExists, mockEventDoesNotExist } from "../helpers/eventsTestHelpers"
 import { expectNthQuery, mockTransaction } from "../../utils/testHelpers";
 
 
@@ -55,9 +58,7 @@ describe("BookingsService.createBooking", () => {
     });
 
     it("should reject the booking when the user does not exist", async () => {
-        client.query.mockResolvedValueOnce({
-            rows: [],
-        });
+        mockUserDoesNotExist(client);
 
         await expect(service.createBooking(999, 1))
             .rejects.toThrow("User 999 not found");
@@ -69,10 +70,7 @@ describe("BookingsService.createBooking", () => {
 
     it("should reject the booking when the event does not exist", async () => {
         mockUserExists(client, 1);
-
-        client.query.mockResolvedValueOnce({
-            rows: [],
-        });
+        mockEventDoesNotExist(client);
 
         await expect(service.createBooking(1, 999))
             .rejects.toThrow("Event 999 not found");

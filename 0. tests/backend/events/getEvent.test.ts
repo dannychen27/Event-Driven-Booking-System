@@ -1,5 +1,8 @@
 import { EventsService } from "../../../4. backend/src/events/events.service";
-import { mockEventLookupExists } from "../helpers/eventsTestHelpers";
+import {
+    mockEventDoesNotExist,
+    mockGetEvent
+} from "../helpers/eventsTestHelpers";
 import { expectNthQuery } from "../../utils/testHelpers";
 
 
@@ -16,7 +19,7 @@ describe("EventsService.getEvent", () => {
     });
 
     it("should return the requested event", async () => {
-        mockEventLookupExists(db, 1);
+        mockGetEvent(db, 1);
 
         const result = await service.getEvent(1);
 
@@ -32,9 +35,7 @@ describe("EventsService.getEvent", () => {
     });
 
     it("should reject the request when the event does not exist", async () => {
-        db.query.mockResolvedValueOnce({
-            rows: [],
-        });
+        mockEventDoesNotExist(db);
 
         await expect(service.getEvent(999))
             .rejects.toThrow("Event 999 not found");

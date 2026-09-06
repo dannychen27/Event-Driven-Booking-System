@@ -1,5 +1,6 @@
 import { EventsService } from "../../../4. backend/src/events/events.service";
 import { expectNthQuery } from "../../utils/testHelpers";
+import { mockGetAllEvents } from "../helpers/eventsTestHelpers";
 
 
 describe("EventsService.getAllEvents", () => {
@@ -30,9 +31,7 @@ describe("EventsService.getAllEvents", () => {
             },
         ];
 
-        db.query.mockResolvedValueOnce({
-            rows: events,
-        });
+        mockGetAllEvents(db, events);
 
         const result = await service.getAllEvents();
 
