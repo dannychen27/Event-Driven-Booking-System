@@ -4,8 +4,10 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "strict": true,
-    "types": ["vitest/globals", "node"]
+    "types": ["vitest/globals", "node"],
+    "noEmit": true
   },
+
   "include": [
     "../0. tests/frontend/**/*.ts",
     "../0. tests/frontend/**/*.tsx"
