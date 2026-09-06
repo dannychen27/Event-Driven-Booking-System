@@ -152,7 +152,7 @@ export const mockBookingHistory = (
 };
 
 
-export const expectQuery = (
+export const expectNthQuery = (
     client: any,
     queryNumber: number,
     sqlFragment: string,

@@ -3,7 +3,7 @@ import {
     mockUserExists, mockEventExists, mockNoDuplicateBooking, mockDuplicateBooking,
     mockBookingCount, mockNoScheduleConflict, mockScheduleConflict,
     mockInsertedBooking,
-    expectQuery,
+    expectNthQuery,
 } from "../helpers/bookingTestHelpers";
 
 
@@ -48,16 +48,16 @@ describe("BookingsService.createBooking", () => {
         expect(db.transaction).toHaveBeenCalledTimes(1);
         expect(client.query).toHaveBeenCalledTimes(6);
 
-        expectQuery(client, 1, "FROM users", [1]);
-        expectQuery(client, 2, "FROM events", [1]);
-        expectQuery(client, 3, "FROM bookings", [1, 1]);
-        expectQuery(client, 4, "COUNT(*)", [1]);
-        expectQuery(client, 5, "JOIN events", [
+        expectNthQuery(client, 1, "FROM users", [1]);
+        expectNthQuery(client, 2, "FROM events", [1]);
+        expectNthQuery(client, 3, "FROM bookings", [1, 1]);
+        expectNthQuery(client, 4, "COUNT(*)", [1]);
+        expectNthQuery(client, 5, "JOIN events", [
             1,
             "2026-09-10T11:00:00Z",
             "2026-09-10T10:00:00Z",
         ]);
-        expectQuery(client, 6, "INSERT INTO bookings", [1, 1]);
+        expectNthQuery(client, 6, "INSERT INTO bookings", [1, 1]);
     });
 
     it("should reject the booking when the user does not exist", async () => {
@@ -70,7 +70,7 @@ describe("BookingsService.createBooking", () => {
 
         expect(client.query).toHaveBeenCalledTimes(1);
 
-        expectQuery(client, 1, "FROM users", [999]);
+        expectNthQuery(client, 1, "FROM users", [999]);
     });
 
     it("should reject the booking when the event does not exist", async () => {
@@ -85,8 +85,8 @@ describe("BookingsService.createBooking", () => {
 
         expect(client.query).toHaveBeenCalledTimes(2);
 
-        expectQuery(client, 1, "FROM users", [1]);
-        expectQuery(client, 2, "FROM events", [999]);
+        expectNthQuery(client, 1, "FROM users", [1]);
+        expectNthQuery(client, 2, "FROM events", [999]);
     });
 
     it("should reject a duplicate booking", async () => {
@@ -99,9 +99,9 @@ describe("BookingsService.createBooking", () => {
 
         expect(client.query).toHaveBeenCalledTimes(3);
 
-        expectQuery(client, 1, "FROM users", [1]);
-        expectQuery(client, 2, "FROM events", [1]);
-        expectQuery(client, 3, "WHERE user_id = $1", [1, 1]);
+        expectNthQuery(client, 1, "FROM users", [1]);
+        expectNthQuery(client, 2, "FROM events", [1]);
+        expectNthQuery(client, 3, "WHERE user_id = $1", [1, 1]);
     });
 
     it("should reject a booking when the event is at capacity", async () => {
@@ -115,10 +115,10 @@ describe("BookingsService.createBooking", () => {
 
         expect(client.query).toHaveBeenCalledTimes(4);
 
-        expectQuery(client, 1, "FROM users", [1]);
-        expectQuery(client, 2, "FROM events", [1]);
-        expectQuery(client, 3, "FROM bookings", [1, 1]);
-        expectQuery(client, 4, "COUNT(*)", [1]);
+        expectNthQuery(client, 1, "FROM users", [1]);
+        expectNthQuery(client, 2, "FROM events", [1]);
+        expectNthQuery(client, 3, "FROM bookings", [1, 1]);
+        expectNthQuery(client, 4, "COUNT(*)", [1]);
     });
 
     it("should reject a booking when the user has a schedule conflict", async () => {
@@ -139,11 +139,11 @@ describe("BookingsService.createBooking", () => {
 
         expect(client.query).toHaveBeenCalledTimes(5);
 
-        expectQuery(client, 1, "FROM users", [1]);
-        expectQuery(client, 2, "FROM events", [1]);
-        expectQuery(client, 3, "WHERE user_id = $1", [1, 1]);
-        expectQuery(client, 4, "COUNT(*)", [1]);
-        expectQuery(client, 5, "JOIN events", [
+        expectNthQuery(client, 1, "FROM users", [1]);
+        expectNthQuery(client, 2, "FROM events", [1]);
+        expectNthQuery(client, 3, "WHERE user_id = $1", [1, 1]);
+        expectNthQuery(client, 4, "COUNT(*)", [1]);
+        expectNthQuery(client, 5, "JOIN events", [
             1,
             "2026-09-10T11:00:00Z",
             "2026-09-10T10:00:00Z",

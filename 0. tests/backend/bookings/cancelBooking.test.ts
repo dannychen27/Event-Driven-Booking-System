@@ -2,7 +2,7 @@ import { BookingsService } from "../../../4. backend/src/bookings/bookings.servi
 import {
     mockUserExists, mockEventExists, mockBookingExists, mockBookingDoesNotExist,
     mockDeletedBooking,
-    expectQuery,
+    expectNthQuery,
 } from "../helpers/bookingTestHelpers";
 
 
@@ -46,17 +46,17 @@ describe("BookingsService.cancelBooking", () => {
         expect(client.query).toHaveBeenCalledTimes(4);
 
         // Check booking lookup
-        expectQuery(client, 1, "FROM bookings", [123]);
+        expectNthQuery(client, 1, "FROM bookings", [123]);
 
         // Check user lookup
-        expectQuery(client, 2, "FROM users", [1]);
+        expectNthQuery(client, 2, "FROM users", [1]);
 
         // Check event lookup / lock
-        expectQuery(client, 3, "FROM events", [1]);
-        expectQuery(client, 3, "FOR UPDATE", [1]);
+        expectNthQuery(client, 3, "FROM events", [1]);
+        expectNthQuery(client, 3, "FOR UPDATE", [1]);
 
         // Check booking deletion
-        expectQuery(client, 4, "DELETE FROM bookings", [123]);
+        expectNthQuery(client, 4, "DELETE FROM bookings", [123]);
     });
 
     it("should reject the cancellation when the booking does not exist", async () => {
@@ -67,7 +67,7 @@ describe("BookingsService.cancelBooking", () => {
 
         expect(client.query).toHaveBeenCalledTimes(1);
 
-        expectQuery(client, 1, "FROM bookings", [999]);
+        expectNthQuery(client, 1, "FROM bookings", [999]);
     });
 
     it("should reject the cancellation when the user does not exist", async () => {
@@ -82,8 +82,8 @@ describe("BookingsService.cancelBooking", () => {
 
         expect(client.query).toHaveBeenCalledTimes(2);
 
-        expectQuery(client, 1, "FROM bookings", [123]);
-        expectQuery(client, 2, "FROM users", [999]);
+        expectNthQuery(client, 1, "FROM bookings", [123]);
+        expectNthQuery(client, 2, "FROM users", [999]);
     });
 
     it("should reject the cancellation when the event does not exist", async () => {
@@ -99,9 +99,9 @@ describe("BookingsService.cancelBooking", () => {
 
         expect(client.query).toHaveBeenCalledTimes(3);
 
-        expectQuery(client, 1, "FROM bookings", [123]);
-        expectQuery(client, 2, "FROM users", [1]);
-        expectQuery(client, 3, "FROM events", [999]);
+        expectNthQuery(client, 1, "FROM bookings", [123]);
+        expectNthQuery(client, 2, "FROM users", [1]);
+        expectNthQuery(client, 3, "FROM events", [999]);
     });
 
     it("TODO: should reject cancellation by a non-booking owner", async () => {
