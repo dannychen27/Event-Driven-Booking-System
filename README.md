@@ -312,4 +312,20 @@ npm run lint
 | Frontend | `npm run lint:frontend` |
 
 
+## Building
+
+I use the root build script to build both the backend and frontend:
+
+```bash
+npm run build
+```
+
+### Build Specific Projects
+
+| Target | Command |
+| --- | --- |
+| Backend | `npm run build:backend` |
+| Frontend | `npm run build:frontend` |
+
+
 
