@@ -38,6 +38,59 @@ The project is being developed incrementally, with automated frontend, backend, 
 - **Orchestration:** Kubernetes
 
 
+## Project Structure
+
+```
+## Project Structure
+
+```text
+Event-Driven Booking System/
+├── frontend/
+│   └── src/
+│       ├── api/                    # Backend API clients
+│       ├── components/             # Reusable React components
+│       ├── pages/                  # Application pages
+│       ├── styles/                 # Component and page styling
+│       ├── types/                  # TypeScript domain types
+│       └── utils/                  # Shared frontend utilities
+│
+├── backend/
+│   └── src/
+│       ├── bookings/               # Booking module and business logic
+│       ├── database/               # PostgreSQL database connection
+│       ├── events/                 # Event module and business logic
+│       └── venues/                 # Venue module and business logic
+│
+├── prisma/
+│   └── schema.prisma               # Prisma database schema
+│
+├── tests/
+│   ├── backend/                    # Backend unit and API tests
+│   ├── frontend/                   # Frontend component and page tests
+│   ├── integration/                # Backend integration tests
+│   ├── end-to-end/                 # End-to-end application tests
+│   ├── mocks/                      # Shared test mocks
+│   └── utils/                      # Shared test utilities
+│
+├── 0. documentation/               # Architecture and technology documentation
+├── 1. api endpoints/               # API specifications and design documentation
+├── 2. data model/                  # Database schema, setup, seeds, and design
+│
+├── .env.example                    # Example environment configuration
+├── package.json                    # Root project scripts and dependencies
+├── prisma.config.ts                # Prisma configuration
+└── README.md                       # Project documentation
+```
+
+I organize the project into separate **frontend**, **backend**, and **test** layers.
+
+I built the frontend with React and TypeScript, while the backend uses NestJS and PostgreSQL.
+
+I organize automated tests by scope, including unit, integration, and end-to-end tests.
+
+I keep additional development documentation in the numbered documentation directories, covering API design, data modeling, architecture, technology choices, and project planning.
+
+
 ## Database Setup
 
 ### Option 1: Using setup.sh
@@ -75,3 +128,5 @@ psql booking_system
 ```
 \dt
 ```
+
+
