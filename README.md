@@ -328,4 +328,37 @@ npm run build
 | Frontend | `npm run build:frontend` |
 
 
+## API Endpoints
+
+I expose the application's functionality through a REST API implemented with NestJS.
+
+### User Endpoints
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/users/:id/bookings` | Retrieve a user's booking history |
+
+### Event Endpoints
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/events` | Retrieve all events |
+| `GET` | `/events/:id` | Retrieve a specific event |
+| `GET` | `/events/:id/availability` | Retrieve event availability |
+| `POST` | `/events/:id/book` | Create a booking for an event |
+
+### Venue Endpoints
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/venues` | Retrieve all venues |
+| `GET` | `/venues/:id` | Retrieve a specific venue |
+
+### Booking Endpoints
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `DELETE` | `/bookings/:id` | Cancel a booking |
+
+
 
