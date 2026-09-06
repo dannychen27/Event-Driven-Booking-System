@@ -6,7 +6,11 @@ export class VenuesService {
   constructor(private readonly db: DatabaseService) {}
 
   async getAllVenues() {
-    const venueResult = await this.db.query(`
+    const venueResult = await this.db.query<{
+      id: number;
+      name: string;
+      address: string;
+    }>(`
             SELECT *
             FROM venues
         `);
@@ -14,7 +18,11 @@ export class VenuesService {
   }
 
   async getVenue(venue_id: number) {
-    const venueResult = await this.db.query(
+    const venueResult = await this.db.query<{
+      id: number;
+      name: string;
+      address: string;
+    }>(
       `
             SELECT id, name, address
             FROM venues

@@ -26,7 +26,11 @@ export class EventsService {
       throw new NotFoundException(`Event ${event_id} not found`);
     }
 
-    const availabilityResult = await this.db.query(
+    const availabilityResult = await this.db.query<{
+      capacity: number;
+      booking_count: number;
+      available: number;
+    }>(
       `
             SELECT
                 e.capacity,
