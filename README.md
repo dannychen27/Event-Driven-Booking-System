@@ -23,8 +23,30 @@ The backend enforces booking constraints such as:
 - schedule conflicts
 - event capacity 
 - cancellation authorization
+- protection against double-booking through database transactions and row-level locking
 
 The project is being developed incrementally, with automated frontend, backend, integration, and end-to-end tests.
+
+
+## Features
+
+I have implemented the following features in the current Phase 1 release:
+
+- [x] **Event and venue browsing** — browse available events and their associated venues
+- [x] **Event availability** — view the remaining capacity for an event
+- [x] **Booking management** — create and cancel event bookings
+- [x] **Booking history** — view a user's previous and current bookings
+- [x] **Booking validation** — prevent duplicate bookings, schedule conflicts, and bookings that exceed event capacity
+
+- [x] **Client-side form validation** — validate booking input before submitting requests
+- [ ] **Responsive user interface** — support common desktop and mobile layouts
+
+- [x] **REST API integration** — connect the frontend to the backend through REST endpoints
+
+- [ ] **Cancellation authorization** — restrict users to cancelling their own bookings
+- [x] **Transactional booking protection** — use database transactions and row-level locking to protect against double-booking
+
+- [x] **Automated testing** — test the frontend, backend, integration workflows, and end-to-end application flows
 
 
 ## Tech Stack
