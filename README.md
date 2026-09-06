@@ -361,4 +361,56 @@ I expose the application's functionality through a REST API implemented with Nes
 | `DELETE` | `/bookings/:id` | Cancel a booking |
 
 
+## Architecture
+
+I structure the application as a layered, event-driven system with separate frontend, backend, and database components.
+
+### Frontend
+
+I built the frontend with React and TypeScript using Vite.
+
+The frontend communicates with the backend through REST API requests and provides the user interface for browsing events and venues, creating bookings, and viewing booking history.
+
+
+### Backend
+
+I built the backend with NestJS and organize it into feature-based modules:
+
+- **Events**: event retrieval and availability
+- **Venues**: venue retrieval
+- **Bookings**: booking creation, cancellation, and booking history
+- **Database**: PostgreSQL database connection and access
+
+The backend contains the application's business logic and exposes the REST API used by the frontend.
+
+
+### Database
+
+I use PostgreSQL to persist users, venues, events, and bookings.
+
+The database schema enforces data integrity through primary keys, foreign keys, constraints, and indexes.
+
+### Request Flow
+
+A typical request follows this flow:
+
+```text
+React Frontend
+      │
+      ▼
+REST API
+      │
+      ▼
+NestJS Controllers
+      │
+      ▼
+NestJS Services
+      │
+      ▼
+PostgreSQL
+```
+
+The backend services validate requests and apply business rules before reading from or writing to the database.
+
+
 
