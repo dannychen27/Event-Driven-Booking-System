@@ -91,6 +91,21 @@ I organize automated tests by scope, including unit, integration, and end-to-end
 I keep additional development documentation in the numbered documentation directories, covering API design, data modeling, architecture, technology choices, and project planning.
 
 
+## Prerequisites
+
+Before running the project, I require the following software:
+
+* **Node.js 20.19.0 or later**: required by Prisma 7 and Vite 8.
+* **npm**: used to install dependencies and run the project scripts.
+* **PostgreSQL**: used as the application's relational database.
+* **Git**: used to clone the repository and manage the project source code.
+
+I recommend using an active LTS version of Node.js, such as Node.js 22.x.
+Prisma currently recommends Node.js 22.x for Prisma 7.
+
+
+
+
 ## Database Setup
 
 ### Option 1: Using setup.sh
