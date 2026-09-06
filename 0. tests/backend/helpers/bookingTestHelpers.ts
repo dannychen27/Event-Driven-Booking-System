@@ -28,6 +28,31 @@ export const mockEventExists = (
 };
 
 
+export const mockBookingExists = (
+    client: any,
+    bookingId: number,
+    userId: number,
+    eventId: number,
+) => {
+    client.query.mockResolvedValueOnce({
+        rows: [{
+            id: bookingId,
+            user_id: userId,
+            event_id: eventId,
+            created_at: "2026-09-05T20:00:00Z",
+        },
+        ],
+    });
+};
+
+
+export const mockBookingDoesNotExist = (client: any) => {
+    client.query.mockResolvedValueOnce({
+        rows: [],
+    });
+};
+
+
 export const mockNoDuplicateBooking = (client: any) => {
     client.query.mockResolvedValueOnce({
         rows: [],
@@ -73,6 +98,25 @@ export const mockScheduleConflict = (
 
 
 export const mockInsertedBooking = (
+    client: any,
+    bookingId: number,
+    userId: number,
+    eventId: number,
+) => {
+    client.query.mockResolvedValueOnce({
+        rows: [
+            {
+                id: bookingId,
+                user_id: userId,
+                event_id: eventId,
+                created_at: "2026-09-05T20:00:00Z",
+            },
+        ],
+    });
+};
+
+
+export const mockDeletedBooking = (
     client: any,
     bookingId: number,
     userId: number,
