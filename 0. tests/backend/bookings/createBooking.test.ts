@@ -4,7 +4,7 @@ import {
     mockBookingCount, mockNoScheduleConflict, mockScheduleConflict,
     mockInsertedBooking,
 } from "../helpers/bookingTestHelpers";
-import { expectNthQuery } from "../../utils/testHelpers";
+import { expectNthQuery, mockTransaction } from "../../utils/testHelpers";
 
 
 describe("BookingsService.createBooking", () => {
@@ -17,12 +17,8 @@ describe("BookingsService.createBooking", () => {
             query: jest.fn(),
         };
 
-        db = {
-            transaction: jest.fn(async (callback: (client: any) => Promise<any>) => {
-                return callback(client);
-            }),
-        };
-
+        db = {};
+        mockTransaction(db, client);
         service = new BookingsService(db);
     });
 

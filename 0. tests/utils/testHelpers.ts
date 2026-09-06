@@ -11,3 +11,15 @@ export const expectNthQuery = (
     );
 };
 
+
+export const mockTransaction = (
+    db: any,
+    client: any,
+) => {
+    db.transaction = jest.fn(async (
+        callback: (client: any) => Promise<any>,
+    ) => {
+        return callback(client);
+    });
+};
+
