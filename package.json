@@ -6,5 +6,10 @@
   "devDependencies": {
     "@types/pg": "^8.23.1",
     "prisma": "^7.9.1"
+  },
+  "scripts": {
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "npm test --prefix \"4. backend\"",
+    "test:frontend": "npm test --prefix \"3. frontend\""
   }
 }

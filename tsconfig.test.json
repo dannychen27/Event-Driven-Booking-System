@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+    "baseUrl": ".",
+
+    "types": ["node", "jest"],
+
+    "typeRoots": [
+      "4. backend/node_modules/@types"
+    ],
+
+    "paths": {
+      "@nestjs/*": [
+        "4. backend/node_modules/@nestjs/*"
+      ]
+    }
+  },
+
+  "include": [
+    "0. tests/backend/**/*.ts",
+    "4. backend/src/**/*.ts"
+  ]
+}
