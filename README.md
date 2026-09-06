@@ -1,3 +1,24 @@
+# Event-Driven Booking System
+
+## Overview
+
+A full-stack event booking system built with React, NestJS, and PostgreSQL.
+
+The system allows users to:
+- browse events and venues
+- book events
+- view booking history
+- cancel their bookings
+
+The backend enforces booking constraints such as:
+- duplicate bookings
+- schedule conflicts
+- event capacity 
+- cancellation authorization
+
+The project is being developed incrementally, with automated frontend, backend, integration, and end-to-end tests.
+
+
 
 
 ## Database Setup
