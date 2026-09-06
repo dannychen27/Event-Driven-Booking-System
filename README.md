@@ -263,4 +263,35 @@ Once both servers are running, open the frontend URL in
 a browser to use the application.
 
 
+## Testing
+
+I organize automated tests into four categories:
+
+- **Backend tests**: unit and API tests for backend services and endpoints
+- **Frontend tests**: component and page tests using Vitest
+- **Integration tests**: tests backend services against a test PostgreSQL database
+- **End-to-end tests**: tests complete application workflows against a test PostgreSQL database
+
+### Run All Tests
+
+Run the complete test suite from the project root:
+
+```
+npm test
+```
+
+## Run Specific Test Suites
+
+| Test suite | Command |
+| --- | --- |
+| Backend | `npm run test:backend` |
+| Frontend | `npm run test:frontend` |
+| Integration | `npm run test:integration` |
+| End-to-end | `npm run test:e2e` |
+
+The integration and end-to-end test commands automatically set 
+up the `booking_system_test` database before running their 
+respective test suites.
+
+
 
