@@ -19,6 +19,23 @@ The backend enforces booking constraints such as:
 The project is being developed incrementally, with automated frontend, backend, integration, and end-to-end tests.
 
 
+## Tech Stack
+
+### Current
+
+- **Frontend:** React, TypeScript, Vite
+- **Backend:** NestJS, TypeScript
+- **Database:** PostgreSQL
+- **Database tooling:** Prisma, node-postgres
+- **Testing:** Vitest, Jest, Supertest
+
+
+### Planned
+
+- **Event streaming:** Apache Kafka
+- **Systems language:** C++
+- **Containerization:** Docker
+- **Orchestration:** Kubernetes
 
 
 ## Database Setup
