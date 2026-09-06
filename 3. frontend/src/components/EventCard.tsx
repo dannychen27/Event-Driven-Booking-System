@@ -80,7 +80,6 @@ export default function EventCard({ event }: EventCardProps) {
             {showBookingForm &&
                 <Modal actions={[]}>
                     <BookingForm
-                        eventId={event.id}
                         onCancel={() => setShowBookingForm(false)}
                         onBookingCreated={() => {
                             handleCreateBooking();

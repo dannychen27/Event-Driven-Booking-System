@@ -13,7 +13,6 @@ export function renderBookingForm({
 } = {}) {
     return render(
         <BookingForm
-            eventId={1}
             onCancel={onCancel}
             onBookingCreated={onBookingCreated}
         />,

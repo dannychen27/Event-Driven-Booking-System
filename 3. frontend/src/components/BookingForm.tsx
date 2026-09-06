@@ -3,13 +3,12 @@ import "../styles/booking-form.css";
 
 
 interface BookingFormProps {
-    eventId: number;
     onCancel: () => void;
     onBookingCreated: () => void;
 }
 
 
-export default function BookingForm({ eventId, onCancel, onBookingCreated }: BookingFormProps) {
+export default function BookingForm({ onCancel, onBookingCreated }: BookingFormProps) {
     const [name, setName] = useState("");
     const [guests, setGuests] = useState(1);
     const [submitted, setSubmitted] = useState(false);
