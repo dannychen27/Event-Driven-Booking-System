@@ -1,5 +1,6 @@
 import { VenuesService } from "../../../4. backend/src/venues/venues.service";
 import { expectNthQuery } from "../../utils/testHelpers";
+import { mockGetVenue, mockVenueDoesNotExist } from "../helpers/venuesTestHelpers";
 
 
 describe("VenuesService.getVenue", () => {
@@ -20,22 +21,18 @@ describe("VenuesService.getVenue", () => {
             name: "Bahen Centre",
             address: "40 St George St",
         };
-
-        db.query.mockResolvedValueOnce({
-            rows: [venue],
-        });
+        mockGetVenue(db, venue);
 
         const result = await service.getVenue(1);
 
         expect(result).toEqual(venue);
         expect(db.query).toHaveBeenCalledTimes(1);
+
         expectNthQuery(db, 1, "FROM venues", [1]);
     });
 
     it("should reject the request when the venue does not exist", async () => {
-        db.query.mockResolvedValueOnce({
-            rows: [],
-        });
+        mockVenueDoesNotExist(db);
 
         await expect(service.getVenue(999))
             .rejects.toThrow("Venue 999 does not exist");

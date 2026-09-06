@@ -1,5 +1,6 @@
 import { VenuesService } from "../../../4. backend/src/venues/venues.service";
 import { expectNthQuery } from "../../utils/testHelpers";
+import { mockGetAllVenues } from "../helpers/venuesTestHelpers";
 
 
 describe("VenuesService.getAllVenues", () => {
@@ -27,10 +28,7 @@ describe("VenuesService.getAllVenues", () => {
                 address: "31 King's College Cir",
             },
         ];
-
-        db.query.mockResolvedValueOnce({
-            rows: venues,
-        });
+        mockGetAllVenues(db, venues);
 
         const result = await service.getAllVenues();
 
