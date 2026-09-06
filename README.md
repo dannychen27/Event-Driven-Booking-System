@@ -104,6 +104,39 @@ I recommend using an active LTS version of Node.js, such as Node.js 22.x.
 Prisma currently recommends Node.js 22.x for Prisma 7.
 
 
+## Installation
+
+Clone the repository and navigate to the project directory:
+
+```
+git clone <repository-url>
+cd <project-directory>
+```
+
+Install the root project dependencies:
+
+```
+npm install
+```
+
+Install the frontend dependencies:
+
+```
+cd "3. frontend"
+npm install
+cd ..
+```
+
+Install the backend dependencies:
+
+```
+cd "4. backend"
+npm install
+cd ..
+```
+
+After installation, configure the environment variables and database before running the application.
+
 
 
 ## Database Setup
