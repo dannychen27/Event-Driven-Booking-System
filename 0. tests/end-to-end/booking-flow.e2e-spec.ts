@@ -100,7 +100,6 @@ describe("Booking flow (E2E)", () => {
             .expect(404);
     });
 
-    // TODO: This test currently fails.
     it("should reject cancellation by a non-booking owner", async () => {
         const bookingResponse = await request(app.getHttpServer())
             .post("/events/1/book")
