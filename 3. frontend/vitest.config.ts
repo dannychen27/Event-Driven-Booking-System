@@ -11,6 +11,7 @@ export default defineConfig({
         alias: {
             react: `${frontendRoot}node_modules/react`,
             "react-dom": `${frontendRoot}node_modules/react-dom`,
+            "react-router-dom": `${frontendRoot}node_modules/react-router-dom`,
             "@testing-library/react": `${frontendRoot}node_modules/@testing-library/react`,
             "@testing-library/user-event": `${frontendRoot}node_modules/@testing-library/user-event`,
             "@testing-library/jest-dom": `${frontendRoot}node_modules/@testing-library/jest-dom`,
