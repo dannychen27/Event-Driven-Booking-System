@@ -14,7 +14,21 @@ vi.mock("../../../3. frontend/src/api/bookings", () => ({
 }));
 
 
+vi.mock("../../../3. frontend/src/components/BookingForm.tsx", () => ({
+    default: ({
+        onBookingCreated,
+    }: {
+        onBookingCreated: () => void;
+    }) => (
+        <button onClick={onBookingCreated}>
+            Mock Booking Form
+        </button>
+    ),
+}));
+
+
 describe("EventCard", () => {
+
     beforeEach(() => {
         vi.clearAllMocks();
     });
@@ -55,12 +69,14 @@ describe("EventCard", () => {
             );
 
             expect(
-                await screen.findByRole("heading", {
-                    name: "Book This Event",
+                await screen.findByRole("button", {
+                    name: "Mock Booking Form",
                 }),
             ).toBeInTheDocument();
 
-            expect(getBookingHistory).toHaveBeenCalledWith(1);
+            expect(
+                getBookingHistory,
+            ).toHaveBeenCalledWith(1);
         },
     );
 
@@ -91,8 +107,8 @@ describe("EventCard", () => {
         ).toBeInTheDocument();
 
         expect(
-            screen.queryByRole("heading", {
-                name: "Book This Event",
+            screen.queryByRole("button", {
+                name: "Mock Booking Form",
             }),
         ).not.toBeInTheDocument();
     });
@@ -111,18 +127,15 @@ describe("EventCard", () => {
             }),
         );
 
-        await user.type(
-            screen.getByLabelText("Name"),
-            "Test User",
-        );
-
         await user.click(
             screen.getByRole("button", {
-                name: "Book Event",
+                name: "Mock Booking Form",
             }),
         );
 
-        expect(createBooking).toHaveBeenCalledWith(1, 1);
+        expect(
+            createBooking,
+        ).toHaveBeenCalledWith(1, 1);
 
         expect(
             await screen.findByText(
@@ -147,14 +160,9 @@ describe("EventCard", () => {
             }),
         );
 
-        await user.type(
-            screen.getByLabelText("Name"),
-            "Test User",
-        );
-
         await user.click(
             screen.getByRole("button", {
-                name: "Book Event",
+                name: "Mock Booking Form",
             }),
         );
 
@@ -165,3 +173,4 @@ describe("EventCard", () => {
         ).toBeInTheDocument();
     });
 });
+
