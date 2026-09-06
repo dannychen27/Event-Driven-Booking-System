@@ -3,32 +3,31 @@ import { DatabaseService } from '../database/database.service';
 
 @Injectable()
 export class EventsService {
+  constructor(private readonly db: DatabaseService) {}
 
-    constructor(private readonly db: DatabaseService) {
-
-    }
-
-    async getAllEvents() {
-        const result = await this.db.query(`
+  async getAllEvents() {
+    const result = await this.db.query(`
             SELECT *
             FROM events;
         `);
-        return result.rows;
-    }
+    return result.rows;
+  }
 
-    async getAvailability(event_id: number) {
-        const eventResult = await this.db.query(`
+  async getAvailability(event_id: number) {
+    const eventResult = await this.db.query(
+      `
             SELECT id, start_time, end_time, capacity
             FROM events
             WHERE id = $1;
         `,
-            [event_id],
-        );
-        if (eventResult.rows.length === 0) {
-            throw new NotFoundException(`Event ${event_id} not found`);
-        }
+      [event_id],
+    );
+    if (eventResult.rows.length === 0) {
+      throw new NotFoundException(`Event ${event_id} not found`);
+    }
 
-        const availabilityResult = await this.db.query(`
+    const availabilityResult = await this.db.query(
+      `
             SELECT
                 e.capacity,
                 COUNT(b.id)::int AS booked,
@@ -39,23 +38,24 @@ export class EventsService {
             WHERE e.id = $1
             GROUP BY e.id, e.capacity;
         `,
-            [event_id],
-        );
-        // if event has no bookings, all spots are available
-        return availabilityResult.rows[0];
-    }
+      [event_id],
+    );
+    // if event has no bookings, all spots are available
+    return availabilityResult.rows[0];
+  }
 
-    async getEvent(event_id: number) {
-        const eventResult = await this.db.query(`
+  async getEvent(event_id: number) {
+    const eventResult = await this.db.query(
+      `
             SELECT id, start_time, end_time, capacity
             FROM events
             WHERE id = $1;
         `,
-            [event_id],
-        );
-        if (eventResult.rows.length === 0) {
-            throw new NotFoundException(`Event ${event_id} not found`);
-        }
-        return eventResult.rows[0];
+      [event_id],
+    );
+    if (eventResult.rows.length === 0) {
+      throw new NotFoundException(`Event ${event_id} not found`);
     }
+    return eventResult.rows[0];
+  }
 }

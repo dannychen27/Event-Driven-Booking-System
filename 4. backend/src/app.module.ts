@@ -6,5 +6,4 @@ import { VenuesModule } from './venues/venues.module';
 @Module({
   imports: [EventsModule, BookingsModule, VenuesModule],
 })
-
 export class AppModule {}

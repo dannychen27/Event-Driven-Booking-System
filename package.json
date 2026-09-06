@@ -12,6 +12,10 @@
     "test:backend": "npm test --prefix \"4. backend\"",
     "test:frontend": "npm test --prefix \"3. frontend\"",
     "test:e2e": "DB_NAME=booking_system_test \"0. tests/end-to-end/setup-e2e-db.sh\" && DB_NAME=booking_system_test \"4. backend/node_modules/.bin/jest\" --config \"0. tests/jest.e2e.config.js\"",
-    "test:integration": "DB_NAME=booking_system_test \"0. tests/end-to-end/setup-e2e-db.sh\" && DB_NAME=booking_system_test \"4. backend/node_modules/.bin/jest\" --config \"0. tests/jest.integration.config.js\""
+    "test:integration": "DB_NAME=booking_system_test \"0. tests/end-to-end/setup-e2e-db.sh\" && DB_NAME=booking_system_test \"4. backend/node_modules/.bin/jest\" --config \"0. tests/jest.integration.config.js\"",
+
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "lint:backend": "npm run lint --prefix \"4. backend\"",
+    "lint:frontend": "npm run lint --prefix \"3. frontend\""
   }
 }
