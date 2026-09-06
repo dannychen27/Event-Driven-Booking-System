@@ -49,23 +49,27 @@ I have implemented the following features in the current Phase 1 release:
 - [x] **Automated testing** — test the frontend, backend, integration workflows, and end-to-end application flows
 
 
-## Tech Stack
+## Technology Stack
 
 ### Current
 
-- **Frontend:** React, TypeScript, Vite
-- **Backend:** NestJS, TypeScript
-- **Database:** PostgreSQL
-- **Database tooling:** Prisma, node-postgres
-- **Testing:** Vitest, Jest, Supertest
+| Layer | Technologies |
+| --- | --- |
+| Frontend | React, TypeScript, Vite |
+| Backend | NestJS, TypeScript |
+| Database | PostgreSQL |
+| Database Tooling | Prisma, node-postgres |
+| Testing | Vitest, Jest, Supertest, Testing Library |
 
 
 ### Planned
 
-- **Event streaming:** Apache Kafka
-- **Systems language:** C++
-- **Containerization:** Docker
-- **Orchestration:** Kubernetes
+| Layer | Technologies |
+| --- | --- |
+| Event streaming | Apache Kafka |
+| Systems language | C++ |
+| Containerization | Docker |
+| Orchestration | Kubernetes |
 
 
 ## Project Structure
