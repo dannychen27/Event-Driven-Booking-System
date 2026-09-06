@@ -294,4 +294,22 @@ up the `booking_system_test` database before running their
 respective test suites.
 
 
+## Linting
+
+I use ESLint to check the frontend and backend code.
+
+Run linting for the entire project from the project root:
+
+```bash
+npm run lint
+```
+
+### Run Specific Linters
+
+| Target | Command |
+| --- | --- |
+| Backend | `npm run lint:backend` |
+| Frontend | `npm run lint:frontend` |
+
+
 
