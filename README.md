@@ -413,4 +413,74 @@ PostgreSQL
 The backend services validate requests and apply business rules before reading from or writing to the database.
 
 
+## Project Roadmap
 
+I plan to develop the project in three major phases, with each phase building on the previous one.
+
+### Phase 1 — Make the Booking System Work
+
+**Goal:** Build the core booking system with React, a REST API, and PostgreSQL.
+
+- [x] Establish users
+- [x] Establish events and venues
+- [x] Implement event availability
+- [x] Implement booking creation and cancellation
+- [x] Implement booking history
+- [x] Add transactional protection against double-booking
+- [x] Build the basic frontend
+
+### Phase 2 — Make It Distributed
+
+**Goal:** Introduce Kafka and event-driven communication.
+
+```text
+        Booking Service
+              │
+            Kafka
+         ╱         ╲
+Notification     Analytics
+```
+
+Planned work:
+
+- [ ] Publish `booking.created` events
+- [ ] Publish `booking.cancelled` events
+- [ ] Implement Kafka producers and consumers
+- [ ] Build the notification consumer
+- [ ] Build the analytics consumer
+- [ ] Implement retries
+- [ ] Implement idempotent event processing
+- [ ] Handle consumer failures
+
+### Phase 3 — Make It Look Professional
+
+**Goal:** Containerize and deploy the distributed system while improving reliability and observability.
+
+```text
+              Kubernetes
+                  │
+       ┌──────────┼──────────┐
+       ▼          ▼          ▼
+      API    Notification  Analytics
+       │
+       ▼
+   PostgreSQL
+       │
+       ▼
+     Kafka
+```
+
+Planned work:
+
+- [ ] Add Docker Compose
+- [ ] Add Kubernetes manifests
+- [ ] Add health checks
+- [ ] Add structured logging
+- [ ] Expand API and integration tests
+- [ ] Add CI/CD
+- [ ] Add load and failure tests
+- [ ] Add an architecture diagram
+- [ ] Expand project documentation
+
+I intend to stop once these phases are complete rather than continuously 
+adding infrastructure and services beyond the project's core goals.
