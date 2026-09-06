@@ -37,7 +37,7 @@ export default function VenuesPage() {
         <div className="venues-page">
             <h1>Venues</h1>
             {venues.length === 0
-                ? <p>No available events right now.</p>
+                ? <p>No available venues right now.</p>
                 : venues.map((venue) => (
                     <VenueCard key={venue.id} venue={venue} />
                 ))
