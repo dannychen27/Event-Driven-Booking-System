@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@testing-library/react": [
+        "3. frontend/node_modules/@testing-library/react"
+      ],
+      "@testing-library/user-event": [
+        "3. frontend/node_modules/@testing-library/user-event"
+      ],
+      "vitest": [
+        "3. frontend/node_modules/vitest"
+      ]
+    }
+  },
+
+  "include": [
+    "0. tests/**/*.ts",
+    "0. tests/**/*.tsx"
+  ],
+
+  "files": [],
+  "references": [
+    {
+      "path": "./3. frontend"
+    }
+  ]
+}
