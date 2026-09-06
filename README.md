@@ -12,7 +12,7 @@ Run this shell script from the "2. data model" folder:
 
 ### Option 2: Manually through psql
 
-Start postgreSQL:
+Start PostgreSQL:
 ```
 psql
 ```
@@ -22,7 +22,7 @@ Inside PostgreSQL:
 CREATE DATABASE booking_system;
 \c booking_system
 
--- load schema:
+-- Load schema:
 \i schema.sql
 \i "seed data/seed.sql"
 ```
@@ -33,7 +33,7 @@ CREATE DATABASE booking_system;
 psql booking_system
 ```
 
-### viewing tables
+### Viewing tables
 ```
 \dt
 ```
