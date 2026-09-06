@@ -100,6 +100,7 @@ describe("Booking flow (E2E)", () => {
             .expect(404);
     });
 
+    // TODO: This test currently fails.
     it("should reject cancellation by a non-booking owner", async () => {
         const bookingResponse = await request(app.getHttpServer())
             .post("/events/1/book")
@@ -110,14 +111,15 @@ describe("Booking flow (E2E)", () => {
 
         const booking = bookingResponse.body;
 
-        try {
-            await request(app.getHttpServer())
-                .delete(`/bookings/${booking.id}`)
-                .send({
-                    user_id: 2,
-                })
-                .expect(403);
-        } finally {
+        const response = await request(app.getHttpServer())
+            .delete(`/bookings/${booking.id}`)
+            .send({
+                user_id: 2,
+            });
+
+        expect(response.status).toBe(403);
+
+        if (response.status === 403) {
             await request(app.getHttpServer())
                 .delete(`/bookings/${booking.id}`)
                 .send({
