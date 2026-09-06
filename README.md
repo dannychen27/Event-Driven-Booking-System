@@ -174,40 +174,59 @@ I keep `.env` out of version control and use `.env.example` as the template for 
 
 ## Database Setup
 
-### Option 1: Using setup.sh
+I use PostgreSQL as the application's relational database.
 
-Run this shell script from the "2. data model" folder:
+The database setup files are located in `2. data model/`:
+
+- `setup.sh` — database setup script
+- `setup.sql` — database setup SQL
+- `schema.sql` — database schema
+- `seed data/seed.sql` — test and development seed data
+- `reset.sql` — database reset script
+
+### Option 1: Using `setup.sh`
+
+Run the shell script from the "2. data model" directory:
 
 ```bash
+cd "2. data model"
 ./setup.sh
 ```
 
-### Option 2: Manually through psql
+### Option 2: Manually through `psql`
 
 Start PostgreSQL:
-```
+```bash
 psql
 ```
 
-Inside PostgreSQL:
-```
+Create and connect to the application database:
+```sql
 CREATE DATABASE booking_system;
 \c booking_system
+```
 
--- Load schema:
+Load the database schema and seed data:
+```text
 \i schema.sql
 \i "seed data/seed.sql"
 ```
 
-### Connecting to the database later
+### Connecting to the Database Later
 
-```
+```bash
 psql booking_system
 ```
 
-### Viewing tables
-```
+### Viewing Tables
+
+List the tables in the database with:
+```text
 \dt
 ```
+
+After the database has been initialized, the application can connect to PostgreSQL 
+using the credentials configured in `.env`.
+
 
 
