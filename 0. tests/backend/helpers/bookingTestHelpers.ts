@@ -8,6 +8,13 @@ export const mockUserExists = (
 };
 
 
+export const mockUserDoesNotExist = (db: any) => {
+    db.query.mockResolvedValueOnce({
+        rows: [],
+    });
+};
+
+
 export const mockEventExists = (
     client: any,
     eventId: number,
@@ -131,6 +138,16 @@ export const mockDeletedBooking = (
                 created_at: "2026-09-05T20:00:00Z",
             },
         ],
+    });
+};
+
+
+export const mockBookingHistory = (
+    db: any,
+    bookings: any[],
+) => {
+    db.query.mockResolvedValueOnce({
+        rows: bookings,
     });
 };
 
