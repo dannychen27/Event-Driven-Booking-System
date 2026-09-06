@@ -1,5 +1,5 @@
 import {
-    ConflictException, NotFoundException,
+    ConflictException, NotFoundException, ForbiddenException,
     Injectable,
 } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
@@ -120,6 +120,12 @@ export class BookingsService {
 
             // TODO: in week 2, add an authorization check -- make sure only the
             // TODO: original booking author can delete this booking, not other users.
+            // check booking ownership
+            if (bookingResult.rows[0].user_id !== user_id) {
+                throw new ForbiddenException(
+                    `User ${user_id} is not authorized to cancel booking ${booking_id}`,
+                );
+            }
 
             // get and lock event
             const event_id = bookingResult.rows[0].event_id;

@@ -122,6 +122,44 @@ describe("BookingsService", () => {
             ).rejects.toThrow("Event 1 not found");
         });
 
+        it("throws an error when the user is not the booking owner", async () => {
+            const mockClient = {
+                query: jest
+                    .fn()
+                    .mockResolvedValueOnce({
+                        rows: [
+                            {
+                                id: 5,
+                                user_id: 1,
+                                event_id: 1,
+                                created_at: "2026-09-06T18:00:00Z",
+                            },
+                        ],
+                    })
+                    .mockResolvedValueOnce({
+                        rows: [{ id: 2 }],
+                    }),
+            };
+
+            const db = {
+                transaction: jest.fn(
+                    async (
+                        callback: (client: typeof mockClient) => Promise<unknown>,
+                    ) => {
+                        return callback(mockClient);
+                    },
+                ),
+            } as unknown as DatabaseService;
+
+            const service = new BookingsService(db);
+
+            await expect(
+                service.cancelBooking(2, 5),
+            ).rejects.toThrow(
+                "User 2 is not authorized to cancel booking 5",
+            );
+        });
+
         it("throws an error when the user has already booked the event", async () => {
             const mockClient = {
                 query: jest
