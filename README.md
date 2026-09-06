@@ -520,7 +520,14 @@ Planned work:
      Kafka
 ```
 
-Planned work:
+## Known Limitations
+
+- Authentication and authorization are not yet implemented at the application level
+- Kafka-based event processing is planned for Phase 2
+- The current deployment workflow is intended for local development
+
+
+## Planned Work
 
 - [ ] Add Docker Compose
 - [ ] Add Kubernetes manifests
