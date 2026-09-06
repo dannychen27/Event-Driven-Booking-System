@@ -22,6 +22,22 @@ describe("Event browsing (E2E)", () => {
         await app.close();
     });
 
+    it("should return all events", async () => {
+        const response = await request(app.getHttpServer())
+            .get("/events")
+            .expect(200);
+
+        expect(response.body.length).toBeGreaterThan(0);
+
+        expect(response.body).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    id: 1,
+                }),
+            ]),
+        );
+    });
+
     it("should return the requested event", async () => {
         const response = await request(app.getHttpServer())
             .get("/events/1")
