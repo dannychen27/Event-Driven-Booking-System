@@ -1,7 +1,7 @@
 import { BookingsService } from "../../../4. backend/src/bookings/bookings.service";
 import {
     mockUserExists, mockUserDoesNotExist,
-    mockBookingHistory,
+    mockBookingHistory
 } from "../helpers/bookingTestHelpers";
 
 
@@ -40,16 +40,10 @@ describe("BookingsService.getBookingHistory", () => {
 
         expect(result).toEqual(bookings);
         expect(db.query).toHaveBeenCalledTimes(2);
-        expect(db.query).toHaveBeenNthCalledWith(
-            1,
-            expect.stringContaining("FROM users"),
-            [1],
-        );
-        expect(db.query).toHaveBeenNthCalledWith(
-            2,
-            expect.stringContaining("FROM bookings"),
-            [1],
-        );
+
+        expect(db.query).toHaveBeenNthCalledWith(1, expect.stringContaining("FROM users"), [1]);
+        expect(db.query).toHaveBeenNthCalledWith(2, expect.stringContaining("FROM bookings"), [1]);
+
         expect(db.query.mock.calls[1][0]).toContain("ORDER BY created_at DESC");
     });
 
@@ -61,16 +55,10 @@ describe("BookingsService.getBookingHistory", () => {
 
         expect(result).toEqual([]);
         expect(db.query).toHaveBeenCalledTimes(2);
-        expect(db.query).toHaveBeenNthCalledWith(
-            1,
-            expect.stringContaining("FROM users"),
-            [1],
-        );
-        expect(db.query).toHaveBeenNthCalledWith(
-            2,
-            expect.stringContaining("FROM bookings"),
-            [1],
-        );
+
+        expect(db.query).toHaveBeenNthCalledWith(1, expect.stringContaining("FROM users"), [1]);
+        expect(db.query).toHaveBeenNthCalledWith(2, expect.stringContaining("FROM bookings"), [1]);
+
         expect(db.query.mock.calls[1][0]).toContain("ORDER BY created_at DESC");
     });
 
@@ -81,11 +69,8 @@ describe("BookingsService.getBookingHistory", () => {
             .rejects.toThrow("User 999 does not exist");
 
         expect(db.query).toHaveBeenCalledTimes(1);
-        expect(db.query).toHaveBeenNthCalledWith(
-            1,
-            expect.stringContaining("FROM users"),
-            [999],
-        );
+
+        expect(db.query).toHaveBeenNthCalledWith(1, expect.stringContaining("FROM users"), [999]);
     });
 });
 

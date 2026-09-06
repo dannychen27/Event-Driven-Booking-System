@@ -17,9 +17,7 @@ describe("BookingsService.cancelBooking", () => {
         };
 
         db = {
-            transaction: jest.fn(async (
-                callback: (client: any) => Promise<any>,
-            ) => {
+            transaction: jest.fn(async (callback: (client: any) => Promise<any>,) => {
                 return callback(client);
             }),
         };
@@ -117,3 +115,4 @@ describe("BookingsService.cancelBooking", () => {
             .rejects.toThrow("User 2 is not authorized to cancel booking 123");
     });
 });
+

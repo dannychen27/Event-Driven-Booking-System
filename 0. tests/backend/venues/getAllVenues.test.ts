@@ -35,14 +35,9 @@ describe("VenuesService.getAllVenues", () => {
         const result = await service.getAllVenues();
 
         expect(result).toEqual(venues);
-
         expect(db.query).toHaveBeenCalledTimes(1);
 
-        expectNthQuery(
-            db,
-            1,
-            "FROM venues",
-        );
+        expectNthQuery(db, 1, "FROM venues");
     });
 });
 

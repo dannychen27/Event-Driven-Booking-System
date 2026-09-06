@@ -39,11 +39,7 @@ describe("EventsService.getAllEvents", () => {
         expect(result).toEqual(events);
         expect(db.query).toHaveBeenCalledTimes(1);
 
-        expectNthQuery(
-            db,
-            1,
-            "SELECT *",
-        );
+        expectNthQuery(db, 1, "SELECT *");
     });
 });
 

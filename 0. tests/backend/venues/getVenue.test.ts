@@ -28,15 +28,8 @@ describe("VenuesService.getVenue", () => {
         const result = await service.getVenue(1);
 
         expect(result).toEqual(venue);
-
         expect(db.query).toHaveBeenCalledTimes(1);
-
-        expectNthQuery(
-            db,
-            1,
-            "FROM venues",
-            [1],
-        );
+        expectNthQuery(db, 1, "FROM venues", [1]);
     });
 
     it("should reject the request when the venue does not exist", async () => {
@@ -44,20 +37,12 @@ describe("VenuesService.getVenue", () => {
             rows: [],
         });
 
-        await expect(
-            service.getVenue(999),
-        ).rejects.toThrow(
-            "Venue 999 does not exist",
-        );
+        await expect(service.getVenue(999))
+            .rejects.toThrow("Venue 999 does not exist");
 
         expect(db.query).toHaveBeenCalledTimes(1);
 
-        expectNthQuery(
-            db,
-            1,
-            "FROM venues",
-            [999],
-        );
+        expectNthQuery(db, 1, "FROM venues", [999]);
     });
 });
 

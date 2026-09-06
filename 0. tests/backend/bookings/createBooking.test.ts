@@ -18,9 +18,7 @@ describe("BookingsService.createBooking", () => {
         };
 
         db = {
-            transaction: jest.fn(async (
-                callback: (client: any) => Promise<any>,
-            ) => {
+            transaction: jest.fn(async (callback: (client: any) => Promise<any>) => {
                 return callback(client);
             }),
         };
