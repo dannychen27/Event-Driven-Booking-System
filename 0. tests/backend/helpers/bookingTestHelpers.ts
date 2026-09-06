@@ -151,17 +151,3 @@ export const mockBookingHistory = (
     });
 };
 
-
-export const expectNthQuery = (
-    client: any,
-    queryNumber: number,
-    sqlFragment: string,
-    params: any[],
-) => {
-    expect(client.query).toHaveBeenNthCalledWith(
-        queryNumber,
-        expect.stringContaining(sqlFragment),
-        params,
-    );
-};
-

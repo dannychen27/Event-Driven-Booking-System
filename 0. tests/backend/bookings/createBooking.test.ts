@@ -3,8 +3,8 @@ import {
     mockUserExists, mockEventExists, mockNoDuplicateBooking, mockDuplicateBooking,
     mockBookingCount, mockNoScheduleConflict, mockScheduleConflict,
     mockInsertedBooking,
-    expectNthQuery,
 } from "../helpers/bookingTestHelpers";
+import { expectNthQuery } from "../../utils/testHelpers";
 
 
 describe("BookingsService.createBooking", () => {

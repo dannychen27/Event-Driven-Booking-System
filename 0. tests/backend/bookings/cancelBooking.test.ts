@@ -2,8 +2,8 @@ import { BookingsService } from "../../../4. backend/src/bookings/bookings.servi
 import {
     mockUserExists, mockEventExists, mockBookingExists, mockBookingDoesNotExist,
     mockDeletedBooking,
-    expectNthQuery,
 } from "../helpers/bookingTestHelpers";
+import { expectNthQuery } from "../../utils/testHelpers";
 
 
 describe("BookingsService.cancelBooking", () => {
