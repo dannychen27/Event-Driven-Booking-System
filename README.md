@@ -43,7 +43,7 @@ I have implemented the following features in the current Phase 1 release:
 
 - [x] **REST API integration** — connect the frontend to the backend through REST endpoints
 
-- [ ] **Cancellation authorization** — restrict users to cancelling their own bookings
+- [x] **Cancellation authorization** — restrict users to cancelling their own bookings
 - [x] **Transactional booking protection** — use database transactions and row-level locking to protect against double-booking
 
 - [x] **Automated testing** — test the frontend, backend, integration workflows, and end-to-end application flows
@@ -502,6 +502,7 @@ Planned work:
 - [ ] Implement retries
 - [ ] Implement idempotent event processing
 - [ ] Handle consumer failures
+- [ ] Implement authentication and broader authorization
 
 ### Phase 3 — Make It Look Professional
 
@@ -542,3 +543,4 @@ adding infrastructure and services beyond the project's core goals.
 - Authentication and authorization are not yet implemented at the application level
 - Kafka-based event processing is planned for Phase 2
 - The current deployment workflow is intended for local development
+- Authentication and authorization are not yet implemented at the application level
