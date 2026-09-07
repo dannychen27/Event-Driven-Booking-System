@@ -2,19 +2,21 @@
 
 ## Overview
 
-A full-stack event booking system built with React, NestJS, and PostgreSQL.
+A full-stack event booking system for managing users, venues, events, and 
+bookings, built with React, NestJS, and PostgreSQL.
 
-I decided to build this project as an event-driven booking system for managing users, 
-venues, events, and bookings. I was inspired by the admin system I 
-debugged during my Sky View Suites internship in summer 2022.
+I built this project to explore the design and implementation of a booking 
+system from the ground up. I was inspired by the admin system I debugged 
+during my Sky View Suites full-stack development internship in summer 2022.
 
-The system currently uses React, NestJS, and PostgreSQL.
-Future phases will introduce Kafka, notification services, 
-analytics services, Docker, and Kubernetes.
+The current implementation uses a layered architecture with React, NestJS, 
+and PostgreSQL. In future phases, I plan to introduce Kafka, a notification 
+consumer, a C++ analytics consumer, Docker, and Kubernetes to evolve the 
+system into a distributed, event-driven architecture.
 
 The system allows users to:
 - browse events and venues
-- book events
+- book an event
 - view booking history
 - cancel their bookings
 
@@ -30,23 +32,21 @@ The project is being developed incrementally, with automated frontend, backend, 
 
 ## Features
 
-I have implemented the following features in the current Phase 1 release:
+- [x] **Event and venue browsing**: browse available events and their associated venues
+- [x] **Event availability**: view the remaining capacity for an event
+- [x] **Booking management**: create and cancel event bookings
+- [x] **Booking history**: view a user's previous and current bookings
+- [x] **Booking validation**: prevent duplicate bookings, schedule conflicts, and bookings that exceed event capacity
 
-- [x] **Event and venue browsing** — browse available events and their associated venues
-- [x] **Event availability** — view the remaining capacity for an event
-- [x] **Booking management** — create and cancel event bookings
-- [x] **Booking history** — view a user's previous and current bookings
-- [x] **Booking validation** — prevent duplicate bookings, schedule conflicts, and bookings that exceed event capacity
+- [x] **Client-side form validation**: validate booking input before submitting requests
+- [ ] **Responsive user interface**: support common desktop and mobile layouts
 
-- [x] **Client-side form validation** — validate booking input before submitting requests
-- [ ] **Responsive user interface** — support common desktop and mobile layouts
+- [x] **REST API integration**: connect the frontend to the backend through REST endpoints
 
-- [x] **REST API integration** — connect the frontend to the backend through REST endpoints
+- [x] **Cancellation authorization**: restrict users to cancelling their own bookings
+- [x] **Transactional booking protection**: use database transactions and row-level locking to protect against double-booking
 
-- [x] **Cancellation authorization** — restrict users to cancelling their own bookings
-- [x] **Transactional booking protection** — use database transactions and row-level locking to protect against double-booking
-
-- [x] **Automated testing** — test the frontend, backend, integration workflows, and end-to-end application flows
+- [x] **Automated testing**: test the frontend, backend, integration workflows, and end-to-end application flows
 
 
 ## Technology Stack
@@ -126,10 +126,10 @@ I keep additional development documentation in the numbered documentation direct
 
 Before running the project, I require the following software:
 
-* **Node.js 20.19.0 or later**: required by Prisma 7 and Vite 8.
-* **npm**: used to install dependencies and run the project scripts.
-* **PostgreSQL**: used as the application's relational database.
-* **Git**: used to clone the repository and manage the project source code.
+- **Node.js 20.19.0 or later**: required by Prisma 7 and Vite 8.
+- **npm**: used to install dependencies and run the project scripts.
+- **PostgreSQL**: used as the application's relational database.
+- **Git**: used to clone the repository and manage the project source code.
 
 I recommend using an active LTS version of Node.js, such as Node.js 22.x.
 Prisma currently recommends Node.js 22.x for Prisma 7.
@@ -217,7 +217,7 @@ The database setup files are located in `2. data model/`:
 
 ### Option 1: Using `setup.sh`
 
-Run the shell script from the "2. data model" directory:
+Run the shell script from the `2. data model` directory:
 
 ```bash
 cd "2. data model"
@@ -495,7 +495,7 @@ Notifications   C++ Analytics
    Consumer        Consumer
 ```
 
-Planned work:
+### Planned Work
 
 - [ ] Publish `booking.created` events
 - [ ] Publish `booking.cancelled` events
@@ -530,8 +530,9 @@ Planned work:
         └──────── Booking Service┘
 ```
 
-Planned Work
+### Planned Work
 
+- [ ] Add responsive user interface
 - [ ] Add Docker Compose
 - [ ] Add Kubernetes manifests
 - [ ] Add health checks
@@ -551,4 +552,3 @@ adding infrastructure and services beyond the project's core goals.
 - Authentication and authorization are not yet implemented at the application level
 - Kafka-based event processing is planned for Phase 2
 - The current deployment workflow is intended for local development
-- Authentication and authorization are not yet implemented at the application level
