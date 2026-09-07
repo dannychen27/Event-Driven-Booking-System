@@ -155,7 +155,7 @@ export class BookingsService {
 
       // get and lock event
       const event_id = bookingResult.rows[0].event_id;
-      const eventResult = await this.db.query<{
+      const eventResult = await client.query<{
         id: number;
         start_time: string;
         end_time: string;
