@@ -310,11 +310,11 @@ I organize automated tests into four categories:
 
 Run the complete test suite from the project root:
 
-```
+```bash
 npm test
 ```
 
-## Run Specific Test Suites
+### Run Specific Test Suites
 
 | Test suite | Command |
 | --- | --- |
