@@ -1,0 +1,9 @@
+{
+  "extends": "../../4. backend/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "../../4. backend"
+  },
+  "include": [
+    "./**/*.ts"
+  ]
+}

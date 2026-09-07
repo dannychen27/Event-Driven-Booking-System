@@ -1,0 +1,34 @@
+source: https://chatgpt.com/c/6a78f04e-a004-83ea-9ba5-47d215edf9d2
+
+Do not start by watching a 4-hour “build a booking app with
+React/Express/Postgres” tutorial 😂.
+
+That’s exactly how you end up knowing where the author put everything
+but not knowing why.
+
+For Week 1, I’d use a build-first, look-things-up-only-when-blocked approach.
+
+
+
+
+Your first move: design the smallest vertical slice
+
+Before touching React, build one complete booking flow through the stack:
+
+    PostgreSQL
+       ↓
+    REST API
+       ↓
+    React
+       ↓
+    "Book" button
+
+Don't build all the tables/features first.
+
+
+Start with:
+
+    User can see an event and book one available slot.
+
+That gives you the architecture for almost everything else.
+

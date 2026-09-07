@@ -1,0 +1,101 @@
+.booking-form {
+    background: var(--surface);
+    color: var(--text);
+
+    max-width: 500px;
+
+    padding: 1.5rem;
+}
+
+.booking-form h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+}
+
+.booking-form input {
+    background: var(--background);
+    color: var(--text);
+    border-color: var(--border);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+/* make all inputs consistent */
+.form-group input {
+    border: 1px solid var(--border);
+
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-size: 1rem;
+
+    width: 100%;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.booking-form button {
+    border: 1px solid var(--border);
+
+    padding: 0.75rem 1.25rem;
+    border-radius: 6px;
+    margin-top: 1rem;
+    margin-right: 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.booking-form .cancel-button {
+    border-color: #dc3545;
+    color: #dc3545;
+    background: white;
+}
+
+.booking-form .cancel-button:hover {
+    background: #dc3545;
+    color: white;
+}
+
+.booking-form .booking-button {
+    border-color: #28a745;
+    color: #28a745;
+    background: white;
+}
+
+.booking-form .booking-button:hover {
+    background: #28a745;
+    color: white;
+}
+
+/* Remove the browser's default number-input spinner controls */
+.form-group input[type="number"]::-webkit-inner-spin-button,
+.form-group input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Use text-field appearance instead of the native number-input UI */
+.form-group input[type="number"] {
+    appearance: textfield;
+}
+
+.input-error {
+    border: 1px solid #d32f2f;
+}
+
+.form-error {
+    color: red;
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+}
+
+.form-success {
+    margin-top: 1rem;
+    color: #2e7d32;
+    font-weight: 500;
+}

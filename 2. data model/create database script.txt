@@ -1,0 +1,9 @@
+// in the shell:
+psql booking_system
+\i schema.sql
+
+
+// in psql itself:
+CREATE DATABASE booking_system;
+-- Q: in schema.sql or seed.sql?
+-- A: neither!

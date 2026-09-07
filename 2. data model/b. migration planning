@@ -1,0 +1,26 @@
+2. After that: migrations
+
+    Once the schema is settled, create something like:
+
+        db/
+        ├── migrations/
+        │   ├── 001_create_users.sql
+        │   ├── 002_create_venues.sql
+        │   ├── 003_create_events.sql
+        │   ├── 004_create_availability.sql
+        │   └── 005_create_bookings.sql
+        └── seed.sql
+
+    The important part is that your database should be reproducible:
+
+        empty PostgreSQL database
+            ↓
+        run migrations
+            ↓
+        same schema every time
+            ↓
+        run seed
+            ↓
+        usable development database
+
+

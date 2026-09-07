@@ -1,0 +1,188 @@
+source 1: https://chatgpt.com/c/6a88e320-5e24-83ea-a7ec-cd79bae8f9a9
+source 2: https://chatgpt.com/c/6a8a9009-fe3c-83ea-a4ed-402175cf8d4b
+source 3: https://chatgpt.com/c/6a8bd803-7a6c-83ea-b803-d5145e89c915 (implementation)
+
+4. Write the queries your API will actually need
+
+This is the bridge between database design → backend design.
+
+For your booking system, I'd implement/test queries corresponding to
+your endpoint requirements:
+
+    GET    /users/:id/bookings
+    GET    /events/:id
+    GET    /events/:id/bookings
+    POST   /bookings
+    DELETE /bookings/:id
+    ...
+
+For each endpoint, figure out:
+
+    HTTP request
+        ↓
+    validation
+        ↓
+    SQL query
+        ↓
+    PostgreSQL
+        ↓
+    result
+        ↓
+    HTTP response
+
+You've already done the endpoint-description work,
+so this is where that work starts paying off.
+
+
+-----------------------------------------------------------------
+
+
+USERS
+
+1. GET      /users              ( getAllUsers() )
+
+    SELECT *
+    FROM users;
+
+
+2. GET      /users/:id          ( getUserWith(user_id) )
+
+    SELECT *
+    FROM users
+    WHERE id = $1;
+
+
+-----------------------------------------------------------------
+
+
+VENUES
+
+1. GET      /venues
+
+    SELECT *
+    FROM venues;
+
+
+2. GET      /venues/:id
+
+    SELECT *
+    FROM venues
+    WHERE id = $1;
+
+
+-----------------------------------------------------------------
+
+
+EVENTS
+
+1. GET      /events                 ( getAllEvents() )
+
+    SELECT *
+    FROM events;
+
+
+2. GET      /events/:id             ( getEvent(event_id) )
+
+    SELECT *
+    FROM events
+    WHERE id = $1;
+
+
+-----------------------------------------------------------------
+
+AVAILABILITY
+
+1. GET      /events/:id/availability        ( getAvailability(event_id) )
+
+    SELECT
+        e.capacity,
+        COUNT(b.id) AS booked,
+        e.capacity - COUNT(b.id) AS available
+    FROM events e
+    LEFT JOIN bookings b
+        ON b.event_id = e.id
+    WHERE e.id = $1
+    GROUP BY e.id, e.capacity;
+
+    -- left join because an event with zero bookings should still return a row
+    -- with available = capacity.
+
+
+-----------------------------------------------------------------
+
+
+BOOKINGS
+
+1. GET     /users/:id/bookings      ( getBookingHistory(user_id) )
+
+    SELECT *
+    FROM bookings
+    WHERE user_id = $1;
+
+
+2. POST    /events/:id/book         ( createBooking )
+
+    -- Check if user exists
+    SELECT id
+    FROM users
+    WHERE id = $1;
+
+    -- Transactional protection against concurrent double-booking
+    BEGIN;
+        -- $1 = user_id
+        -- $2 = event_id
+        -- $3 = new_event.start_time
+        -- $4 = new_event.end_time
+
+        -- Lock the event row so concurrent booking requests
+        -- for this event cannot pass the capacity check simultaneously.
+        SELECT id, start_time, end_time, capacity
+        FROM events
+        WHERE id = $2
+        FOR UPDATE;
+        -- Only one transaction at a time can hold the lock
+        -- on this event row.
+
+        -- Check existing booking
+        SELECT id
+        FROM bookings
+        WHERE user_id = $1
+          AND event_id = $2;
+
+        -- Check how many bookings currently exist.
+        SELECT COUNT(*) AS booking_count
+        FROM bookings
+        WHERE event_id = $2;
+
+        -- Check conflicts with user's existing bookings
+        SELECT b.id
+        FROM bookings b
+        JOIN events e ON e.id = b.event_id
+        WHERE b.user_id = $1
+          AND e.start_time < $4
+          AND e.end_time > $3;
+
+        -- MAIN QUERY: If all checks pass, create the booking
+        INSERT INTO bookings (user_id, event_id)
+        VALUES ($1, $2)
+        RETURNING id, user_id, event_id, created_at;
+
+    COMMIT;
+
+    -- If any validation/error occurs:
+    -- ROLLBACK;
+
+
+3. DELETE  /bookings/:id            ( cancelBooking )
+
+    -- MAIN QUERY: Delete booking (simplified)
+    DELETE FROM bookings
+    WHERE id = $1
+    RETURNING id, user_id, event_id, created_at;
+
+    -- OR....
+    -- MAIN QUERY: Delete booking (authorized users only -- week 2/3)
+    DELETE FROM bookings
+    WHERE id = $1
+      AND user_id = $2
+    RETURNING id, user_id, event_id, created_at;

@@ -1,0 +1,371 @@
+source: https://chatgpt.com/c/6a78f816-df5c-83ea-bbaa-66edeb75c3d3
+
+
+For each endpoint, figure out what each endpoint should receive and return.
+
+Mental trigger:
+    SEND → DO → RETURN → FIELDS → FAIL → STATUS
+
+Full questions:
+    Q1 - Q4: DESIGN THE REQUEST/RESPONSE CONTRACT
+
+    Q1: What does the client send? (Figure out: URL params, query params, body, headers/auth)
+    Q2: What does the server do? (Figure out: What DB operation/business logic happens)
+    Q3: What does the server return? (Figure out: Object, array, confirmation, etc.)
+    Q4: Which fields (are relevant)? (Figure out: Which data should be exposed)
+
+    Q5 - Q6: HANDLE EDGE CASES
+
+    Q5: What can go wrong? (Figure out: Missing resource, invalid input, conflict, etc.)
+    Q6: What HTTP status code? (Figure out: 200, 201, 400, 404, 409, etc.)
+
+
+USERS - DONE!
+
+1. GET /users (get all users)
+
+    Client sends: nothing.
+    Server returns: array of user objects
+    Relevant fields: id (user), name, email
+    Server Checks: nothing special
+    DB call: SELECT id, name, email FROM users;
+    Status codes: 200 (even if no users)
+    Errors: Probably none beyond a generic server/database error
+
+    Response 200 (nonempty, >= 1 user):
+    [
+        {
+            "id": 1,
+            "name": "Darren Criss",
+            "email": "darren_criss@gmail.com"
+        }
+    ]
+
+    Response 200 (empty, no users):
+    []
+
+
+2. GET /users/:id (get a specific user)
+
+    Client sends: user id comes from URL
+    Server returns: user object with matching id, or error if not found.
+    Relevant fields: id (user), name, email
+    Server checks: whether user with given id exists
+    DB call: SELECT id, name, email FROM users WHERE id = :id
+    Status codes: 200 (user found), 404 (user not found)
+    Errors: user with specific id might not exist
+
+    Response 200 (user found):
+    {
+        "id": 1,
+        "name": "Darren Criss",
+        "email": "darren_criss@gmail.com"
+    }
+
+    Response 404 (user not found):
+    {
+        "error": "User with id 1 not found"
+    }
+
+
+
+EVENTS - DONE!
+
+1. GET /events (get all events)
+
+    (Initial endpoint design worked out with ChatGPT.)
+
+    Client sends: nothing
+    Server returns: array of event objects
+    Relevant fields: id (event), name, venue, start_time, end_time, capacity
+    Server checks: nothing special
+    DB call: SELECT id, name, venue, start_time, end_time, capacity FROM events;
+    Status codes: 200 (even if no events)
+    Errors: Probably none beyond a generic server/database error
+
+    Response 200 (nonempty, >= 1 event):
+    [
+        {
+            "id": 1,
+            "name": "UofT Hackathon",
+            "venue": "Bahen Center",
+            "start_time": "2026-09-15T18:00:00",
+            "end_time": "2026-09-17T18:00:00",
+            "capacity": 100
+        }
+    ]
+
+    Response 200 (empty, no events):
+    []
+
+
+2. GET /events/:id (get one event with a specific id)
+
+    Client sends: event id comes from URL
+    Server returns: An event with a matching id
+    Relevant fields: id (event), name, venue, start_time, end_time, capacity
+    Server checks: whether event with event id exists
+    DB call: SELECT id, name, venue, start_time, end_time, capacity FROM events WHERE id = :id;
+    Status codes: 200 (event found), 404 (event not found)
+    Errors: event with specific id might not exist
+
+    Response 200 (event found):
+    {
+        "id": 1,
+        "name": "UofT Hackathon",
+        "venue": "Bahen Center",
+        "start_time": "2026-09-15T18:00:00",
+        "end_time": "2026-09-17T18:00:00",
+        "capacity": 100
+    }
+
+    Response 404 (event not found):
+    {
+        "error": "Event with id 1 not found"
+    }
+
+
+AVAILABILITY - DONE!
+
+1. GET /events/:id/availability (get availability of specific event)
+
+    Client sends: event id comes from URL
+
+    Server returns:
+        - event capacity
+        - number of bookings
+        - remaining availability
+
+    Relevant fields:
+        - event_id
+        - capacity
+        - booking count
+
+    Server checks: does the event exist
+
+    DB call:
+       - get event capacity
+            SELECT capacity
+            FROM events
+            WHERE event_id = :id;
+
+       - count bookings for event: available = capacity - booked
+            SELECT COUNT(*)
+            FROM bookings
+            WHERE event_id = :id;
+
+    Status codes:
+        - 200 OK
+        - 404 Not Found if event doesn't exist
+        - 500 Internal Server Error for unexpected DB/server failure
+
+    Response 200 (event found):
+    {
+        "event_id": 42,
+        "capacity": 100,
+        "booked": 73,
+        "available": 27
+    }
+
+    {
+        "event_id": 42,
+        "capacity": 100,
+        "booked": 100,
+        "available": 0
+    }
+
+    Response 404 (event not found):
+    {
+        "error": "event 42 does not exist"
+    }
+
+
+BOOKINGS - DONE!
+
+1. GET /users/:id/bookings (get a user's booking history)
+
+    Client sends: user id comes from URL
+    Server returns: array of bookings for this user
+    Relevant fields: id (booking), user_id, event_id, created_at
+    Server checks: whether user with given id exists
+
+    DB call:
+        SELECT id, user_id, event_id, created_at
+        FROM bookings
+        WHERE user_id = :id;
+
+    Status codes:
+    - 200 → user exists (even if no booking history)
+    - 404 → user doesn't exist
+    - 500 → unexpected server/database error
+
+    Errors: Probably none beyond a generic server/database error
+
+    Response 200 (nonempty):
+    [
+        {
+            "id": 1,
+            "user_id": 42,
+            "event_id": 17,
+            "created_at": "2026-09-17T18:00:00"
+        }
+    ]
+
+    Response 200 (empty):
+    []
+
+    Response 404 (user not found):
+    {
+        "error": "User with id 42 not found"
+    }
+
+
+2. POST /events/:id/book (create a booking for a user)
+
+    (Initial endpoint design worked out with ChatGPT.)
+
+    Client sends:
+    - event id comes from URL
+    - user id comes from request body
+
+    Example HTTP input for POST /events/42/book:
+
+    {
+        "user_id": 17
+    }
+
+    Server returns: newly created booking, or an error
+    Relevant fields: id (booking), user_id, event_id, created_at
+
+    Server checks:
+        - user exists
+        - event exists
+        - event hasn't already happened
+        - event isn't full
+        - user hasn't already booked the event
+        - User's other bookings don't conflict with the event
+
+    * concurrency check, to make sure 2 people can't book at the same time! *
+
+    DB calls:
+        - Check user
+        - Check event
+        - Check event capacity
+        - Check existing booking
+        - Check booking conflicts
+        - INSERT booking
+
+    Important:
+    - Capacity checking and booking creation must be protected by
+    a database transaction/appropriate locking strategy so
+    concurrent requests cannot overbook the event.
+
+    Status codes:
+        - 201 (booking successfully created)
+        - 404 (event doesn't exist / user doesn't exist)
+        - 409 (event is full / booking conflicts / already booked)
+        - 500 (unexpected server / database error)
+
+    Errors:
+        - user doesn't exist
+        - event doesn't exist
+        - event is full
+        - event is already booked
+        - event already happened
+        - booking conflicts with another event
+
+    Response 201 (booking successful):
+
+        {
+            "id": 583,
+            "user_id": 17,
+            "event_id": 42,
+            "created_at": "2026-09-15T17:32:00"
+        }
+
+    Response 409 (event is full):
+
+    Possible 409 conflicts:
+    - Event is full
+    - User has already booked the event
+    - Event has already happened
+    - Booking conflicts with another event
+
+        {
+            "reason": "event 42 is full",
+            "available": 0,
+            "capacity": 150
+        }
+
+        {
+            "reason": "user 17 has already booked event 42"
+        }
+
+        {
+            "reason": "booking 42 conflicts with booking(s): [17, 34]"
+        }
+
+    Response 404 (event doesn't exist):
+
+        {
+            "reason": "event 42 not found"
+        }
+
+    Response 404 (user doesn't exist):
+
+        {
+            "reason": "user 17 not found"
+        }
+
+
+3. DELETE /bookings/:id (cancel a booking for a user)
+
+    Client sends: booking id comes from URL
+    Server returns: no content on successful deletion, or an error
+    Relevant fields: id (booking), user_id, event_id, created_at
+
+    Server checks:
+        - booking exists
+        - event hasn't already happened
+        - requesting user is authorized to cancel the booking
+
+    DB calls:
+        - Find booking
+        - Verify authorization
+        - Check event status/time
+        - Delete booking
+
+    Status codes:
+        204 (booking successfully deleted)
+        403 (user isn't allowed to cancel it)
+        404 (booking doesn't exist)
+        409 (event has already happened)
+        500 (unexpected server / database error)
+
+    Errors:
+        - booking doesn't exist
+        - user isn't authorized to cancel it
+        - event has already happened
+
+    Response 204:
+
+    No response body.
+
+    Response 403:
+
+    {
+      "error": "User is not authorized to cancel this booking"
+    }
+
+    Response 404:
+
+    {
+      "error": "Booking with id 583 not found"
+    }
+
+    Response 409:
+
+    {
+      "error": "Cannot cancel a booking for an event that has already happened"
+    }
+

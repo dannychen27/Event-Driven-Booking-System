@@ -2,3 +2,10 @@
 .DS_Store
 .idea/
 
+/generated/prisma
+.env
+.claude/skills/
+.windsurf/skills/
+.agents/skills/
+skills-lock.json
+node_modules/

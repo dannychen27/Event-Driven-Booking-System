@@ -1,0 +1,45 @@
+nav {
+    background: var(--surface);
+    color: var(--text);
+
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+nav a {
+    color: var(--text);
+
+    transition: border-color 0.2s ease;
+    text-decoration: none;
+    font-weight: 500;
+
+    border-bottom: 2px solid transparent;
+}
+
+nav a:hover {
+    border-bottom-color: var(--text);
+}
+
+nav a.active {
+    color: var(--secondary-text);
+    font-weight: 700;
+}
+
+.theme-toggle {
+    color: var(--text);
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 2rem;
+    height: 2rem;
+    font-size: 1.25rem;
+}
