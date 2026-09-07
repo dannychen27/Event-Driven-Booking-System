@@ -486,10 +486,13 @@ I plan to develop the project in three major phases, with each phase building on
         Booking Service
              │
              │ booking.created
+             │ booking.cancelled
+             │
              ▼
            Kafka
        ↙         ↘
-Notifications  Analytics
+Notifications   C++ Analytics
+   Consumer        Consumer
 ```
 
 Planned work:
@@ -498,7 +501,7 @@ Planned work:
 - [ ] Publish `booking.cancelled` events
 - [ ] Implement Kafka producers and consumers
 - [ ] Build the notification consumer
-- [ ] Build the analytics consumer
+- [ ] Build the C++ analytics consumer
 - [ ] Implement retries
 - [ ] Implement idempotent event processing
 - [ ] Handle consumer failures
@@ -509,17 +512,22 @@ Planned work:
 **Goal:** Containerize and deploy the distributed system while improving reliability and observability.
 
 ```text
-              Kubernetes
-                  │
-       ┌──────────┼──────────┐
-       ▼          ▼          ▼
-      API    Notification  Analytics
-       │
-       ▼
-   PostgreSQL
-       │
-       ▼
-     Kafka
+                    Kubernetes
+                         │
+        ┌────────────────┼────────────────┐
+        ▼                ▼                ▼
+       API        Notification      C++ Analytics
+        │             Consumer          Consumer
+        │                ▲                ▲
+        │                │                │
+        │             ┌──┴────────────────┴──┐
+        │             │        Kafka          │
+        │             └──────────▲────────────┘
+        │                        │
+        ▼                        │
+    PostgreSQL                   │
+        ▲                        │
+        └──────── Booking Service┘
 ```
 
 Planned Work
