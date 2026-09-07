@@ -4,7 +4,7 @@
 
 A full-stack event booking system built with React, NestJS, and PostgreSQL.
 
-I built this project as an event-driven booking system for managing users, 
+I decided to build this project as an event-driven booking system for managing users, 
 venues, events, and bookings. I was inspired by the admin system I 
 debugged during my Sky View Suites internship in summer 2022.
 
@@ -397,7 +397,8 @@ I expose the application's functionality through a REST API implemented with Nes
 
 ## Architecture
 
-I structure the application as a layered, event-driven system with separate frontend, backend, and database components.
+I structure the current application as a layered full-stack system,
+with event-driven architecture planned for future phases.
 
 ### Why Event-Driven Architecture?
 
