@@ -15,8 +15,12 @@ export default function EventsPage() {
             try {
                 const events = await getEvents();
                 setEvents(events);
-            } catch {
-                setError("Failed to load events");
+            } catch (error) {
+                setError(
+                    error instanceof Error
+                        ? error.message
+                        : "Failed to load events"
+                );
             } finally {
                 setLoading(false);
             }

@@ -46,6 +46,8 @@ export const mockGetEvent = (
         rows: [
             {
                 id: eventId,
+                venue_name: "Moss Park Espresso",
+                venue_address: "185 Queen St E",
                 start_time: startTime,
                 end_time: endTime,
                 capacity,

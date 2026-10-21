@@ -44,3 +44,16 @@
     background: #28a745;
     color: white;
 }
+
+.event-datetime {
+    margin: 1rem 0;
+}
+
+.event-datetime h3 {
+    margin-bottom: 0.25rem;
+    font-size: 1rem;
+}
+
+.event-datetime p {
+    margin: 0;
+}
