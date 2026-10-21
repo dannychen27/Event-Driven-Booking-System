@@ -1,14 +1,15 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 
 import EventsPage from "../../../3. frontend/src/pages/EventsPage";
-import { getEvents } from "../../../3. frontend/src/api/events";
+import { getEvents, searchEvents } from "../../../3. frontend/src/api/events";
 import type { Event } from "../../../3. frontend/src/types/Event";
 
 
 vi.mock("../../../3. frontend/src/api/events", () => ({
     getEvents: vi.fn(),
+    searchEvents: vi.fn(),
 }));
 
 
@@ -90,6 +91,86 @@ describe("EventsPage", () => {
 
         expect(screen.queryByText("Loading events..."))
             .not.toBeInTheDocument();
+    });
+
+
+    it("searches events using the submitted keyword", async () => {
+        vi.mocked(getEvents).mockResolvedValue([]);
+        vi.mocked(searchEvents).mockResolvedValue([
+            {
+                id: 1,
+                name: "Meet and Greet",
+                venue_id: 2,
+                venue_name: "Moss Park Espresso",
+                venue_address: "185 Queen St E",
+                start_time: "2026-08-08T22:00:00Z",
+                end_time: "2026-08-09T00:00:00Z",
+                capacity: 1,
+            },
+        ]);
+
+        render(<EventsPage />);
+
+        await screen.findByText("No available events right now.");
+
+        fireEvent.change(screen.getByLabelText("Search events"), {
+            target: { value: "Meet" },
+        });
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+        expect(await screen.findByText("Mock Event Card: Meet and Greet"))
+            .toBeInTheDocument();
+        expect(searchEvents).toHaveBeenCalledWith("Meet");
+    });
+
+    it("shows a message when search returns no matching events", async () => {
+        vi.mocked(getEvents).mockResolvedValue([]);
+        vi.mocked(searchEvents).mockResolvedValue([]);
+
+        render(<EventsPage />);
+        await screen.findByText("No available events right now.");
+
+        fireEvent.change(screen.getByLabelText("Search events"), {
+            target: { value: "Nonexistent" },
+        });
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+        expect(await screen.findByText("No matching events found."))
+            .toBeInTheDocument();
+    });
+
+    it("shows an error when searching fails", async () => {
+        vi.mocked(getEvents).mockResolvedValue([]);
+        vi.mocked(searchEvents).mockRejectedValue(
+            new Error("Failed to search events"),
+        );
+
+        render(<EventsPage />);
+        await screen.findByText("No available events right now.");
+
+        fireEvent.change(screen.getByLabelText("Search events"), {
+            target: { value: "Meet" },
+        });
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+        expect(await screen.findByRole("alert"))
+            .toHaveTextContent("Failed to search events");
+    });
+
+    it("does not search when the keyword is empty or whitespace", async () => {
+        vi.mocked(getEvents).mockResolvedValue([]);
+
+        render(<EventsPage />);
+        await screen.findByText("No available events right now.");
+
+        fireEvent.change(screen.getByLabelText("Search events"), {
+            target: { value: "   " },
+        });
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+        expect(await screen.findByRole("alert"))
+            .toHaveTextContent("Enter a keyword to search.");
+        expect(searchEvents).not.toHaveBeenCalled();
     });
 });
 
