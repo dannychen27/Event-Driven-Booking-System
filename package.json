@@ -22,6 +22,10 @@
     "lint:backend": "npm run lint --prefix \"4. backend\"",
     "lint:frontend": "npm run lint --prefix \"3. frontend\"",
 
-    "verify": "npm run lint && npm test && npm run build"
+    "verify": "npm run lint && npm test && npm run build",
+
+    "coverage": "npm run coverage:backend && npm run coverage:frontend",
+    "coverage:backend": "npm test --prefix \"4. backend\" -- --coverage",
+    "coverage:frontend": "npm test --prefix \"3. frontend\" -- --coverage"
   }
 }

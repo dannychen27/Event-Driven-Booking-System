@@ -9,3 +9,6 @@
 .agents/skills/
 skills-lock.json
 node_modules/
+
+# Test coverage reports
+coverage/
