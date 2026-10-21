@@ -1,16 +1,21 @@
-import { BadRequestException, Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { EventsService } from './events.service';
-
 
 import { NaturalLanguageSearchService } from './natural-language-search.service';
 
-
 @Controller('events')
 export class EventsController {
-
   constructor(
-      private readonly eventsService: EventsService,
-      private readonly naturalLanguageSearchService: NaturalLanguageSearchService,
+    private readonly eventsService: EventsService,
+    private readonly naturalLanguageSearchService: NaturalLanguageSearchService,
   ) {}
 
   @Get()
@@ -20,18 +25,16 @@ export class EventsController {
 
   @Get('search')
   searchEvents(
-      @Query('keyword') keyword?: string,
-      @Query('startAfter') startAfter?: string,
-      @Query('startBefore') startBefore?: string,
+    @Query('keyword') keyword?: string,
+    @Query('startAfter') startAfter?: string,
+    @Query('startBefore') startBefore?: string,
   ) {
     if (keyword !== undefined && keyword.trim().length === 0) {
       throw new BadRequestException('keyword must not be empty');
     }
 
     if (keyword !== undefined && keyword.trim().length > 100) {
-      throw new BadRequestException(
-          'keyword must be at most 100 characters',
-      );
+      throw new BadRequestException('keyword must be at most 100 characters');
     }
 
     for (const [name, value] of [
@@ -44,12 +47,12 @@ export class EventsController {
     }
 
     if (
-        startAfter !== undefined &&
-        startBefore !== undefined &&
-        Date.parse(startAfter) >= Date.parse(startBefore)
+      startAfter !== undefined &&
+      startBefore !== undefined &&
+      Date.parse(startAfter) >= Date.parse(startBefore)
     ) {
       throw new BadRequestException(
-          'startAfter must be earlier than startBefore',
+        'startAfter must be earlier than startBefore',
       );
     }
 
@@ -71,7 +74,7 @@ export class EventsController {
     }
 
     return this.naturalLanguageSearchService.searchNaturalLanguage(
-        body.query.trim(),
+      body.query.trim(),
     );
   }
 

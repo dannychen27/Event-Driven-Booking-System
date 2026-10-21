@@ -52,36 +52,37 @@ export class EventsService {
     return availabilityResult.rows[0];
   }
 
-    async searchEvents(filters: {
-        keyword?: string;
-        startAfter?: string;
-        startBefore?: string;
-    }) {
-        const conditions: string[] = [];
-        const params: unknown[] = [];
+  async searchEvents(filters: {
+    keyword?: string;
+    startAfter?: string;
+    startBefore?: string;
+  }) {
+    const conditions: string[] = [];
+    const params: unknown[] = [];
 
-        if (filters.keyword) {
-            params.push(`%${filters.keyword}%`);
-            conditions.push(
-                `(e.name ILIKE $${params.length} OR v.name ILIKE $${params.length})`,
-            );
-        }
+    if (filters.keyword) {
+      params.push(`%${filters.keyword}%`);
+      conditions.push(
+        `(e.name ILIKE $${params.length} OR v.name ILIKE $${params.length})`,
+      );
+    }
 
-        if (filters.startAfter) {
-            params.push(filters.startAfter);
-            conditions.push(`e.start_time >= $${params.length}`);
-        }
+    if (filters.startAfter) {
+      params.push(filters.startAfter);
+      conditions.push(`e.start_time >= $${params.length}`);
+    }
 
-        if (filters.startBefore) {
-            params.push(filters.startBefore);
-            conditions.push(`e.start_time < $${params.length}`);
-        }
+    if (filters.startBefore) {
+      params.push(filters.startBefore);
+      conditions.push(`e.start_time < $${params.length}`);
+    }
 
-        const whereClause = conditions.length
-            ? `WHERE ${conditions.join(' AND ')}`
-            : '';
+    const whereClause = conditions.length
+      ? `WHERE ${conditions.join(' AND ')}`
+      : '';
 
-        const result = await this.db.query(`
+    const result = await this.db.query(
+      `
             SELECT
                 e.*,
                 v.name AS venue_name,
@@ -91,14 +92,15 @@ export class EventsService {
                 ${whereClause}
             ORDER BY e.start_time ASC;
         `,
-            params,
-        );
+      params,
+    );
 
-        return result.rows;
-    }
+    return result.rows;
+  }
 
   async getEvent(event_id: number) {
-    const eventResult = await this.db.query(`
+    const eventResult = await this.db.query(
+      `
         SELECT
             e.*,
             v.name AS venue_name,
@@ -107,7 +109,7 @@ export class EventsService {
         JOIN venues v ON e.venue_id = v.id
         WHERE e.id = $1;
         `,
-        [event_id],
+      [event_id],
     );
     if (eventResult.rows.length === 0) {
       throw new NotFoundException(`Event ${event_id} not found`);

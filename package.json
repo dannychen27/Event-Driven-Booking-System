@@ -20,6 +20,8 @@
 
     "lint": "npm run lint:backend && npm run lint:frontend",
     "lint:backend": "npm run lint --prefix \"4. backend\"",
-    "lint:frontend": "npm run lint --prefix \"3. frontend\""
+    "lint:frontend": "npm run lint --prefix \"3. frontend\"",
+
+    "verify": "npm run lint && npm test && npm run build"
   }
 }

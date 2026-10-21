@@ -15,5 +15,4 @@ import { VenuesModule } from './venues/venues.module';
     VenuesModule,
   ],
 })
-
 export class AppModule {}
