@@ -7,9 +7,13 @@ export class EventsService {
 
   async getAllEvents() {
     const result = await this.db.query(`
-            SELECT *
-            FROM events;
-        `);
+      SELECT
+        e.*,
+        v.name AS venue_name,
+        v.address AS venue_address
+      FROM events e
+      JOIN venues v ON e.venue_id = v.id;
+    `);
     return result.rows;
   }
 
@@ -49,13 +53,16 @@ export class EventsService {
   }
 
   async getEvent(event_id: number) {
-    const eventResult = await this.db.query(
-      `
-            SELECT id, start_time, end_time, capacity
-            FROM events
-            WHERE id = $1;
+    const eventResult = await this.db.query(`
+        SELECT
+            e.*,
+            v.name AS venue_name,
+            v.address AS venue_address
+        FROM events e
+        JOIN venues v ON e.venue_id = v.id
+        WHERE e.id = $1;
         `,
-      [event_id],
+        [event_id],
     );
     if (eventResult.rows.length === 0) {
       throw new NotFoundException(`Event ${event_id} not found`);

@@ -19,12 +19,20 @@ describe("EventsService.getAllEvents", () => {
         const events = [
             {
                 id: 1,
+                name: "Meet and Greet",
+                venue_id: 2,
+                venue_name: "Moss Park Espresso",
+                venue_address: "185 Queen St E",
                 start_time: "2026-09-10T10:00:00Z",
                 end_time: "2026-09-10T11:00:00Z",
                 capacity: 10,
             },
             {
                 id: 2,
+                name: "Concert",
+                venue_id: 3,
+                venue_name: "Example Venue",
+                venue_address: "123 Example St",
                 start_time: "2026-09-11T14:00:00Z",
                 end_time: "2026-09-11T15:00:00Z",
                 capacity: 20,
@@ -38,7 +46,12 @@ describe("EventsService.getAllEvents", () => {
         expect(result).toEqual(events);
         expect(db.query).toHaveBeenCalledTimes(1);
 
-        expectNthQuery(db, 1, "SELECT *");
+        expectNthQuery(db, 1, "e.*");
+        expectNthQuery(db, 1, "JOIN venues");
+        expectNthQuery(db, 1, "v.name AS venue_name");
+        expectNthQuery(db, 1, "v.address AS venue_address");
+
+        // expectNthQuery(db, 1, "SELECT *");
     });
 });
 

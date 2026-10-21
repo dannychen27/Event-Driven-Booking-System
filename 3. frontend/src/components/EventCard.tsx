@@ -4,6 +4,7 @@ import { createBooking, getBookingHistory } from "../api/bookings.ts";
 import "../styles/event-card.css";
 import { Modal } from "./Modal.tsx";
 import BookingForm from "./BookingForm.tsx";
+import { formatDate } from "../utils/Dates.ts";
 
 
 interface EventCardProps {
@@ -59,10 +60,27 @@ export default function EventCard({ event }: EventCardProps) {
     return (
         <div className="event-card">
             <h2>{event.name}</h2>
-            <p>Venue: {event.venue}</p>
-            {/* TODO: event.venue is undefined.
-            TODO: figure out how to convert Event's venue_id's into venue objects
-            TODO: to extract the venue name. */}
+
+            <p>Event Id: {event.id}</p>
+
+            <p>Venue: {event.venue_name}</p>
+            <p>Address: {event.venue_address}</p>
+
+            <div className="event-datetime">
+                <h3>Date & Time</h3>
+                <p>
+                    {formatDate(event.start_time, {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                    })}
+                    {" – "}
+                    {formatDate(event.end_time, {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                    })}
+                </p>
+            </div>
+
             <p>Capacity: {event.capacity}</p>
             <button
                 className="create-booking-button"
