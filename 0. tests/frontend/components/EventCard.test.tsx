@@ -171,6 +171,10 @@ describe("EventCard", () => {
                 "Failed to create booking.",
             ),
         ).toBeInTheDocument();
+
+        expect(
+            screen.queryByText("You already booked this event."),
+        ).not.toBeInTheDocument();
     });
 });
 

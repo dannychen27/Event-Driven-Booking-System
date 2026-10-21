@@ -47,6 +47,7 @@ export default function EventCard({ event }: EventCardProps) {
             await createBooking(user_id, event.id);
             setBookingStatus("success");
             setBookingMessage("Booking created successfully.");
+            return true;
         } catch (error) {
             if (error instanceof Error) {
                 setBookingMessage(error.message);
@@ -54,6 +55,7 @@ export default function EventCard({ event }: EventCardProps) {
                 setBookingMessage("Failed to create booking.");
             }
             setBookingStatus("error");
+            return false;
         }
     }
 
@@ -99,10 +101,12 @@ export default function EventCard({ event }: EventCardProps) {
                 <Modal actions={[]}>
                     <BookingForm
                         onCancel={() => setShowBookingForm(false)}
-                        onBookingCreated={() => {
-                            handleCreateBooking();
-                            setAlreadyBooked(true);
-                            setShowBookingForm(false);
+                        onBookingCreated={async () => {
+                            const bookingSuccessful = await handleCreateBooking();
+                            if (bookingSuccessful) {
+                                setAlreadyBooked(true);
+                                setShowBookingForm(false);
+                            }
                         }}
                     />
                 </Modal>

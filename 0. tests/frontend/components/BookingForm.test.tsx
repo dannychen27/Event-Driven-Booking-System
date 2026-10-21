@@ -7,8 +7,7 @@ import { renderBookingForm } from "../../mocks/bookingFormMocks";
 
 
 describe("BookingForm", () => {
-
-    it("renders the booking form", () => {
+    it("renders the booking confirmation form", () => {
         renderBookingForm();
 
         expect(
@@ -17,8 +16,9 @@ describe("BookingForm", () => {
             }),
         ).toBeInTheDocument();
 
-        expect(screen.getByLabelText("Name")).toBeInTheDocument();
-        expect(screen.getByLabelText("Number of Guests")).toBeInTheDocument();
+        expect(
+            screen.getByText("Are you sure you want to book this event?"),
+        ).toBeInTheDocument();
 
         expect(
             screen.getByRole("button", {
@@ -33,7 +33,16 @@ describe("BookingForm", () => {
         ).toBeInTheDocument();
     });
 
-    it("shows an error when the name is empty", async () => {
+    it("does not render name or guest inputs", () => {
+        renderBookingForm();
+
+        expect(screen.queryByLabelText("Name")).not.toBeInTheDocument();
+        expect(
+            screen.queryByLabelText("Number of Guests"),
+        ).not.toBeInTheDocument();
+    });
+
+    it("calls onBookingCreated when the user confirms the booking", async () => {
         const onBookingCreated = vi.fn();
         const user = userEvent.setup();
 
@@ -45,57 +54,7 @@ describe("BookingForm", () => {
             }),
         );
 
-        expect(screen.getByText("Name is required")).toBeInTheDocument();
-
-        expect(onBookingCreated).not.toHaveBeenCalled();
-    });
-
-    it("shows an error when the number of guests is less than 1", async () => {
-        const onBookingCreated = vi.fn();
-        const user = userEvent.setup();
-
-        renderBookingForm({ onBookingCreated });
-
-        const guestsInput = screen.getByLabelText("Number of Guests");
-
-        await user.clear(guestsInput);
-        await user.type(guestsInput, "0");
-
-        await user.click(
-            screen.getByRole("button", {
-                name: "Book Event",
-            }),
-        );
-
-        expect(screen.getByText("Number of guests must be at least 1"))
-            .toBeInTheDocument();
-
-        expect(onBookingCreated).not.toHaveBeenCalled();
-    });
-
-    it("submits the booking when the form is valid", async () => {
-        const onBookingCreated = vi.fn();
-        const user = userEvent.setup();
-
-        renderBookingForm({
-            onBookingCreated,
-        });
-
-        await user.type(
-            screen.getByLabelText("Name"),
-            "Test User",
-        );
-
-        await user.click(
-            screen.getByRole("button", {
-                name: "Book Event",
-            }),
-        );
-
-        expect(onBookingCreated).toHaveBeenCalled();
-
-        expect(screen.getByText("Booking submitted successfully!"))
-            .toBeInTheDocument();
+        expect(onBookingCreated).toHaveBeenCalledOnce();
     });
 
     it("calls onCancel when the user cancels the form", async () => {
@@ -110,7 +69,23 @@ describe("BookingForm", () => {
             }),
         );
 
-        expect(onCancel).toHaveBeenCalled();
+        expect(onCancel).toHaveBeenCalledOnce();
+    });
+
+    it("does not submit when the user cancels", async () => {
+        const onBookingCreated = vi.fn();
+        const onCancel = vi.fn();
+        const user = userEvent.setup();
+
+        renderBookingForm({ onBookingCreated, onCancel });
+
+        await user.click(
+            screen.getByRole("button", {
+                name: "Cancel",
+            }),
+        );
+
+        expect(onCancel).toHaveBeenCalledOnce();
+        expect(onBookingCreated).not.toHaveBeenCalled();
     });
 });
-
