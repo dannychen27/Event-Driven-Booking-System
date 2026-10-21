@@ -1,9 +1,17 @@
-import { BadRequestException, Controller, Get, Param, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { EventsService } from './events.service';
+
+
+import { NaturalLanguageSearchService } from './natural-language-search.service';
+
 
 @Controller('events')
 export class EventsController {
-  constructor(private readonly eventsService: EventsService) {}
+
+  constructor(
+      private readonly eventsService: EventsService,
+      private readonly naturalLanguageSearchService: NaturalLanguageSearchService,
+  ) {}
 
   @Get()
   getAllEvents() {
@@ -50,6 +58,21 @@ export class EventsController {
       startAfter,
       startBefore,
     });
+  }
+
+  @Post('natural-language-search')
+  searchEventsInNaturalLanguage(@Body() body: { query?: string }) {
+    if (typeof body?.query !== 'string' || !body.query.trim()) {
+      throw new BadRequestException('query must be a non-empty string');
+    }
+
+    if (body.query.trim().length > 500) {
+      throw new BadRequestException('query must be at most 500 characters');
+    }
+
+    return this.naturalLanguageSearchService.searchNaturalLanguage(
+        body.query.trim(),
+    );
   }
 
   @Get(':id/availability')

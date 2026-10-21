@@ -543,12 +543,42 @@ Notifications   C++ Analytics
 - [ ] Add an architecture diagram
 - [ ] Expand project documentation
 
+# TODO
+
+## AI-Powered Natural-Language Event Search
+
+- [ ] **Improve relative-date interpretation**
+    - Provide the current date and an explicit timezone to the AI interpreter.
+    - Ensure queries such as "this weekend" produce appropriate `startAfter` and `startBefore` filters.
+    - Add tests for relative-date interpretation and date boundaries.
+
+- [ ] **Harden AI provider error handling**
+    - Handle missing API-key configuration with a clear, actionable error.
+    - Normalize upstream provider failures into appropriate HTTP responses.
+    - Avoid exposing internal provider details to clients while retaining useful server-side diagnostics.
+    - Add tests for missing configuration and different provider failure scenarios.
+
+- [ ] **Add rate limiting to the AI search endpoint**
+    - Protect `POST /events/natural-language-search` against excessive requests.
+    - Return an appropriate HTTP response when the rate limit is exceeded.
+    - Add tests for rate-limit behavior.
+
+- [ ] **Verify live Gemini integration**
+    - Confirm the configured Gemini model responds successfully using the free-tier configuration.
+    - Test a representative natural-language query end to end.
+    - Verify that provider failures produce the expected client-facing error response.
+
+
 I intend to stop once these phases are complete rather than continuously 
 adding infrastructure and services beyond the project's core goals.
 
 
 ## Known Limitations
 
+- Live Gemini integration is not yet verified end to end.
+During development, requests returned 503 UNAVAILABLE from the provider.
+Successful live operation remains unverified.
+- 
 - Authentication and authorization are not yet implemented at the application level
 - Kafka-based event processing is planned for Phase 2
 - The current deployment workflow is intended for local development

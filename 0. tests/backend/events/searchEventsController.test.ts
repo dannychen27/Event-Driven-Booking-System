@@ -2,13 +2,21 @@ import { BadRequestException } from "@nestjs/common";
 import { EventsController } from "../../../4. backend/src/events/events.controller";
 import { EventsService } from "../../../4. backend/src/events/events.service";
 
+import { NaturalLanguageSearchService } from "../../../4. backend/src/events/natural-language-search.service";
+
+
 describe("EventsController.searchEvents", () => {
     let controller: EventsController;
+
     let service: {
         getAllEvents: jest.Mock;
         getEvent: jest.Mock;
         getAvailability: jest.Mock;
         searchEvents: jest.Mock;
+    };
+
+    let naturalLanguageSearchService: {
+        searchNaturalLanguage: jest.Mock;
     };
 
     beforeEach(() => {
@@ -19,8 +27,13 @@ describe("EventsController.searchEvents", () => {
             searchEvents: jest.fn().mockResolvedValue([]),
         };
 
+        naturalLanguageSearchService = {
+            searchNaturalLanguage: jest.fn().mockResolvedValue([]),
+        };
+
         controller = new EventsController(
             service as unknown as EventsService,
+            naturalLanguageSearchService as unknown as NaturalLanguageSearchService,
         );
     });
 
@@ -59,5 +72,27 @@ describe("EventsController.searchEvents", () => {
             "2026-10-26T00:00:00Z",
             "2026-10-24T00:00:00Z",
         )).toThrow(BadRequestException);
+    });
+
+    it("should pass a valid natural-language query to the service", async () => {
+        const events = [{ id: 1, name: "Coffee Meetup" }];
+        naturalLanguageSearchService.searchNaturalLanguage.mockResolvedValue(events);
+
+        const result = await controller.searchEventsInNaturalLanguage({
+            query: "  Find coffee events  ",
+        });
+
+        expect(naturalLanguageSearchService.searchNaturalLanguage)
+            .toHaveBeenCalledWith("Find coffee events");
+        expect(result).toEqual(events);
+    });
+
+    it("should reject an empty natural-language query", () => {
+        expect(() =>
+            controller.searchEventsInNaturalLanguage({ query: "   " }),
+        ).toThrow(BadRequestException);
+
+        expect(naturalLanguageSearchService.searchNaturalLanguage)
+            .not.toHaveBeenCalled();
     });
 });

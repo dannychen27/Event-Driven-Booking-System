@@ -24,3 +24,22 @@ export async function searchEvents(keyword: string): Promise<Event[]> {
     return response.json();
 }
 
+
+export async function searchEventsNaturalLanguage(query: string,): Promise<Event[]> {
+    const response = await fetch(
+        "http://localhost:3000/events/natural-language-search",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ query }),
+        },
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to search events with natural language");
+    }
+
+    return response.json();
+}

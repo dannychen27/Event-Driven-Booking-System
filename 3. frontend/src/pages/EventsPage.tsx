@@ -1,8 +1,7 @@
-
 import { useEffect, useState } from "react";
 import type { Event } from "../types/Event";
 import "../styles/events-page.css";
-import { getEvents, searchEvents } from "../api/events";
+import { getEvents, searchEvents, searchEventsNaturalLanguage, } from "../api/events";
 import EventCard from "../components/EventCard";
 
 
@@ -14,6 +13,8 @@ export default function EventsPage() {
     const [searching, setSearching] = useState(false);
     const [searchError, setSearchError] = useState("");
     const [isSearchActive, setIsSearchActive] = useState(false);
+
+    const [naturalLanguageQuery, setNaturalLanguageQuery] = useState("");
 
     useEffect(() => {
         async function fetchEvents() {
@@ -55,6 +56,33 @@ export default function EventsPage() {
                 error instanceof Error
                     ? error.message
                     : "Failed to search events"
+            );
+        } finally {
+            setSearching(false);
+        }
+    }
+
+    async function handleNaturalLanguageSearch(event: React.FormEvent<HTMLFormElement>,) {
+        event.preventDefault();
+
+        const query = naturalLanguageQuery.trim();
+        if (!query) {
+            setSearchError("Enter a description of the events you're looking for.");
+            return;
+        }
+
+        setSearching(true);
+        setSearchError("");
+        setIsSearchActive(true);
+
+        try {
+            const results = await searchEventsNaturalLanguage(query);
+            setEvents(results);
+        } catch (error) {
+            setSearchError(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to search events with natural language",
             );
         } finally {
             setSearching(false);
@@ -116,6 +144,24 @@ export default function EventsPage() {
                             Clear search
                         </button>
                     )}
+                </div>
+            </form>
+
+            <form className="event-search-form" onSubmit={handleNaturalLanguageSearch}>
+                <label htmlFor="natural-language-search">
+                    Describe the events you're looking for
+                </label>
+                <div className="event-search-controls">
+                    <input
+                        id="natural-language-search"
+                        type="text"
+                        value={naturalLanguageQuery}
+                        onChange={(event) => setNaturalLanguageQuery(event.target.value)}
+                        placeholder="e.g. Find coffee events this weekend"
+                    />
+                    <button type="submit" disabled={searching}>
+                        {searching ? "Searching..." : "Ask AI"}
+                    </button>
                 </div>
             </form>
 
