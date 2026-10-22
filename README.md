@@ -578,7 +578,14 @@ adding infrastructure and services beyond the project's core goals.
 - Live Gemini integration is not yet verified end to end.
 During development, requests returned 503 UNAVAILABLE from the provider.
 Successful live operation remains unverified.
-- 
+
+- ### Development Dependency Audit
+
+- `npm audit --prefix "4. backend" --omit=dev` reports zero vulnerabilities in production dependencies.
+- The full backend dependency audit reports 20 moderate findings associated with a known `sprintf-js` vulnerability in the Jest testing and coverage dependency chain.
+- The remaining findings are in development dependencies. The suggested automatic remediation involves a potentially breaking `ts-jest` downgrade, so it has not been applied.
+- Backend and frontend tests, end-to-end tests, integration tests, linting, and production builds pass with the current dependency versions.
+
 - Authentication and authorization are not yet implemented at the application level
 - Kafka-based event processing is planned for Phase 2
 - The current deployment workflow is intended for local development
