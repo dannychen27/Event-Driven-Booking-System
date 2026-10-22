@@ -1,0 +1,83 @@
+
+name: Publish Coverage Reports
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install backend dependencies
+        run: npm ci --prefix "4. backend"
+
+      - name: Install frontend dependencies
+        run: npm ci --prefix "3. frontend"
+
+      - name: Generate backend coverage
+        run: npm run coverage:backend
+
+      - name: Generate frontend coverage
+        run: npm run coverage:frontend
+
+      - name: Prepare Pages site
+        run: |
+          mkdir -p site/backend site/frontend
+
+          cp -R "4. backend/coverage/lcov-report/." site/backend/
+          cp -R "3. frontend/coverage/lcov-report/." site/frontend/
+
+          cat > site/index.html <<'EOF'
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <title>Booking System — Test Coverage</title>
+            </head>
+            <body>
+              <h1>Event-Driven Booking System</h1>
+              <h2>Test Coverage Reports</h2>
+              <ul>
+                <li><a href="./backend/">Backend coverage report</a></li>
+                <li><a href="./frontend/">Frontend coverage report</a></li>
+              </ul>
+            </body>
+          </html>
+          EOF
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
