@@ -328,6 +328,48 @@ up the `booking_system_test` database before running their
 respective test suites.
 
 
+### Test Coverage
+
+Run all backend and frontend coverage reports from the project root:
+
+```
+npm run coverage
+```
+
+This runs the backend Jest coverage suite followed by the frontend 
+Vitest coverage suite.
+
+#### Backend
+
+| Metric | Coverage |
+|---|---:|
+| Statements | 91.63% |
+| Branches | 87.70% |
+| Functions | 87.03% |
+| Lines | 90.39% |
+
+- **Test suites:** 17/17 passed
+- **Tests:** 75/75 passed
+
+#### Frontend
+
+| Metric | Coverage |
+|---|---:|
+| Statements | 93.20% |
+| Branches | 87.20% |
+| Functions | 90.90% |
+| Lines | 93.16% |
+
+- **Test files:** 11/11 passed
+- **Tests:** 52/52 passed
+
+Coverage is reported by Jest for the backend and Vitest with the V8 coverage 
+provider for the frontend. Aggregate figures include test-support files and 
+other files included by each coverage configuration.
+
+**Detailed HTML reports:** [Backend](YOUR_BACKEND_REPORT_URL) · [Frontend](YOUR_FRONTEND_REPORT_URL)
+
+
 ## Linting
 
 I use ESLint to check the frontend and backend code.
@@ -543,11 +585,48 @@ Notifications   C++ Analytics
 - [ ] Add an architecture diagram
 - [ ] Expand project documentation
 
+# TODO
+
+## AI-Powered Natural-Language Event Search
+
+- [ ] **Improve relative-date interpretation**
+    - Provide the current date and an explicit timezone to the AI interpreter.
+    - Ensure queries such as "this weekend" produce appropriate `startAfter` and `startBefore` filters.
+    - Add tests for relative-date interpretation and date boundaries.
+
+- [ ] **Harden AI provider error handling**
+    - Handle missing API-key configuration with a clear, actionable error.
+    - Normalize upstream provider failures into appropriate HTTP responses.
+    - Avoid exposing internal provider details to clients while retaining useful server-side diagnostics.
+    - Add tests for missing configuration and different provider failure scenarios.
+
+- [ ] **Add rate limiting to the AI search endpoint**
+    - Protect `POST /events/natural-language-search` against excessive requests.
+    - Return an appropriate HTTP response when the rate limit is exceeded.
+    - Add tests for rate-limit behavior.
+
+- [ ] **Verify live Gemini integration**
+    - Confirm the configured Gemini model responds successfully using the free-tier configuration.
+    - Test a representative natural-language query end to end.
+    - Verify that provider failures produce the expected client-facing error response.
+
+
 I intend to stop once these phases are complete rather than continuously 
 adding infrastructure and services beyond the project's core goals.
 
 
 ## Known Limitations
+
+- Live Gemini integration is not yet verified end to end.
+During development, requests returned 503 UNAVAILABLE from the provider.
+Successful live operation remains unverified.
+
+- ### Development Dependency Audit
+
+- `npm audit --prefix "4. backend" --omit=dev` reports zero vulnerabilities in production dependencies.
+- The full backend dependency audit reports 20 moderate findings associated with a known `sprintf-js` vulnerability in the Jest testing and coverage dependency chain.
+- The remaining findings are in development dependencies. The suggested automatic remediation involves a potentially breaking `ts-jest` downgrade, so it has not been applied.
+- Backend and frontend tests, end-to-end tests, integration tests, linting, and production builds pass with the current dependency versions.
 
 - Authentication and authorization are not yet implemented at the application level
 - Kafka-based event processing is planned for Phase 2

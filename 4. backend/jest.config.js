@@ -20,4 +20,8 @@ module.exports = {
             },
         ],
     },
+
+    collectCoverage: true,
+    coverageReporters: ["text", "lcov", "html"],
+    coverageDirectory: "<rootDir>/4. backend/coverage",
 };

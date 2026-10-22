@@ -6,11 +6,13 @@ import { VenuesModule } from './venues/venues.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '../.env',
+    }),
     EventsModule,
     BookingsModule,
     VenuesModule,
   ],
 })
-
 export class AppModule {}
