@@ -328,6 +328,48 @@ up the `booking_system_test` database before running their
 respective test suites.
 
 
+### Test Coverage
+
+Run all backend and frontend coverage reports from the project root:
+
+```
+npm run coverage
+```
+
+This runs the backend Jest coverage suite followed by the frontend 
+Vitest coverage suite.
+
+#### Backend
+
+| Metric | Coverage |
+|---|---:|
+| Statements | 91.63% |
+| Branches | 87.70% |
+| Functions | 87.03% |
+| Lines | 90.39% |
+
+- **Test suites:** 17/17 passed
+- **Tests:** 75/75 passed
+
+#### Frontend
+
+| Metric | Coverage |
+|---|---:|
+| Statements | 93.20% |
+| Branches | 87.20% |
+| Functions | 90.90% |
+| Lines | 93.16% |
+
+- **Test files:** 11/11 passed
+- **Tests:** 52/52 passed
+
+Coverage is reported by Jest for the backend and Vitest with the V8 coverage 
+provider for the frontend. Aggregate figures include test-support files and 
+other files included by each coverage configuration.
+
+**Detailed HTML reports:** [Backend](YOUR_BACKEND_REPORT_URL) · [Frontend](YOUR_FRONTEND_REPORT_URL)
+
+
 ## Linting
 
 I use ESLint to check the frontend and backend code.

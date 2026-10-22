@@ -25,6 +25,13 @@ export default defineConfig({
         include: [
             "0. tests/frontend/**/*.{test,spec}.?(c|m)[jt]s?(x)",
         ],
+
+        testTimeout: 15000,
+
+        coverage: {
+            reporter: ["text", "lcov", "html"],
+            reportsDirectory: "./3. frontend/coverage",
+        },
     },
 
     server: {
