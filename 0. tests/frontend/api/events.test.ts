@@ -131,8 +131,27 @@ describe("searchEventsNaturalLanguage", () => {
         ).resolves.toEqual(events);
     });
 
-    it("throws an error when the request fails", async () => {
-        const fetchMock = vi.fn().mockResolvedValue({ ok: false });
+    it("preserves the backend error message when the request fails", async () => {
+        const fetchMock = vi.fn().mockResolvedValue({
+            ok: false,
+            json: vi.fn().mockResolvedValue({
+                message: "AI search is temporarily unavailable. Please try again later.",
+            }),
+        });
+        vi.stubGlobal("fetch", fetchMock);
+
+        await expect(
+            searchEventsNaturalLanguage("Find coffee events"),
+        ).rejects.toThrow(
+            "AI search is temporarily unavailable. Please try again later.",
+        );
+    });
+
+    it("uses a fallback message when the error response cannot be parsed", async () => {
+        const fetchMock = vi.fn().mockResolvedValue({
+            ok: false,
+            json: vi.fn().mockRejectedValue(new Error("Invalid JSON")),
+        });
         vi.stubGlobal("fetch", fetchMock);
 
         await expect(

@@ -38,7 +38,11 @@ export async function searchEventsNaturalLanguage(query: string,): Promise<Event
     );
 
     if (!response.ok) {
-        throw new Error("Failed to search events with natural language");
+        const body = await response.json().catch(() => null);
+        throw new Error(
+            body?.message ??
+            "Failed to search events with natural language"
+        );
     }
 
     return response.json();
