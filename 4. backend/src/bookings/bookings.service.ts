@@ -218,7 +218,8 @@ export class BookingsService {
       end_time: string | null;
       venue_name: string | null;
       venue_address: string | null;
-    }>(`
+    }>(
+      `
           SELECT
             b.id,
             b.user_id,

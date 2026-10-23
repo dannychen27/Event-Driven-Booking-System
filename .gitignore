@@ -14,3 +14,7 @@ node_modules/
 coverage/
 /frontend@0.0.0
 /vitest
+
+# Generated verification logs
+test-logs/*
+!test-logs/.gitkeep
