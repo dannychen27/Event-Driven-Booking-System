@@ -3,6 +3,25 @@ import { GeminiSearchInterpreter } from "../../../4. backend/src/events/gemini-s
 
 describe("GeminiSearchInterpreter", () => {
 
+    it("should include the current Toronto date and timezone in the prompt", async () => {
+        const generateContent = jest.fn().mockResolvedValue({
+            text: '{"keyword":"coffee"}',
+        });
+
+        const interpreter = new GeminiSearchInterpreter(
+            "test-api-key",
+            { models: { generateContent } } as never,
+            () => new Date("2026-10-24T16:00:00.000Z"),
+        );
+
+        await interpreter.interpret("Find coffee events this weekend");
+
+        const prompt = generateContent.mock.calls[0][0].contents;
+
+        expect(prompt).toContain("Current date: 2026-10-24");
+        expect(prompt).toContain("Timezone: America/Toronto.");
+    });
+
     it("should reject a missing API key", async () => {
         const interpreter = new GeminiSearchInterpreter("");
 

@@ -45,6 +45,7 @@ export class GeminiSearchInterpreter {
   constructor(
     private readonly apiKey: string,
     client?: GeminiClient,
+    private readonly now: () => Date = () => new Date(),
   ) {
     if (apiKey.trim()) {
       this.client = client ?? new GoogleGenAI({ apiKey });
@@ -74,6 +75,14 @@ export class GeminiSearchInterpreter {
         'Allowed fields: keyword, startAfter, startBefore.',
         'Use ISO 8601 date strings for date boundaries.',
         'Omit fields the user did not specify or imply.',
+        'Interpret relative dates using the current date and timezone below.',
+        `Current date: ${new Intl.DateTimeFormat('en-CA', {
+          timeZone: 'America/Toronto',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        }).format(this.now())}`,
+        'Timezone: America/Toronto.',
         `User request: ${request}`,
       ].join('\n'),
       config: {
