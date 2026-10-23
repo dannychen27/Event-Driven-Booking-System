@@ -74,6 +74,23 @@ describe("NaturalLanguageSearchService", () => {
         expect(result).toEqual(events);
     });
 
+
+    it("should pass all interpreted filters to event search", async () => {
+        const filters = {
+            keyword: "coffee",
+            startAfter: "2026-10-24T00:00:00Z",
+            startBefore: "2026-10-26T00:00:00Z",
+        };
+
+        interpreter.interpret.mockResolvedValueOnce(filters);
+
+        await service.searchNaturalLanguage(
+            "Find coffee events this weekend",
+        );
+
+        expect(eventsService.searchEvents).toHaveBeenCalledWith(filters);
+    });
+
     it("should return a service-unavailable error when Gemini is unavailable", async () => {
         interpreter.interpret.mockRejectedValueOnce({
             status: 503,
