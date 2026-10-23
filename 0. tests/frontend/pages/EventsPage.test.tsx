@@ -321,5 +321,38 @@ describe("EventsPage", () => {
 
         expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });
+
+    it("preserves previous results when a new search fails", async () => {
+        vi.mocked(getEvents).mockResolvedValue([
+            {
+                id: 1,
+                name: "Initial Event",
+                venue_id: 1,
+                start_time: "2026-10-24T10:00:00Z",
+                end_time: "2026-10-24T11:00:00Z",
+                capacity: 10,
+            },
+        ]);
+
+        vi.mocked(searchEvents).mockRejectedValue(
+            new Error("Failed to search events"),
+        );
+
+        render(<EventsPage />);
+
+        expect(await screen.findByText("Mock Event Card: Initial Event"))
+            .toBeInTheDocument();
+
+        fireEvent.change(screen.getByLabelText("Search events"), {
+            target: { value: "Coffee" },
+        });
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+        expect(await screen.findByRole("alert"))
+            .toHaveTextContent("Failed to search events");
+
+        expect(screen.getByText("Mock Event Card: Initial Event"))
+            .toBeInTheDocument();
+    });
 });
 
