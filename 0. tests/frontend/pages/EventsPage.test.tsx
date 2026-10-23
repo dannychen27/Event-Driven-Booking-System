@@ -235,5 +235,35 @@ describe("EventsPage", () => {
         expect(await screen.findByRole("alert"))
             .toHaveTextContent("Failed to search events with natural language");
     });
+
+    it("clears both search inputs when clearing search", async () => {
+        vi.mocked(getEvents).mockResolvedValue([]);
+        vi.mocked(searchEvents).mockResolvedValue([]);
+        vi.mocked(searchEventsNaturalLanguage).mockResolvedValue([]);
+
+        render(<EventsPage />);
+
+        await screen.findByText("No available events right now.");
+
+        fireEvent.change(screen.getByLabelText("Search events"), {
+            target: { value: "Coffee" },
+        });
+        fireEvent.change(
+            screen.getByLabelText("Describe the events you're looking for"),
+            { target: { value: "Find coffee events this weekend" } },
+        );
+
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+        await screen.findByText("No matching events found.");
+
+        fireEvent.click(screen.getByRole("button", { name: "Clear search" }));
+
+        await screen.findByText("No available events right now.");
+
+        expect(screen.getByLabelText("Search events")).toHaveValue("");
+        expect(
+            screen.getByLabelText("Describe the events you're looking for"),
+        ).toHaveValue("");
+    });
 });
 

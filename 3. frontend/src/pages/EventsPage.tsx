@@ -91,6 +91,7 @@ export default function EventsPage() {
 
     async function handleClearSearch() {
         setKeyword("");
+        setNaturalLanguageQuery("");
         setSearchError("");
         setIsSearchActive(false);
         setSearching(true);
