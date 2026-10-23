@@ -62,6 +62,33 @@ describe("GeminiSearchInterpreter", () => {
         ).rejects.toThrow(/unsupported search filter/i);
     });
 
+    it("should return date filters for a relative-date request", async () => {
+        const filters = {
+            keyword: "coffee",
+            startAfter: "2026-10-24T00:00:00-04:00",
+            startBefore: "2026-10-27T00:00:00-04:00",
+        };
+
+        const generateContent = jest.fn().mockResolvedValue({
+            text: JSON.stringify(filters),
+        });
+
+        const interpreter = new GeminiSearchInterpreter(
+            "test-api-key",
+            { models: { generateContent } } as never,
+            () => new Date("2026-10-23T16:00:00.000Z"),
+        );
+
+        await expect(
+            interpreter.interpret("Find coffee events this weekend"),
+        ).resolves.toEqual(filters);
+
+        expect(generateContent).toHaveBeenCalledTimes(1);
+        expect(generateContent.mock.calls[0][0].contents).toContain(
+            "Find coffee events this weekend",
+        );
+    });
+
     it("should propagate Gemini API failures", async () => {
         const generateContent = jest.fn().mockRejectedValue(
             new Error("Gemini unavailable"),
