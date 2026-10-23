@@ -94,17 +94,26 @@ describe("BookingsService.cancelBooking", () => {
         expectNthQuery(client, 3, "FROM events", [999]);
     });
 
-    it("TODO: should reject cancellation by a non-booking owner", async () => {
+
+    it("should reject cancellation by a non-booking owner without deleting the booking", async () => {
         mockBookingExists(client, 123, 1, 1);
         mockUserExists(client, 2);
-        mockEventExists(client, 1);
-
-        // TODO: Current implementation does not perform authorization,
-        // TODO: so the DELETE query still executes.
-        mockDeletedBooking(client, 123, 1, 1);
 
         await expect(service.cancelBooking(2, 123))
-            .rejects.toThrow("User 2 is not authorized to cancel booking 123");
+            .rejects.toThrow(
+                "User 2 is not authorized to cancel booking 123",
+            );
+
+        expect(client.query).toHaveBeenCalledTimes(2);
+        expectNthQuery(client, 1, "FROM bookings", [123]);
+        expectNthQuery(client, 2, "FROM users", [2]);
+
+        expect(
+            client.query.mock.calls.some(([query]: [string]) =>
+                query.includes("DELETE FROM bookings"),
+            ),
+        ).toBe(false);
     });
+
 });
 
