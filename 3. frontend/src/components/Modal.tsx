@@ -6,6 +6,7 @@ interface ModalAction {
     label: string;
     onClick: () => void | Promise<void>;
     className?: string;
+    disabled?: boolean;
 }
 
 interface ModalProps {
@@ -25,6 +26,7 @@ export function Modal({ children, actions }: ModalProps) {
                         key={action.label}
                         className={action.className}
                         onClick={action.onClick}
+                        disabled={action.disabled}
                     >
                         {action.label}
                     </button>

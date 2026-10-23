@@ -19,6 +19,7 @@ export default function BookingCard({
 }: BookingCardProps) {
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [cancellationError, setCancellationError] = useState("");
+    const [isCancelling, setIsCancelling] = useState(false);
 
     function getFormattedDate() {
         return formatDate(
@@ -28,7 +29,30 @@ export default function BookingCard({
                 timeStyle: "medium",
                 is12HourFormat: false,
             }
-        )
+        );
+    }
+
+    async function handleCancellation() {
+        if (isCancelling) {
+            return;
+        }
+
+        setIsCancelling(true);
+        setCancellationError("");
+
+        try {
+            await cancelBooking(booking.user_id, booking.id);
+            setShowCancelModal(false);
+            onBookingCancelled();
+        } catch (error) {
+            if (error instanceof Error) {
+                setCancellationError(error.message);
+            } else {
+                setCancellationError("Failed to cancel booking.");
+            }
+        } finally {
+            setIsCancelling(false);
+        }
     }
 
     function getCancelModalButtons() {
@@ -36,48 +60,68 @@ export default function BookingCard({
             {
                 label: "Keep Booking",
                 className: "keep-booking-button",
+                disabled: isCancelling,
                 onClick: () => setShowCancelModal(false),
             },
             {
-                label: "Cancel Booking",
+                label: isCancelling ? "Cancelling..." : "Cancel Booking",
                 className: "cancel-button",
-                onClick: async () => {
-                    try {
-                        await cancelBooking(booking.user_id, booking.id);
-                        setShowCancelModal(false);
-                        onBookingCancelled();
-                    } catch (error) {
-                        // display cancellation error
-                        if (error instanceof Error) {
-                            setCancellationError(error.message);
-                        } else {
-                            setCancellationError("Failed to cancel booking.");
-                        }
-                    }
-                },
+                disabled: isCancelling,
+                onClick: handleCancellation,
             },
         ];
     }
 
     return (
         <div className="booking-card">
-            <h2>Booking Id: {booking.id}</h2>   {/* TODO: replace with booking name? */}
-            <p>Event Id: {booking.event_id}</p>   {/* TODO: replace with event's name and address? */}
-            <p>User Id: {booking.user_id}</p>   {/* TODO: replace with user's name? */}
-            <p>Created at: {getFormattedDate()}</p>
+            <h2>{booking.event_name ?? `Event ${booking.event_id}`}</h2>
+            <p>Booking Id: {booking.id}</p>
+            <p>Event Id: {booking.event_id}</p>
+            <p>User Id: {booking.user_id}</p>
+            <p>Starts at: {
+                booking.start_time
+                    ? formatDate(booking.start_time, {
+                        dateStyle: "long",
+                        timeStyle: "medium",
+                        is12HourFormat: false,
+                    })
+                    : "Unavailable"
+            }</p>
+            <p>Ends at: {
+                booking.end_time
+                    ? formatDate(booking.end_time, {
+                        dateStyle: "long",
+                        timeStyle: "medium",
+                        is12HourFormat: false,
+                    })
+                    : "Unavailable"
+            }</p>
+            <p>Venue: {booking.venue_name ?? "Unavailable"}</p>
+            {booking.venue_address && <p>Address: {booking.venue_address}</p>}
+            <p>Booked at: {getFormattedDate()}</p>
+
             <button
                 className="cancel-button"
-                onClick={() => setShowCancelModal(true)}
+                disabled={isCancelling}
+                onClick={() => {
+                    setCancellationError("");
+                    setShowCancelModal(true);
+                }}
             >
                 Cancel Booking
             </button>
-            {showCancelModal &&
+
+            {showCancelModal && (
                 <Modal actions={getCancelModalButtons()}>
                     <h2>Cancel Booking?</h2>
                     <p>This action cannot be undone.</p>
-
-                    {cancellationError && <p className="cancellation-error">{cancellationError}</p>}
-                </Modal>}
+                    {cancellationError && (
+                        <p className="cancellation-error">
+                            {cancellationError}
+                        </p>
+                    )}
+                </Modal>
+            )}
         </div>
     );
 }
