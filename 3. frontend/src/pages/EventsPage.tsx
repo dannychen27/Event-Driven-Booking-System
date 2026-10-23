@@ -129,7 +129,10 @@ export default function EventsPage() {
                         id="event-search"
                         type="text"
                         value={keyword}
-                        onChange={(event) => setKeyword(event.target.value)}
+                        onChange={(event) => {
+                            setKeyword(event.target.value);
+                            setSearchError("");
+                        }}
                         placeholder="e.g. Meet and Greet"
                     />
                     <button type="submit" disabled={searching}>
@@ -157,7 +160,10 @@ export default function EventsPage() {
                         id="natural-language-search"
                         type="text"
                         value={naturalLanguageQuery}
-                        onChange={(event) => setNaturalLanguageQuery(event.target.value)}
+                        onChange={(event) => {
+                            setNaturalLanguageQuery(event.target.value);
+                            setSearchError("");
+                        }}
                         placeholder="e.g. Find coffee events this weekend"
                     />
                     <button type="submit" disabled={searching}>

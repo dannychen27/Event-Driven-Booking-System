@@ -265,5 +265,61 @@ describe("EventsPage", () => {
             screen.getByLabelText("Describe the events you're looking for"),
         ).toHaveValue("");
     });
+
+    it("clears the search error when the keyword input changes", async () => {
+        vi.mocked(getEvents).mockResolvedValue([]);
+        vi.mocked(searchEvents).mockRejectedValue(
+            new Error("Failed to search events"),
+        );
+
+        render(<EventsPage />);
+
+        await screen.findByText("No available events right now.");
+
+        fireEvent.change(screen.getByLabelText("Search events"), {
+            target: { value: "Coffee" },
+        });
+
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+        expect(await screen.findByRole("alert"))
+            .toHaveTextContent("Failed to search events");
+
+        fireEvent.change(screen.getByLabelText("Search events"), {
+            target: { value: "Music" },
+        });
+
+        expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    });
+
+    it("clears the search error when the natural-language input changes", async () => {
+        vi.mocked(getEvents).mockResolvedValue([]);
+        vi.mocked(searchEventsNaturalLanguage).mockRejectedValue(
+            new Error("Failed to search events with natural language"),
+        );
+
+        render(<EventsPage />);
+
+        await screen.findByText("No available events right now.");
+
+        const input = screen.getByLabelText(
+            "Describe the events you're looking for",
+        );
+
+        fireEvent.change(input, {
+            target: { value: "Find coffee events" },
+        });
+
+        fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
+
+        expect(await screen.findByRole("alert"))
+            .toHaveTextContent("Failed to search events with natural language");
+
+        fireEvent.change(input, {
+            target: { value: "Find music events" },
+        });
+
+        expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    });
 });
 
