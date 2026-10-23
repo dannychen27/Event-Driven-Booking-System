@@ -113,6 +113,32 @@ describe("EventCard", () => {
         ).not.toBeInTheDocument();
     });
 
+    it("shows an error when booking history fails to load", async () => {
+        vi.mocked(getBookingHistory).mockRejectedValue(
+            new Error("Failed to fetch booking history."),
+        );
+
+        const user = userEvent.setup();
+
+        render(<EventCard event={mockEvent} />);
+
+        await user.click(
+            screen.getByRole("button", {
+                name: "Create Booking",
+            }),
+        );
+
+        expect(
+            await screen.findByText("Failed to fetch booking history."),
+        ).toBeInTheDocument();
+
+        expect(
+            screen.queryByRole("button", {
+                name: "Mock Booking Form",
+            }),
+        ).not.toBeInTheDocument();
+    });
+
     it("successfully submits a booking", async () => {
         vi.mocked(getBookingHistory).mockResolvedValue([]);
         vi.mocked(createBooking).mockResolvedValue(undefined);
