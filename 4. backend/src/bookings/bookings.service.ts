@@ -206,17 +206,34 @@ export class BookingsService {
 
     // display user bookings in reverse chronological order
     // (most recent at the top -> least recent at the bottom)
+
+    // Include event and venue details for booking history.
     const userBookingResult = await this.db.query<{
       id: number;
       user_id: number;
       event_id: number;
       created_at: string;
-    }>(
-      `
-            SELECT id, user_id, event_id, created_at
-            FROM bookings
-            WHERE user_id = $1
-            ORDER BY created_at DESC;
+      event_name: string | null;
+      start_time: string | null;
+      end_time: string | null;
+      venue_name: string | null;
+      venue_address: string | null;
+    }>(`
+          SELECT
+            b.id,
+            b.user_id,
+            b.event_id,
+            b.created_at,
+            e.name AS event_name,
+            e.start_time,
+            e.end_time,
+            v.name AS venue_name,
+            v.address AS venue_address
+          FROM bookings b
+            LEFT JOIN events e ON b.event_id = e.id
+            LEFT JOIN venues v ON e.venue_id = v.id
+          WHERE b.user_id = $1
+          ORDER BY b.created_at DESC;
         `,
       [user_id],
     );

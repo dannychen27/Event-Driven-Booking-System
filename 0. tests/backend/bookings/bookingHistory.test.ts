@@ -22,12 +22,22 @@ describe("BookingsService.getBookingHistory", () => {
                 user_id: 1,
                 event_id: 20,
                 created_at: "2026-09-05T20:00:00Z",
+                event_name: "Toronto Tech Meetup",
+                start_time: "2026-09-10T18:00:00Z",
+                end_time: "2026-09-10T20:00:00Z",
+                venue_name: "Innovation Hub",
+                venue_address: "100 King Street West",
             },
             {
                 id: 1,
                 user_id: 1,
                 event_id: 10,
                 created_at: "2026-09-04T20:00:00Z",
+                event_name: "AI Research Conference",
+                start_time: "2026-09-11T14:00:00Z",
+                end_time: "2026-09-11T17:00:00Z",
+                venue_name: "Toronto Convention Centre",
+                venue_address: "255 Front Street West",
             },
         ];
 
@@ -42,7 +52,14 @@ describe("BookingsService.getBookingHistory", () => {
         expect(db.query).toHaveBeenNthCalledWith(1, expect.stringContaining("FROM users"), [1]);
         expect(db.query).toHaveBeenNthCalledWith(2, expect.stringContaining("FROM bookings"), [1]);
 
-        expect(db.query.mock.calls[1][0]).toContain("ORDER BY created_at DESC");
+        const historyQuery = db.query.mock.calls[1][0];
+
+        expect(historyQuery).toContain("LEFT JOIN events");
+        expect(historyQuery).toContain("LEFT JOIN venues");
+        expect(historyQuery).toContain("ORDER BY b.created_at DESC");
+
+        expect(result[0].event_name).toBe("Toronto Tech Meetup");
+        expect(result[0].venue_name).toBe("Innovation Hub");
     });
 
     it("should return an empty array when the user has no bookings", async () => {
@@ -57,7 +74,11 @@ describe("BookingsService.getBookingHistory", () => {
         expect(db.query).toHaveBeenNthCalledWith(1, expect.stringContaining("FROM users"), [1]);
         expect(db.query).toHaveBeenNthCalledWith(2, expect.stringContaining("FROM bookings"), [1]);
 
-        expect(db.query.mock.calls[1][0]).toContain("ORDER BY created_at DESC");
+        const historyQuery = db.query.mock.calls[1][0];
+
+        expect(historyQuery).toContain("LEFT JOIN events");
+        expect(historyQuery).toContain("LEFT JOIN venues");
+        expect(historyQuery).toContain("ORDER BY b.created_at DESC");
     });
 
     it("should reject the request when the user does not exist", async () => {
