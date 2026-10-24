@@ -638,6 +638,39 @@ I plan to develop the project in three major phases, with each phase building on
 - [x] Add transactional protection against double-booking
 - [x] Build the basic frontend
 
+### Phase 1 Follow-up — AI-Powered Natural-Language Event Search
+
+The core search feature is implemented, but improvements to date interpretation, 
+provider error handling, and rate limiting remain.
+
+- [ ] **Improve relative-date interpretation**
+  - [ ] Provide the current date and an explicit timezone to the AI interpreter.
+  - [ ] Ensure queries such as "this weekend" produce appropriate `startAfter` and `startBefore` filters.
+  - [ ] Add tests for relative-date interpretation and timezone boundaries.
+  - [x] Test date-filter validation, including invalid dates and reversed date ranges.
+
+- [ ] **Harden AI provider error handling**
+  - [x] Detect a missing API key and throw a clear error.
+  - [x] Map a provider `503` failure to a `ServiceUnavailableException`.
+  - [x] Return a generic client-facing message for the handled `503` failure.
+  - [ ] Return an appropriate, actionable client-facing error for missing API-key configuration.
+  - [ ] Normalize other upstream provider failures into appropriate HTTP responses.
+  - [ ] Retain useful server-side diagnostics without exposing internal provider details to clients.
+  - [x] Test missing API-key handling.
+  - [x] Test the handled 503 provider-failure scenario.
+  - [ ] Add tests for other provider failures and client-facing error messages.
+
+- [ ] **Add rate limiting to the AI search endpoint**
+  - [ ] Protect `POST /events/natural-language-search` against excessive requests.
+  - [ ] Return an appropriate HTTP response when the rate limit is exceeded.
+  - [ ] Add tests for rate-limit behavior.
+
+- [ ] **Verify live Gemini integration**
+  - [ ] Confirm the configured Gemini model responds successfully using the free-tier configuration.
+  - [ ] Test a representative natural-language query end to end.
+  - [ ] Verify that provider failures produce the expected client-facing error response.
+
+
 ### Phase 2 — Make It Distributed
 
 **Goal:** Introduce Kafka and event-driven communication.
@@ -703,31 +736,6 @@ Notifications   C++ Analytics
 - [ ] Add an architecture diagram
 - [ ] Expand project documentation
 
-# TODO
-
-## AI-Powered Natural-Language Event Search
-
-- [ ] **Improve relative-date interpretation**
-    - Provide the current date and an explicit timezone to the AI interpreter.
-    - Ensure queries such as "this weekend" produce appropriate `startAfter` and `startBefore` filters.
-    - Add tests for relative-date interpretation and date boundaries.
-
-- [ ] **Harden AI provider error handling**
-    - Handle missing API-key configuration with a clear, actionable error.
-    - Normalize upstream provider failures into appropriate HTTP responses.
-    - Avoid exposing internal provider details to clients while retaining useful server-side diagnostics.
-    - Add tests for missing configuration and different provider failure scenarios.
-
-- [ ] **Add rate limiting to the AI search endpoint**
-    - Protect `POST /events/natural-language-search` against excessive requests.
-    - Return an appropriate HTTP response when the rate limit is exceeded.
-    - Add tests for rate-limit behavior.
-
-- [ ] **Verify live Gemini integration**
-    - Confirm the configured Gemini model responds successfully using the free-tier configuration.
-    - Test a representative natural-language query end to end.
-    - Verify that provider failures produce the expected client-facing error response.
-
 
 I intend to stop once these phases are complete rather than continuously 
 adding infrastructure and services beyond the project's core goals.
@@ -739,7 +747,7 @@ adding infrastructure and services beyond the project's core goals.
 During development, requests returned 503 UNAVAILABLE from the provider.
 Successful live operation remains unverified.
 
-- ### Development Dependency Audit
+### Development Dependency Audit
 
 - `npm audit --prefix "4. backend" --omit=dev` reports zero vulnerabilities in production dependencies.
 - The full backend dependency audit reports 20 moderate findings associated with a known `sprintf-js` vulnerability in the Jest testing and coverage dependency chain.
