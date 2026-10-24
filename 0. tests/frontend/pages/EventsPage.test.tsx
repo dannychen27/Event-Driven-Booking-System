@@ -200,6 +200,46 @@ describe("EventsPage", () => {
             .toHaveBeenCalledWith("Find coffee events this weekend");
     });
 
+    it("shows the loading state while natural-language search is pending", async () => {
+        vi.mocked(getEvents).mockResolvedValue([]);
+
+        let resolveSearch!: (events: Event[]) => void;
+        vi.mocked(searchEventsNaturalLanguage).mockReturnValue(
+            new Promise<Event[]>((resolve) => {
+                resolveSearch = resolve;
+            }),
+        );
+
+        render(<EventsPage />);
+        await screen.findByText("No available events right now.");
+
+        fireEvent.change(
+            screen.getByLabelText("Describe the events you're looking for"),
+            { target: { value: "Find coffee events" } },
+        );
+        fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
+
+        // Both search buttons show "Searching..." and are disabled.
+        const searchingButtons = screen.getAllByRole("button", {
+            name: "Searching...",
+        });
+        expect(searchingButtons).toHaveLength(2);
+        searchingButtons.forEach((button) => {
+            expect(button).toBeDisabled();
+        });
+
+        expect(screen.getByRole("status"))
+            .toHaveTextContent("Searching events...");
+
+        // Resolve the pending request and verify the loading state disappears.
+        resolveSearch([]);
+
+        expect(await screen.findByText("No matching events found."))
+            .toBeInTheDocument();
+        expect(screen.queryByText("Searching events..."))
+            .not.toBeInTheDocument();
+    });
+
     it("shows a message when natural-language search returns no matching events", async () => {
         vi.mocked(getEvents).mockResolvedValue([]);
         vi.mocked(searchEventsNaturalLanguage).mockResolvedValue([]);

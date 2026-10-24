@@ -173,7 +173,7 @@ export default function EventsPage() {
             </form>
 
             {searchError && <p role="alert">{searchError}</p>}
-            {searching && <p>Searching events...</p>}
+            {searching && <p role="status">Searching events...</p>}
 
             {!searching && events.length === 0
                 ? <p>{isSearchActive ? "No matching events found." : "No available events right now."}</p>
