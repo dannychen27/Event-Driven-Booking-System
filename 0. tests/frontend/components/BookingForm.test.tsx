@@ -77,13 +77,21 @@ describe("BookingForm", () => {
 
         await user.click(bookButton);
 
+        // Verify the pending state.
         expect(onBookingCreated).toHaveBeenCalledOnce();
+        expect(bookButton).toHaveTextContent("Booking...");
         expect(bookButton).toBeDisabled();
         expect(cancelButton).toBeDisabled();
 
+        // Verify another click cannot trigger a duplicate booking.
+        await user.click(bookButton);
+        expect(onBookingCreated).toHaveBeenCalledOnce();
+
+        // Resolve the request and verify the controls become available again.
         resolveRequest();
 
         await waitFor(() => {
+            expect(bookButton).toHaveTextContent("Book Event");
             expect(bookButton).toBeEnabled();
             expect(cancelButton).toBeEnabled();
         });
