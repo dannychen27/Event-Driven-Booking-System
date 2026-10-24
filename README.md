@@ -102,6 +102,7 @@ The backend runs on `http://localhost:3000` by default.
 
 - [x] **Event and venue browsing**: browse available events and their associated venues
 - [x] **Event availability**: view the remaining capacity for an event
+- [x] **Natural-language event search**: search for events using natural-language queries, with supported filters for keywords and date ranges; requires a configured `GEMINI_API_KEY`.
 - [x] **Booking management**: create and cancel event bookings
 - [x] **Booking history**: view a user's previous and current bookings
 - [x] **Booking validation**: prevent duplicate bookings, schedule conflicts, and bookings that exceed event capacity
@@ -115,6 +116,11 @@ The backend runs on `http://localhost:3000` by default.
 - [x] **Transactional booking protection**: use database transactions and row-level locking to protect against double-booking
 
 - [x] **Automated testing**: test the frontend, backend, integration workflows, and end-to-end application flows
+
+**AI integration note:** Natural-language search uses Gemini to interpret queries and rank candidate events.
+It requires a valid `GEMINI_API_KEY` and depends on the availability of the external Gemini service.
+Live integration has not yet been reliably verified end to end; AI search may return `503 Service Unavailable` 
+when the service is unavailable.
 
 
 ## Technology Stack
