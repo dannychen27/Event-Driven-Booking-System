@@ -168,6 +168,12 @@ describe("EventCard", () => {
                 "Booking created successfully.",
             ),
         ).toBeInTheDocument();
+
+        expect(
+            screen.queryByRole("button", {
+                name: "Mock Booking Form",
+            }),
+        ).not.toBeInTheDocument();
     });
 
     it("shows an error when booking creation fails", async () => {
@@ -201,6 +207,12 @@ describe("EventCard", () => {
         expect(
             screen.queryByText("You already booked this event."),
         ).not.toBeInTheDocument();
+
+        expect(
+            screen.getByRole("button", {
+                name: "Mock Booking Form",
+            }),
+        ).toBeInTheDocument();
     });
 });
 
