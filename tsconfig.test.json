@@ -22,6 +22,9 @@
       ],
       "supertest": [
         "4. backend/node_modules/supertest"
+      ],
+      "@google/genai": [
+        "4. backend/node_modules/@google/genai"
       ]
     }
   },

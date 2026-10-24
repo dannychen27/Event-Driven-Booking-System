@@ -182,4 +182,43 @@ describe("NaturalLanguageSearchService", () => {
             service.searchNaturalLanguage('Find coffee events'),
         ).rejects.toThrow(ServiceUnavailableException);
     });
+
+    it('returns a controlled unavailable error when Gemini interpretation times out', async () => {
+        const timeoutError = new Error('The operation was aborted.');
+        timeoutError.name = 'AbortError';
+        interpreter.interpret.mockRejectedValueOnce(timeoutError);
+
+        await expect(
+            service.searchNaturalLanguage('Find coffee events'),
+        ).rejects.toThrow(ServiceUnavailableException);
+
+        expect(eventsService.searchEventCandidates).not.toHaveBeenCalled();
+        expect(ranker.rank).not.toHaveBeenCalled();
+    });
+
+    it('returns a controlled unavailable error when Gemini ranking times out', async () => {
+        const timeoutError = new Error('The operation was aborted.');
+        timeoutError.name = 'AbortError';
+        ranker.rank.mockRejectedValueOnce(timeoutError);
+
+        await expect(
+            service.searchNaturalLanguage('Find coffee events'),
+        ).rejects.toThrow(ServiceUnavailableException);
+    });
+
+    it('returns a controlled unavailable error when Gemini returns 504', async () => {
+        const deadlineError = Object.assign(
+            new Error('Deadline expired before operation could complete.'),
+            { status: 504 },
+        );
+
+        interpreter.interpret.mockRejectedValueOnce(deadlineError);
+
+        await expect(
+            service.searchNaturalLanguage('Find coffee events'),
+        ).rejects.toThrow(ServiceUnavailableException);
+
+        expect(eventsService.searchEventCandidates).not.toHaveBeenCalled();
+        expect(ranker.rank).not.toHaveBeenCalled();
+    });
 });

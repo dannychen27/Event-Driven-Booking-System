@@ -47,11 +47,17 @@ export class NaturalLanguageSearchService {
         .map((id) => candidatesById.get(id))
         .filter((event) => event !== undefined);
     } catch (error: unknown) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new ServiceUnavailableException(
+            'AI search is temporarily unavailable. Please try again later.',
+        );
+      }
+
       if (
         typeof error === 'object' &&
         error !== null &&
         'status' in error &&
-        error.status === 503
+        (error.status === 503 || error.status === 504)
       ) {
         throw new ServiceUnavailableException(
           'AI search is temporarily unavailable. Please try again later.',

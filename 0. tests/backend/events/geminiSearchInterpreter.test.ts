@@ -3,7 +3,35 @@ import {
     parseNaturalLanguageSearchPlan,
 } from "../../../4. backend/src/events/gemini-search-interpreter";
 
+
+jest.mock('@google/genai', () => ({
+    GoogleGenAI: jest.fn().mockImplementation(() => ({
+        models: {
+            generateContent: jest.fn(),
+        },
+    })),
+}));
+
+
 describe("GeminiSearchInterpreter", () => {
+
+    it('configures the default Gemini client with a 20-second timeout and 2 attempts', () => {
+        const { GoogleGenAI } = jest.requireMock('@google/genai') as {
+            GoogleGenAI: jest.Mock;
+        };
+
+        new GeminiSearchInterpreter('test-api-key');
+
+        expect(GoogleGenAI).toHaveBeenCalledWith({
+            apiKey: 'test-api-key',
+            httpOptions: {
+                timeout: 20_000,
+                retryOptions: {
+                    attempts: 2,
+                },
+            },
+        });
+    });
 
     it("should include the current Toronto date and timezone in the prompt", async () => {
         const generateContent = jest.fn().mockResolvedValue({

@@ -80,7 +80,15 @@ export class GeminiEventRanker {
     client?: GeminiClient,
   ) {
     if (apiKey.trim()) {
-      this.client = client ?? new GoogleGenAI({ apiKey });
+      this.client = client ?? new GoogleGenAI({
+        apiKey,
+        httpOptions: {
+          timeout: 20_000,
+          retryOptions: {
+            attempts: 2,
+          },
+        },
+      });
     } else {
       this.client = client;
     }
@@ -109,7 +117,7 @@ export class GeminiEventRanker {
     }));
 
     const response = await this.client.models.generateContent({
-      model: 'gemini-flash-latest',
+      model: 'gemini-3.5-flash-lite',
       contents: [
         'Rank the supplied events by how well they match the user’s original request.',
         'Use semantic meaning, not just literal keyword overlap.',

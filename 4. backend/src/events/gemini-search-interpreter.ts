@@ -50,7 +50,15 @@ export class GeminiSearchInterpreter {
     private readonly now: () => Date = () => new Date(),
   ) {
     if (apiKey.trim()) {
-      this.client = client ?? new GoogleGenAI({ apiKey });
+      this.client = client ?? new GoogleGenAI({
+        apiKey,
+        httpOptions: {
+          timeout: 20_000,
+          retryOptions: {
+            attempts: 2,
+          },
+        },
+      });
     } else {
       this.client = client;
     }
@@ -70,7 +78,7 @@ export class GeminiSearchInterpreter {
     }
 
     const response = await this.client.models.generateContent({
-      model: 'gemini-flash-latest',
+      model: 'gemini-3.5-flash-lite',
       contents: [
         "Interpret the user's event search request as a natural-language search plan.",
         'Return only fields supported by the schema.',

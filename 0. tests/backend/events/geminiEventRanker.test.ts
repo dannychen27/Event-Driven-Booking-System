@@ -4,12 +4,39 @@ import {
 } from '../../../4. backend/src/events/gemini-event-ranker';
 
 
+jest.mock('@google/genai', () => ({
+    GoogleGenAI: jest.fn().mockImplementation(() => ({
+        models: {
+            generateContent: jest.fn(),
+        },
+    })),
+}));
+
+
 describe('parseRankedEventIds', () => {
     const candidates = [
         { id: 1, name: 'Coffee Meetup' },
         { id: 2, name: 'Outdoor Yoga' },
         { id: 3, name: 'Networking Night' },
     ];
+
+    it('configures the default Gemini client with a 20-second timeout and 2 attempts', () => {
+        const { GoogleGenAI } = jest.requireMock('@google/genai') as {
+            GoogleGenAI: jest.Mock;
+        };
+
+        new GeminiEventRanker('test-api-key');
+
+        expect(GoogleGenAI).toHaveBeenCalledWith({
+            apiKey: 'test-api-key',
+            httpOptions: {
+                timeout: 20_000,
+                retryOptions: {
+                    attempts: 2,
+                },
+            },
+        });
+    });
 
     it('accepts valid ranked candidate IDs in relevance order', () => {
         expect(
@@ -117,7 +144,7 @@ describe('GeminiEventRanker', () => {
 
         const args = generateContent.mock.calls[0][0];
 
-        expect(args.model).toBe('gemini-flash-latest');
+        expect(args.model).toBe('gemini-3.5-flash-lite');
         expect(args.config).toMatchObject({
             responseMimeType: 'application/json',
             responseSchema: {
