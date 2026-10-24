@@ -150,7 +150,17 @@ when the service is unavailable.
 
 ```text
 Event-Driven Booking System/
-├── frontend/
+├── 0. documentation/               # Architecture and technology documentation
+├── 0. tests/
+│   ├── backend/                    # Backend unit and API tests
+│   ├── frontend/                   # Frontend component and page tests
+│   ├── integration/                # Backend integration tests
+│   ├── end-to-end/                 # End-to-end application tests
+│   ├── mocks/                      # Shared test mocks
+│   └── utils/                      # Shared test utilities
+├── 1. api endpoints/               # API specifications and design documentation
+├── 2. data model/                  # Database schema, setup, seeds, and design
+├── 3. frontend/
 │   └── src/
 │       ├── api/                    # Backend API clients
 │       ├── components/             # Reusable React components
@@ -158,32 +168,26 @@ Event-Driven Booking System/
 │       ├── styles/                 # Component and page styling
 │       ├── types/                  # TypeScript domain types
 │       └── utils/                  # Shared frontend utilities
-│
-├── backend/
+├── 4. backend/
 │   └── src/
 │       ├── bookings/               # Booking module and business logic
 │       ├── database/               # PostgreSQL database connection
 │       ├── events/                 # Event module and business logic
 │       └── venues/                 # Venue module and business logic
-│
-├── prisma/
-│   └── schema.prisma               # Prisma database schema
-│
-├── tests/
-│   ├── backend/                    # Backend unit and API tests
-│   ├── frontend/                   # Frontend component and page tests
-│   ├── integration/                # Backend integration tests
-│   ├── end-to-end/                 # End-to-end application tests
-│   ├── mocks/                      # Shared test mocks
-│   └── utils/                      # Shared test utilities
-│
-├── 0. documentation/               # Architecture and technology documentation
-├── 1. api endpoints/               # API specifications and design documentation
-├── 2. data model/                  # Database schema, setup, seeds, and design
-│
+├── for the resume/                 # Resume-related project materials
+├── instructions/                   # Project instructions
+├── prisma/                         # Prisma-related project files
+├── scheduling/                     # Scheduling-related project materials
+├── scripts/                        # Verification and development scripts
+│   └── verify-logs.sh              # Validates test, lint, build, and coverage logs
+├── test-logs/                      # Test and verification logs
 ├── .env.example                    # Example environment configuration
 ├── package.json                    # Root project scripts and dependencies
+├── package-lock.json               # Root npm dependency lockfile
 ├── prisma.config.ts                # Prisma configuration
+├── skills-lock.json                # Skills dependency lockfile
+├── tsconfig.json                   # Root TypeScript configuration
+├── tsconfig.test.json              # TypeScript configuration for tests
 └── README.md                       # Project documentation
 ```
 
