@@ -227,6 +227,12 @@ describe("EventsPage", () => {
         searchingButtons.forEach((button) => {
             expect(button).toBeDisabled();
         });
+        expect(searchEventsNaturalLanguage).toHaveBeenCalledTimes(1);
+
+        // This simulates another click on the disabled AI search button
+        // and verifies the request count stays at one.
+        fireEvent.click(searchingButtons[1]);
+        expect(searchEventsNaturalLanguage).toHaveBeenCalledTimes(1);
 
         expect(screen.getByRole("status"))
             .toHaveTextContent("Searching events...");
