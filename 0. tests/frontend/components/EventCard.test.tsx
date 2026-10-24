@@ -214,5 +214,56 @@ describe("EventCard", () => {
             }),
         ).toBeInTheDocument();
     });
+
+    it("allows the user to retry after booking creation fails", async () => {
+        vi.mocked(getBookingHistory).mockResolvedValue([]);
+        vi.mocked(createBooking)
+            .mockRejectedValueOnce(new Error("Temporary booking failure."))
+            .mockResolvedValueOnce(undefined);
+
+        const user = userEvent.setup();
+
+        render(<EventCard event={mockEvent} />);
+
+        await user.click(
+            screen.getByRole("button", {
+                name: "Create Booking",
+            }),
+        );
+
+        const bookingForm = await screen.findByRole("button", {
+            name: "Mock Booking Form",
+        });
+
+        await user.click(bookingForm);
+
+        expect(
+            await screen.findByText("Temporary booking failure."),
+        ).toBeInTheDocument();
+
+        expect(
+            screen.getByRole("button", {
+                name: "Mock Booking Form",
+            }),
+        ).toBeInTheDocument();
+
+        await user.click(
+            screen.getByRole("button", {
+                name: "Mock Booking Form",
+            }),
+        );
+
+        expect(createBooking).toHaveBeenCalledTimes(2);
+
+        expect(
+            await screen.findByText("Booking created successfully."),
+        ).toBeInTheDocument();
+
+        expect(
+            screen.queryByRole("button", {
+                name: "Mock Booking Form",
+            }),
+        ).not.toBeInTheDocument();
+    });
 });
 
