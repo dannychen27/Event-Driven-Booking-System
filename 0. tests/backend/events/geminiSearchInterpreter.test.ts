@@ -1,11 +1,13 @@
-import { GeminiSearchInterpreter } from "../../../4. backend/src/events/gemini-search-interpreter";
-
+import {
+    GeminiSearchInterpreter,
+    parseNaturalLanguageSearchPlan,
+} from "../../../4. backend/src/events/gemini-search-interpreter";
 
 describe("GeminiSearchInterpreter", () => {
 
     it("should include the current Toronto date and timezone in the prompt", async () => {
         const generateContent = jest.fn().mockResolvedValue({
-            text: '{"keyword":"coffee"}',
+            text: '{"intent":"coffee events"}',
         });
 
         const interpreter = new GeminiSearchInterpreter(
@@ -30,9 +32,9 @@ describe("GeminiSearchInterpreter", () => {
         ).rejects.toThrow(/API key/i);
     });
 
-    it("should return validated filters from Gemini", async () => {
+    it("should return a validated semantic intent", async () => {
         const generateContent = jest.fn().mockResolvedValue({
-            text: '{"keyword":"coffee"}',
+            text: '{"intent":"Relaxing outdoor activities"}',
         });
 
         const interpreter = new GeminiSearchInterpreter(
@@ -41,10 +43,37 @@ describe("GeminiSearchInterpreter", () => {
         );
 
         await expect(
-            interpreter.interpret("Find coffee events"),
-        ).resolves.toEqual({ keyword: "coffee" });
+            interpreter.interpret("Find something relaxing outdoors"),
+        ).resolves.toEqual({
+            intent: "Relaxing outdoor activities",
+        });
 
         expect(generateContent).toHaveBeenCalledTimes(1);
+
+        const request = generateContent.mock.calls[0][0];
+
+        expect(request.config.responseMimeType).toBe("application/json");
+        expect(request.config.responseSchema.properties).toHaveProperty("intent");
+        expect(request.config.responseSchema.properties).not.toHaveProperty("keyword");
+    });
+
+    it("should prompt Gemini to interpret semantic preferences", async () => {
+        const generateContent = jest.fn().mockResolvedValue({
+            text: '{"intent":"Relaxing outdoor activities"}',
+        });
+
+        const interpreter = new GeminiSearchInterpreter(
+            "test-api-key",
+            { models: { generateContent } } as never,
+        );
+
+        await interpreter.interpret("Find something relaxing outdoors");
+
+        const prompt = generateContent.mock.calls[0][0].contents;
+
+        expect(prompt).toContain("semantic event preferences");
+        expect(prompt).toContain("literal keywords");
+        expect(prompt).toContain("startAfter and startBefore");
     });
 
     it("should reject invalid Gemini output", async () => {
@@ -59,18 +88,18 @@ describe("GeminiSearchInterpreter", () => {
 
         await expect(
             interpreter.interpret("Find coffee events"),
-        ).rejects.toThrow(/unsupported search filter/i);
+        ).rejects.toThrow(/unsupported natural-language search field/i);
     });
 
     it("should return date filters for a relative-date request", async () => {
-        const filters = {
-            keyword: "coffee",
+        const plan = {
+            intent: "Coffee events",
             startAfter: "2026-10-24T00:00:00-04:00",
             startBefore: "2026-10-27T00:00:00-04:00",
         };
 
         const generateContent = jest.fn().mockResolvedValue({
-            text: JSON.stringify(filters),
+            text: JSON.stringify(plan),
         });
 
         const interpreter = new GeminiSearchInterpreter(
@@ -81,12 +110,38 @@ describe("GeminiSearchInterpreter", () => {
 
         await expect(
             interpreter.interpret("Find coffee events this weekend"),
-        ).resolves.toEqual(filters);
+        ).resolves.toEqual(plan);
 
         expect(generateContent).toHaveBeenCalledTimes(1);
         expect(generateContent.mock.calls[0][0].contents).toContain(
             "Find coffee events this weekend",
         );
+    });
+
+    it("should allow date-only requests without an intent", async () => {
+        const generateContent = jest.fn().mockResolvedValue({
+            text: JSON.stringify({
+                startAfter: "2026-10-24T00:00:00-04:00",
+                startBefore: "2026-10-27T00:00:00-04:00",
+            }),
+        });
+
+        const interpreter = new GeminiSearchInterpreter(
+            "test-api-key",
+            { models: { generateContent } } as never,
+        );
+
+        await expect(
+            interpreter.interpret("Show me events this weekend"),
+        ).resolves.toEqual({
+            startAfter: "2026-10-24T00:00:00-04:00",
+            startBefore: "2026-10-27T00:00:00-04:00",
+        });
+    });
+
+    it("should reject invalid JSON", () => {
+        expect(() => parseNaturalLanguageSearchPlan("not JSON"))
+            .toThrow("Gemini returned invalid JSON");
     });
 
     it("should propagate Gemini API failures", async () => {
