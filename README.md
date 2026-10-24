@@ -30,6 +30,74 @@ The backend enforces booking constraints such as:
 The project is being developed incrementally, with automated frontend, backend, integration, and end-to-end tests.
 
 
+## Quick Start
+
+### Prerequisites
+
+- Node.js 20.19.0 or later
+- npm
+- PostgreSQL
+
+### 1. Install dependencies
+
+From the project root:
+
+```bash
+npm install
+npm install --prefix "4. backend"
+npm install --prefix "3. frontend"
+```
+
+### 2. Configure the environment
+
+```bash
+cp .env.example .env
+```
+
+Update `.env` with your local PostgreSQL connection settings.
+Set `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD` 
+as appropriate for your setup.
+
+To use AI-powered natural-language search, configure `GEMINI_API_KEY`.
+
+### 3. Initialize the database
+
+Ensure PostgreSQL is running, then create the application database:
+
+```bash
+createdb booking_system
+```
+
+From the project root, create the tables, indexes, and seed data:
+
+```bash
+psql -d booking_system -f "2. data model/schema.sql"
+psql -d booking_system -f "2. data model/indices/indices.sql"
+psql -d booking_system -f "2. data model/seed data/seed.sql"
+```
+
+These commands initialize the demo database without running the SQL constraint-test scripts.
+See `2. data model/` for the full database setup and constraint tests.
+
+
+### 4. Start the application
+
+In one terminal, start the backend:
+
+```bash
+npm run start:dev --prefix "4. backend"
+```
+
+In another terminal, start the frontend:
+
+```bash
+npm run dev --prefix "3. frontend"
+```
+
+Open the frontend URL printed by Vite in your terminal (typically `http://localhost:5173`).
+The backend runs on `http://localhost:3000` by default.
+
+
 ## Features
 
 - [x] **Event and venue browsing**: browse available events and their associated venues
