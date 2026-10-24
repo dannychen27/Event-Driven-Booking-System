@@ -391,6 +391,31 @@ describe("EventsPage", () => {
         expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });
 
+    it("clears the keyword search error when the natural-language input changes", async () => {
+        vi.mocked(getEvents).mockResolvedValue([]);
+        vi.mocked(searchEvents).mockRejectedValue(
+            new Error("Failed to search events"),
+        );
+
+        render(<EventsPage />);
+        await screen.findByText("No available events right now.");
+
+        fireEvent.change(screen.getByLabelText("Search events"), {
+            target: { value: "Coffee" },
+        });
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+        expect(await screen.findByRole("alert"))
+            .toHaveTextContent("Failed to search events");
+
+        fireEvent.change(
+            screen.getByLabelText("Describe the events you're looking for"),
+            { target: { value: "Find music events" } },
+        );
+
+        expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    });
+
     it("preserves previous results when a new search fails", async () => {
         vi.mocked(getEvents).mockResolvedValue([
             {
