@@ -18,7 +18,6 @@ const ALLOWED_NATURAL_LANGUAGE_FIELDS = new Set([
   'startBefore',
 ]);
 
-
 export function validateSearchFilters(input: unknown): SearchFilters {
   if (typeof input !== 'object' || input === null || Array.isArray(input)) {
     throw new Error('Search filters must be an object');
@@ -75,7 +74,7 @@ export function validateSearchFilters(input: unknown): SearchFilters {
 }
 
 export function validateNaturalLanguageSearchPlan(
-    input: unknown,
+  input: unknown,
 ): NaturalLanguageSearchPlan {
   if (typeof input !== 'object' || input === null || Array.isArray(input)) {
     throw new Error('Natural-language search plan must be an object');
@@ -92,12 +91,14 @@ export function validateNaturalLanguageSearchPlan(
   const { intent, startAfter, startBefore } = fields;
 
   if (
-      intent !== undefined &&
-      (typeof intent !== 'string' ||
-          intent.trim().length === 0 ||
-          intent.trim().length > 300)
+    intent !== undefined &&
+    (typeof intent !== 'string' ||
+      intent.trim().length === 0 ||
+      intent.trim().length > 300)
   ) {
-    throw new Error('intent must be a non-empty string of at most 300 characters');
+    throw new Error(
+      'intent must be a non-empty string of at most 300 characters',
+    );
   }
 
   for (const [name, value] of [
@@ -112,9 +113,9 @@ export function validateNaturalLanguageSearchPlan(
   }
 
   if (
-      startAfter !== undefined &&
-      startBefore !== undefined &&
-      Date.parse(startAfter as string) >= Date.parse(startBefore as string)
+    startAfter !== undefined &&
+    startBefore !== undefined &&
+    Date.parse(startAfter as string) >= Date.parse(startBefore as string)
   ) {
     throw new Error('startAfter must be earlier than startBefore');
   }
@@ -123,7 +124,7 @@ export function validateNaturalLanguageSearchPlan(
     ...(intent !== undefined ? { intent: intent.trim() } : {}),
     ...(startAfter !== undefined ? { startAfter: startAfter as string } : {}),
     ...(startBefore !== undefined
-        ? { startBefore: startBefore as string }
-        : {}),
+      ? { startBefore: startBefore as string }
+      : {}),
   };
 }
