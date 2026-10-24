@@ -449,9 +449,12 @@ npm test
 | Integration | `npm run test:integration` |
 | End-to-end | `npm run test:e2e` |
 
-The integration and end-to-end test commands automatically set
-up the `booking_system_test` database before running their
-respective test suites.
+The integration and end-to-end test commands automatically recreate the 
+`booking_system_test` database, load the schema, and seed test data before 
+running their respective test suites.
+
+Ensure PostgreSQL is running and accessible with the required connection 
+settings before running these commands.
 
 
 ### Test Coverage
