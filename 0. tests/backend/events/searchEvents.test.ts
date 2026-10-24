@@ -77,4 +77,71 @@ describe("EventsService.searchEvents", () => {
         expectNthQuery(db, 1, "ORDER BY e.start_time ASC", []);
         expect(db.query).toHaveBeenCalledTimes(1);
     });
+
+    it('should retrieve candidates using date bounds without keyword matching', async () => {
+        const events = [
+            {
+                id: 1,
+                name: 'Outdoor Yoga',
+                description: 'A relaxing session in a park.',
+                venue_name: 'Central Park',
+            },
+        ];
+        db.query.mockResolvedValueOnce({ rows: events });
+
+        const result = await service.searchEventCandidates({
+            startAfter: '2026-10-24T00:00:00Z',
+            startBefore: '2026-10-27T00:00:00Z',
+        });
+
+        expect(result).toEqual(events);
+        expectNthQuery(
+            db,
+            1,
+            'e.start_time >= $1',
+            ['2026-10-24T00:00:00Z', '2026-10-27T00:00:00Z'],
+        );
+        expectNthQuery(
+            db,
+            1,
+            'e.start_time < $2',
+            ['2026-10-24T00:00:00Z', '2026-10-27T00:00:00Z'],
+        );
+
+        const sql = db.query.mock.calls[0][0] as string;
+        expect(sql).not.toContain('ILIKE');
+        expect(sql).toContain('e.*');
+        expect(sql).toContain('ORDER BY e.start_time ASC');
+    });
+
+    it('should retrieve all candidates when no date bounds are provided', async () => {
+        const events = [{ id: 1 }, { id: 2 }];
+        db.query.mockResolvedValueOnce({ rows: events });
+
+        const result = await service.searchEventCandidates({});
+
+        expect(result).toEqual(events);
+        expect(db.query).toHaveBeenCalledTimes(1);
+
+        const sql = db.query.mock.calls[0][0] as string;
+        expect(sql).not.toContain('WHERE');
+        expect(sql).not.toContain('ILIKE');
+    });
+
+    it('should apply only the supplied candidate date bound', async () => {
+        await service.searchEventCandidates({
+            startAfter: '2026-10-24T00:00:00Z',
+        });
+
+        expectNthQuery(
+            db,
+            1,
+            'e.start_time >= $1',
+            ['2026-10-24T00:00:00Z'],
+        );
+
+        const sql = db.query.mock.calls[0][0] as string;
+        expect(sql).not.toContain('e.start_time <');
+        expect(sql).not.toContain('ILIKE');
+    });
 });

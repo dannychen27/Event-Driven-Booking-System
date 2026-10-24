@@ -1,104 +1,185 @@
-import { EventsService } from "../../../4. backend/src/events/events.service";
-import { ServiceUnavailableException } from "@nestjs/common";
+import { ServiceUnavailableException } from '@nestjs/common';
+import { EventsService } from '../../../4. backend/src/events/events.service';
 
 
-import { NaturalLanguageSearchService } from "../../../4. backend/src/events/natural-language-search.service";
-import { GeminiSearchInterpreter } from "../../../4. backend/src/events/gemini-search-interpreter";
+import { GeminiEventRanker } from '../../../4. backend/src/events/gemini-event-ranker';
+import { GeminiSearchInterpreter } from '../../../4. backend/src/events/gemini-search-interpreter';
+import { NaturalLanguageSearchService } from '../../../4. backend/src/events/natural-language-search.service';
 
 
 describe("NaturalLanguageSearchService", () => {
     let service: NaturalLanguageSearchService;
     let eventsService: {
         searchEvents: jest.Mock;
+        searchEventCandidates: jest.Mock;
     };
     let interpreter: {
         interpret: jest.Mock;
     };
+    let ranker: {
+        rank: jest.Mock;
+    };
+
+    const candidates = [
+        {
+            id: 1,
+            name: 'Coffee Meetup',
+            description: 'An informal social gathering over coffee.',
+            venue_name: 'Community Cafe',
+            venue_address: 'Toronto',
+            start_time: '2026-10-24T14:00:00Z',
+        },
+        {
+            id: 2,
+            name: 'Outdoor Yoga',
+            description: 'A relaxing yoga session in a park.',
+            venue_name: 'Central Park',
+            venue_address: 'Toronto',
+            start_time: '2026-10-25T14:00:00Z',
+        },
+    ];
 
     beforeEach(() => {
         eventsService = {
             searchEvents: jest.fn().mockResolvedValue([]),
+            searchEventCandidates: jest.fn().mockResolvedValue(candidates),
         };
 
         interpreter = {
             interpret: jest.fn().mockResolvedValue({
-                keyword: "coffee",
+                intent: 'relaxing outdoor activities',
+                startAfter: '2026-10-24T00:00:00Z',
+                startBefore: '2026-10-27T00:00:00Z',
             }),
+        };
+
+        ranker = {
+            rank: jest.fn().mockResolvedValue([2, 1]),
         };
 
         service = new NaturalLanguageSearchService(
             eventsService as unknown as EventsService,
             interpreter as unknown as GeminiSearchInterpreter,
+            ranker as unknown as GeminiEventRanker,
         );
     });
 
-    it("should validate filters and delegate to event search", async () => {
+    it('validates structured filters and delegates to ordinary event search', async () => {
         await service.search({
-            keyword: " coffee ",
-            startAfter: "2026-10-24T00:00:00Z",
+            keyword: ' coffee ',
+            startAfter: '2026-10-24T00:00:00Z',
         });
 
         expect(eventsService.searchEvents).toHaveBeenCalledWith({
-            keyword: "coffee",
-            startAfter: "2026-10-24T00:00:00Z",
+            keyword: 'coffee',
+            startAfter: '2026-10-24T00:00:00Z',
         });
+        expect(eventsService.searchEventCandidates).not.toHaveBeenCalled();
+        expect(ranker.rank).not.toHaveBeenCalled();
     });
 
-    it("should return the matching events", async () => {
-        const events = [{ id: 1, name: "Coffee Meetup" }];
+    it('returns the matching events from structured search', async () => {
+        const events = [{ id: 1, name: 'Coffee Meetup' }];
         eventsService.searchEvents.mockResolvedValueOnce(events);
 
-        const result = await service.search({ keyword: "coffee" });
+        const result = await service.search({ keyword: 'coffee' });
 
         expect(result).toEqual(events);
     });
 
-    it("should reject invalid filters without querying events", async () => {
-        await expect(service.search({ keyword: " ", sql: "DROP TABLE events" }),)
-            .rejects.toThrow();
+    it('rejects invalid structured filters without querying events', async () => {
+        await expect(
+            service.search({ keyword: ' ', sql: 'DROP TABLE events' }),
+        ).rejects.toThrow();
 
         expect(eventsService.searchEvents).not.toHaveBeenCalled();
     });
 
-    it("should interpret natural language and search using its filters", async () => {
-        const events = [{ id: 1, name: "Coffee Meetup" }];
-        interpreter.interpret.mockResolvedValueOnce({ keyword: "coffee", });
-        eventsService.searchEvents.mockResolvedValueOnce(events);
+    it('retrieves date-filtered candidates and returns them in semantic ranking order', async () => {
+        const result = await service.searchNaturalLanguage(
+            'Find something relaxing outdoors this weekend',
+        );
+
+        expect(interpreter.interpret).toHaveBeenCalledWith(
+            'Find something relaxing outdoors this weekend',
+        );
+        expect(eventsService.searchEventCandidates).toHaveBeenCalledWith({
+            startAfter: '2026-10-24T00:00:00Z',
+            startBefore: '2026-10-27T00:00:00Z',
+        });
+        expect(ranker.rank).toHaveBeenCalledWith(
+            'Find something relaxing outdoors this weekend',
+            'relaxing outdoor activities',
+            candidates,
+        );
+        expect(result).toEqual([candidates[1], candidates[0]]);
+        expect(eventsService.searchEvents).not.toHaveBeenCalled();
+    });
+
+    it('returns date-filtered candidates without ranking when there is no intent', async () => {
+        interpreter.interpret.mockResolvedValueOnce({
+            startAfter: '2026-10-24T00:00:00Z',
+        });
 
         const result = await service.searchNaturalLanguage(
-            "Find coffee events",
+            'Show me events after October 24',
         );
 
-        expect(interpreter.interpret).toHaveBeenCalledWith("Find coffee events");
-        expect(eventsService.searchEvents).toHaveBeenCalledWith({ keyword: "coffee", });
-        expect(result).toEqual(events);
-    });
-
-
-    it("should pass all interpreted filters to event search", async () => {
-        const filters = {
-            keyword: "coffee",
-            startAfter: "2026-10-24T00:00:00Z",
-            startBefore: "2026-10-26T00:00:00Z",
-        };
-
-        interpreter.interpret.mockResolvedValueOnce(filters);
-
-        await service.searchNaturalLanguage(
-            "Find coffee events this weekend",
-        );
-
-        expect(eventsService.searchEvents).toHaveBeenCalledWith(filters);
-    });
-
-    it("should return a service-unavailable error when Gemini is unavailable", async () => {
-        interpreter.interpret.mockRejectedValueOnce({
-            status: 503,
+        expect(eventsService.searchEventCandidates).toHaveBeenCalledWith({
+            startAfter: '2026-10-24T00:00:00Z',
+            startBefore: undefined,
         });
+        expect(result).toEqual(candidates);
+        expect(ranker.rank).not.toHaveBeenCalled();
+    });
 
-        await expect(service.searchNaturalLanguage("Find coffee events"),)
-            .rejects.toThrow(ServiceUnavailableException);
+    it('does not call the ranker when there are no candidates', async () => {
+        eventsService.searchEventCandidates.mockResolvedValueOnce([]);
 
-        expect(eventsService.searchEvents).not.toHaveBeenCalled();
+        const result = await service.searchNaturalLanguage(
+            'Find relaxing outdoor activities',
+        );
+
+        expect(result).toEqual([]);
+        expect(ranker.rank).not.toHaveBeenCalled();
+    });
+
+    it('returns only the events whose IDs Gemini ranked', async () => {
+        ranker.rank.mockResolvedValueOnce([2]);
+
+        const result = await service.searchNaturalLanguage(
+            'Find something relaxing outdoors',
+        );
+
+        expect(result).toEqual([candidates[1]]);
+    });
+
+    it('returns no events when Gemini ranks no candidates as relevant', async () => {
+        ranker.rank.mockResolvedValueOnce([]);
+
+        const result = await service.searchNaturalLanguage(
+            'Find something relaxing outdoors',
+        );
+
+        expect(result).toEqual([]);
+    });
+
+    it('maps interpreter service-unavailable errors to ServiceUnavailableException', async () => {
+        interpreter.interpret.mockRejectedValueOnce({ status: 503 });
+
+        await expect(
+            service.searchNaturalLanguage('Find coffee events'),
+        ).rejects.toThrow(ServiceUnavailableException);
+
+        expect(eventsService.searchEventCandidates).not.toHaveBeenCalled();
+        expect(ranker.rank).not.toHaveBeenCalled();
+    });
+
+    it('maps ranker service-unavailable errors to ServiceUnavailableException', async () => {
+        ranker.rank.mockRejectedValueOnce({ status: 503 });
+
+        await expect(
+            service.searchNaturalLanguage('Find coffee events'),
+        ).rejects.toThrow(ServiceUnavailableException);
     });
 });
