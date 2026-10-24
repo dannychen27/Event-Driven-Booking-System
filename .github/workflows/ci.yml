@@ -66,5 +66,19 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci --prefix "3. frontend"
 
-      - name: Run all tests
-        run: npm test
+      - name: Run unit tests with coverage
+        run: npm run coverage
+
+      - name: Run end-to-end and integration tests
+        run: npm run test:e2e && npm run test:integration
+
+      - name: Upload coverage reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            4. backend/coverage/
+            3. frontend/coverage/
+          if-no-files-found: warn
+          retention-days: 14
