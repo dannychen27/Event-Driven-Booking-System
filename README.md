@@ -496,6 +496,30 @@ I expose the application's functionality through a REST API implemented with Nes
 | `GET` | `/events/:id` | Retrieve a specific event |
 | `GET` | `/events/:id/availability` | Retrieve event availability |
 | `POST` | `/events/:id/book` | Create a booking for an event |
+| `POST` | `/events/natural-language-search` | Search for events using a natural-language query (requires a configured Gemini API key) |
+
+**How AI search works:** Describe what kind of event you're looking for in natural language.
+Gemini interprets your request, identifies event preferences and date constraints, and ranks candidate events by relevance.
+Events outside the requested date range are filtered out before ranking, and irrelevant events may be excluded.
+
+This feature requires a valid `GEMINI_API_KEY` and an available Gemini service.
+Temporary service failures may result in a `503 Service Unavailable` response.
+
+Natural-language search accepts a JSON body containing a non-empty `query` string of up to 500 characters.
+
+Example request body:
+
+```json
+{
+  "query": "Find networking events before November 1"
+}
+```
+
+The endpoint returns a `400 Bad Request` if:
+- `query` is missing,
+- `query` is empty,
+- `query` is not a string, or 
+- `query` is longer than 500 characters.
 
 ### Venue Endpoints
 
