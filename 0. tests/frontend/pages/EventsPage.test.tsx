@@ -297,6 +297,13 @@ describe("EventsPage", () => {
 
         expect(await screen.findByRole("alert"))
             .toHaveTextContent("Failed to search events with natural language");
+
+        expect(screen.queryByRole("status")).not.toBeInTheDocument();
+
+        expect(screen.getByRole("button", { name: "Search" }))
+            .toBeEnabled();
+        expect(screen.getByRole("button", { name: "Ask AI" }))
+            .toBeEnabled();
     });
 
     it("recovers when natural-language search succeeds after a failure", async () => {
