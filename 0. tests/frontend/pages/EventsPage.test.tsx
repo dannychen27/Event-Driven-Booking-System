@@ -200,6 +200,23 @@ describe("EventsPage", () => {
             .toHaveBeenCalledWith("Find coffee events this weekend");
     });
 
+    it("shows a message when natural-language search returns no matching events", async () => {
+        vi.mocked(getEvents).mockResolvedValue([]);
+        vi.mocked(searchEventsNaturalLanguage).mockResolvedValue([]);
+
+        render(<EventsPage />);
+        await screen.findByText("No available events right now.");
+
+        fireEvent.change(
+            screen.getByLabelText("Describe the events you're looking for"),
+            { target: { value: "Find events about underwater basket weaving" } },
+        );
+        fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
+
+        expect(await screen.findByText("No matching events found."))
+            .toBeInTheDocument();
+    });
+
     it("does not run natural-language search when the query is empty or whitespace", async () => {
         vi.mocked(getEvents).mockResolvedValue([]);
 
