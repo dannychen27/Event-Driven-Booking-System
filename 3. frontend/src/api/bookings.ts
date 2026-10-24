@@ -11,6 +11,7 @@ export async function getBookingHistory(user_id: number): Promise<Booking[]> {
     return getBookingsResponse.json();
 }
 
+
 export async function createBooking(user_id: number, event_id: number): Promise<Booking> {
     const createBookingsResponse = await fetch(
         `${API_BASE_URL}/events/${event_id}/book`,
@@ -26,8 +27,20 @@ export async function createBooking(user_id: number, event_id: number): Promise<
     );
 
     if (!createBookingsResponse.ok) {
-        const errorBody = await createBookingsResponse.json();
-        const errorMessage = errorBody.message;
+        let errorMessage: string | undefined;
+
+        try {
+            const errorBody = await createBookingsResponse.json();
+            if (typeof errorBody.message === "string") {
+                errorMessage = errorBody.message;
+            }
+        } catch {
+            // Use the fallback message when the response isn't valid JSON.
+        }
+
+        if (!errorMessage) {
+            throw new Error("Failed to create booking");
+        }
 
         if (errorMessage.includes("already booked")) {
             throw new Error("You have already booked this event.");
@@ -43,8 +56,10 @@ export async function createBooking(user_id: number, event_id: number): Promise<
             throw new Error(errorMessage);
         }
     }
+
     return createBookingsResponse.json();
 }
+
 
 export async function cancelBooking(user_id: number, booking_id: number): Promise<Booking> {
     const cancelBookingResponse = await fetch(
