@@ -293,6 +293,52 @@ describe("EventsPage", () => {
             .toHaveTextContent("Failed to search events with natural language");
     });
 
+    it("recovers when natural-language search succeeds after a failure", async () => {
+        vi.mocked(getEvents).mockResolvedValue([]);
+        vi.mocked(searchEventsNaturalLanguage)
+            .mockRejectedValueOnce(
+                new Error("Failed to search events with natural language"),
+            )
+            .mockResolvedValueOnce([
+                {
+                    id: 3,
+                    name: "Coffee Meetup",
+                    venue_id: 1,
+                    start_time: "2026-10-24T10:00:00Z",
+                    end_time: "2026-10-24T11:00:00Z",
+                    capacity: 10,
+                },
+            ]);
+
+        render(<EventsPage />);
+        await screen.findByText("No available events right now.");
+
+        const input = screen.getByLabelText(
+            "Describe the events you're looking for",
+        );
+
+        fireEvent.change(input, {
+            target: { value: "Find coffee events" },
+        });
+        fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
+
+        expect(await screen.findByRole("alert"))
+            .toHaveTextContent("Failed to search events with natural language");
+
+        fireEvent.change(input, {
+            target: { value: "Find coffee meetups" },
+        });
+
+        expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
+
+        expect(await screen.findByText("Mock Event Card: Coffee Meetup"))
+            .toBeInTheDocument();
+        expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    });
+
+
     it("clears both search inputs and restores all events", async () => {
         vi.mocked(getEvents).mockResolvedValue([
             {
