@@ -541,47 +541,44 @@ The endpoint returns a `400 Bad Request` if:
 
 ## Architecture
 
-I structure the current application as a layered full-stack system,
-with event-driven architecture planned for future phases.
+The application currently uses a layered full-stack architecture:
+a React frontend communicates with a NestJS backend through a REST API, and 
+the backend accesses PostgreSQL to retrieve and persist application data. 
 
-### Why Event-Driven Architecture?
-
-I plan to introduce event-driven architecture to decouple booking operations 
-from downstream services.
-
-For example, when a booking is created, the booking service could publish a 
-`booking.created` event to Kafka. Separate notification and analytics services 
-could consume that event independently without requiring the booking service to 
-directly call each service.
-
-This would allow the system to add downstream functionality without tightly 
-coupling it to the core booking workflow.
+NOTE: I plan to add event-driven processing with Kafka in a future phase.
 
 
 ### Frontend
 
 I built the frontend with React and TypeScript using Vite.
-
-The frontend communicates with the backend through REST API requests and provides the user interface for browsing events and venues, creating bookings, and viewing booking history.
+The frontend provides the user interface for browsing events and venues, 
+creating bookings, checking event availability, and viewing booking history.
+It also communicates with the backend through REST API requests.
 
 
 ### Backend
 
-I built the backend with NestJS and organize it into feature-based modules:
+I built the backend with NestJS and organized it into feature-based modules:
 
-- **Events**: event retrieval and availability
+- **Events**: event retrieval, availability, and natural-language search
 - **Venues**: venue retrieval
 - **Bookings**: booking creation, cancellation, and booking history
 - **Database**: PostgreSQL database connection and access
 
-The backend contains the application's business logic and exposes the REST API used by the frontend.
+The backend:
+- exposes the REST API that the frontend also uses,
+- validates requests,
+- applies business rules, and
+- coordinates database operations.
 
 
 ### Database
 
-I use PostgreSQL to persist users, venues, events, and bookings.
-
-The database schema enforces data integrity through primary keys, foreign keys, constraints, and indexes.
+I use PostgreSQL to store users, venues, events, and bookings.
+The database schema uses primary keys, foreign keys, constraints, and indexes to 
+support data integrity.
+Booking operations also use database transactions and row-level locking to 
+protect against double-booking and conflicting operations.
 
 ### Request Flow
 
@@ -591,19 +588,38 @@ A typical request follows this flow:
 React Frontend
       │
       ▼
-REST API
+REST API Request
       │
       ▼
-NestJS Controllers
+NestJS Controller
       │
       ▼
-NestJS Services
+NestJS Service
       │
       ▼
 PostgreSQL
+      │
+      ▼
+Response to Frontend
 ```
 
-The backend services validate requests and apply business rules before reading from or writing to the database.
+- The controller receives the request and delegates processing to the appropriate service.
+- The service applies business rules and coordinates database operations, such as reading from and writing to the database.
+- Then the backend returns the result through the controller to the frontend.
+
+
+### Why Event-Driven Architecture?
+
+The planned event-driven architecture aims to decouple booking operations from 
+downstream services.
+
+For example, when a booking is created, the booking service could publish a
+`booking.created` event to Kafka. Separate notification and analytics services
+could consume that event independently without requiring the booking service to
+directly call each service.
+
+This would allow the system to add downstream functionality without tightly
+coupling it to the core booking workflow.
 
 
 ## Project Roadmap
