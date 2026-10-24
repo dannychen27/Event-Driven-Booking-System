@@ -1,46 +1,74 @@
 # Event-Driven Booking System
 
+[![Coverage Reports](https://github.com/dannychen27/Event-Driven-Booking-System/actions/workflows/coverage-pages.yml/badge.svg)](https://github.com/dannychen27/Event-Driven-Booking-System/actions/workflows/coverage-pages.yml)
+
 ## Overview
 
-A full-stack event booking system for managing users, venues, events, and 
-bookings, built with React, NestJS, and PostgreSQL.
+A full-stack event booking system built with React, NestJS, and PostgreSQL.
+The project explores the design of a booking platform, from database constraints
+and transaction safety to frontend/backend integration and automated testing.
 
-I built this project to explore the design and implementation of a booking 
-system from the ground up. I was inspired by the admin system I debugged 
-during my Sky View Suites full-stack development internship in summer 2022.
+This project was inspired by an admin system I debugged during my
+summer 2022 full-stack development internship at Sky View Suites.
 
-The current implementation uses a layered architecture with React, NestJS, 
-and PostgreSQL. In future phases, I plan to introduce Kafka, a notification 
-consumer, a C++ analytics consumer, Docker, and Kubernetes to evolve the 
-system into a distributed, event-driven architecture.
+### Current Features
+- Browse events and venues.
+- Book events and view booking history.
+- Cancel bookings with booking-ownership checks.
+- Enforce booking constraints, including duplicate-booking prevention, schedule-conflict checks, and event-capacity limits.
+- Protect against concurrent overbooking using database transactions and row-level locking.
+- Search events using natural-language queries powered by Gemini.
 
-The system allows users to:
-- browse events and venues
-- book an event
-- view booking history
-- cancel their bookings
+The current implementation uses a layered application architecture.
+Future phases may introduce Kafka-based event processing, notification and
+C++ analytics consumers, Docker, and Kubernetes to evolve the system toward
+a distributed architecture.
 
-The backend enforces booking constraints such as:
-- duplicate bookings
-- schedule conflicts
-- event capacity 
-- cancellation authorization
-- protection against double-booking through database transactions and row-level locking
+## Technology Stack
 
-The project is being developed incrementally, with automated frontend, backend, integration, and end-to-end tests.
+### Current
+
+| Layer | Technologies |
+| --- | --- |
+| Frontend | React, TypeScript, Vite |
+| Backend | NestJS, TypeScript |
+| Database | PostgreSQL |
+| Database Tooling | Prisma, node-postgres |
+| Testing | Vitest, Jest, Supertest, Testing Library |
+
+
+### Planned
+
+| Layer | Technologies |
+| --- | --- |
+| Event streaming | Apache Kafka |
+| Systems language | C++ |
+| Containerization | Docker |
+| Orchestration | Kubernetes |
 
 
 ## Quick Start
 
 ### Prerequisites
 
-- Node.js 20.19.0 or later
-- npm
-- PostgreSQL
+Before running the project, I require the following software:
+- **Node.js 20.19.0 or later**: required by Prisma 7 and Vite 8.
+- **npm**: used to install dependencies and run the project scripts.
+- **PostgreSQL**: used as the application's relational database.
+- **Git**: used to clone the repository and manage the project source code.
+
+I recommend using an active LTS version of Node.js, such as Node.js 22.x.
+Prisma currently recommends Node.js 22.x for Prisma 7.
 
 ### 1. Install dependencies
 
-From the project root:
+Start from a fresh `git checkout`:
+```bash
+git clone <repository-url>
+cd <project-directory>
+```
+
+From the project root, install frontend and backend dependencies:
 
 ```bash
 npm install
@@ -48,39 +76,51 @@ npm install --prefix "4. backend"
 npm install --prefix "3. frontend"
 ```
 
-### 2. Configure the environment
+After installation, configure the environment variables and
+database before running the application.
 
+### 2. Configure the environment variables
+
+Copy the example environment file:
 ```bash
 cp .env.example .env
 ```
 
 Update `.env` with your local PostgreSQL connection settings.
-Set `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD` 
+Set `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD`
 as appropriate for your setup.
 
 To use AI-powered natural-language search, configure `GEMINI_API_KEY`.
 
+
+Then update `.env` with the PostgreSQL credentials for your local database:
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=booking_system
+DB_USER=<your-postgresql-username>
+DB_PASSWORD=<your-postgresql-password>
+```
+
+The environment variables control the following database connection settings:
+| Variable | Description | Default |
+| --- | --- | --- |
+| `DB_HOST` | PostgreSQL server host | `localhost` |
+| `DB_PORT` | PostgreSQL server port | `5432` |
+| `DB_NAME` | Application database name | `booking_system` |
+| `DB_USER` | PostgreSQL username | — |
+| `DB_PASSWORD` | PostgreSQL password | — |
+
 ### 3. Initialize the database
 
-Ensure PostgreSQL is running, then create the application database:
+Ensure PostgreSQL is running, then follow the [Database Setup](#database-setup) instructions below.
 
-```bash
-createdb booking_system
-```
-
-From the project root, create the tables, indexes, and seed data:
-
-```bash
-psql -d booking_system -f "2. data model/schema.sql"
-psql -d booking_system -f "2. data model/indices/indices.sql"
-psql -d booking_system -f "2. data model/seed data/seed.sql"
-```
-
-These commands initialize the demo database without running the SQL constraint-test scripts.
-See `2. data model/` for the full database setup and constraint tests.
-
+For a quick local setup, the `setup.sh` script recreates `booking_system` and loads the schema and seed data.
+**It deletes existing data in that database**, so use it only when you intend to reset it.
 
 ### 4. Start the application
+
+I run the frontend and backend separately during development.
 
 In one terminal, start the backend:
 
@@ -112,38 +152,94 @@ The backend runs on `http://localhost:3000` by default.
 
 - [x] **REST API integration**: connect the frontend to the backend through REST endpoints
 
-- [x] **Cancellation authorization**: restrict users to cancelling their own bookings
+- [x] **Booking ownership validation**: check that a booking belongs to the specified user before allowing cancellation
 - [x] **Transactional booking protection**: use database transactions and row-level locking to protect against double-booking
 
 - [x] **Automated testing**: test the frontend, backend, integration workflows, and end-to-end application flows
 
 **AI integration note:** Natural-language search uses Gemini to interpret queries and rank candidate events.
 It requires a valid `GEMINI_API_KEY` and depends on the availability of the external Gemini service.
-Live integration has not yet been reliably verified end to end; AI search may return `503 Service Unavailable` 
+Live integration has not yet been reliably verified end to end; AI search may return `503 Service Unavailable`
 when the service is unavailable.
 
 
-## Technology Stack
+## Architecture
 
-### Current
+The application currently uses a layered full-stack architecture:
+a React frontend communicates with a NestJS backend through a REST API,
+and the backend retrieves and persists data in PostgreSQL.
 
-| Layer | Technologies |
-| --- | --- |
-| Frontend | React, TypeScript, Vite |
-| Backend | NestJS, TypeScript |
-| Database | PostgreSQL |
-| Database Tooling | Prisma, node-postgres |
-| Testing | Vitest, Jest, Supertest, Testing Library |
+Kafka-based event-driven processing is planned for a future phase
+and is not part of the current request flow.
+
+### Frontend
+
+The frontend uses React, TypeScript, and Vite to provide the user interface
+for browsing events and venues, creating bookings, checking event availability,
+and viewing booking history.
+It also communicates with the backend through REST API requests.
 
 
-### Planned
+### Backend
 
-| Layer | Technologies |
-| --- | --- |
-| Event streaming | Apache Kafka |
-| Systems language | C++ |
-| Containerization | Docker |
-| Orchestration | Kubernetes |
+The NestJS backend is organized into feature-based modules:
+
+- **Events**: Event retrieval, availability, and natural-language search
+- **Venues**: Venue retrieval
+- **Bookings**: Booking creation, cancellation, and booking history
+- **Database**: PostgreSQL database connection and access
+
+The backend exposes the REST API, validates requests, applies business rules,
+and coordinates database operations.
+
+
+### Database
+
+PostgreSQL stores users, venues, events, and bookings.
+Primary keys, foreign keys, constraints, and indexes support data integrity.
+Booking operations use database transactions and row-level locking to help
+prevent conflicting operations and concurrent overbooking.
+
+### Request Flow
+
+A typical request follows this path:
+
+```text
+React Frontend
+      │
+      ▼
+REST API Request
+      │
+      ▼
+NestJS Controller
+      │
+      ▼
+NestJS Service
+      │
+      ▼
+PostgreSQL
+      │
+      ▼
+Response to Frontend
+```
+
+- The controller receives the request and delegates processing to the appropriate service.
+- The service applies business rules and coordinates database operations, such as reading from and writing to the database.
+- The controller then returns the backend response to the frontend.
+
+
+### Why Event-Driven Architecture?
+
+The planned event-driven architecture aims to decouple booking operations from
+downstream services.
+
+For example, after a booking is created, the booking service could publish a
+`booking.created` event to Kafka.
+Independent notification and analytics services could process that event
+without requiring the booking service to call each consumer service directly.
+
+This would make it easier to add downstream functionality while keeping the
+core booking workflow less tightly coupled.
 
 
 ## Project Structure
@@ -199,292 +295,9 @@ I organize automated tests by scope, including unit, integration, and end-to-end
 
 I keep additional development documentation in the numbered documentation directories, covering API design, data modeling, architecture, technology choices, and project planning.
 
-
-## Prerequisites
-
-Before running the project, I require the following software:
-
-- **Node.js 20.19.0 or later**: required by Prisma 7 and Vite 8.
-- **npm**: used to install dependencies and run the project scripts.
-- **PostgreSQL**: used as the application's relational database.
-- **Git**: used to clone the repository and manage the project source code.
-
-I recommend using an active LTS version of Node.js, such as Node.js 22.x.
-Prisma currently recommends Node.js 22.x for Prisma 7.
-
-
-## Installation
-
-Clone the repository and navigate to the project directory:
-
-```bash
-git clone <repository-url>
-cd <project-directory>
-```
-
-Install the root project dependencies:
-
-```bash
-npm install
-```
-
-Install the frontend dependencies:
-
-```bash
-cd "3. frontend"
-npm install
-cd ..
-```
-
-Install the backend dependencies:
-
-```bash
-cd "4. backend"
-npm install
-cd ..
-```
-
-After installation, configure the environment variables and database before running the application.
-
-
-## Environment Configuration
-
-I use environment variables to configure the PostgreSQL database connection.
-
-Copy the example environment file:
-
-```bash
-cp .env.example .env
-```
-
-Then update `.env` with the PostgreSQL credentials for your local database:
-
-```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=booking_system
-DB_USER=<your-postgresql-username>
-DB_PASSWORD=<your-postgresql-password>
-```
-
-The environment variables control the following database connection settings:
-
-| Variable | Description | Default |
-| --- | --- | --- |
-| `DB_HOST` | PostgreSQL server host | `localhost` |
-| `DB_PORT` | PostgreSQL server port | `5432` |
-| `DB_NAME` | Application database name | `booking_system` |
-| `DB_USER` | PostgreSQL username | — |
-| `DB_PASSWORD` | PostgreSQL password | — |
-
-
-I keep `.env` out of version control and use `.env.example` as the template for local configuration.
-
-
-## Database Setup
-
-I use PostgreSQL as the application's relational database.
-
-The database setup files are located in `2. data model/`:
-
-- `setup.sh` — database setup script
-- `setup.sql` — database setup SQL
-- `schema.sql` — database schema
-- `seed data/seed.sql` — test and development seed data
-- `reset.sql` — database reset script
-
-### Option 1: Using `setup.sh`
-
-Run the shell script from the `2. data model` directory:
-
-```bash
-cd "2. data model"
-./setup.sh
-```
-
-### Option 2: Manually through `psql`
-
-Start PostgreSQL:
-```bash
-psql
-```
-
-Create and connect to the application database:
-```sql
-CREATE DATABASE booking_system;
-\c booking_system
-```
-
-Load the database schema and seed data:
-```text
-\i schema.sql
-\i "seed data/seed.sql"
-```
-
-### Connecting to the Database Later
-
-```bash
-psql booking_system
-```
-
-### Viewing Tables
-
-List the tables in the database with:
-```text
-\dt
-```
-
-After the database has been initialized, the application can connect to PostgreSQL 
-using the credentials configured in `.env`.
-
-
-## Running the Application
-
-I run the frontend and backend separately during development.
-
-
-### Start the Backend
-
-From the project root, run:
-
-```bash
-npm run start --prefix "4. backend"
-```
-
-For development mode with automatic reload:
-
-```bash
-npm run start:dev --prefix "4. backend"
-```
-
-The backend runs on `http://localhost:3000`.
-
-
-### Start the Frontend
-
-From the project root, run:
-
-```bash
-npm run dev --prefix "3. frontend"
-```
-
-The frontend runs on the URL provided by Vite,
-typically `http://localhost:5173`.
-
-Once both servers are running, open the frontend URL in 
-a browser to use the application.
-
-
-## Testing
-
-I organize automated tests into four categories:
-
-- **Backend tests**: unit and API tests for backend services and endpoints
-- **Frontend tests**: component and page tests using Vitest
-- **Integration tests**: tests backend services against a test PostgreSQL database
-- **End-to-end tests**: tests complete application workflows against a test PostgreSQL database
-
-### Run All Tests
-
-Run the complete test suite from the project root:
-
-```bash
-npm test
-```
-
-### Run Specific Test Suites
-
-| Test suite | Command |
-| --- | --- |
-| Backend | `npm run test:backend` |
-| Frontend | `npm run test:frontend` |
-| Integration | `npm run test:integration` |
-| End-to-end | `npm run test:e2e` |
-
-The integration and end-to-end test commands automatically set 
-up the `booking_system_test` database before running their 
-respective test suites.
-
-
-### Test Coverage
-
-Run all backend and frontend coverage reports from the project root:
-
-```
-npm run coverage
-```
-
-This runs the backend Jest coverage suite followed by the frontend 
-Vitest coverage suite.
-
-#### Backend
-
-| Metric | Coverage |
-|---|---:|
-| Statements | 91.63% |
-| Branches | 87.70% |
-| Functions | 87.03% |
-| Lines | 90.39% |
-
-- **Test suites:** 17/17 passed
-- **Tests:** 75/75 passed
-
-#### Frontend
-
-| Metric | Coverage |
-|---|---:|
-| Statements | 93.20% |
-| Branches | 87.20% |
-| Functions | 90.90% |
-| Lines | 93.16% |
-
-- **Test files:** 11/11 passed
-- **Tests:** 52/52 passed
-
-Coverage is reported by Jest for the backend and Vitest with the V8 coverage 
-provider for the frontend. Aggregate figures include test-support files and 
-other files included by each coverage configuration.
-
-**Detailed HTML reports:** [Backend](YOUR_BACKEND_REPORT_URL) · [Frontend](YOUR_FRONTEND_REPORT_URL)
-
-
-## Linting
-
-I use ESLint to check the frontend and backend code.
-
-Run linting for the entire project from the project root:
-
-```bash
-npm run lint
-```
-
-### Run Specific Linters
-
-| Target | Command |
-| --- | --- |
-| Backend | `npm run lint:backend` |
-| Frontend | `npm run lint:frontend` |
-
-
-## Building
-
-I use the root build script to build both the backend and frontend:
-
-```bash
-npm run build
-```
-
-### Build Specific Projects
-
-| Target | Command |
-| --- | --- |
-| Backend | `npm run build:backend` |
-| Frontend | `npm run build:frontend` |
-
-
 ## API Endpoints
 
-I expose the application's functionality through a REST API implemented with NestJS.
+The application exposes its functionality through a REST API implemented with NestJS.
 
 ### User Endpoints
 
@@ -522,7 +335,7 @@ Example request body:
 The endpoint returns a `400 Bad Request` if:
 - `query` is missing,
 - `query` is empty,
-- `query` is not a string, or 
+- `query` is not a string, or
 - `query` is longer than 500 characters.
 
 ### Venue Endpoints
@@ -539,87 +352,196 @@ The endpoint returns a `400 Bad Request` if:
 | `DELETE` | `/bookings/:id` | Cancel a booking |
 
 
-## Architecture
+## Database Setup
 
-The application currently uses a layered full-stack architecture:
-a React frontend communicates with a NestJS backend through a REST API, and 
-the backend accesses PostgreSQL to retrieve and persist application data. 
+- `setup.sh` — drops and recreates `booking_system`, then loads the schema and seed data. It does not create indexes or run constraint tests.
+- `setup.sql` — loads the schema, indexes, seed data, and constraint tests into an existing database.
+- `schema.sql` — defines the database schema.
+- `seed data/seed.sql` — provides seed data for development and testing.
+- `reset.sql` — drops the application tables, then reruns `setup.sql` to restore the schema, indexes, seed data, and constraint tests. It does not drop or recreate the database itself.
 
-NOTE: I plan to add event-driven processing with Kafka in a future phase.
+### Option 1: Using `setup.sh`
 
+Run the shell script from the `2. data model` directory:
 
-### Frontend
-
-I built the frontend with React and TypeScript using Vite.
-The frontend provides the user interface for browsing events and venues, 
-creating bookings, checking event availability, and viewing booking history.
-It also communicates with the backend through REST API requests.
-
-
-### Backend
-
-I built the backend with NestJS and organized it into feature-based modules:
-
-- **Events**: event retrieval, availability, and natural-language search
-- **Venues**: venue retrieval
-- **Bookings**: booking creation, cancellation, and booking history
-- **Database**: PostgreSQL database connection and access
-
-The backend:
-- exposes the REST API that the frontend also uses,
-- validates requests,
-- applies business rules, and
-- coordinates database operations.
-
-
-### Database
-
-I use PostgreSQL to store users, venues, events, and bookings.
-The database schema uses primary keys, foreign keys, constraints, and indexes to 
-support data integrity.
-Booking operations also use database transactions and row-level locking to 
-protect against double-booking and conflicting operations.
-
-### Request Flow
-
-A typical request follows this flow:
-
-```text
-React Frontend
-      │
-      ▼
-REST API Request
-      │
-      ▼
-NestJS Controller
-      │
-      ▼
-NestJS Service
-      │
-      ▼
-PostgreSQL
-      │
-      ▼
-Response to Frontend
+```bash
+cd "2. data model"
+./setup.sh
 ```
 
-- The controller receives the request and delegates processing to the appropriate service.
-- The service applies business rules and coordinates database operations, such as reading from and writing to the database.
-- Then the backend returns the result through the controller to the frontend.
+**Warning:** This script drops and recreates `booking_system`, deleting its existing data.
+Use it only when you intend to reset that database.
 
 
-### Why Event-Driven Architecture?
+### Option 2: Manually through `psql`
 
-The planned event-driven architecture aims to decouple booking operations from 
-downstream services.
+Run the following commands from the project root to switch to the database directory before starting `psql`:
+```bash
+cd "2. data model"
+```
 
-For example, when a booking is created, the booking service could publish a
-`booking.created` event to Kafka. Separate notification and analytics services
-could consume that event independently without requiring the booking service to
-directly call each service.
+Start PostgreSQL:
+```bash
+psql
+```
 
-This would allow the system to add downstream functionality without tightly
-coupling it to the core booking workflow.
+Create the application database and connect to it.
+If `booking_system` already exists, skip the `CREATE DATABASE` command and
+connect to the existing database instead:
+```sql
+CREATE DATABASE booking_system;
+\c booking_system
+```
+
+**Warning:** These commands are intended for a fresh development or test database.
+If `booking_system` already contains data, use a separate test database rather
+than rerunning the setup scripts against it.
+
+Load the schema, indexes, seed data, and constraint tests:
+```text
+\i setup.sql
+```
+
+Note: The constraint-test scripts perform database operations to
+verify constraint enforcement.
+Run them only in a development or test database, not against
+production data.
+
+### Connecting to the Database Later
+
+```bash
+psql booking_system
+```
+
+### Viewing Tables
+
+List the tables in the database with:
+```text
+\dt
+```
+
+After initialization, configure the database connection variables in `.env` so the backend can connect to PostgreSQL.
+
+
+## Testing
+
+I organize automated tests into four categories:
+
+- **Backend tests**: unit and API tests for backend services and endpoints
+- **Frontend tests**: component and page tests using Vitest
+- **Integration tests**: tests backend services against a test PostgreSQL database
+- **End-to-end tests**: tests complete application workflows against a test PostgreSQL database
+
+### Run All Tests
+
+Run the complete test suite from the project root:
+
+```bash
+npm test
+```
+
+### Run Specific Test Suites
+
+| Test suite | Command |
+| --- | --- |
+| Backend | `npm run test:backend` |
+| Frontend | `npm run test:frontend` |
+| Integration | `npm run test:integration` |
+| End-to-end | `npm run test:e2e` |
+
+The integration and end-to-end test commands automatically set
+up the `booking_system_test` database before running their
+respective test suites.
+
+
+### Test Coverage
+
+Run all backend and frontend coverage reports from the project root:
+
+```
+npm run coverage
+```
+
+This runs the backend Jest coverage suite followed by the frontend
+Vitest coverage suite.
+
+View the latest published reports:
+- [Backend coverage](https://dannychen27.github.io/Event-Driven-Booking-System/backend/)
+- [Frontend coverage](https://dannychen27.github.io/Event-Driven-Booking-System/frontend/)
+- [GitHub Actions runs](https://github.com/dannychen27/Event-Driven-Booking-System/actions/workflows/coverage-pages.yml)
+
+#### Backend
+
+| Metric | Coverage |
+|---|---:|
+| Statements | 93.73% |
+| Branches | 92.38% |
+| Functions | 89.55% |
+| Lines | 92.95% |
+
+- **Test suites:** 18/18 passed
+- **Tests:** 112/112 passed
+
+#### Frontend
+
+| Metric | Coverage |
+|---|---:|
+| Statements | 96.69% |
+| Branches | 85.82% |
+| Functions | 93.75% |
+| Lines | 96.66% |
+
+- **Test files:** 12/12 passed
+- **Tests:** 76/76 passed
+
+#### Integration
+
+- **Test suites:** 1/1 passed
+- **Tests:** 3/3 passed
+
+#### End-to-End (E2E)
+
+- **Test suites:** 3/3 passed
+- **Tests:** 14/14 passed
+
+
+Coverage is reported by Jest for the backend and Vitest with the V8 coverage
+provider for the frontend. Aggregate figures include test-support files and
+other files included by each coverage configuration.
+
+
+## Linting
+
+I use ESLint to check the frontend and backend code.
+
+Run linting for the entire project from the project root:
+
+```bash
+npm run lint
+```
+
+### Run Specific Linters
+
+| Target | Command |
+| --- | --- |
+| Backend | `npm run lint:backend` |
+| Frontend | `npm run lint:frontend` |
+
+
+## Building
+
+I use the root build script to build both the backend and frontend:
+
+```bash
+npm run build
+```
+
+### Build Specific Projects
+
+| Target | Command |
+| --- | --- |
+| Backend | `npm run build:backend` |
+| Frontend | `npm run build:frontend` |
 
 
 ## Project Roadmap
@@ -640,7 +562,7 @@ I plan to develop the project in three major phases, with each phase building on
 
 ### Phase 1 Follow-up — AI-Powered Natural-Language Event Search
 
-The core search feature is implemented, but improvements to date interpretation, 
+The core search feature is implemented, but improvements to date interpretation,
 provider error handling, and rate limiting remain.
 
 - [ ] **Improve relative-date interpretation**
@@ -737,7 +659,7 @@ Notifications   C++ Analytics
 - [ ] Expand project documentation
 
 
-I intend to stop once these phases are complete rather than continuously 
+I intend to stop once these phases are complete rather than continuously
 adding infrastructure and services beyond the project's core goals.
 
 
@@ -754,6 +676,7 @@ Successful live operation remains unverified.
 - The remaining findings are in development dependencies. The suggested automatic remediation involves a potentially breaking `ts-jest` downgrade, so it has not been applied.
 - Backend and frontend tests, end-to-end tests, integration tests, linting, and production builds pass with the current dependency versions.
 
-- Authentication and authorization are not yet implemented at the application level
-- Kafka-based event processing is planned for Phase 2
-- The current deployment workflow is intended for local development
+- Authentication is not implemented.
+The booking service checks that the supplied user ID owns a booking before cancellation, but requests do not establish that the caller is actually that user.
+- Kafka-based event processing is planned for Phase 2.
+- The current deployment workflow is intended for local development.
