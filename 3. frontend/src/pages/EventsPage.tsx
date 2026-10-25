@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import type { Event } from "../types/Event";
-import "../styles/events-page.css";
-import "../styles/event-search-bar.css";
-import "../styles/ai-search-bar.css";
-import "../styles/event-search-shared.css";
+import "../styles/pages/events-page.css";
+import "../styles/search/event-search-bar.css";
+import "../styles/search/ai-search-bar.css";
+import "../styles/shared/event-search-bar-shared.css";
 import { getEvents, searchEvents, searchEventsNaturalLanguage, } from "../api/events";
 import EventCard from "../components/EventCard";
 

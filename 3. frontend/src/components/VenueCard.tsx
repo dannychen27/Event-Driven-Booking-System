@@ -1,5 +1,5 @@
 import type { Venue } from "../types/Venue.ts";
-import "../styles/venue-card.css";
+import "../styles/venues/venue-card.css";
 
 
 interface VenueCardProps {
