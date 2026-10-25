@@ -1,12 +1,19 @@
 const fs = require("node:fs");
 const path = require("node:path");
+const { execFileSync } = require("node:child_process");
 
 const ROOT_DIR = path.resolve(__dirname, "..");
 const SITE_DIR = path.join(ROOT_DIR, "site");
 
-const COVERAGE_REPORTS = {
-  backend: path.join(ROOT_DIR, "4. backend/coverage/lcov.info"),
-  frontend: path.join(ROOT_DIR, "3. frontend/coverage/lcov.info"),
+const COVERAGE_SUMMARIES = {
+  backend: path.join(
+      ROOT_DIR,
+      "4. backend/coverage/coverage-summary.json"
+  ),
+  frontend: path.join(
+      ROOT_DIR,
+      "3. frontend/coverage/coverage-summary.json"
+  ),
 };
 
 function getTestReportPath(project) {
@@ -20,22 +27,37 @@ function readJsonFile(filename) {
   return JSON.parse(fs.readFileSync(filename, "utf8"));
 }
 
-function sumLcovValues(lines, prefix) {
-  return lines
-    .filter((line) => line.startsWith(prefix))
-    .reduce((sum, line) => sum + Number(line.slice(prefix.length)), 0);
-}
+function readCoverageSummary(filename) {
+  const report = readJsonFile(filename);
+  const total = report.total;
 
-function calculateLineCoverage(filename) {
-  const lines = fs.readFileSync(filename, "utf8").split(/\r?\n/);
-  const totalLines = sumLcovValues(lines, "LF:");
-  const coveredLines = sumLcovValues(lines, "LH:");
-
-  if (totalLines === 0) {
-    throw new Error(`No instrumented lines found in ${filename}`);
+  if (!total || typeof total !== "object") {
+    throw new Error(`Missing total coverage metrics in ${filename}`);
   }
 
-  return Number(((coveredLines / totalLines) * 100).toFixed(2));
+  const metrics = ["statements", "branches", "functions", "lines"];
+
+  for (const metric of metrics) {
+    const percentage = total[metric]?.pct;
+
+    if (
+        typeof percentage !== "number" ||
+        !Number.isFinite(percentage) ||
+        percentage < 0 ||
+        percentage > 100
+    ) {
+      throw new Error(
+          `Missing or invalid ${metric} coverage in ${filename}`
+      );
+    }
+  }
+
+  return {
+    statements: total.statements.pct,
+    branches: total.branches.pct,
+    functions: total.functions.pct,
+    lines: total.lines.pct,
+  };
 }
 
 function readTestCounts(filename) {
@@ -79,9 +101,25 @@ function getTorontoTimestamp(date) {
   }).format(date);
 }
 
+function getGitValue(args) {
+  try {
+    return execFileSync("git", args, {
+      cwd: ROOT_DIR,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+  } catch {
+    return "";
+  }
+}
+
 function createCoverageMetadata() {
   const backend = readTestCounts(getTestReportPath("backend"));
   const frontend = readTestCounts(getTestReportPath("frontend"));
+
+  const backendCoverage = readCoverageSummary(COVERAGE_SUMMARIES.backend);
+  const frontendCoverage = readCoverageSummary(COVERAGE_SUMMARIES.frontend);
+
   const now = new Date();
 
   function getRate(count, total) {
@@ -92,14 +130,30 @@ function createCoverageMetadata() {
     return `${count}/${total} (${getRate(count, total)}%)`;
   }
 
+  const commit =
+      process.env.GITHUB_SHA || getGitValue(["rev-parse", "HEAD"]) || "local";
+  const commitShort = commit === "local" ? "local" : commit.slice(0, 7);
+  const branch =
+      process.env.GITHUB_REF_NAME ||
+      getGitValue(["branch", "--show-current"]) ||
+      "local";
+
   return {
     generatedAt: now.toISOString(),
     generatedAtDisplay: getTorontoTimestamp(now),
-    commit: process.env.GITHUB_SHA || "local",
-    branch: process.env.GITHUB_REF_NAME || "local",
+    commit,
+    commitShort,
+    branch,
 
-    backendLines: calculateLineCoverage(COVERAGE_REPORTS.backend),
-    frontendLines: calculateLineCoverage(COVERAGE_REPORTS.frontend),
+    backendStatements: backendCoverage.statements,
+    backendBranches: backendCoverage.branches,
+    backendFunctions: backendCoverage.functions,
+    backendLines: backendCoverage.lines,
+
+    frontendStatements: frontendCoverage.statements,
+    frontendBranches: frontendCoverage.branches,
+    frontendFunctions: frontendCoverage.functions,
+    frontendLines: frontendCoverage.lines,
 
     backendTestsPassed: backend.passed,
     frontendTestsPassed: frontend.passed,
@@ -118,11 +172,22 @@ function createCoverageMetadata() {
     frontendTestsPassedDisplay: getTestDisplay(frontend.passed, frontend.total),
     frontendTestsFailedDisplay: getTestDisplay(frontend.failed, frontend.total),
 
+    totalTestsPassedDisplay: getTestDisplay(
+        backend.passed + frontend.passed,
+        backend.total + frontend.total
+    ),
+    totalTestsFailedDisplay: getTestDisplay(
+        backend.failed + frontend.failed,
+        backend.total + frontend.total
+    ),
+
     backendTestPassRate: getRate(backend.passed, backend.total),
     frontendTestPassRate: getRate(frontend.passed, frontend.total),
+    totalTestsPassRate: getRate(backend.passed + frontend.passed, backend.total + frontend.total),
 
     backendTestFailureRate: getRate(backend.failed, backend.total),
     frontendTestFailureRate: getRate(frontend.failed, frontend.total),
+    totalTestsFailureRate: getRate(backend.failed + frontend.failed, backend.total + frontend.total),
   };
 }
 
