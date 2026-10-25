@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import type { Event } from "../types/Event";
 import "../styles/events-page.css";
+import "../styles/ai-search-bar.css";
 import { getEvents, searchEvents, searchEventsNaturalLanguage, } from "../api/events";
 import EventCard from "../components/EventCard";
 
@@ -177,20 +178,30 @@ export default function EventsPage() {
                 </div>
             </form>
 
-            <form className="event-search-form" onSubmit={handleNaturalLanguageSearch}>
+            <form
+                className="event-search-form ai-search-form"
+                onSubmit={handleNaturalLanguageSearch}
+            >
                 <label htmlFor="natural-language-search">
                     Describe the events you're looking for
                 </label>
+
+                <p className="ai-search-help" id="natural-language-search-help">
+                    Describe a topic, date, or type of event in your own words.
+                    AI will interpret your request and find matching events.
+                </p>
+
                 <div className="event-search-controls">
                     <input
                         id="natural-language-search"
                         type="text"
                         value={naturalLanguageQuery}
+                        aria-describedby="natural-language-search-help"
                         onChange={(event) => {
                             setNaturalLanguageQuery(event.target.value);
                             setSearchError("");
                         }}
-                        placeholder="e.g. Find coffee events this weekend"
+                        placeholder="e.g. Find relaxed networking events next weekend"
                     />
                     <button type="submit" disabled={searching}>
                         {searching ? "Searching..." : "Ask AI"}
