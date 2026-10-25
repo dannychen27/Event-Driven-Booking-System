@@ -1,38 +1,8 @@
 import { GoogleGenAI } from '@google/genai';
+import { EventCandidate } from '../../events.types';
+import { EVENT_RANKING_SCHEMA } from './gemini-schemas';
+import { GeminiClient } from "./gemini.types";
 
-type EventCandidate = {
-  id: number;
-  name: string;
-  description?: string | null;
-  venue_name?: string | null;
-  venue_address?: string | null;
-  start_time?: string | Date;
-};
-
-type GeminiClient = {
-  models: {
-    generateContent: (args: {
-      model: string;
-      contents: string;
-      config: {
-        responseMimeType: string;
-        responseSchema: object;
-      };
-    }) => Promise<{ text?: string }>;
-  };
-};
-
-const EVENT_RANKING_SCHEMA = {
-  type: 'OBJECT',
-  properties: {
-    eventIds: {
-      type: 'ARRAY',
-      items: { type: 'INTEGER' },
-    },
-  },
-  required: ['eventIds'],
-  propertyOrdering: ['eventIds'],
-};
 
 export function parseRankedEventIds(
   response: string,

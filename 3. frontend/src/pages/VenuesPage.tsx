@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getVenues } from "../api/venues.ts";
 import type { Venue } from "../types/Venue.ts";
 import VenueCard from "../components/VenueCard.tsx";
-import "../styles/venues-page.css";
+import "../styles/pages/venues-page.css";
 
 
 export default function VenuesPage() {

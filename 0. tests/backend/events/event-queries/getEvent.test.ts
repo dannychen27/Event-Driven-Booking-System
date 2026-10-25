@@ -1,9 +1,9 @@
-import { EventsService } from "../../../4. backend/src/events/events.service";
+import { EventsService } from "../../../../4. backend/src/events/events.service";
 import {
     mockEventDoesNotExist,
     mockGetEvent
-} from "../helpers/eventsTestHelpers";
-import { expectNthQuery } from "../../utils/testHelpers";
+} from "../../helpers/eventsTestHelpers";
+import { expectNthQuery } from "../../../utils/testHelpers";
 
 
 describe("EventsService.getEvent", () => {

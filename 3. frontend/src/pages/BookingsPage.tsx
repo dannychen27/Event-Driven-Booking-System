@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { Booking } from "../types/Booking.ts";
 import { getBookingHistory } from "../api/bookings.ts";
 import BookingCard from "../components/BookingCard.tsx";
-import "../styles/booking-page.css";
+import "../styles/pages/booking-page.css";
 
 
 export default function BookingsPage() {

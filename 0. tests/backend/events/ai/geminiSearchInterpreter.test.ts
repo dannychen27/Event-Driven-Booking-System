@@ -1,7 +1,7 @@
 import {
     GeminiSearchInterpreter,
     parseNaturalLanguageSearchPlan,
-} from "../../../4. backend/src/events/gemini-search-interpreter";
+} from "../../../../4. backend/src/events/ai/gemini/gemini-search-interpreter";
 
 
 jest.mock('@google/genai', () => ({

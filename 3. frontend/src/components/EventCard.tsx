@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Event } from "../types/Event";
 import { createBooking, getBookingHistory } from "../api/bookings.ts";
-import "../styles/event-card.css";
+import "../styles/events/event-card.css";
 import { Modal } from "./Modal.tsx";
 import BookingForm from "./BookingForm.tsx";
 import { formatDate } from "../utils/Dates.ts";

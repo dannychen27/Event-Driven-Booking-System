@@ -1,8 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import type { Event } from "../types/Event";
-import "../styles/events-page.css";
-import { getEvents, searchEvents, searchEventsNaturalLanguage, } from "../api/events";
+import "../styles/pages/events-page.css";
+import {
+    getEvents,
+    searchEvents,
+    searchEventsNaturalLanguage,
+} from "../api/events";
 import EventCard from "../components/EventCard";
+import EventSearchForm from "../components/EventSearchForm.tsx";
+import AiSearchForm from "../components/AiSearchForm";
 
 
 export default function EventsPage() {
@@ -13,9 +19,9 @@ export default function EventsPage() {
     const [searching, setSearching] = useState(false);
     const [searchError, setSearchError] = useState("");
     const [isSearchActive, setIsSearchActive] = useState(false);
-    const searchRequestId = useRef(0);
-
     const [naturalLanguageQuery, setNaturalLanguageQuery] = useState("");
+
+    const searchRequestId = useRef(0);
 
     useEffect(() => {
         async function fetchEvents() {
@@ -26,7 +32,7 @@ export default function EventsPage() {
                 setError(
                     error instanceof Error
                         ? error.message
-                        : "Failed to load events"
+                        : "Failed to load events",
                 );
             } finally {
                 setLoading(false);
@@ -36,7 +42,9 @@ export default function EventsPage() {
         void fetchEvents();
     }, []);
 
-    async function handleSearch(event: React.FormEvent<HTMLFormElement>) {
+    async function handleSearch(
+        event: React.FormEvent<HTMLFormElement>,
+    ) {
         event.preventDefault();
 
         const trimmedKeyword = keyword.trim();
@@ -46,6 +54,7 @@ export default function EventsPage() {
         }
 
         const requestId = ++searchRequestId.current;
+
         setSearching(true);
         setSearchError("");
         setIsSearchActive(true);
@@ -53,13 +62,15 @@ export default function EventsPage() {
         try {
             const results = await searchEvents(trimmedKeyword);
             if (requestId !== searchRequestId.current) return;
+
             setEvents(results);
         } catch (error) {
             if (requestId !== searchRequestId.current) return;
+
             setSearchError(
                 error instanceof Error
                     ? error.message
-                    : "Failed to search events"
+                    : "Failed to search events",
             );
         } finally {
             if (requestId === searchRequestId.current) {
@@ -68,16 +79,21 @@ export default function EventsPage() {
         }
     }
 
-    async function handleNaturalLanguageSearch(event: React.FormEvent<HTMLFormElement>,) {
+    async function handleNaturalLanguageSearch(
+        event: React.FormEvent<HTMLFormElement>,
+    ) {
         event.preventDefault();
 
         const query = naturalLanguageQuery.trim();
         if (!query) {
-            setSearchError("Enter a description of the events you're looking for.");
+            setSearchError(
+                "Enter a description of the events you're looking for.",
+            );
             return;
         }
 
         const requestId = ++searchRequestId.current;
+
         setSearching(true);
         setSearchError("");
         setIsSearchActive(true);
@@ -85,9 +101,11 @@ export default function EventsPage() {
         try {
             const results = await searchEventsNaturalLanguage(query);
             if (requestId !== searchRequestId.current) return;
+
             setEvents(results);
         } catch (error) {
             if (requestId !== searchRequestId.current) return;
+
             setSearchError(
                 error instanceof Error
                     ? error.message
@@ -102,6 +120,7 @@ export default function EventsPage() {
 
     async function handleClearSearch() {
         const requestId = ++searchRequestId.current;
+
         setKeyword("");
         setNaturalLanguageQuery("");
         setSearchError("");
@@ -111,13 +130,15 @@ export default function EventsPage() {
         try {
             const results = await getEvents();
             if (requestId !== searchRequestId.current) return;
+
             setEvents(results);
         } catch (error) {
             if (requestId !== searchRequestId.current) return;
+
             setSearchError(
                 error instanceof Error
                     ? error.message
-                    : "Failed to load events"
+                    : "Failed to load events",
             );
         } finally {
             if (requestId === searchRequestId.current) {
@@ -138,66 +159,50 @@ export default function EventsPage() {
         <div className="events-page">
             <h1>Events</h1>
 
+            <EventSearchForm
+                keyword={keyword}
+                searching={searching}
+                isSearchActive={isSearchActive}
+                onKeywordChange={(value) => {
+                    setKeyword(value);
+                    setSearchError("");
+                }}
+                onSearch={handleSearch}
+                onClearQuery={() => {
+                    setKeyword("");
+                    setSearchError("");
+                }}
+                onClearSearch={handleClearSearch}
+            />
 
-            <form className="event-search-form" onSubmit={handleSearch}>
-                <label htmlFor="event-search">Search events</label>
-                <div className="event-search-controls">
-                    <input
-                        id="event-search"
-                        type="text"
-                        value={keyword}
-                        onChange={(event) => {
-                            setKeyword(event.target.value);
-                            setSearchError("");
-                        }}
-                        placeholder="e.g. Meet and Greet"
-                    />
-                    <button type="submit" disabled={searching}>
-                        {searching ? "Searching..." : "Search"}
-                    </button>
-                    {isSearchActive && (
-                        <button
-                            className="clear-search-button"
-                            type="button"
-                            onClick={handleClearSearch}
-                            disabled={searching}
-                        >
-                            Clear search
-                        </button>
-                    )}
-                </div>
-            </form>
-
-            <form className="event-search-form" onSubmit={handleNaturalLanguageSearch}>
-                <label htmlFor="natural-language-search">
-                    Describe the events you're looking for
-                </label>
-                <div className="event-search-controls">
-                    <input
-                        id="natural-language-search"
-                        type="text"
-                        value={naturalLanguageQuery}
-                        onChange={(event) => {
-                            setNaturalLanguageQuery(event.target.value);
-                            setSearchError("");
-                        }}
-                        placeholder="e.g. Find coffee events this weekend"
-                    />
-                    <button type="submit" disabled={searching}>
-                        {searching ? "Searching..." : "Ask AI"}
-                    </button>
-                </div>
-            </form>
+            <AiSearchForm
+                query={naturalLanguageQuery}
+                searching={searching}
+                onQueryChange={(value) => {
+                    setNaturalLanguageQuery(value);
+                    setSearchError("");
+                }}
+                onSearch={handleNaturalLanguageSearch}
+                onClearQuery={() => {
+                    setNaturalLanguageQuery("");
+                    setSearchError("");
+                }}
+            />
 
             {searchError && <p role="alert">{searchError}</p>}
             {searching && <p role="status">Searching events...</p>}
 
-            {!searching && events.length === 0
-                ? <p>{isSearchActive ? "No matching events found." : "No available events right now."}</p>
-                : events.map((event) => (
+            {!searching && events.length === 0 ? (
+                <p>
+                    {isSearchActive
+                        ? "No matching events found."
+                        : "No available events right now."}
+                </p>
+            ) : (
+                events.map((event) => (
                     <EventCard key={event.id} event={event} />
                 ))
-            }
+            )}
         </div>
     );
 }
