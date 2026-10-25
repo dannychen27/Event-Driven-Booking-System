@@ -362,6 +362,55 @@ describe("EventsPage", () => {
         expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });
 
+    it("fills the AI input from an example without submitting a search", async () => {
+        vi.mocked(getEvents).mockResolvedValue([]);
+
+        render(<EventsPage />);
+
+        const input = await screen.findByLabelText(
+            "Describe the events you're looking for",
+        );
+
+        fireEvent.click(
+            screen.getByRole("button", {
+                name: "Find coffee meetups this weekend",
+            }),
+        );
+
+        expect(input).toHaveValue(
+            "Find coffee meetups this weekend",
+        );
+        expect(searchEventsNaturalLanguage).not.toHaveBeenCalled();
+    });
+
+    it("clears only the AI query without submitting or resetting results", async () => {
+        const events = [
+            {
+                id: 1,
+                name: "Coffee Meetup",
+            },
+        ] as Event[];
+
+        vi.mocked(getEvents).mockResolvedValue(events);
+
+        render(<EventsPage />);
+
+        const input = await screen.findByLabelText(
+            "Describe the events you're looking for",
+        );
+
+        fireEvent.change(input, {
+            target: { value: "Find coffee events" },
+        });
+
+        fireEvent.click(
+            screen.getByRole("button", { name: "Clear query" }),
+        );
+
+        expect(input).toHaveValue("");
+        expect(searchEventsNaturalLanguage).not.toHaveBeenCalled();
+        expect(getEvents).toHaveBeenCalledTimes(1);
+    });
 
     it("clears both search inputs and restores all events", async () => {
         vi.mocked(getEvents).mockResolvedValue([
