@@ -2,12 +2,29 @@
 
 [![Coverage Reports](https://github.com/dannychen27/Event-Driven-Booking-System/actions/workflows/coverage-pages.yml/badge.svg)](https://github.com/dannychen27/Event-Driven-Booking-System/actions/workflows/coverage-pages.yml)
 [![Coverage updated](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.generatedAtDisplay&label=Coverage%20updated%20%28Toronto%20time%29&style=flat&cacheSeconds=300&v=2)](https://dannychen27.github.io/Event-Driven-Booking-System/)
+[![Coverage commit](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.commitShort&label=Coverage%20commit&style=flat&cacheSeconds=300)](https://github.com/dannychen27/Event-Driven-Booking-System/commits/main/)
+
+[![Total Tests Passed](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.totalTestsPassedDisplay&label=Total%20Tests%20Passed&style=flat&color=brightgreen&cacheSeconds=300)](https://dannychen27.github.io/Event-Driven-Booking-System/)
+[![Total Tests Failed](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.totalTestsFailedDisplay&label=Total%20Tests%20Failed&style=flat&color=red&cacheSeconds=300)](https://dannychen27.github.io/Event-Driven-Booking-System/)
 
 [![Backend passed](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.backendTestsPassedDisplay&label=Backend%20passed&style=flat&color=brightgreen&cacheSeconds=300)](https://dannychen27.github.io/Event-Driven-Booking-System/backend/)
 [![Backend failed](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.backendTestsFailedDisplay&label=Backend%20failed&style=flat&color=red&cacheSeconds=300)](https://dannychen27.github.io/Event-Driven-Booking-System/backend/)
 
+[![Backend Statements](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.backendStatements&label=Backend%20Statements&suffix=%25&style=flat&cacheSeconds=300)](https://dannychen27.github.io/Event-Driven-Booking-System/backend/)
+[![Backend Branches](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.backendBranches&label=Backend%20Branches&suffix=%25&style=flat&cacheSeconds=300)](https://dannychen27.github.io/Event-Driven-Booking-System/backend/)
+[![Backend Functions](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.backendFunctions&label=Backend%20Functions&suffix=%25&style=flat&cacheSeconds=300)](https://dannychen27.github.io/Event-Driven-Booking-System/backend/)
+[![Backend Lines](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.backendLines&label=Backend%20Lines&suffix=%25&style=flat&cacheSeconds=300)](https://dannychen27.github.io/Event-Driven-Booking-System/backend/)
+
 [![Frontend passed](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.frontendTestsPassedDisplay&label=Frontend%20passed&style=flat&color=brightgreen&cacheSeconds=300)](https://dannychen27.github.io/Event-Driven-Booking-System/frontend/)
 [![Frontend failed](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.frontendTestsFailedDisplay&label=Frontend%20failed&style=flat&color=red&cacheSeconds=300)](https://dannychen27.github.io/Event-Driven-Booking-System/frontend/)
+
+[![Frontend Statements](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.frontendStatements&label=Frontend%20Statements&suffix=%25&style=flat&cacheSeconds=300)](https://dannychen27.github.io/Event-Driven-Booking-System/frontend/)
+[![Frontend Branches](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.frontendBranches&label=Frontend%20Branches&suffix=%25&style=flat&cacheSeconds=300)](https://dannychen27.github.io/Event-Driven-Booking-System/frontend/)
+[![Frontend Functions](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.frontendFunctions&label=Frontend%20Functions&suffix=%25&style=flat&cacheSeconds=300)](https://dannychen27.github.io/Event-Driven-Booking-System/frontend/)
+[![Frontend Lines](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.frontendLines&label=Frontend%20Lines&suffix=%25&style=flat&cacheSeconds=300)](https://dannychen27.github.io/Event-Driven-Booking-System/frontend/)
+
+
+
 
 ## Overview
 
