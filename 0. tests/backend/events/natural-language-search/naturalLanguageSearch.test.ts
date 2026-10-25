@@ -1,7 +1,7 @@
 import {
     validateSearchFilters,
     validateNaturalLanguageSearchPlan,
-} from "../../../4. backend/src/events/natural-language-search";
+} from "../../../../4. backend/src/events/natural-language-search";
 
 describe("validateSearchFilters", () => {
 

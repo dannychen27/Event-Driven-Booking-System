@@ -1,5 +1,5 @@
-import { EventsService } from "../../../4. backend/src/events/events.service";
-import { expectNthQuery } from "../../utils/testHelpers";
+import { EventsService } from "../../../../4. backend/src/events/events.service";
+import { expectNthQuery } from "../../../utils/testHelpers";
 
 describe("EventsService.searchEvents", () => {
     let service: EventsService;

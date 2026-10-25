@@ -1,10 +1,10 @@
 import { ServiceUnavailableException } from '@nestjs/common';
-import { EventsService } from '../../../4. backend/src/events/events.service';
+import { EventsService } from '../../../../4. backend/src/events/events.service';
 
 
-import { GeminiEventRanker } from '../../../4. backend/src/events/gemini-event-ranker';
-import { GeminiSearchInterpreter } from '../../../4. backend/src/events/gemini-search-interpreter';
-import { NaturalLanguageSearchService } from '../../../4. backend/src/events/natural-language-search.service';
+import { GeminiEventRanker } from '../../../../4. backend/src/events/gemini-event-ranker';
+import { GeminiSearchInterpreter } from '../../../../4. backend/src/events/gemini-search-interpreter';
+import { NaturalLanguageSearchService } from '../../../../4. backend/src/events/natural-language-search.service';
 
 
 describe("NaturalLanguageSearchService", () => {
