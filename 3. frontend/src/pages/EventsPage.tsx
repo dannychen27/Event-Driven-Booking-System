@@ -3,6 +3,7 @@ import type { Event } from "../types/Event";
 import "../styles/events-page.css";
 import "../styles/event-search-bar.css";
 import "../styles/ai-search-bar.css";
+import "../styles/event-search-shared.css";
 import { getEvents, searchEvents, searchEventsNaturalLanguage, } from "../api/events";
 import EventCard from "../components/EventCard";
 
