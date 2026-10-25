@@ -29,7 +29,7 @@ export default defineConfig({
         testTimeout: 15000,
 
         coverage: {
-            reporter: ["text", "lcov", "html"],
+            reporter: ["text", "lcov", "html", "json-summary"],
             reportsDirectory: "./3. frontend/coverage",
         },
     },

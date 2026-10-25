@@ -22,6 +22,6 @@ module.exports = {
     },
 
     collectCoverage: true,
-    coverageReporters: ["text", "lcov", "html"],
+    coverageReporters: ["text", "lcov", "html", "json-summary"],
     coverageDirectory: "<rootDir>/4. backend/coverage",
 };
