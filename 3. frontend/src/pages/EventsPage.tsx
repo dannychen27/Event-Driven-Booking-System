@@ -175,6 +175,21 @@ export default function EventsPage() {
                     <button type="submit" disabled={searching}>
                         {searching ? "Searching..." : "Search"}
                     </button>
+
+                    {keyword.length > 0 && (
+                        <button
+                            type="button"
+                            className="ai-search-clear"
+                            disabled={searching}
+                            onClick={() => {
+                                setKeyword("");
+                                setSearchError("");
+                            }}
+                        >
+                            Clear query
+                        </button>
+                    )}
+
                     {isSearchActive && (
                         <button
                             className="clear-search-button"

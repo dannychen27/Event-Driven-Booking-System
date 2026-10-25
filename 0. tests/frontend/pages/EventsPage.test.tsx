@@ -96,6 +96,43 @@ describe("EventsPage", () => {
             .not.toBeInTheDocument();
     });
 
+    it("clears the keyword query without submitting or resetting results", async () => {
+        vi.mocked(getEvents).mockResolvedValue([
+            {
+                id: 1,
+                name: "Coffee Meetup",
+                venue_id: 2,
+                venue_name: "Moss Park Espresso",
+                venue_address: "185 Queen St E",
+                start_time: "2026-10-24T10:00:00Z",
+                end_time: "2026-10-24T11:00:00Z",
+                capacity: 10,
+            },
+        ]);
+
+        render(<EventsPage />);
+
+        expect(
+            await screen.findByText("Mock Event Card: Coffee Meetup"),
+        ).toBeInTheDocument();
+
+        const input = screen.getByLabelText("Search events");
+
+        fireEvent.change(input, {
+            target: { value: "Coffee" },
+        });
+
+        fireEvent.click(
+            screen.getByRole("button", { name: "Clear query" }),
+        );
+
+        expect(input).toHaveValue("");
+        expect(searchEvents).not.toHaveBeenCalled();
+        expect(getEvents).toHaveBeenCalledTimes(1);
+        expect(
+            screen.getByText("Mock Event Card: Coffee Meetup"),
+        ).toBeInTheDocument();
+    });
 
     it("searches events using the submitted keyword", async () => {
         vi.mocked(getEvents).mockResolvedValue([]);
