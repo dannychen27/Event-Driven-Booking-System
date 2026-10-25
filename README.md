@@ -1,6 +1,6 @@
 # Event-Driven Booking System
 
-[![Coverage Reports](https://github.com/dannychen27/Event-Driven-Booking-System/actions/workflows/coverage-pages.yml/badge.svg)](https://github.com/dannychen27/Event-Driven-Booking-System/actions/workflows/coverage-pages.yml)
+[![Coverage Reports](https://github.com/dannychen27/Event-Driven-Booking-System/actions/workflows/coverage-pages.yml/badge.svg)](https://github.com/dannychen27/Event-Driven-Booking-System/actions/workflows/coverage-pages.yml) [![Coverage updated](https://img.shields.io/badges/dynamic-json-badge?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.generatedAtDisplay&label=Coverage%20updated&style=flat&cacheSeconds=300)](https://dannychen27.github.io/Event-Driven-Booking-System/)
 
 ## Overview
 

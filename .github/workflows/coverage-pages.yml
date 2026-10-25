@@ -51,6 +51,15 @@ jobs:
           cp -R "4. backend/coverage/lcov-report/." site/backend/
           cp -R "3. frontend/coverage/lcov-report/." site/frontend/
 
+          cat > site/coverage-info.json <<EOF
+          {
+            "generatedAt": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')",
+            "generatedAtDisplay": "$(date -u +'%b %d, %Y')",
+            "commit": "${GITHUB_SHA}",
+            "branch": "${GITHUB_REF_NAME}"
+          }
+          EOF
+
           cat > site/index.html <<'EOF'
           <!doctype html>
           <html lang="en">
@@ -62,10 +71,53 @@ jobs:
             <body>
               <h1>Event-Driven Booking System</h1>
               <h2>Test Coverage Reports</h2>
+
+              <section aria-labelledby="freshness-heading">
+                <h3 id="freshness-heading">Coverage freshness</h3>
+                <p id="coverage-freshness">Loading deployment information...</p>
+              </section>
+
               <ul>
                 <li><a href="./backend/">Backend coverage report</a></li>
                 <li><a href="./frontend/">Frontend coverage report</a></li>
               </ul>
+
+              <script>
+                fetch("./coverage-info.json")
+                  .then((response) => {
+                    if (!response.ok) {
+                      throw new Error("Could not load coverage metadata");
+                    }
+                    return response.json();
+                  })
+                  .then((info) => {
+                    const timestamp = new Date(info.generatedAt);
+                    const dateText = timestamp.toLocaleString(undefined, {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                      timeZone: "UTC"
+                    }) + " UTC";
+
+                    const commitLink = document.createElement("a");
+                    commitLink.href =
+                      "https://github.com/dannychen27/Event-Driven-Booking-System/commit/" +
+                      encodeURIComponent(info.commit);
+                    commitLink.textContent = info.commit.slice(0, 7);
+
+                    const freshness =
+                      document.getElementById("coverage-freshness");
+
+                    freshness.replaceChildren(
+                      document.createTextNode("Last published: " + dateText + " · Commit: "),
+                      commitLink,
+                      document.createTextNode(" · Branch: " + info.branch)
+                    );
+                  })
+                  .catch(() => {
+                    document.getElementById("coverage-freshness").textContent =
+                      "Coverage deployment information is unavailable.";
+                  });
+              </script>
             </body>
           </html>
           EOF
