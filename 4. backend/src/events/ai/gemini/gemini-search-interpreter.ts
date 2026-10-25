@@ -1,31 +1,8 @@
 import { GoogleGenAI } from '@google/genai';
-import {
-  NaturalLanguageSearchPlan,
-  validateNaturalLanguageSearchPlan,
-} from './natural-language-search';
-
-type GeminiClient = {
-  models: {
-    generateContent: (args: {
-      model: string;
-      contents: string;
-      config: {
-        responseMimeType: string;
-        responseSchema: object;
-      };
-    }) => Promise<{ text?: string }>;
-  };
-};
-
-const NATURAL_LANGUAGE_SEARCH_SCHEMA = {
-  type: 'OBJECT',
-  properties: {
-    intent: { type: 'STRING' },
-    startAfter: { type: 'STRING' },
-    startBefore: { type: 'STRING' },
-  },
-  propertyOrdering: ['intent', 'startAfter', 'startBefore'],
-};
+import { NaturalLanguageSearchPlan } from '../../search/natural-language-search.types';
+import { validateNaturalLanguageSearchPlan } from '../../search/natural-language-search';
+import { NATURAL_LANGUAGE_SEARCH_SCHEMA } from './gemini-schemas';
+import { GeminiClient } from "./gemini.types";
 
 export function parseNaturalLanguageSearchPlan(
   response: string,

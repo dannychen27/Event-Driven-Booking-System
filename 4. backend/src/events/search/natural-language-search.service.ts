@@ -1,11 +1,10 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
-import { EventsService } from './events.service';
-import {
-  SearchFilters,
-  validateSearchFilters,
-} from './natural-language-search';
-import { GeminiSearchInterpreter } from './gemini-search-interpreter';
-import { GeminiEventRanker } from './gemini-event-ranker';
+import { EventsService } from '../events.service';
+
+import { SearchFilters, } from './natural-language-search.types';
+import { validateSearchFilters, } from './natural-language-search';
+import { GeminiSearchInterpreter } from '../ai/gemini/gemini-search-interpreter';
+import { GeminiEventRanker } from '../ai/gemini/gemini-event-ranker';
 
 @Injectable()
 export class NaturalLanguageSearchService {

@@ -2,7 +2,7 @@ import { BadRequestException } from "@nestjs/common";
 import { EventsController } from "../../../4. backend/src/events/events.controller";
 import { EventsService } from "../../../4. backend/src/events/events.service";
 
-import { NaturalLanguageSearchService } from "../../../4. backend/src/events/natural-language-search.service";
+import { NaturalLanguageSearchService } from "../../../4. backend/src/events/search/natural-language-search.service";
 
 
 describe("EventsController.searchEvents", () => {

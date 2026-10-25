@@ -1,16 +1,6 @@
+import { SearchFilters, NaturalLanguageSearchPlan } from './natural-language-search.types';
+
 const ALLOWED_FIELDS = new Set(['keyword', 'startAfter', 'startBefore']);
-
-export type SearchFilters = {
-  keyword?: string;
-  startAfter?: string;
-  startBefore?: string;
-};
-
-export type NaturalLanguageSearchPlan = {
-  intent?: string;
-  startAfter?: string;
-  startBefore?: string;
-};
 
 const ALLOWED_NATURAL_LANGUAGE_FIELDS = new Set([
   'intent',

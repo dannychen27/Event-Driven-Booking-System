@@ -1,7 +1,7 @@
 import {
     GeminiEventRanker,
     parseRankedEventIds,
-} from '../../../../4. backend/src/events/gemini-event-ranker';
+} from '../../../../4. backend/src/events/ai/gemini/gemini-event-ranker';
 
 
 jest.mock('@google/genai', () => ({

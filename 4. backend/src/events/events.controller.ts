@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { EventsService } from './events.service';
 
-import { NaturalLanguageSearchService } from './natural-language-search.service';
+import { NaturalLanguageSearchService } from './search/natural-language-search.service';
 
 @Controller('events')
 export class EventsController {
