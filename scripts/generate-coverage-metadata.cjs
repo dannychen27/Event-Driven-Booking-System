@@ -1,5 +1,6 @@
 const fs = require("node:fs");
 const path = require("node:path");
+const { execFileSync } = require("node:child_process");
 
 const ROOT_DIR = path.resolve(__dirname, "..");
 const SITE_DIR = path.join(ROOT_DIR, "site");
@@ -100,6 +101,18 @@ function getTorontoTimestamp(date) {
   }).format(date);
 }
 
+function getGitValue(args) {
+  try {
+    return execFileSync("git", args, {
+      cwd: ROOT_DIR,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+  } catch {
+    return "";
+  }
+}
+
 function createCoverageMetadata() {
   const backend = readTestCounts(getTestReportPath("backend"));
   const frontend = readTestCounts(getTestReportPath("frontend"));
@@ -117,11 +130,20 @@ function createCoverageMetadata() {
     return `${count}/${total} (${getRate(count, total)}%)`;
   }
 
+  const commit =
+      process.env.GITHUB_SHA || getGitValue(["rev-parse", "HEAD"]) || "local";
+  const commitShort = commit === "local" ? "local" : commit.slice(0, 7);
+  const branch =
+      process.env.GITHUB_REF_NAME ||
+      getGitValue(["branch", "--show-current"]) ||
+      "local";
+
   return {
     generatedAt: now.toISOString(),
     generatedAtDisplay: getTorontoTimestamp(now),
-    commit: process.env.GITHUB_SHA || "local",
-    branch: process.env.GITHUB_REF_NAME || "local",
+    commit,
+    commitShort,
+    branch,
 
     backendStatements: backendCoverage.statements,
     backendBranches: backendCoverage.branches,

@@ -1,8 +1,9 @@
 {
-  "generatedAt": "2026-10-25T06:29:28.796Z",
-  "generatedAtDisplay": "October 25, 2026 at 02:29:28 a.m.",
-  "commit": "local",
-  "branch": "local",
+  "generatedAt": "2026-10-25T06:42:47.118Z",
+  "generatedAtDisplay": "October 25, 2026 at 02:42:47 a.m.",
+  "commit": "d5a1c3c01ad17b7cde26a92e5593a1de112db3ff",
+  "commitShort": "d5a1c3c",
+  "branch": "feature/ai-integration",
   "backendStatements": 93.8,
   "backendBranches": 93.06,
   "backendFunctions": 89.55,
