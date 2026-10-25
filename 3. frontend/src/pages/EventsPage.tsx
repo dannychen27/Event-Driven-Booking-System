@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import type { Event } from "../types/Event";
 import "../styles/events-page.css";
 import { getEvents, searchEvents, searchEventsNaturalLanguage, } from "../api/events";
@@ -13,6 +13,7 @@ export default function EventsPage() {
     const [searching, setSearching] = useState(false);
     const [searchError, setSearchError] = useState("");
     const [isSearchActive, setIsSearchActive] = useState(false);
+    const searchRequestId = useRef(0);
 
     const [naturalLanguageQuery, setNaturalLanguageQuery] = useState("");
 
@@ -44,21 +45,28 @@ export default function EventsPage() {
             return;
         }
 
+        const requestId = ++searchRequestId.current;
+
         setSearching(true);
         setSearchError("");
         setIsSearchActive(true);
 
         try {
             const results = await searchEvents(trimmedKeyword);
+            if (requestId !== searchRequestId.current) return;
             setEvents(results);
         } catch (error) {
+            if (requestId !== searchRequestId.current) return;
+
             setSearchError(
                 error instanceof Error
                     ? error.message
                     : "Failed to search events"
             );
         } finally {
-            setSearching(false);
+            if (requestId === searchRequestId.current) {
+                setSearching(false);
+            }
         }
     }
 
@@ -71,25 +79,35 @@ export default function EventsPage() {
             return;
         }
 
+        const requestId = ++searchRequestId.current;
+
         setSearching(true);
         setSearchError("");
         setIsSearchActive(true);
 
         try {
             const results = await searchEventsNaturalLanguage(query);
+            if (requestId !== searchRequestId.current) return;
+
             setEvents(results);
         } catch (error) {
+            if (requestId !== searchRequestId.current) return;
+
             setSearchError(
                 error instanceof Error
                     ? error.message
                     : "Failed to search events with natural language",
             );
         } finally {
-            setSearching(false);
+            if (requestId === searchRequestId.current) {
+                setSearching(false);
+            }
         }
     }
 
     async function handleClearSearch() {
+        const requestId = ++searchRequestId.current;
+
         setKeyword("");
         setNaturalLanguageQuery("");
         setSearchError("");
@@ -97,15 +115,23 @@ export default function EventsPage() {
         setSearching(true);
 
         try {
-            setEvents(await getEvents());
+            const results = await getEvents();
+
+            if (requestId !== searchRequestId.current) return;
+
+            setEvents(results);
         } catch (error) {
+            if (requestId !== searchRequestId.current) return;
+
             setSearchError(
                 error instanceof Error
                     ? error.message
                     : "Failed to load events"
             );
         } finally {
-            setSearching(false);
+            if (requestId === searchRequestId.current) {
+                setSearching(false);
+            }
         }
     }
 

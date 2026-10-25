@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import EventsPage from "../../../3. frontend/src/pages/EventsPage";
 import { getEvents, searchEvents, searchEventsNaturalLanguage, } from "../../../3. frontend/src/api/events";
@@ -513,6 +513,86 @@ describe("EventsPage", () => {
 
         expect(screen.getByText("Mock Event Card: Initial Event"))
             .toBeInTheDocument();
+    });
+
+
+    it("does not let an older search overwrite newer results", async () => {
+        vi.mocked(getEvents).mockResolvedValue([]);
+
+        let resolveOlderSearch!: (events: Event[]) => void;
+        let resolveNewerSearch!: (events: Event[]) => void;
+
+        vi.mocked(searchEvents)
+            .mockReturnValueOnce(
+                new Promise<Event[]>((resolve) => {
+                    resolveOlderSearch = resolve;
+                }),
+            )
+            .mockReturnValueOnce(
+                new Promise<Event[]>((resolve) => {
+                    resolveNewerSearch = resolve;
+                }),
+            );
+
+        render(<EventsPage />);
+        await screen.findByText("No available events right now.");
+
+        const keywordInput = screen.getByLabelText("Search events");
+
+        fireEvent.change(keywordInput, {
+            target: { value: "Older query" },
+        });
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+        // Simulate a newer request entering the page through another path.
+        // The implementation must not rely solely on disabled UI controls.
+        fireEvent.change(keywordInput, {
+            target: { value: "Newer query" },
+        });
+
+        // Temporarily allow the second request to be initiated in this
+        // regression test, independently of the UI's disabled-button guard.
+        const keywordForm = keywordInput.closest("form");
+        if (!keywordForm) {
+            throw new Error("Keyword search form was not found");
+        }
+
+        const searchButton = within(keywordForm).getByRole("button", {
+            name: "Searching...",
+        });
+
+        searchButton.removeAttribute("disabled");
+        fireEvent.click(searchButton);
+
+        resolveNewerSearch([
+            {
+                id: 2,
+                name: "Newer Result",
+                venue_id: 1,
+                start_time: "2026-10-25T10:00:00Z",
+                end_time: "2026-10-25T11:00:00Z",
+                capacity: 10,
+            },
+        ]);
+
+        expect(await screen.findByText("Mock Event Card: Newer Result"))
+            .toBeInTheDocument();
+
+        resolveOlderSearch([
+            {
+                id: 1,
+                name: "Older Result",
+                venue_id: 1,
+                start_time: "2026-10-24T10:00:00Z",
+                end_time: "2026-10-24T11:00:00Z",
+                capacity: 10,
+            },
+        ]);
+
+        expect(await screen.findByText("Mock Event Card: Newer Result"))
+            .toBeInTheDocument();
+        expect(screen.queryByText("Mock Event Card: Older Result"))
+            .not.toBeInTheDocument();
     });
 });
 
