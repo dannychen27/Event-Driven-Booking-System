@@ -3,6 +3,12 @@
 [![Coverage Reports](https://github.com/dannychen27/Event-Driven-Booking-System/actions/workflows/coverage-pages.yml/badge.svg)](https://github.com/dannychen27/Event-Driven-Booking-System/actions/workflows/coverage-pages.yml)
 [![Coverage updated](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.generatedAtDisplay&label=Coverage%20updated%20%28Toronto%20time%29&style=flat&cacheSeconds=300&v=2)](https://dannychen27.github.io/Event-Driven-Booking-System/)
 
+[![Backend passed](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.backendTestsPassedDisplay&label=Backend%20passed&style=flat&color=brightgreen&cacheSeconds=300)](https://dannychen27.github.io/Event-Driven-Booking-System/backend/)
+[![Backend failed](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.backendTestsFailedDisplay&label=Backend%20failed&style=flat&color=red&cacheSeconds=300)](https://dannychen27.github.io/Event-Driven-Booking-System/backend/)
+
+[![Frontend passed](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.frontendTestsPassedDisplay&label=Frontend%20passed&style=flat&color=brightgreen&cacheSeconds=300)](https://dannychen27.github.io/Event-Driven-Booking-System/frontend/)
+[![Frontend failed](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.frontendTestsFailedDisplay&label=Frontend%20failed&style=flat&color=red&cacheSeconds=300)](https://dannychen27.github.io/Event-Driven-Booking-System/frontend/)
+
 ## Overview
 
 A full-stack event booking system built with React, NestJS, and PostgreSQL.

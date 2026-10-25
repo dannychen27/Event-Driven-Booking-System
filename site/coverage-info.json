@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-10-25T02:25:06.936Z",
-  "generatedAtDisplay": "October 24, 2026 at 10:25:06 p.m.",
-  "commit": "ff621072280bc37af637998700d1a83509f0aa68",
-  "branch": "main",
+  "generatedAt": "2026-10-25T02:43:06.968Z",
+  "generatedAtDisplay": "October 24, 2026 at 10:43:06 p.m.",
+  "commit": "local",
+  "branch": "local",
   "backendLines": 93,
   "frontendLines": 96.67,
   "backendTestsPassed": 117,
@@ -12,5 +12,13 @@
   "frontendTestsTotal": 81,
   "totalTests": 198,
   "backendTestsFailed": 0,
-  "frontendTestsFailed": 0
+  "frontendTestsFailed": 0,
+  "backendTestsPassedDisplay": "117/117 (100%)",
+  "backendTestsFailedDisplay": "0/117 (0%)",
+  "frontendTestsPassedDisplay": "81/81 (100%)",
+  "frontendTestsFailedDisplay": "0/81 (0%)",
+  "backendTestPassRate": 100,
+  "frontendTestPassRate": 100,
+  "backendTestFailureRate": 0,
+  "frontendTestFailureRate": 0
 }

@@ -84,6 +84,14 @@ function createCoverageMetadata() {
   const frontend = readTestCounts(getTestReportPath("frontend"));
   const now = new Date();
 
+  function getRate(count, total) {
+    return total === 0 ? 0 : Number(((count / total) * 100).toFixed(2));
+  }
+
+  function getTestDisplay(count, total) {
+    return `${count}/${total} (${getRate(count, total)}%)`;
+  }
+
   return {
     generatedAt: now.toISOString(),
     generatedAtDisplay: getTorontoTimestamp(now),
@@ -103,6 +111,18 @@ function createCoverageMetadata() {
 
     backendTestsFailed: backend.failed,
     frontendTestsFailed: frontend.failed,
+
+    backendTestsPassedDisplay: getTestDisplay(backend.passed, backend.total),
+    backendTestsFailedDisplay: getTestDisplay(backend.failed, backend.total),
+
+    frontendTestsPassedDisplay: getTestDisplay(frontend.passed, frontend.total),
+    frontendTestsFailedDisplay: getTestDisplay(frontend.failed, frontend.total),
+
+    backendTestPassRate: getRate(backend.passed, backend.total),
+    frontendTestPassRate: getRate(frontend.passed, frontend.total),
+
+    backendTestFailureRate: getRate(backend.failed, backend.total),
+    frontendTestFailureRate: getRate(frontend.failed, frontend.total),
   };
 }
 
