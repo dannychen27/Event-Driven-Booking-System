@@ -1,7 +1,11 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import EventsPage from "../../../3. frontend/src/pages/EventsPage";
-import { getEvents, searchEvents, searchEventsNaturalLanguage, } from "../../../3. frontend/src/api/events";
+import {
+    getEvents,
+    searchEvents,
+    searchEventsNaturalLanguage,
+} from "../../../3. frontend/src/api/events";
 import type { Event } from "../../../3. frontend/src/types/Event";
 
 
@@ -231,7 +235,7 @@ describe("EventsPage", () => {
             name: "Searching...",
         });
         expect(searchingButtons).toHaveLength(2);
-        searchingButtons.forEach((button) => {
+        searchingButtons.forEach((button: HTMLElement) => {
             expect(button).toBeDisabled();
         });
         expect(searchEventsNaturalLanguage).toHaveBeenCalledTimes(1);
@@ -533,13 +537,11 @@ describe("EventsPage", () => {
                 capacity: 10,
             },
         ]);
-
         vi.mocked(searchEvents).mockRejectedValue(
             new Error("Failed to search events"),
         );
 
         render(<EventsPage />);
-
         expect(await screen.findByText("Mock Event Card: Initial Event"))
             .toBeInTheDocument();
 
@@ -550,13 +552,12 @@ describe("EventsPage", () => {
 
         expect(await screen.findByRole("alert"))
             .toHaveTextContent("Failed to search events");
-
         expect(screen.getByText("Mock Event Card: Initial Event"))
             .toBeInTheDocument();
     });
 
-
     it("does not let an older search overwrite newer results", async () => {
+        // Arrange: prepare two searches whose completion order we control.
         vi.mocked(getEvents).mockResolvedValue([]);
 
         let resolveOlderSearch!: (events: Event[]) => void;
@@ -579,19 +580,18 @@ describe("EventsPage", () => {
 
         const keywordInput = screen.getByLabelText("Search events");
 
+        // Act 1: start the older search.
         fireEvent.change(keywordInput, {
             target: { value: "Older query" },
         });
         fireEvent.click(screen.getByRole("button", { name: "Search" }));
 
-        // Simulate a newer request entering the page through another path.
-        // The implementation must not rely solely on disabled UI controls.
+        // Act 2: start a newer search while the older request is pending.
+        // Bypass the disabled button to simulate overlapping requests.
         fireEvent.change(keywordInput, {
             target: { value: "Newer query" },
         });
 
-        // Temporarily allow the second request to be initiated in this
-        // regression test, independently of the UI's disabled-button guard.
         const keywordForm = keywordInput.closest("form");
         if (!keywordForm) {
             throw new Error("Keyword search form was not found");
@@ -600,39 +600,45 @@ describe("EventsPage", () => {
         const searchButton = within(keywordForm).getByRole("button", {
             name: "Searching...",
         });
-
         searchButton.removeAttribute("disabled");
         fireEvent.click(searchButton);
 
+        // Act 3: resolve the newer request first.
         resolveNewerSearch([
             {
                 id: 2,
                 name: "Newer Result",
                 venue_id: 1,
+                venue_name: "Test Venue",
+                venue_address: "123 Test Street",
                 start_time: "2026-10-25T10:00:00Z",
                 end_time: "2026-10-25T11:00:00Z",
                 capacity: 10,
             },
         ]);
 
+        // Assert: the newer results are published.
         expect(await screen.findByText("Mock Event Card: Newer Result"))
             .toBeInTheDocument();
 
+        // Act 4: resolve the older request after the newer one.
         resolveOlderSearch([
             {
                 id: 1,
                 name: "Older Result",
                 venue_id: 1,
+                venue_name: "Test Venue",
+                venue_address: "123 Test Street",
                 start_time: "2026-10-24T10:00:00Z",
                 end_time: "2026-10-24T11:00:00Z",
                 capacity: 10,
             },
         ]);
 
+        // Assert: the older results must not overwrite the newer results.
         expect(await screen.findByText("Mock Event Card: Newer Result"))
             .toBeInTheDocument();
         expect(screen.queryByText("Mock Event Card: Older Result"))
             .not.toBeInTheDocument();
     });
 });
-
