@@ -461,39 +461,6 @@ describe("EventsPage", () => {
         expect(getEvents).toHaveBeenCalledTimes(1);
     });
 
-    it("keeps the AI Clear query button visible and disables it when the query is empty", async () => {
-        render(<EventsPage />);
-
-        const aiInput = await screen.findByLabelText(
-            "Search with AI",
-        );
-        const aiForm = aiInput.closest("form");
-
-        expect(aiForm).not.toBeNull();
-
-        const clearButton = within(aiForm as HTMLFormElement).getByRole(
-            "button",
-            { name: "Clear query" },
-        );
-
-        // Visible and disabled when the input is empty.
-        expect(clearButton).toBeVisible();
-        expect(clearButton).toBeDisabled();
-
-        // Enabled after entering a query.
-        fireEvent.change(aiInput, {
-            target: { value: "Find events this weekend" },
-        });
-
-        expect(clearButton).toBeEnabled();
-
-        // Clearing removes only the AI query and disables the button again.
-        fireEvent.click(clearButton);
-
-        expect(aiInput).toHaveValue("");
-        expect(clearButton).toBeDisabled();
-    });
-
     it("clears both search inputs and restores all events", async () => {
         vi.mocked(getEvents).mockResolvedValue([
             {

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { Event } from "../types/Event";
 import "../styles/pages/events-page.css";
-import "../styles/search/ai-search-bar.css";
 import {
     getEvents,
     searchEvents,
@@ -9,6 +8,7 @@ import {
 } from "../api/events";
 import EventCard from "../components/EventCard";
 import EventSearchForm from "../components/EventSearchForm.tsx";
+import AiSearchForm from "../components/AiSearchForm";
 
 
 export default function EventsPage() {
@@ -175,67 +175,19 @@ export default function EventsPage() {
                 onClearSearch={handleClearSearch}
             />
 
-            <form
-                className="event-search-form ai-search-form"
-                onSubmit={handleNaturalLanguageSearch}
-            >
-                <label htmlFor="natural-language-search">
-                    Search with AI
-                </label>
-                <p className="ai-search-help">
-                    Describe the events you’re looking for in plain English.
-                </p>
-                <div className="ai-search-examples">
-                <span className="ai-search-examples-label">
-                    Try an example:
-                </span>
-                    {[
-                        "Find coffee meetups this weekend",
-                        "Show me tech networking events",
-                        "Find relaxed events next week",
-                    ].map((example) => (
-                        <button
-                            key={example}
-                            type="button"
-                            className="ai-search-example"
-                            disabled={searching}
-                            onClick={() => {
-                                setNaturalLanguageQuery(example);
-                                setSearchError("");
-                            }}
-                        >
-                            {example}
-                        </button>
-                    ))}
-                </div>
-
-                <div className="event-search-controls">
-                    <input
-                        id="natural-language-search"
-                        type="text"
-                        value={naturalLanguageQuery}
-                        onChange={(event) => {
-                            setNaturalLanguageQuery(event.target.value);
-                            setSearchError("");
-                        }}
-                        placeholder="e.g. Find events happening this weekend"
-                    />
-                    <button type="submit" disabled={searching}>
-                        {searching ? "Searching..." : "Ask AI"}
-                    </button>
-                    <button
-                        type="button"
-                        className="ai-search-clear"
-                        disabled={searching || naturalLanguageQuery.length === 0}
-                        onClick={() => {
-                            setNaturalLanguageQuery("");
-                            setSearchError("");
-                        }}
-                    >
-                        Clear query
-                    </button>
-                </div>
-            </form>
+            <AiSearchForm
+                query={naturalLanguageQuery}
+                searching={searching}
+                onQueryChange={(value) => {
+                    setNaturalLanguageQuery(value);
+                    setSearchError("");
+                }}
+                onSearch={handleNaturalLanguageSearch}
+                onClearQuery={() => {
+                    setNaturalLanguageQuery("");
+                    setSearchError("");
+                }}
+            />
 
             {searchError && <p role="alert">{searchError}</p>}
             {searching && <p role="status">Searching events...</p>}
