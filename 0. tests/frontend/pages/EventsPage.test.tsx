@@ -401,6 +401,46 @@ describe("EventsPage", () => {
         ).toHaveValue("");
     });
 
+    it("shows an error when clearing search fails to reload events", async () => {
+        vi.mocked(getEvents)
+            .mockResolvedValueOnce([
+                {
+                    id: 1,
+                    name: "Initial Event",
+                    description: "An initial event",
+                    date: "2026-11-01T10:00:00Z",
+                    venue_id: 1,
+                    capacity: 10,
+                },
+            ])
+            .mockRejectedValueOnce(new Error("Failed to reload events"));
+
+        vi.mocked(searchEvents).mockResolvedValue([]);
+
+        render(<EventsPage />);
+
+        expect(
+            await screen.findByText("Mock Event Card: Initial Event"),
+        ).toBeInTheDocument();
+
+        fireEvent.change(screen.getByLabelText("Search events"), {
+            target: { value: "Coffee" },
+        });
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+        expect(
+            await screen.findByText("No matching events found."),
+        ).toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole("button", { name: "Clear search" }));
+
+        expect(await screen.findByRole("alert"))
+            .toHaveTextContent("Failed to reload events");
+
+        expect(screen.queryByText("Loading events..."))
+            .not.toBeInTheDocument();
+    });
+
     it("clears the search error when the keyword input changes", async () => {
         vi.mocked(getEvents).mockResolvedValue([]);
         vi.mocked(searchEvents).mockRejectedValue(
