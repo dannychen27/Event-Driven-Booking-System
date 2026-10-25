@@ -122,8 +122,14 @@ describe("EventsPage", () => {
             target: { value: "Coffee" },
         });
 
+        const keywordForm = input.closest("form");
+        expect(keywordForm).not.toBeNull();
+
         fireEvent.click(
-            screen.getByRole("button", { name: "Clear query" }),
+            within(keywordForm as HTMLFormElement).getByRole(
+                "button",
+                { name: "Clear query" },
+            ),
         );
 
         expect(input).toHaveValue("");
@@ -133,6 +139,38 @@ describe("EventsPage", () => {
             screen.getByText("Mock Event Card: Coffee Meetup"),
         ).toBeInTheDocument();
     });
+
+    it("keeps the keyword Clear query button visible and disables it when the query is empty", async () => {
+        render(<EventsPage />);
+
+        const keywordInput = await screen.findByLabelText("Search events");
+        const keywordForm = keywordInput.closest("form");
+
+        expect(keywordForm).not.toBeNull();
+
+        const clearButton = within(keywordForm as HTMLFormElement).getByRole(
+            "button",
+            { name: "Clear query" },
+        );
+
+        // Visible and disabled when the input is empty.
+        expect(clearButton).toBeVisible();
+        expect(clearButton).toBeDisabled();
+
+        // Enabled after entering a query.
+        fireEvent.change(keywordInput, {
+            target: { value: "Meet and Greet" },
+        });
+
+        expect(clearButton).toBeEnabled();
+
+        // Clearing removes only the keyword query and disables the button again.
+        fireEvent.click(clearButton);
+
+        expect(keywordInput).toHaveValue("");
+        expect(clearButton).toBeDisabled();
+    });
+
 
     it("searches events using the submitted keyword", async () => {
         vi.mocked(getEvents).mockResolvedValue([]);
@@ -237,7 +275,7 @@ describe("EventsPage", () => {
         await screen.findByText("No available events right now.");
 
         fireEvent.change(
-            screen.getByLabelText("Describe the events you're looking for"),
+            screen.getByLabelText("Search with AI"),
             { target: { value: "  Find coffee events this weekend  " } },
         );
         fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
@@ -262,7 +300,7 @@ describe("EventsPage", () => {
         await screen.findByText("No available events right now.");
 
         fireEvent.change(
-            screen.getByLabelText("Describe the events you're looking for"),
+            screen.getByLabelText("Search with AI"),
             { target: { value: "Find coffee events" } },
         );
         fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
@@ -302,7 +340,7 @@ describe("EventsPage", () => {
         await screen.findByText("No available events right now.");
 
         fireEvent.change(
-            screen.getByLabelText("Describe the events you're looking for"),
+            screen.getByLabelText("Search with AI"),
             { target: { value: "Find events about underwater basket weaving" } },
         );
         fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
@@ -318,7 +356,7 @@ describe("EventsPage", () => {
         await screen.findByText("No available events right now.");
 
         fireEvent.change(
-            screen.getByLabelText("Describe the events you're looking for"),
+            screen.getByLabelText("Search with AI"),
             { target: { value: "   " } },
         );
         fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
@@ -338,7 +376,7 @@ describe("EventsPage", () => {
         await screen.findByText("No available events right now.");
 
         fireEvent.change(
-            screen.getByLabelText("Describe the events you're looking for"),
+            screen.getByLabelText("Search with AI"),
             { target: { value: "Find coffee events" } },
         );
         fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
@@ -375,7 +413,7 @@ describe("EventsPage", () => {
         await screen.findByText("No available events right now.");
 
         const input = screen.getByLabelText(
-            "Describe the events you're looking for",
+            "Search with AI",
         );
 
         fireEvent.change(input, {
@@ -405,7 +443,7 @@ describe("EventsPage", () => {
         render(<EventsPage />);
 
         const input = await screen.findByLabelText(
-            "Describe the events you're looking for",
+            "Search with AI",
         );
 
         fireEvent.click(
@@ -433,20 +471,59 @@ describe("EventsPage", () => {
         render(<EventsPage />);
 
         const input = await screen.findByLabelText(
-            "Describe the events you're looking for",
+            "Search with AI",
         );
 
         fireEvent.change(input, {
             target: { value: "Find coffee events" },
         });
 
+        const aiForm = input.closest("form");
+        expect(aiForm).not.toBeNull();
+
         fireEvent.click(
-            screen.getByRole("button", { name: "Clear query" }),
+            within(aiForm as HTMLFormElement).getByRole(
+                "button",
+                { name: "Clear query" },
+            ),
         );
 
         expect(input).toHaveValue("");
         expect(searchEventsNaturalLanguage).not.toHaveBeenCalled();
         expect(getEvents).toHaveBeenCalledTimes(1);
+    });
+
+    it("keeps the AI Clear query button visible and disables it when the query is empty", async () => {
+        render(<EventsPage />);
+
+        const aiInput = await screen.findByLabelText(
+            "Search with AI",
+        );
+        const aiForm = aiInput.closest("form");
+
+        expect(aiForm).not.toBeNull();
+
+        const clearButton = within(aiForm as HTMLFormElement).getByRole(
+            "button",
+            { name: "Clear query" },
+        );
+
+        // Visible and disabled when the input is empty.
+        expect(clearButton).toBeVisible();
+        expect(clearButton).toBeDisabled();
+
+        // Enabled after entering a query.
+        fireEvent.change(aiInput, {
+            target: { value: "Find events this weekend" },
+        });
+
+        expect(clearButton).toBeEnabled();
+
+        // Clearing removes only the AI query and disables the button again.
+        fireEvent.click(clearButton);
+
+        expect(aiInput).toHaveValue("");
+        expect(clearButton).toBeDisabled();
     });
 
     it("clears both search inputs and restores all events", async () => {
@@ -473,7 +550,7 @@ describe("EventsPage", () => {
             target: { value: "Coffee" },
         });
         fireEvent.change(
-            screen.getByLabelText("Describe the events you're looking for"),
+            screen.getByLabelText("Search with AI"),
             { target: { value: "Find coffee events this weekend" } },
         );
 
@@ -487,7 +564,7 @@ describe("EventsPage", () => {
         ).toBeInTheDocument();
         expect(screen.getByLabelText("Search events")).toHaveValue("");
         expect(
-            screen.getByLabelText("Describe the events you're looking for"),
+            screen.getByLabelText("Search with AI"),
         ).toHaveValue("");
     });
 
@@ -568,7 +645,7 @@ describe("EventsPage", () => {
         await screen.findByText("No available events right now.");
 
         const input = screen.getByLabelText(
-            "Describe the events you're looking for",
+            "Search with AI",
         );
 
         fireEvent.change(input, {
@@ -605,7 +682,7 @@ describe("EventsPage", () => {
             .toHaveTextContent("Failed to search events");
 
         fireEvent.change(
-            screen.getByLabelText("Describe the events you're looking for"),
+            screen.getByLabelText("Search with AI"),
             { target: { value: "Find music events" } },
         );
 

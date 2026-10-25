@@ -175,21 +175,17 @@ export default function EventsPage() {
                     <button type="submit" disabled={searching}>
                         {searching ? "Searching..." : "Search"}
                     </button>
-
-                    {keyword.length > 0 && (
-                        <button
-                            type="button"
-                            className="ai-search-clear"
-                            disabled={searching}
-                            onClick={() => {
-                                setKeyword("");
-                                setSearchError("");
-                            }}
-                        >
-                            Clear query
-                        </button>
-                    )}
-
+                    <button
+                        type="button"
+                        className="ai-search-clear"
+                        disabled={searching || keyword.length === 0}
+                        onClick={() => {
+                            setKeyword("");
+                            setSearchError("");
+                        }}
+                    >
+                        Clear query
+                    </button>
                     {isSearchActive && (
                         <button
                             className="clear-search-button"
@@ -203,28 +199,20 @@ export default function EventsPage() {
                 </div>
             </form>
 
-
             <form
                 className="event-search-form ai-search-form"
                 onSubmit={handleNaturalLanguageSearch}
             >
                 <label htmlFor="natural-language-search">
-                    Describe the events you're looking for
+                    Search with AI
                 </label>
-
-                <p
-                    className="ai-search-help"
-                    id="natural-language-search-help"
-                >
-                    Describe a topic, date, or type of event in your own words.
-                    AI will interpret your request and find matching events.
+                <p className="ai-search-help">
+                    Describe the events you’re looking for in plain English.
                 </p>
-
                 <div className="ai-search-examples">
-        <span className="ai-search-examples-label">
-            Try an example:
-        </span>
-
+                <span className="ai-search-examples-label">
+                    Try an example:
+                </span>
                     {[
                         "Find coffee meetups this weekend",
                         "Show me tech networking events",
@@ -250,31 +238,26 @@ export default function EventsPage() {
                         id="natural-language-search"
                         type="text"
                         value={naturalLanguageQuery}
-                        aria-describedby="natural-language-search-help"
                         onChange={(event) => {
                             setNaturalLanguageQuery(event.target.value);
                             setSearchError("");
                         }}
-                        placeholder="e.g. Find relaxed networking events next weekend"
+                        placeholder="e.g. Find events happening this weekend"
                     />
-
                     <button type="submit" disabled={searching}>
                         {searching ? "Searching..." : "Ask AI"}
                     </button>
-
-                    {naturalLanguageQuery.length > 0 && (
-                        <button
-                            type="button"
-                            className="ai-search-clear"
-                            disabled={searching}
-                            onClick={() => {
-                                setNaturalLanguageQuery("");
-                                setSearchError("");
-                            }}
-                        >
-                            Clear query
-                        </button>
-                    )}
+                    <button
+                        type="button"
+                        className="ai-search-clear"
+                        disabled={searching || naturalLanguageQuery.length === 0}
+                        onClick={() => {
+                            setNaturalLanguageQuery("");
+                            setSearchError("");
+                        }}
+                    >
+                        Clear query
+                    </button>
                 </div>
             </form>
 
