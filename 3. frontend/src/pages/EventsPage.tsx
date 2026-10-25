@@ -10,6 +10,8 @@ import {
     searchEventsNaturalLanguage,
 } from "../api/events";
 import EventCard from "../components/EventCard";
+import EventSearchForm from "../components/EventSearchForm.tsx";
+
 
 export default function EventsPage() {
     const [events, setEvents] = useState<Event[]>([]);
@@ -159,45 +161,21 @@ export default function EventsPage() {
         <div className="events-page">
             <h1>Events</h1>
 
-            <form className="event-search-form" onSubmit={handleSearch}>
-                <label htmlFor="event-search">Search events</label>
-                <div className="event-search-controls">
-                    <input
-                        id="event-search"
-                        type="text"
-                        value={keyword}
-                        onChange={(event) => {
-                            setKeyword(event.target.value);
-                            setSearchError("");
-                        }}
-                        placeholder="e.g. Meet and Greet"
-                    />
-                    <button type="submit" disabled={searching}>
-                        {searching ? "Searching..." : "Search"}
-                    </button>
-                    <button
-                        type="button"
-                        className="ai-search-clear"
-                        disabled={searching || keyword.length === 0}
-                        onClick={() => {
-                            setKeyword("");
-                            setSearchError("");
-                        }}
-                    >
-                        Clear query
-                    </button>
-                    {isSearchActive && (
-                        <button
-                            className="clear-search-button"
-                            type="button"
-                            onClick={handleClearSearch}
-                            disabled={searching}
-                        >
-                            Clear search
-                        </button>
-                    )}
-                </div>
-            </form>
+            <EventSearchForm
+                keyword={keyword}
+                searching={searching}
+                isSearchActive={isSearchActive}
+                onKeywordChange={(value) => {
+                    setKeyword(value);
+                    setSearchError("");
+                }}
+                onSearch={handleSearch}
+                onClearQuery={() => {
+                    setKeyword("");
+                    setSearchError("");
+                }}
+                onClearSearch={handleClearSearch}
+            />
 
             <form
                 className="event-search-form ai-search-form"

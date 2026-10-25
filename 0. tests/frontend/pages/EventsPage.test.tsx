@@ -140,38 +140,6 @@ describe("EventsPage", () => {
         ).toBeInTheDocument();
     });
 
-    it("keeps the keyword Clear query button visible and disables it when the query is empty", async () => {
-        render(<EventsPage />);
-
-        const keywordInput = await screen.findByLabelText("Search events");
-        const keywordForm = keywordInput.closest("form");
-
-        expect(keywordForm).not.toBeNull();
-
-        const clearButton = within(keywordForm as HTMLFormElement).getByRole(
-            "button",
-            { name: "Clear query" },
-        );
-
-        // Visible and disabled when the input is empty.
-        expect(clearButton).toBeVisible();
-        expect(clearButton).toBeDisabled();
-
-        // Enabled after entering a query.
-        fireEvent.change(keywordInput, {
-            target: { value: "Meet and Greet" },
-        });
-
-        expect(clearButton).toBeEnabled();
-
-        // Clearing removes only the keyword query and disables the button again.
-        fireEvent.click(clearButton);
-
-        expect(keywordInput).toHaveValue("");
-        expect(clearButton).toBeDisabled();
-    });
-
-
     it("searches events using the submitted keyword", async () => {
         vi.mocked(getEvents).mockResolvedValue([]);
         vi.mocked(searchEvents).mockResolvedValue([
