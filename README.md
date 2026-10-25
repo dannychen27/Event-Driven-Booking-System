@@ -425,12 +425,11 @@ After initialization, configure the database connection variables in `.env` so t
 
 ## Testing
 
-I organize automated tests into four categories:
-
-- **Backend tests**: unit and API tests for backend services and endpoints
-- **Frontend tests**: component and page tests using Vitest
-- **Integration tests**: tests backend services against a test PostgreSQL database
-- **End-to-end tests**: tests complete application workflows against a test PostgreSQL database
+The project includes four categories of automated tests:
+- **Backend tests**: Unit and API tests for backend services and endpoints
+- **Frontend tests**: Component and page tests using Vitest
+- **Integration tests**: Backend integration tests using a test PostgreSQL database
+- **End-to-end tests**: Tests of complete application workflows using a test PostgreSQL database
 
 ### Run All Tests
 
@@ -457,9 +456,9 @@ Ensure PostgreSQL is running and accessible with the required connection
 settings before running these commands.
 
 
-### Test Coverage
+## Code Coverage
 
-Run all backend and frontend coverage reports from the project root:
+Generate backend and frontend coverage reports from the project root.
 
 ```
 npm run coverage
@@ -468,45 +467,17 @@ npm run coverage
 This runs the backend Jest coverage suite followed by the frontend
 Vitest coverage suite.
 
-View the latest published reports:
-- [Backend coverage](https://dannychen27.github.io/Event-Driven-Booking-System/backend/)
-- [Frontend coverage](https://dannychen27.github.io/Event-Driven-Booking-System/frontend/)
-- [GitHub Actions runs](https://github.com/dannychen27/Event-Driven-Booking-System/actions/workflows/coverage-pages.yml)
+GitHub Actions publishes detailed HTML coverage reports and 
+uploads coverage reports as downloadable workflow artifacts.
 
-#### Backend
+View the latest published coverage reports:
+- [Backend coverage report](https://dannychen27.github.io/Event-Driven-Booking-System/backend/)
+- [Frontend coverage report](https://dannychen27.github.io/Event-Driven-Booking-System/frontend/)
+- [Coverage workflow runs and artifacts](https://github.com/dannychen27/Event-Driven-Booking-System/actions/workflows/coverage-pages.yml)
 
-| Metric | Coverage |
-|---|---:|
-| Statements | 93.73% |
-| Branches | 92.38% |
-| Functions | 89.55% |
-| Lines | 92.95% |
-
-- **Test suites:** 18/18 passed
-- **Tests:** 112/112 passed
-
-#### Frontend
-
-| Metric | Coverage |
-|---|---:|
-| Statements | 96.69% |
-| Branches | 85.82% |
-| Functions | 93.75% |
-| Lines | 96.66% |
-
-- **Test files:** 12/12 passed
-- **Tests:** 76/76 passed
-
-#### Integration
-
-- **Test suites:** 1/1 passed
-- **Tests:** 3/3 passed
-
-#### End-to-End (E2E)
-
-- **Test suites:** 3/3 passed
-- **Tests:** 14/14 passed
-
+Backend coverage is measured using Jest, 
+while frontend coverage uses Vitest with the V8 coverage provider.
+Aggregate figures include test-support files and other files included by each coverage configuration.
 
 Coverage is reported by Jest for the backend and Vitest with the V8 coverage
 provider for the frontend. Aggregate figures include test-support files and
