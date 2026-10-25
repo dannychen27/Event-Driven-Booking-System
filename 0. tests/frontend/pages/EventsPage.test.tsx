@@ -154,6 +154,13 @@ describe("EventsPage", () => {
 
         expect(await screen.findByRole("alert"))
             .toHaveTextContent("Failed to search events");
+
+        expect(screen.queryByRole("status")).not.toBeInTheDocument();
+
+        expect(screen.getByRole("button", { name: "Search" }))
+            .toBeEnabled();
+        expect(screen.getByRole("button", { name: "Ask AI" }))
+            .toBeEnabled();
     });
 
     it("does not search when the keyword is empty or whitespace", async () => {
@@ -200,6 +207,69 @@ describe("EventsPage", () => {
             .toHaveBeenCalledWith("Find coffee events this weekend");
     });
 
+    it("shows the loading state while natural-language search is pending", async () => {
+        vi.mocked(getEvents).mockResolvedValue([]);
+
+        let resolveSearch!: (events: Event[]) => void;
+        vi.mocked(searchEventsNaturalLanguage).mockReturnValue(
+            new Promise<Event[]>((resolve) => {
+                resolveSearch = resolve;
+            }),
+        );
+
+        render(<EventsPage />);
+        await screen.findByText("No available events right now.");
+
+        fireEvent.change(
+            screen.getByLabelText("Describe the events you're looking for"),
+            { target: { value: "Find coffee events" } },
+        );
+        fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
+
+        // Both search buttons show "Searching..." and are disabled.
+        const searchingButtons = screen.getAllByRole("button", {
+            name: "Searching...",
+        });
+        expect(searchingButtons).toHaveLength(2);
+        searchingButtons.forEach((button) => {
+            expect(button).toBeDisabled();
+        });
+        expect(searchEventsNaturalLanguage).toHaveBeenCalledTimes(1);
+
+        // This simulates another click on the disabled AI search button
+        // and verifies the request count stays at one.
+        fireEvent.click(searchingButtons[1]);
+        expect(searchEventsNaturalLanguage).toHaveBeenCalledTimes(1);
+
+        expect(screen.getByRole("status"))
+            .toHaveTextContent("Searching events...");
+
+        // Resolve the pending request and verify the loading state disappears.
+        resolveSearch([]);
+
+        expect(await screen.findByText("No matching events found."))
+            .toBeInTheDocument();
+        expect(screen.queryByText("Searching events..."))
+            .not.toBeInTheDocument();
+    });
+
+    it("shows a message when natural-language search returns no matching events", async () => {
+        vi.mocked(getEvents).mockResolvedValue([]);
+        vi.mocked(searchEventsNaturalLanguage).mockResolvedValue([]);
+
+        render(<EventsPage />);
+        await screen.findByText("No available events right now.");
+
+        fireEvent.change(
+            screen.getByLabelText("Describe the events you're looking for"),
+            { target: { value: "Find events about underwater basket weaving" } },
+        );
+        fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
+
+        expect(await screen.findByText("No matching events found."))
+            .toBeInTheDocument();
+    });
+
     it("does not run natural-language search when the query is empty or whitespace", async () => {
         vi.mocked(getEvents).mockResolvedValue([]);
 
@@ -234,6 +304,215 @@ describe("EventsPage", () => {
 
         expect(await screen.findByRole("alert"))
             .toHaveTextContent("Failed to search events with natural language");
+
+        expect(screen.queryByRole("status")).not.toBeInTheDocument();
+
+        expect(screen.getByRole("button", { name: "Search" }))
+            .toBeEnabled();
+        expect(screen.getByRole("button", { name: "Ask AI" }))
+            .toBeEnabled();
+    });
+
+    it("recovers when natural-language search succeeds after a failure", async () => {
+        vi.mocked(getEvents).mockResolvedValue([]);
+        vi.mocked(searchEventsNaturalLanguage)
+            .mockRejectedValueOnce(
+                new Error("Failed to search events with natural language"),
+            )
+            .mockResolvedValueOnce([
+                {
+                    id: 3,
+                    name: "Coffee Meetup",
+                    venue_id: 1,
+                    start_time: "2026-10-24T10:00:00Z",
+                    end_time: "2026-10-24T11:00:00Z",
+                    capacity: 10,
+                },
+            ]);
+
+        render(<EventsPage />);
+        await screen.findByText("No available events right now.");
+
+        const input = screen.getByLabelText(
+            "Describe the events you're looking for",
+        );
+
+        fireEvent.change(input, {
+            target: { value: "Find coffee events" },
+        });
+        fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
+
+        expect(await screen.findByRole("alert"))
+            .toHaveTextContent("Failed to search events with natural language");
+
+        fireEvent.change(input, {
+            target: { value: "Find coffee meetups" },
+        });
+
+        expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
+
+        expect(await screen.findByText("Mock Event Card: Coffee Meetup"))
+            .toBeInTheDocument();
+        expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    });
+
+
+    it("clears both search inputs and restores all events", async () => {
+        vi.mocked(getEvents).mockResolvedValue([
+            {
+                id: 1,
+                name: "Initial Event",
+                venue_id: 1,
+                start_time: "2026-10-24T10:00:00Z",
+                end_time: "2026-10-24T11:00:00Z",
+                capacity: 10,
+            },
+        ]);
+        vi.mocked(searchEvents).mockResolvedValue([]);
+        vi.mocked(searchEventsNaturalLanguage).mockResolvedValue([]);
+
+        render(<EventsPage />);
+
+        expect(
+            await screen.findByText("Mock Event Card: Initial Event"),
+        ).toBeInTheDocument();
+
+        fireEvent.change(screen.getByLabelText("Search events"), {
+            target: { value: "Coffee" },
+        });
+        fireEvent.change(
+            screen.getByLabelText("Describe the events you're looking for"),
+            { target: { value: "Find coffee events this weekend" } },
+        );
+
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+        await screen.findByText("No matching events found.");
+
+        fireEvent.click(screen.getByRole("button", { name: "Clear search" }));
+
+        expect(
+            await screen.findByText("Mock Event Card: Initial Event"),
+        ).toBeInTheDocument();
+        expect(screen.getByLabelText("Search events")).toHaveValue("");
+        expect(
+            screen.getByLabelText("Describe the events you're looking for"),
+        ).toHaveValue("");
+    });
+
+    it("clears the search error when the keyword input changes", async () => {
+        vi.mocked(getEvents).mockResolvedValue([]);
+        vi.mocked(searchEvents).mockRejectedValue(
+            new Error("Failed to search events"),
+        );
+
+        render(<EventsPage />);
+
+        await screen.findByText("No available events right now.");
+
+        fireEvent.change(screen.getByLabelText("Search events"), {
+            target: { value: "Coffee" },
+        });
+
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+        expect(await screen.findByRole("alert"))
+            .toHaveTextContent("Failed to search events");
+
+        fireEvent.change(screen.getByLabelText("Search events"), {
+            target: { value: "Music" },
+        });
+
+        expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    });
+
+    it("clears the search error when the natural-language input changes", async () => {
+        vi.mocked(getEvents).mockResolvedValue([]);
+        vi.mocked(searchEventsNaturalLanguage).mockRejectedValue(
+            new Error("Failed to search events with natural language"),
+        );
+
+        render(<EventsPage />);
+
+        await screen.findByText("No available events right now.");
+
+        const input = screen.getByLabelText(
+            "Describe the events you're looking for",
+        );
+
+        fireEvent.change(input, {
+            target: { value: "Find coffee events" },
+        });
+
+        fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
+
+        expect(await screen.findByRole("alert"))
+            .toHaveTextContent("Failed to search events with natural language");
+
+        fireEvent.change(input, {
+            target: { value: "Find music events" },
+        });
+
+        expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    });
+
+    it("clears the keyword search error when the natural-language input changes", async () => {
+        vi.mocked(getEvents).mockResolvedValue([]);
+        vi.mocked(searchEvents).mockRejectedValue(
+            new Error("Failed to search events"),
+        );
+
+        render(<EventsPage />);
+        await screen.findByText("No available events right now.");
+
+        fireEvent.change(screen.getByLabelText("Search events"), {
+            target: { value: "Coffee" },
+        });
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+        expect(await screen.findByRole("alert"))
+            .toHaveTextContent("Failed to search events");
+
+        fireEvent.change(
+            screen.getByLabelText("Describe the events you're looking for"),
+            { target: { value: "Find music events" } },
+        );
+
+        expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    });
+
+    it("preserves previous results when a new search fails", async () => {
+        vi.mocked(getEvents).mockResolvedValue([
+            {
+                id: 1,
+                name: "Initial Event",
+                venue_id: 1,
+                start_time: "2026-10-24T10:00:00Z",
+                end_time: "2026-10-24T11:00:00Z",
+                capacity: 10,
+            },
+        ]);
+
+        vi.mocked(searchEvents).mockRejectedValue(
+            new Error("Failed to search events"),
+        );
+
+        render(<EventsPage />);
+
+        expect(await screen.findByText("Mock Event Card: Initial Event"))
+            .toBeInTheDocument();
+
+        fireEvent.change(screen.getByLabelText("Search events"), {
+            target: { value: "Coffee" },
+        });
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+        expect(await screen.findByRole("alert"))
+            .toHaveTextContent("Failed to search events");
+
+        expect(screen.getByText("Mock Event Card: Initial Event"))
+            .toBeInTheDocument();
     });
 });
 

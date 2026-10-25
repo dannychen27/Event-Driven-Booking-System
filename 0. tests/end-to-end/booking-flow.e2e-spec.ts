@@ -37,8 +37,6 @@ describe("Booking flow (E2E)", () => {
                 user_id: 1,
             });
 
-        // console.log("BOOKING RESPONSE:", bookingResponse.status, bookingResponse.body);
-
         expect(bookingResponse.status).toBe(201);
 
         const booking = bookingResponse.body;

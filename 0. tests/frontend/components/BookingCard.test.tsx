@@ -25,9 +25,11 @@ describe("BookingCard", () => {
 
         expect(
             screen.getByRole("heading", {
-                name: "Booking Id: 1",
+                name: "Toronto Tech Meetup",
             }),
         ).toBeInTheDocument();
+
+        expect(screen.getByText("Booking Id: 1")).toBeInTheDocument();
 
         expect(
             screen.getByText("Event Id: 1"),
@@ -37,15 +39,36 @@ describe("BookingCard", () => {
             screen.getByText("User Id: 1"),
         ).toBeInTheDocument();
 
-        expect(
-            screen.getByText(/^Created at:/),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/^Booked at:/)).toBeInTheDocument();
 
         expect(
             screen.getByRole("button", {
                 name: "Cancel Booking",
             }),
         ).toBeInTheDocument();
+    });
+
+    it("renders event and venue details in booking history", () => {
+        render(
+            <BookingCard
+                booking={mockBooking}
+                onBookingCancelled={() => {}}
+            />,
+        );
+
+        expect(
+            screen.getByRole("heading", {
+                name: "Toronto Tech Meetup",
+            }),
+        ).toBeInTheDocument();
+
+        expect(screen.getByText("Venue: Innovation Hub")).toBeInTheDocument();
+        expect(screen.getByText("Address: 100 King Street West")).toBeInTheDocument();
+
+        expect(screen.getByText("Booking Id: 1")).toBeInTheDocument();
+        expect(screen.getByText(/^Starts at:/)).toBeInTheDocument();
+        expect(screen.getByText(/^Ends at:/)).toBeInTheDocument();
+        expect(screen.getByText(/^Booked at:/)).toBeInTheDocument();
     });
 
     it("opens the cancellation modal", async () => {
@@ -117,6 +140,51 @@ describe("BookingCard", () => {
                 name: "Cancel Booking?",
             }),
         ).not.toBeInTheDocument();
+    });
+
+    it("prevents duplicate cancellation requests while one is pending", async () => {
+        let resolveCancellation!: (value: undefined) => void;
+
+        vi.mocked(cancelBooking).mockReturnValue(
+            new Promise<undefined>((resolve) => {
+                resolveCancellation = resolve;
+            }),
+        );
+
+        const user = userEvent.setup();
+
+        render(
+            <BookingCard
+                booking={mockBooking}
+                onBookingCancelled={() => {}}
+            />,
+        );
+
+        await user.click(
+            screen.getByRole("button", { name: "Cancel Booking" }),
+        );
+
+        await user.click(
+            screen.getAllByRole("button", { name: "Cancel Booking" })[1],
+        );
+
+        expect(
+            screen.getByRole("button", { name: "Cancelling..." }),
+        ).toBeDisabled();
+
+        expect(
+            screen.getByRole("button", { name: "Keep Booking" }),
+        ).toBeDisabled();
+
+        expect(cancelBooking).toHaveBeenCalledTimes(1);
+
+        resolveCancellation(undefined);
+
+        expect(
+            await screen.findByRole("button", { name: "Cancel Booking" }),
+        ).toBeInTheDocument();
+
+        expect(cancelBooking).toHaveBeenCalledTimes(1);
     });
 
     it("successfully cancels the booking", async () => {

@@ -1,3 +1,4 @@
+
 {
   "dependencies": {
     "@prisma/client": "^7.9.1",
@@ -22,7 +23,17 @@
     "lint:backend": "npm run lint --prefix \"4. backend\"",
     "lint:frontend": "npm run lint --prefix \"3. frontend\"",
 
-    "verify": "npm run lint && npm test && npm run build",
+    "verify": "npm run verify:all",
+    "verify:json": "node -e \"JSON.parse(require('fs').readFileSync('package.json', 'utf8')); console.log('PASS: package.json is valid JSON')\"",
+    "verify:syntax": "bash -n scripts/verify-logs.sh && echo 'PASS: verify-logs.sh syntax is valid'",
+    "verify:all": "npm run verify:json && npm run verify:syntax && bash ./scripts/verify-logs.sh all",
+    "verify:frontend": "npm run verify:json && npm run verify:syntax && bash ./scripts/verify-logs.sh frontend",
+    "verify:backend": "npm run verify:json && npm run verify:syntax && bash ./scripts/verify-logs.sh backend",
+    "verify:e2e": "npm run verify:json && npm run verify:syntax && bash ./scripts/verify-logs.sh e2e",
+    "verify:integration": "npm run verify:json && npm run verify:syntax && bash ./scripts/verify-logs.sh integration",
+    "verify:lint": "npm run verify:json && npm run verify:syntax && bash ./scripts/verify-logs.sh lint",
+    "verify:build": "npm run verify:json && npm run verify:syntax && bash ./scripts/verify-logs.sh build",
+    "verify:coverage": "npm run verify:json && npm run verify:syntax && bash ./scripts/verify-logs.sh coverage",
 
     "coverage": "npm run coverage:backend && npm run coverage:frontend",
     "coverage:backend": "npm test --prefix \"4. backend\" -- --coverage",

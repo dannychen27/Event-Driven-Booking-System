@@ -1,6 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 
+type EventCandidate = {
+  id: number;
+  name: string;
+  description?: string | null;
+  venue_name?: string | null;
+  venue_address?: string | null;
+  start_time?: string | Date;
+};
+
 @Injectable()
 export class EventsService {
   constructor(private readonly db: DatabaseService) {}
@@ -92,6 +101,44 @@ export class EventsService {
                 ${whereClause}
             ORDER BY e.start_time ASC;
         `,
+      params,
+    );
+
+    return result.rows;
+  }
+
+  async searchEventCandidates(filters: {
+    startAfter?: string;
+    startBefore?: string;
+  }) {
+    const conditions: string[] = [];
+    const params: unknown[] = [];
+
+    if (filters.startAfter) {
+      params.push(filters.startAfter);
+      conditions.push(`e.start_time >= $${params.length}`);
+    }
+
+    if (filters.startBefore) {
+      params.push(filters.startBefore);
+      conditions.push(`e.start_time < $${params.length}`);
+    }
+
+    const whereClause = conditions.length
+      ? `WHERE ${conditions.join(' AND ')}`
+      : '';
+
+    const result = await this.db.query<EventCandidate>(
+      `
+        SELECT
+          e.*,
+          v.name AS venue_name,
+          v.address AS venue_address
+        FROM events e
+        JOIN venues v ON e.venue_id = v.id
+        ${whereClause}
+        ORDER BY e.start_time ASC;
+      `,
       params,
     );
 

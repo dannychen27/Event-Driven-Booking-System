@@ -113,6 +113,32 @@ describe("EventCard", () => {
         ).not.toBeInTheDocument();
     });
 
+    it("shows an error when booking history fails to load", async () => {
+        vi.mocked(getBookingHistory).mockRejectedValue(
+            new Error("Failed to fetch booking history."),
+        );
+
+        const user = userEvent.setup();
+
+        render(<EventCard event={mockEvent} />);
+
+        await user.click(
+            screen.getByRole("button", {
+                name: "Create Booking",
+            }),
+        );
+
+        expect(
+            await screen.findByText("Failed to fetch booking history."),
+        ).toBeInTheDocument();
+
+        expect(
+            screen.queryByRole("button", {
+                name: "Mock Booking Form",
+            }),
+        ).not.toBeInTheDocument();
+    });
+
     it("successfully submits a booking", async () => {
         vi.mocked(getBookingHistory).mockResolvedValue([]);
         vi.mocked(createBooking).mockResolvedValue(undefined);
@@ -142,6 +168,12 @@ describe("EventCard", () => {
                 "Booking created successfully.",
             ),
         ).toBeInTheDocument();
+
+        expect(
+            screen.queryByRole("button", {
+                name: "Mock Booking Form",
+            }),
+        ).not.toBeInTheDocument();
     });
 
     it("shows an error when booking creation fails", async () => {
@@ -174,6 +206,63 @@ describe("EventCard", () => {
 
         expect(
             screen.queryByText("You already booked this event."),
+        ).not.toBeInTheDocument();
+
+        expect(
+            screen.getByRole("button", {
+                name: "Mock Booking Form",
+            }),
+        ).toBeInTheDocument();
+    });
+
+    it("allows the user to retry after booking creation fails", async () => {
+        vi.mocked(getBookingHistory).mockResolvedValue([]);
+        vi.mocked(createBooking)
+            .mockRejectedValueOnce(new Error("Temporary booking failure."))
+            .mockResolvedValueOnce(undefined);
+
+        const user = userEvent.setup();
+
+        render(<EventCard event={mockEvent} />);
+
+        await user.click(
+            screen.getByRole("button", {
+                name: "Create Booking",
+            }),
+        );
+
+        const bookingForm = await screen.findByRole("button", {
+            name: "Mock Booking Form",
+        });
+
+        await user.click(bookingForm);
+
+        expect(
+            await screen.findByText("Temporary booking failure."),
+        ).toBeInTheDocument();
+
+        expect(
+            screen.getByRole("button", {
+                name: "Mock Booking Form",
+            }),
+        ).toBeInTheDocument();
+
+        await user.click(
+            screen.getByRole("button", {
+                name: "Mock Booking Form",
+            }),
+        );
+
+        expect(createBooking).toHaveBeenCalledTimes(2);
+
+        expect(
+            await screen.findByText("Booking created successfully."),
+        ).toBeInTheDocument();
+
+        expect(
+            screen.queryByRole("button", {
+                name: "Mock Booking Form",
+            }),
         ).not.toBeInTheDocument();
     });
 });

@@ -26,16 +26,25 @@ export default function EventCard({ event }: EventCardProps) {
     // TODO: bookings (using their own user_id instead of a hardcoded one).
 
     async function handleOpenBookingForm() {
-        const bookings = await getBookingHistory(user_id);
-        const userHasBooking = bookings.some(
-            booking => booking.event_id === event.id
-        );
+        try {
+            const bookings = await getBookingHistory(user_id);
+            const userHasBooking = bookings.some(
+                booking => booking.event_id === event.id
+            );
 
-        if (userHasBooking) {
-            setAlreadyBooked(true);
-            return;
-        } else {
-            setShowBookingForm(true);
+            if (userHasBooking) {
+                setAlreadyBooked(true);
+                return;
+            } else {
+                setShowBookingForm(true);
+            }
+        } catch (error) {
+            setBookingMessage(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to fetch booking history."
+            );
+            setBookingStatus("error");
         }
     }
 

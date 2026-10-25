@@ -9,7 +9,7 @@ export function renderBookingForm({
     onBookingCreated = () => {},
 }: {
     onCancel?: () => void;
-    onBookingCreated?: () => void;
+    onBookingCreated?: () => void | Promise<void>;
 } = {}) {
     return render(
         <BookingForm

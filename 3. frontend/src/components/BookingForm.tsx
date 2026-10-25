@@ -1,4 +1,5 @@
 import "../styles/booking-form.css";
+import { useState } from "react";
 
 
 interface BookingFormProps {
@@ -6,12 +7,26 @@ interface BookingFormProps {
     onBookingCreated: () => void | Promise<void>;
 }
 
+export default function BookingForm({
+    onCancel,
+    onBookingCreated,
+}: BookingFormProps) {
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-
-export default function BookingForm({ onCancel, onBookingCreated }: BookingFormProps) {
-    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        onBookingCreated();
+
+        if (isSubmitting) {
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            await onBookingCreated();
+        } finally {
+            setIsSubmitting(false);
+        }
     }
 
     return (
@@ -25,12 +40,21 @@ export default function BookingForm({ onCancel, onBookingCreated }: BookingFormP
             <p>Are you sure you want to book this event?</p>
 
             <div className="booking-form-actions">
-                <button className="cancel-button" type="button" onClick={onCancel}>
+                <button
+                    className="cancel-button"
+                    type="button"
+                    onClick={onCancel}
+                    disabled={isSubmitting}
+                >
                     Cancel
                 </button>
 
-                <button className="booking-button" type="submit">
-                    Book Event
+                <button
+                    className="booking-button"
+                    type="submit"
+                    disabled={isSubmitting}
+                >
+                    {isSubmitting ? "Booking..." : "Book Event"}
                 </button>
             </div>
         </form>

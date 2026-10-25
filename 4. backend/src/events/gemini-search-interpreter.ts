@@ -1,7 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 import {
-  SearchFilters,
-  validateSearchFilters,
+  NaturalLanguageSearchPlan,
+  validateNaturalLanguageSearchPlan,
 } from './natural-language-search';
 
 type GeminiClient = {
@@ -17,17 +17,19 @@ type GeminiClient = {
   };
 };
 
-const SEARCH_FILTER_SCHEMA = {
+const NATURAL_LANGUAGE_SEARCH_SCHEMA = {
   type: 'OBJECT',
   properties: {
-    keyword: { type: 'STRING' },
+    intent: { type: 'STRING' },
     startAfter: { type: 'STRING' },
     startBefore: { type: 'STRING' },
   },
-  propertyOrdering: ['keyword', 'startAfter', 'startBefore'],
+  propertyOrdering: ['intent', 'startAfter', 'startBefore'],
 };
 
-export function parseSearchFilters(response: string): SearchFilters {
+export function parseNaturalLanguageSearchPlan(
+  response: string,
+): NaturalLanguageSearchPlan {
   let parsed: unknown;
 
   try {
@@ -36,7 +38,7 @@ export function parseSearchFilters(response: string): SearchFilters {
     throw new Error('Gemini returned invalid JSON');
   }
 
-  return validateSearchFilters(parsed);
+  return validateNaturalLanguageSearchPlan(parsed);
 }
 
 export class GeminiSearchInterpreter {
@@ -45,15 +47,24 @@ export class GeminiSearchInterpreter {
   constructor(
     private readonly apiKey: string,
     client?: GeminiClient,
+    private readonly now: () => Date = () => new Date(),
   ) {
     if (apiKey.trim()) {
-      this.client = client ?? new GoogleGenAI({ apiKey });
+      this.client = client ?? new GoogleGenAI({
+        apiKey,
+        httpOptions: {
+          timeout: 20_000,
+          retryOptions: {
+            attempts: 2,
+          },
+        },
+      });
     } else {
       this.client = client;
     }
   }
 
-  async interpret(request: string): Promise<SearchFilters> {
+  async interpret(request: string): Promise<NaturalLanguageSearchPlan> {
     if (!this.apiKey.trim()) {
       throw new Error('Gemini API key is required');
     }
@@ -67,18 +78,30 @@ export class GeminiSearchInterpreter {
     }
 
     const response = await this.client.models.generateContent({
-      model: 'gemini-flash-latest',
+      model: 'gemini-3.5-flash-lite',
       contents: [
-        "Translate the user's event search request into filters.",
-        'Return only filters supported by the schema.',
-        'Allowed fields: keyword, startAfter, startBefore.',
+        "Interpret the user's event search request as a natural-language search plan.",
+        'Return only fields supported by the schema.',
+        'Use intent to summarize the semantic event preferences the user expresses.',
+        'Do not reduce intent to literal keywords or require exact phrase matches.',
+        'For example, "something relaxing outdoors" expresses an intent for calm outdoor activities.',
+        'Omit intent when the user expresses no event preference beyond dates.',
+        'Use startAfter and startBefore for date boundaries implied by the request.',
         'Use ISO 8601 date strings for date boundaries.',
         'Omit fields the user did not specify or imply.',
+        'Interpret relative dates using the current date and timezone below.',
+        `Current date: ${new Intl.DateTimeFormat('en-CA', {
+          timeZone: 'America/Toronto',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        }).format(this.now())}`,
+        'Timezone: America/Toronto.',
         `User request: ${request}`,
       ].join('\n'),
       config: {
         responseMimeType: 'application/json',
-        responseSchema: SEARCH_FILTER_SCHEMA,
+        responseSchema: NATURAL_LANGUAGE_SEARCH_SCHEMA,
       },
     });
 
@@ -86,6 +109,6 @@ export class GeminiSearchInterpreter {
       throw new Error('Gemini returned an empty response');
     }
 
-    return parseSearchFilters(response.text);
+    return parseNaturalLanguageSearchPlan(response.text);
   }
 }

@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -55,6 +55,46 @@ describe("BookingForm", () => {
         );
 
         expect(onBookingCreated).toHaveBeenCalledOnce();
+    });
+
+    it("disables booking controls while the booking request is pending", async () => {
+        let resolveRequest!: () => void;
+        const request = new Promise<void>((resolve) => {
+            resolveRequest = resolve;
+        });
+
+        const onBookingCreated = vi.fn(() => request);
+        const user = userEvent.setup();
+
+        renderBookingForm({ onBookingCreated });
+
+        const bookButton = screen.getByRole("button", {
+            name: "Book Event",
+        });
+        const cancelButton = screen.getByRole("button", {
+            name: "Cancel",
+        });
+
+        await user.click(bookButton);
+
+        // Verify the pending state.
+        expect(onBookingCreated).toHaveBeenCalledOnce();
+        expect(bookButton).toHaveTextContent("Booking...");
+        expect(bookButton).toBeDisabled();
+        expect(cancelButton).toBeDisabled();
+
+        // Verify another click cannot trigger a duplicate booking.
+        await user.click(bookButton);
+        expect(onBookingCreated).toHaveBeenCalledOnce();
+
+        // Resolve the request and verify the controls become available again.
+        resolveRequest();
+
+        await waitFor(() => {
+            expect(bookButton).toHaveTextContent("Book Event");
+            expect(bookButton).toBeEnabled();
+            expect(cancelButton).toBeEnabled();
+        });
     });
 
     it("calls onCancel when the user cancels the form", async () => {
