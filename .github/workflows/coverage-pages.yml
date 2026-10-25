@@ -38,94 +38,30 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci --prefix "3. frontend"
 
-      - name: Generate backend coverage
-        run: npm run coverage:backend
+      - name: Generate backend coverage and test results
+        run: >
+          npm run coverage:backend --
+          --json
+          --outputFile="$RUNNER_TEMP/backend-test-results.json"
 
-      - name: Generate frontend coverage
-        run: npm run coverage:frontend
+      - name: Generate frontend coverage and test results
+        run: >
+          npm run coverage:frontend --
+          --reporter=json
+          --outputFile="$RUNNER_TEMP/frontend-test-results.json"
 
       - name: Prepare Pages site
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+          RUNNER_TEMP: ${{ runner.temp }}
         run: |
           mkdir -p site/backend site/frontend
 
           cp -R "4. backend/coverage/lcov-report/." site/backend/
           cp -R "3. frontend/coverage/lcov-report/." site/frontend/
 
-          cat > site/coverage-info.json <<EOF
-          {
-            "generatedAt": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')",
-            "generatedAtDisplay": "$(TZ='America/Toronto' date +'%B %d, %Y %I:%M:%S %p')",
-            "commit": "${GITHUB_SHA}",
-            "branch": "${GITHUB_REF_NAME}"
-          }
-          EOF
-
-          cat > site/index.html <<'EOF'
-          <!doctype html>
-          <html lang="en">
-            <head>
-              <meta charset="utf-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1">
-              <title>Booking System — Test Coverage</title>
-            </head>
-            <body>
-              <h1>Event-Driven Booking System</h1>
-              <h2>Test Coverage Reports</h2>
-
-              <section aria-labelledby="freshness-heading">
-                <h3 id="freshness-heading">Coverage freshness</h3>
-                <p id="coverage-freshness">Loading deployment information...</p>
-              </section>
-
-              <ul>
-                <li><a href="./backend/">Backend coverage report</a></li>
-                <li><a href="./frontend/">Frontend coverage report</a></li>
-              </ul>
-
-              <script>
-                fetch("./coverage-info.json")
-                  .then((response) => {
-                    if (!response.ok) {
-                      throw new Error("Could not load coverage metadata");
-                    }
-                    return response.json();
-                  })
-                  .then((info) => {
-                    const timestamp = new Date(info.generatedAt);
-                    const dateText = timestamp.toLocaleString("en-CA", {
-                      month: "long",
-                      day: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      second: "2-digit",
-                      hour12: true,
-                      timeZone: "America/Toronto"
-                    });
-
-                    const commitLink = document.createElement("a");
-                    commitLink.href =
-                      "https://github.com/dannychen27/Event-Driven-Booking-System/commit/" +
-                      encodeURIComponent(info.commit);
-                    commitLink.textContent = info.commit.slice(0, 7);
-
-                    const freshness =
-                      document.getElementById("coverage-freshness");
-
-                    freshness.replaceChildren(
-                      document.createTextNode("Last published: " + dateText + " · Commit: "),
-                      commitLink,
-                      document.createTextNode(" · Branch: " + info.branch)
-                    );
-                  })
-                  .catch(() => {
-                    document.getElementById("coverage-freshness").textContent =
-                      "Coverage deployment information is unavailable.";
-                  });
-              </script>
-            </body>
-          </html>
-          EOF
+          node scripts/generate-coverage-metadata.cjs
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

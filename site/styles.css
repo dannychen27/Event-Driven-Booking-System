@@ -1,0 +1,94 @@
+:root {
+    color-scheme: light;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #172033;
+    background: #f4f6fa;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-width: 320px;
+}
+
+.page {
+    width: min(100% - 2rem, 760px);
+    margin: 0 auto;
+    padding: 3rem 0;
+}
+
+.page-header {
+    margin-bottom: 2rem;
+}
+
+h1 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    line-height: 1.2;
+}
+
+h2 {
+    margin: 0;
+    color: #536078;
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+h3 {
+    margin-top: 0;
+    font-size: 1.1rem;
+}
+
+.panel {
+    margin-bottom: 1.25rem;
+    padding: 1.5rem;
+    border: 1px solid #dce2ec;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgb(23 32 51 / 4%);
+}
+
+#coverage-freshness {
+    margin-bottom: 0;
+    overflow-wrap: anywhere;
+    line-height: 1.7;
+}
+
+.report-links {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+a {
+    color: #175cd3;
+    text-underline-offset: 3px;
+}
+
+a:hover {
+    color: #123f91;
+}
+
+a:focus-visible {
+    outline: 3px solid #84adff;
+    outline-offset: 3px;
+    border-radius: 2px;
+}
+
+@media (max-width: 480px) {
+    .page {
+        padding: 2rem 0;
+    }
+
+    .panel {
+        padding: 1.1rem;
+    }
+}

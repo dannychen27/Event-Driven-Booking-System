@@ -1,0 +1,16 @@
+{
+  "generatedAt": "2026-10-25T02:25:06.936Z",
+  "generatedAtDisplay": "October 24, 2026 at 10:25:06 p.m.",
+  "commit": "ff621072280bc37af637998700d1a83509f0aa68",
+  "branch": "main",
+  "backendLines": 93,
+  "frontendLines": 96.67,
+  "backendTestsPassed": 117,
+  "frontendTestsPassed": 81,
+  "totalTestsPassed": 198,
+  "backendTestsTotal": 117,
+  "frontendTestsTotal": 81,
+  "totalTests": 198,
+  "backendTestsFailed": 0,
+  "frontendTestsFailed": 0
+}
