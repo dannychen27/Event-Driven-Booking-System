@@ -1,0 +1,6 @@
+.empty-state-message {
+    color: var(--secondary-text);
+    font-size: 0.95rem;
+    margin: 1rem 0;
+    text-align: center;
+}

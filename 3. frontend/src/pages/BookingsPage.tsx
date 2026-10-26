@@ -4,6 +4,8 @@ import { getBookingHistory } from "../api/bookings.ts";
 import BookingCard from "../components/BookingCard.tsx";
 import "../styles/pages/booking-page.css";
 import "../styles/errors/error-message.css";
+import "../styles/errors/status-message.css";
+import "../styles/errors/empty-state-message.css";
 
 
 export default function BookingsPage() {
@@ -31,7 +33,11 @@ export default function BookingsPage() {
     }, []);
 
     if (loading) {
-        return <p>{`Loading bookings for user ${user_id}`}</p>;
+        return (
+            <p className="status-message">
+                {`Loading bookings for user ${user_id}`}
+            </p>
+        );
     }
 
     if (error) {
@@ -42,7 +48,7 @@ export default function BookingsPage() {
         <div className="bookings-page">
             <h1>Booking History</h1>
             {bookings.length === 0
-                ? <p>No bookings right now.</p>
+                ? <p className="empty-state-message">No bookings right now.</p>
                 : bookings.map((booking) => (
                     <BookingCard
                         key={booking.id}

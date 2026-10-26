@@ -7,6 +7,7 @@ import "../styles/shared/card-buttons.css";
 import "../styles/buttons/create-booking-button.css";
 import "../styles/errors/error-message.css";
 import "../styles/errors/success-message.css";
+import "../styles/errors/status-message.css";
 import { Modal } from "./Modal.tsx";
 import BookingForm from "./BookingForm.tsx";
 import { formatDate } from "../utils/Dates.ts";
@@ -127,7 +128,11 @@ export default function EventCard({ event }: EventCardProps) {
                     }
                 />
             )}
-            {bookingStatus === "creating" && <p>{bookingMessage}</p>}
+            {bookingStatus === "creating" && (
+                <p className="status-message" role="status">
+                    {bookingMessage}
+                </p>
+            )}
             {bookingStatus === "success" && <p className="success-message">{bookingMessage}</p>}
             {bookingStatus === "error" && <p className="error-message">{bookingMessage}</p>}
         </div>

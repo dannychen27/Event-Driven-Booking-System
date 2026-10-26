@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import type { Event } from "../types/Event";
 import "../styles/pages/events-page.css";
 import "../styles/errors/error-message.css";
+import "../styles/errors/status-message.css";
+import "../styles/errors/empty-state-message.css";
 import {
     getEvents,
     searchEvents,
@@ -149,7 +151,7 @@ export default function EventsPage() {
     }
 
     if (loading) {
-        return <p>Loading events...</p>;
+        return <p className="status-message">Loading events...</p>;
     }
 
     if (error) {
@@ -195,10 +197,14 @@ export default function EventsPage() {
                     {searchError}
                 </p>
             )}
-            {searching && <p role="status">Searching events...</p>}
+            {searching && (
+                <p className="status-message" role="status">
+                    Searching events...
+                </p>
+            )}
 
             {!searching && events.length === 0 ? (
-                <p>
+                <p className="empty-state-message">
                     {isSearchActive
                         ? "No matching events found."
                         : "No available events right now."}

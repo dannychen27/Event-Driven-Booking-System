@@ -4,6 +4,8 @@ import type { Venue } from "../types/Venue.ts";
 import VenueCard from "../components/VenueCard.tsx";
 import "../styles/pages/venues-page.css";
 import "../styles/errors/error-message.css";
+import "../styles/errors/status-message.css";
+import "../styles/errors/empty-state-message.css";
 
 
 export default function VenuesPage() {
@@ -27,7 +29,7 @@ export default function VenuesPage() {
     }, []);
 
     if (loading) {
-        return <p>Loading venues...</p>;
+        return <p className="status-message">Loading venues...</p>;
     }
 
     if (error) {
@@ -38,7 +40,7 @@ export default function VenuesPage() {
         <div className="venues-page">
             <h1>Venues</h1>
             {venues.length === 0
-                ? <p>No available venues right now.</p>
+                ? <p className="empty-state-message">No available venues right now.</p>
                 : venues.map((venue) => (
                     <VenueCard key={venue.id} venue={venue} />
                 ))
