@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Event } from "../types/Event";
 import "../styles/pages/events-page.css";
+import "../styles/errors/error-message.css";
 import {
     getEvents,
     searchEvents,
@@ -152,7 +153,7 @@ export default function EventsPage() {
     }
 
     if (error) {
-        return <p>{error}</p>;
+        return <p className="error-message">{error}</p>;
     }
 
     return (
@@ -189,7 +190,11 @@ export default function EventsPage() {
                 }}
             />
 
-            {searchError && <p role="alert">{searchError}</p>}
+            {searchError && (
+                <p className="error-message" role="alert">
+                    {searchError}
+                </p>
+            )}
             {searching && <p role="status">Searching events...</p>}
 
             {!searching && events.length === 0 ? (

@@ -3,6 +3,7 @@ import { getVenues } from "../api/venues.ts";
 import type { Venue } from "../types/Venue.ts";
 import VenueCard from "../components/VenueCard.tsx";
 import "../styles/pages/venues-page.css";
+import "../styles/errors/error-message.css";
 
 
 export default function VenuesPage() {
@@ -30,7 +31,7 @@ export default function VenuesPage() {
     }
 
     if (error) {
-        return <p>{error}</p>;
+        return <p className="error-message">{error}</p>;
     }
 
     return (

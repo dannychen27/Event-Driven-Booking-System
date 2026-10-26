@@ -3,6 +3,7 @@ import type { Booking } from "../types/Booking.ts";
 import { getBookingHistory } from "../api/bookings.ts";
 import BookingCard from "../components/BookingCard.tsx";
 import "../styles/pages/booking-page.css";
+import "../styles/errors/error-message.css";
 
 
 export default function BookingsPage() {
@@ -34,7 +35,7 @@ export default function BookingsPage() {
     }
 
     if (error) {
-        return <p>{error}</p>;
+        return <p className="error-message">{error}</p>;
     }
 
     return (
