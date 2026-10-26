@@ -37,62 +37,85 @@ describe("EventsController.searchEvents", () => {
         );
     });
 
-    it("should pass valid filters to the service", async () => {
-        await controller.searchEvents(
-            " coffee ",
-            "2026-10-24T00:00:00Z",
-            "2026-10-26T00:00:00Z",
-        );
+    describe("structured search", () => {
+        it("should pass valid filters to the service", async () => {
+            const events = [{ id: 1, name: "Coffee Meetup" }];
+            service.searchEvents.mockResolvedValueOnce(events);
 
-        expect(service.searchEvents).toHaveBeenCalledWith({
-            keyword: "coffee",
-            startAfter: "2026-10-24T00:00:00Z",
-            startBefore: "2026-10-26T00:00:00Z",
+            const result = await controller.searchEvents(
+                " coffee ",
+                undefined,
+                undefined,
+            );
+
+            expect(service.searchEvents).toHaveBeenCalledWith({
+                keyword: "coffee",
+            });
+            expect(result).toEqual(events);
+        });
+
+        it("should reject an empty keyword", () => {
+            expect(() =>
+                controller.searchEvents("   ", undefined, undefined),
+            ).toThrow(BadRequestException);
+
+            expect(service.searchEvents).not.toHaveBeenCalled();
+        });
+
+        it("should reject a keyword longer than 100 characters", () => {
+            expect(() =>
+                controller.searchEvents("a".repeat(101), undefined, undefined),
+            ).toThrow(BadRequestException);
+
+            expect(service.searchEvents).not.toHaveBeenCalled();
+        });
+
+        it("should reject an invalid start date", () => {
+            expect(() =>
+                controller.searchEvents(
+                    "coffee",
+                    "not-a-date",
+                    undefined,
+                ),
+            ).toThrow(BadRequestException);
+
+            expect(service.searchEvents).not.toHaveBeenCalled();
+        });
+
+        it("should reject a start date that is not earlier than the end date", () => {
+            expect(() =>
+                controller.searchEvents(
+                    "coffee",
+                    "2026-10-24T00:00:00Z",
+                    "2026-10-24T00:00:00Z",
+                ),
+            ).toThrow(BadRequestException);
+
+            expect(service.searchEvents).not.toHaveBeenCalled();
         });
     });
 
-    it("should reject an empty keyword", () => {
-        expect(() => controller.searchEvents("   "))
-            .toThrow(BadRequestException);
-    });
+    describe("natural-language search", () => {
+        it("should pass a valid natural-language query to the service", async () => {
+            const events = [{ id: 1, name: "Coffee Meetup" }];
+            naturalLanguageSearchService.searchNaturalLanguage.mockResolvedValue(events);
 
-    it("should reject a keyword longer than 100 characters", () => {
-        expect(() => controller.searchEvents("a".repeat(101)))
-            .toThrow(BadRequestException);
-    });
+            const result = await controller.searchEventsInNaturalLanguage({
+                query: "  Find coffee events  ",
+            });
 
-    it("should reject an invalid start date", () => {
-        expect(() => controller.searchEvents(undefined, "not-a-date"))
-            .toThrow(BadRequestException);
-    });
-
-    it("should reject a start date that is not earlier than the end date", () => {
-        expect(() => controller.searchEvents(
-            undefined,
-            "2026-10-26T00:00:00Z",
-            "2026-10-24T00:00:00Z",
-        )).toThrow(BadRequestException);
-    });
-
-    it("should pass a valid natural-language query to the service", async () => {
-        const events = [{ id: 1, name: "Coffee Meetup" }];
-        naturalLanguageSearchService.searchNaturalLanguage.mockResolvedValue(events);
-
-        const result = await controller.searchEventsInNaturalLanguage({
-            query: "  Find coffee events  ",
+            expect(naturalLanguageSearchService.searchNaturalLanguage)
+                .toHaveBeenCalledWith("Find coffee events");
+            expect(result).toEqual(events);
         });
 
-        expect(naturalLanguageSearchService.searchNaturalLanguage)
-            .toHaveBeenCalledWith("Find coffee events");
-        expect(result).toEqual(events);
-    });
+        it("should reject an empty natural-language query", () => {
+            expect(() =>
+                controller.searchEventsInNaturalLanguage({ query: "   " }),
+            ).toThrow(BadRequestException);
 
-    it("should reject an empty natural-language query", () => {
-        expect(() =>
-            controller.searchEventsInNaturalLanguage({ query: "   " }),
-        ).toThrow(BadRequestException);
-
-        expect(naturalLanguageSearchService.searchNaturalLanguage)
-            .not.toHaveBeenCalled();
+            expect(naturalLanguageSearchService.searchNaturalLanguage)
+                .not.toHaveBeenCalled();
+        });
     });
 });
