@@ -34,7 +34,7 @@ export default function BookingsPage() {
 
     if (loading) {
         return (
-            <p className="status-message">
+            <p className="status-message" role="status">
                 {`Loading bookings for user ${user_id}`}
             </p>
         );

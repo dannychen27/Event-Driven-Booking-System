@@ -133,7 +133,11 @@ export default function EventCard({ event }: EventCardProps) {
                     {bookingMessage}
                 </p>
             )}
-            {bookingStatus === "success" && <p className="success-message">{bookingMessage}</p>}
+            {bookingStatus === "success" && (
+                <p className="success-message" role="status">
+                    {bookingMessage}
+                </p>
+            )}
             {bookingStatus === "error" && <p className="error-message">{bookingMessage}</p>}
         </div>
     );

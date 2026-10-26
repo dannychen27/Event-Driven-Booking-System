@@ -151,7 +151,7 @@ export default function EventsPage() {
     }
 
     if (loading) {
-        return <p className="status-message">Loading events...</p>;
+        return <p className="status-message" role="status">Loading events...</p>;
     }
 
     if (error) {

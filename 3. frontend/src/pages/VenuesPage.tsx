@@ -29,7 +29,7 @@ export default function VenuesPage() {
     }, []);
 
     if (loading) {
-        return <p className="status-message">Loading venues...</p>;
+        return <p className="status-message" role="status">Loading venues...</p>;
     }
 
     if (error) {
