@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Event } from "../types/Event";
 import { createBooking, getBookingHistory } from "../api/bookings.ts";
+import "../styles/shared/card.css";
 import "../styles/events/event-card.css";
 import "../styles/shared/card-buttons.css";
 import "../styles/buttons/create-booking-button.css";
@@ -71,7 +72,7 @@ export default function EventCard({ event }: EventCardProps) {
     }
 
     return (
-        <div className="event-card">
+        <div className="card event-card">
             <h2>{event.name}</h2>
 
             <p>Event Id: {event.id}</p>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Booking } from "../types/Booking.ts";
 import { formatDate } from "../utils/Dates.ts";
+import "../styles/shared/card.css";
 import "../styles/bookings/booking-card.css";
 import "../styles/shared/card-buttons.css";
 import "../styles/buttons/cancel-booking-button.css";
@@ -75,7 +76,7 @@ export default function BookingCard({
     }
 
     return (
-        <div className="booking-card">
+        <div className="card booking-card">
             <h2>{booking.event_name ?? `Event ${booking.event_id}`}</h2>
             <p>Booking Id: {booking.id}</p>
             <p>Event Id: {booking.event_id}</p>
