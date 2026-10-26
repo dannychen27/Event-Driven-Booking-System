@@ -6,6 +6,10 @@ import { GeminiEventRanker } from '../../../../4. backend/src/events/ai/gemini/g
 import { GeminiSearchInterpreter } from '../../../../4. backend/src/events/ai/gemini/gemini-search-interpreter';
 import { NaturalLanguageSearchService } from '../../../../4. backend/src/events/search/natural-language-search.service';
 
+import {
+    SEARCH_START_BOUNDARY,
+    SEARCH_LATER_BOUNDARY,
+} from "../../fixtures/eventSearchFixtures";
 
 describe("NaturalLanguageSearchService", () => {
     let service: NaturalLanguageSearchService;
@@ -48,8 +52,8 @@ describe("NaturalLanguageSearchService", () => {
         interpreter = {
             interpret: jest.fn().mockResolvedValue({
                 intent: 'relaxing outdoor activities',
-                startAfter: '2026-10-24T00:00:00Z',
-                startBefore: '2026-10-27T00:00:00Z',
+                startAfter: SEARCH_START_BOUNDARY,
+                startBefore: SEARCH_LATER_BOUNDARY,
             }),
         };
 
@@ -68,12 +72,12 @@ describe("NaturalLanguageSearchService", () => {
         it('validates structured filters and delegates to ordinary event search', async () => {
             await service.search({
                 keyword: ' coffee ',
-                startAfter: '2026-10-24T00:00:00Z',
+                startAfter: SEARCH_START_BOUNDARY,
             });
 
             expect(eventsService.searchEvents).toHaveBeenCalledWith({
                 keyword: 'coffee',
-                startAfter: '2026-10-24T00:00:00Z',
+                startAfter: SEARCH_START_BOUNDARY,
             });
             expect(eventsService.searchEventCandidates).not.toHaveBeenCalled();
             expect(ranker.rank).not.toHaveBeenCalled();
@@ -107,8 +111,8 @@ describe("NaturalLanguageSearchService", () => {
                 'Find something relaxing outdoors this weekend',
             );
             expect(eventsService.searchEventCandidates).toHaveBeenCalledWith({
-                startAfter: '2026-10-24T00:00:00Z',
-                startBefore: '2026-10-27T00:00:00Z',
+                startAfter: SEARCH_START_BOUNDARY,
+                startBefore: SEARCH_LATER_BOUNDARY,
             });
             expect(ranker.rank).toHaveBeenCalledWith(
                 'Find something relaxing outdoors this weekend',
@@ -121,7 +125,7 @@ describe("NaturalLanguageSearchService", () => {
 
         it('returns date-filtered candidates without ranking when there is no intent', async () => {
             interpreter.interpret.mockResolvedValueOnce({
-                startAfter: '2026-10-24T00:00:00Z',
+                startAfter: SEARCH_START_BOUNDARY,
             });
 
             const result = await service.searchNaturalLanguage(
@@ -129,7 +133,7 @@ describe("NaturalLanguageSearchService", () => {
             );
 
             expect(eventsService.searchEventCandidates).toHaveBeenCalledWith({
-                startAfter: '2026-10-24T00:00:00Z',
+                startAfter: SEARCH_START_BOUNDARY,
                 startBefore: undefined,
             });
             expect(result).toEqual(candidates);

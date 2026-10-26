@@ -2,6 +2,11 @@ import {
     validateNaturalLanguageSearchPlan,
 } from "../../../../4. backend/src/events/search/natural-language-search";
 
+import {
+    SEARCH_START_BOUNDARY,
+    SEARCH_END_BOUNDARY,
+} from "../../fixtures/eventSearchFixtures";
+
 describe("validateNaturalLanguageSearchPlan", () => {
     it("should accept a semantic intent", () => {
         expect(validateNaturalLanguageSearchPlan({
@@ -13,8 +18,8 @@ describe("validateNaturalLanguageSearchPlan", () => {
 
     it("should accept date boundaries without an intent", () => {
         const plan = {
-            startAfter: "2026-10-24T00:00:00Z",
-            startBefore: "2026-10-26T00:00:00Z",
+            startAfter: SEARCH_START_BOUNDARY,
+            startBefore: SEARCH_END_BOUNDARY,
         };
 
         expect(validateNaturalLanguageSearchPlan(plan)).toEqual(plan);
@@ -52,8 +57,8 @@ describe("validateNaturalLanguageSearchPlan", () => {
 
     it("should reject a start boundary that is not earlier than the end boundary", () => {
         expect(() => validateNaturalLanguageSearchPlan({
-            startAfter: "2026-10-26T00:00:00Z",
-            startBefore: "2026-10-24T00:00:00Z",
+            startAfter: SEARCH_END_BOUNDARY,
+            startBefore: SEARCH_START_BOUNDARY,
         })).toThrow();
     });
 

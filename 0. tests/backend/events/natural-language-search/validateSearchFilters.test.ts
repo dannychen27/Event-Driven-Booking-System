@@ -2,6 +2,11 @@ import {
     validateSearchFilters,
 } from "../../../../4. backend/src/events/search/natural-language-search";
 
+import {
+    SEARCH_START_BOUNDARY,
+    SEARCH_END_BOUNDARY,
+} from "../../fixtures/eventSearchFixtures";
+
 describe("validateSearchFilters", () => {
     it("should accept a keyword filter", () => {
         expect(validateSearchFilters({ keyword: "Meet and Greet" }))
@@ -10,8 +15,8 @@ describe("validateSearchFilters", () => {
 
     it("should accept date boundaries", () => {
         const filters = {
-            startAfter: "2026-10-24T00:00:00Z",
-            startBefore: "2026-10-26T00:00:00Z",
+            startAfter: SEARCH_START_BOUNDARY,
+            startBefore: SEARCH_END_BOUNDARY,
         };
 
         expect(validateSearchFilters(filters)).toEqual(filters);
@@ -38,8 +43,8 @@ describe("validateSearchFilters", () => {
 
     it("should reject a start boundary that is not earlier than the end boundary", () => {
         expect(() => validateSearchFilters({
-            startAfter: "2026-10-26T00:00:00Z",
-            startBefore: "2026-10-24T00:00:00Z",
+            startAfter: SEARCH_END_BOUNDARY,
+            startBefore: SEARCH_START_BOUNDARY,
         })).toThrow();
     });
 
