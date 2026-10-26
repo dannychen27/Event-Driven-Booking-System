@@ -3,6 +3,7 @@ import type { Booking } from "../types/Booking.ts";
 import { formatDate } from "../utils/Dates.ts";
 import "../styles/bookings/booking-card.css";
 import "../styles/shared/card-buttons.css";
+import "../styles/buttons/cancel-booking-button.css";
 import "../styles/bookings/booking-card-modal.css";
 import { cancelBooking } from "../api/bookings.ts";
 import { Modal } from "./Modal.tsx";

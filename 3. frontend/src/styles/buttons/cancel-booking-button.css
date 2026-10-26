@@ -1,0 +1,10 @@
+.booking-card .cancel-button {
+    border-color: #dc3545;
+    color: #dc3545;
+    background: white;
+}
+
+.booking-card .cancel-button:hover {
+    background: #dc3545;
+    color: white;
+}
