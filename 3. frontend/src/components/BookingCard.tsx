@@ -6,6 +6,7 @@ import "../styles/bookings/booking-card.css";
 import "../styles/shared/card-buttons.css";
 import "../styles/buttons/cancel-booking-button.css";
 import "../styles/bookings/booking-card-modal.css";
+import "../styles/errors/cancellation-error.css";
 import { cancelBooking } from "../api/bookings.ts";
 import { Modal } from "./Modal.tsx";
 
