@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
 
 
-import BookingForm from "../../3. frontend/src/components/BookingForm";
+import BookingForm from "../../../3. frontend/src/components/BookingForm";
 
 
 export function renderBookingForm({
