@@ -1,6 +1,7 @@
 import { EventsService } from "../../../../4. backend/src/events/events.service";
 import { expectNthQuery } from "../../../utils/testHelpers";
 import { mockGetAllEvents } from "../../helpers/eventsTestHelpers";
+import {DatabaseService} from "../../../../4. backend/src/database/database.service";
 
 
 describe("EventsService.getAllEvents", () => {
@@ -52,6 +53,23 @@ describe("EventsService.getAllEvents", () => {
         expectNthQuery(db, 1, "v.address AS venue_address");
 
         // expectNthQuery(db, 1, "SELECT *");
+    });
+
+    it("returns an empty array when there are no events", async () => {
+        const db = {
+            query: jest
+                .fn()
+                .mockResolvedValueOnce({
+                    rows: [],
+                }),
+        } as unknown as DatabaseService;
+
+        const service = new EventsService(db);
+
+        const result = await service.getAllEvents();
+
+        expect(result).toEqual([]);
+        expect(db.query).toHaveBeenCalledTimes(1);
     });
 });
 
