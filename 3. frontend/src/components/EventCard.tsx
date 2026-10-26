@@ -5,6 +5,8 @@ import "../styles/shared/card.css";
 import "../styles/events/event-card.css";
 import "../styles/shared/card-buttons.css";
 import "../styles/buttons/create-booking-button.css";
+import "../styles/errors/error-message.css";
+import "../styles/errors/success-message.css";
 import { Modal } from "./Modal.tsx";
 import BookingForm from "./BookingForm.tsx";
 import { formatDate } from "../utils/Dates.ts";
@@ -104,7 +106,7 @@ export default function EventCard({ event }: EventCardProps) {
                 Create Booking
             </button>
             {alreadyBooked && (
-                <p className="booking-error">
+                <p className="error-message">
                     You already booked this event.
                 </p>
             )}
@@ -126,8 +128,8 @@ export default function EventCard({ event }: EventCardProps) {
                 />
             )}
             {bookingStatus === "creating" && <p>{bookingMessage}</p>}
-            {bookingStatus === "success" && <p className="booking-success">{bookingMessage}</p>}
-            {bookingStatus === "error" && <p className="booking-error">{bookingMessage}</p>}
+            {bookingStatus === "success" && <p className="success-message">{bookingMessage}</p>}
+            {bookingStatus === "error" && <p className="error-message">{bookingMessage}</p>}
         </div>
     );
 }

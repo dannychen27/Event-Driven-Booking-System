@@ -1,7 +1,6 @@
-.modal-content .cancellation-error {
-    color: #dc3545;
+.success-message {
+    color: #28a745;
     font-size: 0.9rem;
     font-weight: 500;
-
     margin-top: 1rem;
 }
