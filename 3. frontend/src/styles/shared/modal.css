@@ -3,35 +3,51 @@
     color: var(--text);
 
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    width: min(90%, 400px);
+    width: min(90%, 500px);
+    border: 1px solid var(--border);
     border-radius: 8px;
-
+    padding: 1.5rem;
     margin-top: 1rem;
 }
 
-.modal-content h2 {
-    margin-top: 0;
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
-.modal-content p {
+.modal-body h2 {
+    margin: 0 0 0.5rem;
+}
+
+.modal-body p {
+    margin: 0;
     color: var(--secondary-text);
 }
 
 .modal-actions {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
 }
 
 .modal-actions button {
-    border: 1px solid var(--border);
-    color: var(--text);
-    background: var(--surface);
+    margin: 0;
+    padding: 0.75rem 1.25rem;
 
-    white-space: nowrap;
-    cursor: pointer;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text);
 
     font-size: 1rem;
+    white-space: nowrap;
+    cursor: pointer;
+}
 
-    padding: 0.75rem 1.25rem;
-    border-radius: 6px;
+.modal-actions button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
 }

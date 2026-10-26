@@ -115,15 +115,20 @@ export default function BookingCard({
             </button>
 
             {showCancelModal && (
-                <Modal actions={getCancelModalButtons()}>
-                    <h2>Cancel Booking?</h2>
-                    <p>This action cannot be undone.</p>
-                    {cancellationError && (
-                        <p className="cancellation-error">
-                            {cancellationError}
-                        </p>
-                    )}
-                </Modal>
+                <Modal
+                    body={
+                        <>
+                            <h2>Cancel Booking?</h2>
+                            <p>This action cannot be undone.</p>
+                            {cancellationError && (
+                                <p className="cancellation-error">
+                                    {cancellationError}
+                                </p>
+                            )}
+                        </>
+                    }
+                    actions={getCancelModalButtons()}
+                />
             )}
         </div>
     );

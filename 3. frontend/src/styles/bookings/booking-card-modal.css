@@ -1,16 +1,15 @@
-.booking-card .keep-booking-button {
+.modal-content .keep-booking-button {
     background: white;
-
     border-color: #28a745;
     color: #28a745;
 }
 
-.booking-card .keep-booking-button:hover {
+.modal-content .keep-booking-button:hover {
     background: #28a745;
     color: white;
 }
 
-.booking-card .cancellation-error {
+.modal-content .cancellation-error {
     color: #dc3545;
     font-size: 0.9rem;
     font-weight: 500;

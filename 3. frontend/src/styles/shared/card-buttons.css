@@ -1,5 +1,5 @@
-.event-card button,
-.booking-card button {
+.event-card > button,
+.booking-card > button {
     background: #f5f5f5;
     font-size: 0.9rem;
     border: 1px solid #ccc;
@@ -10,7 +10,7 @@
     cursor: pointer;
 }
 
-.event-card button:hover,
-.booking-card button:hover {
+.event-card > button:hover,
+.booking-card > button:hover {
     background: #e9e9e9;
 }

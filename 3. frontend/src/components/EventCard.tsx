@@ -109,20 +109,22 @@ export default function EventCard({ event }: EventCardProps) {
                 </p>
             )}
 
-            {showBookingForm &&
-                <Modal actions={[]}>
-                    <BookingForm
-                        onCancel={() => setShowBookingForm(false)}
-                        onBookingCreated={async () => {
-                            const bookingSuccessful = await handleCreateBooking();
-                            if (bookingSuccessful) {
-                                setAlreadyBooked(true);
-                                setShowBookingForm(false);
-                            }
-                        }}
-                    />
-                </Modal>
-            }
+            {showBookingForm && (
+                <Modal
+                    body={
+                        <BookingForm
+                            onCancel={() => setShowBookingForm(false)}
+                            onBookingCreated={async () => {
+                                const bookingSuccessful = await handleCreateBooking();
+                                if (bookingSuccessful) {
+                                    setAlreadyBooked(true);
+                                    setShowBookingForm(false);
+                                }
+                            }}
+                        />
+                    }
+                />
+            )}
             {bookingStatus === "creating" && <p>{bookingMessage}</p>}
             {bookingStatus === "success" && <p className="booking-success">{bookingMessage}</p>}
             {bookingStatus === "error" && <p className="booking-error">{bookingMessage}</p>}

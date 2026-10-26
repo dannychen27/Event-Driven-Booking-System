@@ -10,28 +10,32 @@ interface ModalAction {
 }
 
 interface ModalProps {
-    children: ReactNode;
-    actions: ModalAction[];
+    body: ReactNode;
+    actions?: ModalAction[];
 }
 
 
-export function Modal({ children, actions }: ModalProps) {
+export function Modal({ body, actions = [] }: ModalProps) {
     return (
         <div className="modal-content">
-            {children}
-
-            <div className="modal-actions">
-                {actions.map((action) => (
-                    <button
-                        key={action.label}
-                        className={action.className}
-                        onClick={action.onClick}
-                        disabled={action.disabled}
-                    >
-                        {action.label}
-                    </button>
-                ))}
+            <div className="modal-body">
+                {body}
             </div>
+
+            {actions.length > 0 && (
+                <div className="modal-actions">
+                    {actions.map((action) => (
+                        <button
+                            key={action.label}
+                            className={action.className}
+                            onClick={action.onClick}
+                            disabled={action.disabled}
+                        >
+                            {action.label}
+                        </button>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
