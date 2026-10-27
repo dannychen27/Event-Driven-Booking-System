@@ -4,6 +4,9 @@ import {
     SEARCH_START_BOUNDARY,
     SEARCH_END_BOUNDARY,
     SEARCH_LATER_BOUNDARY,
+    NO_FILTER_EVENTS_FIXTURE,
+    keywordSearchEventsFixture,
+    eventCandidateFixture,
 } from "../../fixtures/eventSearchFixtures";
 
 describe("EventsService.searchEvents", () => {
@@ -19,14 +22,11 @@ describe("EventsService.searchEvents", () => {
     });
 
     it("should search event and venue names by keyword", async () => {
-        const events = [{ id: 1, name: "Coffee Meetup" }];
-        db.query.mockResolvedValueOnce({ rows: events });
+        db.query.mockResolvedValueOnce({ rows: keywordSearchEventsFixture });
 
-        const result = await service.searchEvents({
-            keyword: "coffee",
-        });
+        const result = await service.searchEvents({ keyword: "coffee", });
 
-        expect(result).toEqual(events);
+        expect(result).toEqual(keywordSearchEventsFixture);
         expectNthQuery(
             db,
             1,
@@ -72,34 +72,25 @@ describe("EventsService.searchEvents", () => {
     });
 
     it("should return all events when no filters are provided", async () => {
-        const events = [{ id: 1 }, { id: 2 }];
-        db.query.mockResolvedValueOnce({ rows: events });
+        db.query.mockResolvedValueOnce({ rows: NO_FILTER_EVENTS_FIXTURE, });
 
         const result = await service.searchEvents({});
 
-        expect(result).toEqual(events);
+        expect(result).toEqual(NO_FILTER_EVENTS_FIXTURE);
         expectNthQuery(db, 1, "JOIN venues", []);
         expectNthQuery(db, 1, "ORDER BY e.start_time ASC", []);
         expect(db.query).toHaveBeenCalledTimes(1);
     });
 
     it('should retrieve candidates using date bounds without keyword matching', async () => {
-        const events = [
-            {
-                id: 1,
-                name: 'Outdoor Yoga',
-                description: 'A relaxing session in a park.',
-                venue_name: 'Central Park',
-            },
-        ];
-        db.query.mockResolvedValueOnce({ rows: events });
+        db.query.mockResolvedValueOnce({ rows: eventCandidateFixture, });
 
         const result = await service.searchEventCandidates({
             startAfter: SEARCH_START_BOUNDARY,
             startBefore: SEARCH_LATER_BOUNDARY,
         });
 
-        expect(result).toEqual(events);
+        expect(result).toEqual(eventCandidateFixture);
         expectNthQuery(
             db,
             1,
@@ -120,12 +111,11 @@ describe("EventsService.searchEvents", () => {
     });
 
     it('should retrieve all candidates when no date bounds are provided', async () => {
-        const events = [{ id: 1 }, { id: 2 }];
-        db.query.mockResolvedValueOnce({ rows: events });
+        db.query.mockResolvedValueOnce({ rows: NO_FILTER_EVENTS_FIXTURE });
 
         const result = await service.searchEventCandidates({});
 
-        expect(result).toEqual(events);
+        expect(result).toEqual(NO_FILTER_EVENTS_FIXTURE);
         expect(db.query).toHaveBeenCalledTimes(1);
 
         const sql = db.query.mock.calls[0][0] as string;
