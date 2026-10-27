@@ -44,3 +44,12 @@ export const secondInitialRenderEventFixture = {
     end_time: "2026-09-11T11:00:00Z",
     capacity: 20,
 };
+
+export const initialEventFixture = {
+    id: 1,
+    name: "Initial Event",
+    venue_id: 1,
+    start_time: "2026-10-24T10:00:00Z",
+    end_time: "2026-10-24T11:00:00Z",
+    capacity: 10,
+};

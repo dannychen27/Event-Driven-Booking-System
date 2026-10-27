@@ -13,6 +13,7 @@ import {
     newerSearchResultFixture,
     olderSearchResultFixture,
     coffeeMeetupEventFixture,
+    initialEventFixture,
 } from "../fixtures/eventFixtures";
 
 
@@ -449,16 +450,7 @@ describe("EventsPage", () => {
     });
 
     it("clears both search inputs and restores all events", async () => {
-        vi.mocked(getEvents).mockResolvedValue([
-            {
-                id: 1,
-                name: "Initial Event",
-                venue_id: 1,
-                start_time: "2026-10-24T10:00:00Z",
-                end_time: "2026-10-24T11:00:00Z",
-                capacity: 10,
-            },
-        ]);
+        vi.mocked(getEvents).mockResolvedValue([initialEventFixture]);
         vi.mocked(searchEvents).mockResolvedValue([]);
         vi.mocked(searchEventsNaturalLanguage).mockResolvedValue([]);
 
@@ -612,16 +604,7 @@ describe("EventsPage", () => {
     });
 
     it("preserves previous results when a new search fails", async () => {
-        vi.mocked(getEvents).mockResolvedValue([
-            {
-                id: 1,
-                name: "Initial Event",
-                venue_id: 1,
-                start_time: "2026-10-24T10:00:00Z",
-                end_time: "2026-10-24T11:00:00Z",
-                capacity: 10,
-            },
-        ]);
+        vi.mocked(getEvents).mockResolvedValue([initialEventFixture]);
         vi.mocked(searchEvents).mockRejectedValue(
             new Error("Failed to search events"),
         );
