@@ -12,10 +12,10 @@ import {
     secondInitialRenderEventFixture,
     newerSearchResultFixture,
     olderSearchResultFixture,
-    coffeeMeetupEventFixture,
     initialEventFixture,
     naturalLanguageSearchResultFixture,
     meetAndGreetSearchResultFixture,
+    coffeeMeetupAtMossParkFixture
 } from "../fixtures/eventFixtures";
 
 
@@ -93,15 +93,7 @@ describe("EventsPage", () => {
     });
 
     it("clears the keyword query without submitting or resetting results", async () => {
-        vi.mocked(getEvents).mockResolvedValue([
-            {
-                id: 1,
-                ...coffeeMeetupEventFixture,
-                venue_id: 2,
-                venue_name: "Moss Park Espresso",
-                venue_address: "185 Queen St E",
-            },
-        ]);
+        vi.mocked(getEvents).mockResolvedValue([coffeeMeetupAtMossParkFixture,]);
 
         render(<EventsPage />);
 

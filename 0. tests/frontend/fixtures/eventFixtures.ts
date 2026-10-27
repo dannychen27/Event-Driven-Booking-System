@@ -70,3 +70,11 @@ export const meetAndGreetSearchResultFixture = {
     end_time: "2026-08-09T00:00:00Z",
     capacity: 1,
 };
+
+export const coffeeMeetupAtMossParkFixture = {
+    id: 1,
+    ...coffeeMeetupEventFixture,
+    venue_id: 2,
+    venue_name: "Moss Park Espresso",
+    venue_address: "185 Queen St E",
+};
