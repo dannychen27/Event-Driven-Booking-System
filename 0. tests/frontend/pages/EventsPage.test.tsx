@@ -10,6 +10,7 @@ import type { Event } from "../../../3. frontend/src/types/Event";
 import {
     newerSearchResultFixture,
     olderSearchResultFixture,
+    coffeeMeetupEventFixture,
 } from "../fixtures/eventFixtures";
 
 
@@ -104,13 +105,10 @@ describe("EventsPage", () => {
         vi.mocked(getEvents).mockResolvedValue([
             {
                 id: 1,
-                name: "Coffee Meetup",
+                ...coffeeMeetupEventFixture,
                 venue_id: 2,
                 venue_name: "Moss Park Espresso",
                 venue_address: "185 Queen St E",
-                start_time: "2026-10-24T10:00:00Z",
-                end_time: "2026-10-24T11:00:00Z",
-                capacity: 10,
             },
         ]);
 
@@ -235,11 +233,8 @@ describe("EventsPage", () => {
         vi.mocked(searchEventsNaturalLanguage).mockResolvedValue([
             {
                 id: 3,
-                name: "Coffee Meetup",
+                ...coffeeMeetupEventFixture,
                 venue_id: 1,
-                start_time: "2026-10-24T10:00:00Z",
-                end_time: "2026-10-24T11:00:00Z",
-                capacity: 10,
             },
         ]);
 
