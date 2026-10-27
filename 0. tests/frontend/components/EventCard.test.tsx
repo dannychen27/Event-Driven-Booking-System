@@ -3,6 +3,9 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 
+import { existingBookingFixture } from "../fixtures/bookingFixtures";
+
+
 import EventCard from "../../../3. frontend/src/components/EventCard";
 import { createBooking, getBookingHistory } from "../../../3. frontend/src/api/bookings";
 import { mockEvent } from "../../mocks/eventMocks";
@@ -81,14 +84,7 @@ describe("EventCard", () => {
     );
 
     it("shows an error when the user has already booked the event", async () => {
-        vi.mocked(getBookingHistory).mockResolvedValue([
-            {
-                id: 1,
-                user_id: 1,
-                event_id: 1,
-                created_at: "2026-09-06T12:00:00Z",
-            },
-        ]);
+        vi.mocked(getBookingHistory).mockResolvedValue([existingBookingFixture,]);
 
         const user = userEvent.setup();
 

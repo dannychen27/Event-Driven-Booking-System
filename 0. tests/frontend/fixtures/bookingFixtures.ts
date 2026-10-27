@@ -24,3 +24,5 @@ export const bookingHistoryFixture: Booking[] = [
         venue_address: "255 Front Street West",
     },
 ];
+
+export const existingBookingFixture: Booking = bookingHistoryFixture[0];
