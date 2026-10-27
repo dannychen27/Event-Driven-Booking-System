@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 
+import { bookingHistoryFixture } from "../fixtures/bookingFixtures";
 
 import BookingsPage from "../../../3. frontend/src/pages/BookingsPage";
 import { getBookingHistory } from "../../../3. frontend/src/api/bookings";
@@ -13,22 +14,26 @@ vi.mock("../../../3. frontend/src/api/bookings.ts", () => ({
 }));
 
 
-vi.mock("../../../3. frontend/src/components/BookingCard.tsx", () => ({
-    default: ({
-                  booking,
-                  onBookingCancelled,
-              }: {
-        booking: Booking;
-        onBookingCancelled: () => void;
-    }) => (
-        <div>
-            <p>Mock Booking Card: {booking.id}</p>
-            <button onClick={onBookingCancelled}>
-                Cancel Booking {booking.id}
-            </button>
-        </div>
-    ),
-}));
+vi.mock("../../../3. frontend/src/components/BookingCard.tsx", () => (
+    {
+        default: (
+            {
+                booking,
+                onBookingCancelled,
+            }: {
+                booking: Booking;
+                onBookingCancelled: () => void;
+            }
+        ) => (
+            <div>
+                <p>Mock Booking Card: {booking.id}</p>
+                <button onClick={onBookingCancelled}>
+                    Cancel Booking {booking.id}
+                </button>
+            </div>
+        ),
+    }
+));
 
 
 describe("BookingsPage", () => {
@@ -46,30 +51,7 @@ describe("BookingsPage", () => {
     });
 
     it("renders bookings after they are successfully fetched", async () => {
-        vi.mocked(getBookingHistory).mockResolvedValue([
-            {
-                id: 1,
-                user_id: 1,
-                event_id: 1,
-                created_at: "2026-09-06T12:00:00Z",
-                event_name: "Toronto Tech Meetup",
-                start_time: "2026-09-10T18:00:00Z",
-                end_time: "2026-09-10T20:00:00Z",
-                venue_name: "Innovation Hub",
-                venue_address: "100 King Street West",
-            },
-            {
-                id: 2,
-                user_id: 1,
-                event_id: 2,
-                created_at: "2026-09-06T13:00:00Z",
-                event_name: "AI Research Conference",
-                start_time: "2026-09-11T14:00:00Z",
-                end_time: "2026-09-11T17:00:00Z",
-                venue_name: "Toronto Convention Centre",
-                venue_address: "255 Front Street West",
-            },
-        ]);
+        vi.mocked(getBookingHistory).mockResolvedValue(bookingHistoryFixture);
 
         render(<BookingsPage />);
 
@@ -99,43 +81,18 @@ describe("BookingsPage", () => {
 
         expect(await screen.findByText("Failed to load bookings for user 1"))
             .toBeInTheDocument();
-
         expect(screen.queryByText("Loading bookings for user 1"))
             .not.toBeInTheDocument();
     });
 
     it("removes a booking when it is cancelled", async () => {
-        vi.mocked(getBookingHistory).mockResolvedValue([
-            {
-                id: 1,
-                user_id: 1,
-                event_id: 1,
-                created_at: "2026-09-06T12:00:00Z",
-                event_name: "Toronto Tech Meetup",
-                start_time: "2026-09-10T18:00:00Z",
-                end_time: "2026-09-10T20:00:00Z",
-                venue_name: "Innovation Hub",
-                venue_address: "100 King Street West",
-            },
-            {
-                id: 2,
-                user_id: 1,
-                event_id: 2,
-                created_at: "2026-09-06T13:00:00Z",
-                event_name: "AI Research Conference",
-                start_time: "2026-09-11T14:00:00Z",
-                end_time: "2026-09-11T17:00:00Z",
-                venue_name: "Toronto Convention Centre",
-                venue_address: "255 Front Street West",
-            },
-        ]);
+        vi.mocked(getBookingHistory).mockResolvedValue(bookingHistoryFixture);
 
         const user = userEvent.setup();
 
         render(<BookingsPage />);
 
         expect(await screen.findByText("Mock Booking Card: 1")).toBeInTheDocument();
-
         expect(screen.getByText("Mock Booking Card: 2")).toBeInTheDocument();
 
         await user.click(
