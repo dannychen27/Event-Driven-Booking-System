@@ -1,23 +1,13 @@
-import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
-
-
-import NavigationBar from "../../../3. frontend/src/components/NavigationBar";
+import { renderNavigationBar } from "../helpers/navigationBarTestHelpers";
 
 
 describe("NavigationBar", () => {
 
     it("renders the navigation links", () => {
-        render(
-            <MemoryRouter>
-                <NavigationBar
-                    darkMode={false}
-                    onToggleDarkMode={() => {}}
-                />
-            </MemoryRouter>,
-        );
+        renderNavigationBar();
 
         expect(
             screen.getByRole("link", {
@@ -39,14 +29,7 @@ describe("NavigationBar", () => {
     });
 
     it("renders the correct theme toggle in light mode", () => {
-        render(
-            <MemoryRouter>
-                <NavigationBar
-                    darkMode={false}
-                    onToggleDarkMode={() => {}}
-                />
-            </MemoryRouter>,
-        );
+        renderNavigationBar({ darkMode: false });
 
         expect(
             screen.getByRole("button", {
@@ -56,14 +39,7 @@ describe("NavigationBar", () => {
     });
 
     it("renders the correct theme toggle in dark mode", () => {
-        render(
-            <MemoryRouter>
-                <NavigationBar
-                    darkMode={true}
-                    onToggleDarkMode={() => {}}
-                />
-            </MemoryRouter>,
-        );
+        renderNavigationBar({ darkMode: true });
 
         expect(
             screen.getByRole("button", {
@@ -76,14 +52,7 @@ describe("NavigationBar", () => {
         const onToggleDarkMode = vi.fn();
         const user = userEvent.setup();
 
-        render(
-            <MemoryRouter>
-                <NavigationBar
-                    darkMode={false}
-                    onToggleDarkMode={onToggleDarkMode}
-                />
-            </MemoryRouter>,
-        );
+        renderNavigationBar({ onToggleDarkMode });
 
         await user.click(
             screen.getByRole("button", {
