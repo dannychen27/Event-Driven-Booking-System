@@ -15,7 +15,8 @@ import {
     initialEventFixture,
     naturalLanguageSearchResultFixture,
     meetAndGreetSearchResultFixture,
-    coffeeMeetupAtMossParkFixture
+    coffeeMeetupAtMossParkFixture,
+    minimalCoffeeMeetupEventFixture,
 } from "../fixtures/eventFixtures";
 
 
@@ -385,12 +386,7 @@ describe("EventsPage", () => {
     });
 
     it("clears only the AI query without submitting or resetting results", async () => {
-        const events = [
-            {
-                id: 1,
-                name: "Coffee Meetup",
-            },
-        ] as Event[];
+        const events = [minimalCoffeeMeetupEventFixture,] as Event[];
 
         vi.mocked(getEvents).mockResolvedValue(events);
 

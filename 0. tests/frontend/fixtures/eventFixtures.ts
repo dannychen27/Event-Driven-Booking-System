@@ -78,3 +78,8 @@ export const coffeeMeetupAtMossParkFixture = {
     venue_name: "Moss Park Espresso",
     venue_address: "185 Queen St E",
 };
+
+export const minimalCoffeeMeetupEventFixture = {
+    id: 1,
+    name: "Coffee Meetup",
+};
