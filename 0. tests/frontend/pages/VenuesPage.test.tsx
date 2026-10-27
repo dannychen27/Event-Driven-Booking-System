@@ -2,6 +2,9 @@ import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 
+import { venueListFixture } from "../fixtures/venueFixtures";
+
+
 import VenuesPage from "../../../3. frontend/src/pages/VenuesPage";
 import { getVenues } from "../../../3. frontend/src/api/venues";
 import type { Venue } from "../../../3. frontend/src/types/Venue.ts";
@@ -34,27 +37,14 @@ describe("VenuesPage", () => {
     });
 
     it("renders venues after they are successfully fetched", async () => {
-        vi.mocked(getVenues).mockResolvedValue([
-            {
-                id: 1,
-                name: "Test Venue 1",
-                address: "123 Test Street",
-            },
-            {
-                id: 2,
-                name: "Test Venue 2",
-                address: "456 Test Avenue",
-            },
-        ]);
+        vi.mocked(getVenues).mockResolvedValue(venueListFixture);
 
         render(<VenuesPage />);
 
         expect(await screen.findByText("Mock Venue Card: Test Venue 1"))
             .toBeInTheDocument();
-
         expect(screen.getByText("Mock Venue Card: Test Venue 2"))
             .toBeInTheDocument();
-
         expect(screen.queryByText("Loading venues..."))
             .not.toBeInTheDocument();
     });
@@ -66,7 +56,6 @@ describe("VenuesPage", () => {
 
         expect(await screen.findByText("No available venues right now."))
             .toBeInTheDocument();
-
         expect(screen.queryByText("Loading venues..."))
             .not.toBeInTheDocument();
     });
@@ -80,7 +69,6 @@ describe("VenuesPage", () => {
 
         expect(await screen.findByText("Failed to load venues"))
             .toBeInTheDocument();
-
         expect(screen.queryByText("Loading venues..."))
             .not.toBeInTheDocument();
     });
