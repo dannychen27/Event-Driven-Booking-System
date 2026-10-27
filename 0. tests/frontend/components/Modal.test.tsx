@@ -1,30 +1,15 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 
 
-import { Modal } from "../../../3. frontend/src/components/Modal";
+import { renderModal } from "../helpers/modalTestHelpers";
 
 
 describe("Modal", () => {
 
     it("renders its body and actions", () => {
-        render(
-            <Modal
-                body={
-                    <>
-                        <h2>Test Modal</h2>
-                        <p>Test message.</p>
-                    </>
-                }
-                actions={[
-                    {
-                        label: "Confirm",
-                        onClick: () => {},
-                    },
-                ]}
-            />,
-        );
+        renderModal();
 
         expect(
             screen.getByRole("heading", {
@@ -32,9 +17,8 @@ describe("Modal", () => {
             }),
         ).toBeInTheDocument();
 
-        expect(
-            screen.getByText("Test message."),
-        ).toBeInTheDocument();
+        expect(screen.getByText("Test message."),)
+            .toBeInTheDocument();
 
         expect(
             screen.getByRole("button", {
@@ -50,26 +34,15 @@ describe("Modal", () => {
             }),
         );
 
-        expect(
-            document.querySelector(".modal-actions"),
-        ).toBeInTheDocument();
+        expect(document.querySelector(".modal-actions"),)
+            .toBeInTheDocument();
     });
 
     it("calls an action handler when the action button is clicked", async () => {
         const onClick = vi.fn();
         const user = userEvent.setup();
 
-        render(
-            <Modal
-                body={<h2>Test Modal</h2>}
-                actions={[
-                    {
-                        label: "Confirm",
-                        onClick,
-                    },
-                ]}
-            />,
-        );
+        renderModal({ onClick });
 
         await user.click(
             screen.getByRole("button", {
@@ -81,16 +54,7 @@ describe("Modal", () => {
     });
 
     it("does not render an empty actions container when no actions are supplied", () => {
-        render(
-            <Modal
-                body={
-                    <>
-                        <h2>Test Modal</h2>
-                        <p>Test message.</p>
-                    </>
-                }
-            />,
-        );
+        renderModal({ withActions: false });
 
         expect(
             screen.getByRole("heading", {
@@ -98,9 +62,8 @@ describe("Modal", () => {
             }),
         ).toBeInTheDocument();
 
-        expect(
-            document.querySelector(".modal-actions"),
-        ).not.toBeInTheDocument();
+        expect(document.querySelector(".modal-actions"),)
+            .not.toBeInTheDocument();
     });
 });
 
