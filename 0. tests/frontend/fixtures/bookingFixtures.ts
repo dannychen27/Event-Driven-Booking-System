@@ -26,3 +26,9 @@ export const bookingHistoryFixture: Booking[] = [
 ];
 
 export const existingBookingFixture: Booking = bookingHistoryFixture[0];
+
+export const apiBookingFixture = {
+    id: 10,
+    user_id: 1,
+    event_id: 2,
+};
