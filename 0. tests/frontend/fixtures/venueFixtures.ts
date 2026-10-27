@@ -1,4 +1,5 @@
 import type { Venue } from "../../../3. frontend/src/types/Venue";
+import { mockVenue } from "../../mocks/venueMocks";
 
 export const venueListFixture: Venue[] = [
     {
@@ -12,3 +13,5 @@ export const venueListFixture: Venue[] = [
         address: "456 Test Avenue",
     },
 ];
+
+export const venueCardFixture: Venue = mockVenue;

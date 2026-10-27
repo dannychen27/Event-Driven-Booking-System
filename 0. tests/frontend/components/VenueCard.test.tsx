@@ -3,12 +3,12 @@ import { describe, expect, it } from "vitest";
 
 
 import VenueCard from "../../../3. frontend/src/components/VenueCard";
-import { mockVenue } from "../../mocks/venueMocks";
+import { venueCardFixture } from "../fixtures/venueFixtures";
 
 
 describe("VenueCard", () => {
     it("renders the venue information", () => {
-        render(<VenueCard venue={mockVenue} />);
+        render(<VenueCard venue={venueCardFixture} />);
 
         expect(
             screen.getByRole("heading", {
