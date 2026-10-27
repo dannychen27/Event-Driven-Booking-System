@@ -1,3 +1,6 @@
+import { mossParkEspressoFixture } from "../fixtures/venueFixtures";
+
+
 export const mockEventExists = (
     client: any,
     eventId: number,
@@ -46,8 +49,7 @@ export const mockGetEvent = (
         rows: [
             {
                 id: eventId,
-                venue_name: "Moss Park Espresso",
-                venue_address: "185 Queen St E",
+                ...mossParkEspressoFixture,
                 start_time: startTime,
                 end_time: endTime,
                 capacity,
