@@ -2,6 +2,7 @@ import {
     GeminiSearchInterpreter,
     parseNaturalLanguageSearchPlan,
 } from "../../../../4. backend/src/events/ai/gemini/gemini-search-interpreter";
+import { geminiClientConfigFixture } from '../../fixtures/geminiClientConfigFixture';
 
 
 jest.mock('@google/genai', () => ({
@@ -22,15 +23,9 @@ describe("GeminiSearchInterpreter", () => {
 
         new GeminiSearchInterpreter('test-api-key');
 
-        expect(GoogleGenAI).toHaveBeenCalledWith({
-            apiKey: 'test-api-key',
-            httpOptions: {
-                timeout: 20_000,
-                retryOptions: {
-                    attempts: 2,
-                },
-            },
-        });
+        expect(GoogleGenAI).toHaveBeenCalledWith(
+            geminiClientConfigFixture('test-api-key'),
+        );
     });
 
     it("should include the current Toronto date and timezone in the prompt", async () => {

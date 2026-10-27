@@ -1,6 +1,7 @@
 import {
     GeminiEventRanker,
 } from '../../../../4. backend/src/events/ai/gemini/gemini-event-ranker';
+import { geminiClientConfigFixture } from '../../fixtures/geminiClientConfigFixture';
 
 jest.mock('@google/genai', () => ({
     GoogleGenAI: jest.fn().mockImplementation(() => ({
@@ -37,15 +38,9 @@ describe('GeminiEventRanker', () => {
 
         new GeminiEventRanker('test-api-key');
 
-        expect(GoogleGenAI).toHaveBeenCalledWith({
-            apiKey: 'test-api-key',
-            httpOptions: {
-                timeout: 20_000,
-                retryOptions: {
-                    attempts: 2,
-                },
-            },
-        });
+        expect(GoogleGenAI).toHaveBeenCalledWith(
+            geminiClientConfigFixture('test-api-key'),
+        );
     });
 
     it('returns an empty ranking without calling Gemini when there are no candidates', async () => {
