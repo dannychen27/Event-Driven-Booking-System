@@ -17,6 +17,7 @@ import {
     meetAndGreetSearchResultFixture,
     coffeeMeetupAtMossParkFixture,
     minimalCoffeeMeetupEventFixture,
+    reloadFailureInitialEventFixture,
 } from "../fixtures/eventFixtures";
 
 
@@ -450,16 +451,7 @@ describe("EventsPage", () => {
 
     it("shows an error when clearing search fails to reload events", async () => {
         vi.mocked(getEvents)
-            .mockResolvedValueOnce([
-                {
-                    id: 1,
-                    name: "Initial Event",
-                    description: "An initial event",
-                    date: "2026-11-01T10:00:00Z",
-                    venue_id: 1,
-                    capacity: 10,
-                },
-            ])
+            .mockResolvedValueOnce([reloadFailureInitialEventFixture,])
             .mockRejectedValueOnce(new Error("Failed to reload events"));
 
         vi.mocked(searchEvents).mockResolvedValue([]);

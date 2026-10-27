@@ -83,3 +83,12 @@ export const minimalCoffeeMeetupEventFixture = {
     id: 1,
     name: "Coffee Meetup",
 };
+
+export const reloadFailureInitialEventFixture = {
+    id: 1,
+    name: "Initial Event",
+    description: "An initial event",
+    date: "2026-11-01T10:00:00Z",
+    venue_id: 1,
+    capacity: 10,
+};
