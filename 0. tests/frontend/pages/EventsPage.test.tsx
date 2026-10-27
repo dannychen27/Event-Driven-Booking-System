@@ -8,6 +8,8 @@ import {
 } from "../../../3. frontend/src/api/events";
 import type { Event } from "../../../3. frontend/src/types/Event";
 import {
+    firstInitialRenderEventFixture,
+    secondInitialRenderEventFixture,
     newerSearchResultFixture,
     olderSearchResultFixture,
     coffeeMeetupEventFixture,
@@ -47,22 +49,8 @@ describe("EventsPage", () => {
 
     it("renders events after they are successfully fetched", async () => {
         vi.mocked(getEvents).mockResolvedValue([
-            {
-                id: 1,
-                name: "Test Event 1",
-                venue_id: 1,
-                start_time: "2026-09-10T10:00:00Z",
-                end_time: "2026-09-10T11:00:00Z",
-                capacity: 10,
-            },
-            {
-                id: 2,
-                name: "Test Event 2",
-                venue_id: 2,
-                start_time: "2026-09-11T10:00:00Z",
-                end_time: "2026-09-11T11:00:00Z",
-                capacity: 20,
-            },
+            firstInitialRenderEventFixture,
+            secondInitialRenderEventFixture,
         ]);
 
         render(<EventsPage />);
