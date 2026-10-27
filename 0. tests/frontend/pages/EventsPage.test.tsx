@@ -7,6 +7,10 @@ import {
     searchEventsNaturalLanguage,
 } from "../../../3. frontend/src/api/events";
 import type { Event } from "../../../3. frontend/src/types/Event";
+import {
+    newerSearchResultFixture,
+    olderSearchResultFixture,
+} from "../fixtures/eventFixtures";
 
 
 vi.mock("../../../3. frontend/src/api/events", () => ({
@@ -702,36 +706,14 @@ describe("EventsPage", () => {
         fireEvent.click(searchButton);
 
         // Act 3: resolve the newer request first.
-        resolveNewerSearch([
-            {
-                id: 2,
-                name: "Newer Result",
-                venue_id: 1,
-                venue_name: "Test Venue",
-                venue_address: "123 Test Street",
-                start_time: "2026-10-25T10:00:00Z",
-                end_time: "2026-10-25T11:00:00Z",
-                capacity: 10,
-            },
-        ]);
+        resolveNewerSearch([newerSearchResultFixture]);
 
         // Assert: the newer results are published.
         expect(await screen.findByText("Mock Event Card: Newer Result"))
             .toBeInTheDocument();
 
         // Act 4: resolve the older request after the newer one.
-        resolveOlderSearch([
-            {
-                id: 1,
-                name: "Older Result",
-                venue_id: 1,
-                venue_name: "Test Venue",
-                venue_address: "123 Test Street",
-                start_time: "2026-10-24T10:00:00Z",
-                end_time: "2026-10-24T11:00:00Z",
-                capacity: 10,
-            },
-        ]);
+        resolveOlderSearch([olderSearchResultFixture]);
 
         // Assert: the older results must not overwrite the newer results.
         expect(await screen.findByText("Mock Event Card: Newer Result"))
