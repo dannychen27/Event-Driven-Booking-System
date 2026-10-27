@@ -53,3 +53,9 @@ export const initialEventFixture = {
     end_time: "2026-10-24T11:00:00Z",
     capacity: 10,
 };
+
+export const naturalLanguageSearchResultFixture = {
+    id: 3,
+    ...coffeeMeetupEventFixture,
+    venue_id: 1,
+};

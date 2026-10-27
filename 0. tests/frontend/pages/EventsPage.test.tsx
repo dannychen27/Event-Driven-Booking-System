@@ -14,6 +14,7 @@ import {
     olderSearchResultFixture,
     coffeeMeetupEventFixture,
     initialEventFixture,
+    naturalLanguageSearchResultFixture,
 } from "../fixtures/eventFixtures";
 
 
@@ -219,13 +220,7 @@ describe("EventsPage", () => {
 
     it("searches events using a natural-language query", async () => {
         vi.mocked(getEvents).mockResolvedValue([]);
-        vi.mocked(searchEventsNaturalLanguage).mockResolvedValue([
-            {
-                id: 3,
-                ...coffeeMeetupEventFixture,
-                venue_id: 1,
-            },
-        ]);
+        vi.mocked(searchEventsNaturalLanguage).mockResolvedValue([naturalLanguageSearchResultFixture]);
 
         render(<EventsPage />);
         await screen.findByText("No available events right now.");
@@ -355,14 +350,7 @@ describe("EventsPage", () => {
                 new Error("Failed to search events with natural language"),
             )
             .mockResolvedValueOnce([
-                {
-                    id: 3,
-                    name: "Coffee Meetup",
-                    venue_id: 1,
-                    start_time: "2026-10-24T10:00:00Z",
-                    end_time: "2026-10-24T11:00:00Z",
-                    capacity: 10,
-                },
+                naturalLanguageSearchResultFixture,
             ]);
 
         render(<EventsPage />);
