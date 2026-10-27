@@ -15,6 +15,7 @@ import {
     coffeeMeetupEventFixture,
     initialEventFixture,
     naturalLanguageSearchResultFixture,
+    meetAndGreetSearchResultFixture,
 } from "../fixtures/eventFixtures";
 
 
@@ -134,18 +135,7 @@ describe("EventsPage", () => {
 
     it("searches events using the submitted keyword", async () => {
         vi.mocked(getEvents).mockResolvedValue([]);
-        vi.mocked(searchEvents).mockResolvedValue([
-            {
-                id: 1,
-                name: "Meet and Greet",
-                venue_id: 2,
-                venue_name: "Moss Park Espresso",
-                venue_address: "185 Queen St E",
-                start_time: "2026-08-08T22:00:00Z",
-                end_time: "2026-08-09T00:00:00Z",
-                capacity: 1,
-            },
-        ]);
+        vi.mocked(searchEvents).mockResolvedValue([meetAndGreetSearchResultFixture,]);
 
         render(<EventsPage />);
 
