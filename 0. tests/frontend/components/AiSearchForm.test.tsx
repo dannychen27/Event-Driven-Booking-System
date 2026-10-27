@@ -1,28 +1,8 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import AiSearchForm from "../../../3. frontend/src/components/AiSearchForm";
+import { renderAiSearchForm, } from "../helpers/aiSearchFormTestHelpers";
 
 describe("AiSearchForm", () => {
-    const onQueryChange = vi.fn();
-    const onSearch = vi.fn();
-    const onClearQuery = vi.fn();
-
-    function renderForm(
-        overrides: Partial<{
-            query: string;
-            searching: boolean;
-        }> = {},
-    ) {
-        return render(
-            <AiSearchForm
-                query={overrides.query ?? ""}
-                searching={overrides.searching ?? false}
-                onQueryChange={onQueryChange}
-                onSearch={onSearch}
-                onClearQuery={onClearQuery}
-            />,
-        );
-    }
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -33,7 +13,7 @@ describe("AiSearchForm", () => {
     });
 
     it("renders the AI search form and example queries", () => {
-        renderForm();
+        renderAiSearchForm();
 
         expect(screen.getByLabelText("Search with AI")).toBeInTheDocument();
         expect(
@@ -68,7 +48,7 @@ describe("AiSearchForm", () => {
     });
 
     it("notifies the parent when typing or selecting an example without submitting", () => {
-        renderForm();
+        const { onQueryChange, onSearch } = renderAiSearchForm();
 
         fireEvent.change(screen.getByLabelText("Search with AI"), {
             target: { value: "Find concerts" },
@@ -89,7 +69,7 @@ describe("AiSearchForm", () => {
     });
 
     it("calls the clear callback without submitting the form", () => {
-        renderForm({ query: "Find concerts" });
+        const { onClearQuery, onSearch } = renderAiSearchForm({ query: "Find concerts", });
 
         fireEvent.click(screen.getByRole("button", { name: "Clear query" }));
 
@@ -98,7 +78,7 @@ describe("AiSearchForm", () => {
     });
 
     it("disables the appropriate controls while searching", () => {
-        renderForm({ query: "Find concerts", searching: true });
+        renderAiSearchForm({ query: "Find concerts", searching: true });
 
         expect(screen.getByRole("button", { name: "Searching..." }))
             .toBeDisabled();
@@ -126,7 +106,7 @@ describe("AiSearchForm", () => {
     });
 
     it("enables Clear query when the query is non-empty and not searching", () => {
-        renderForm({ query: "Find concerts" });
+        renderAiSearchForm({ query: "Find concerts" });
 
         expect(screen.getByRole("button", { name: "Clear query" }))
             .toBeEnabled();
