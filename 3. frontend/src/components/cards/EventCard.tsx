@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Event } from "../../types/Event";
+import type { EventCardProps } from "../../types/EventCardProps.ts";
 import { createBooking, getBookingHistory } from "../../api/bookings.ts";
 import "../../styles/shared/card.css";
 import "../../styles/events/event-card.css";
@@ -11,11 +11,6 @@ import Button from "../ui/buttons/Button";
 import { Modal } from "../modals/Modal.tsx";
 import BookingForm from "../forms/BookingForm.tsx";
 import { formatDate } from "../../utils/Dates.ts";
-
-
-interface EventCardProps {
-    event: Event;
-}
 
 
 export default function EventCard({ event }: EventCardProps) {

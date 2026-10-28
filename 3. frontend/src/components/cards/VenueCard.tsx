@@ -1,11 +1,6 @@
-import type { Venue } from "../../types/Venue.ts";
+import type { VenueCardProps } from "../../types/VenueCardProps.ts";
 import "../../styles/shared/card.css";
 import "../../styles/venues/venue-card.css";
-
-
-interface VenueCardProps {
-    venue: Venue;
-}
 
 
 export default function VenueCard({ venue }: VenueCardProps) {

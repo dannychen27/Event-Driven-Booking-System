@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Booking } from "../../types/Booking.ts";
+import type { BookingCardProps } from "../../types/BookingCardProps.ts";
 import { formatBookingDate } from "../../utils/Dates.ts";
 import "../../styles/shared/card.css";
 import "../../styles/bookings/booking-card.css";
@@ -8,12 +8,6 @@ import "../../styles/errors/error-message.css";
 import { cancelBooking } from "../../api/bookings.ts";
 import { Modal } from "../modals/Modal.tsx";
 import Button from "../ui/buttons/Button";
-
-
-interface BookingCardProps {
-    booking: Booking;
-    onBookingCancelled: () => void;
-}
 
 
 export default function BookingCard({
