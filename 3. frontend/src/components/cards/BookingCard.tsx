@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Booking } from "../../types/Booking.ts";
-import { formatDate } from "../../utils/Dates.ts";
+import { formatBookingDate } from "../../utils/Dates.ts";
 import "../../styles/shared/card.css";
 import "../../styles/bookings/booking-card.css";
 import "../../styles/shared/card-buttons.css";
@@ -23,17 +23,6 @@ export default function BookingCard({
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [cancellationError, setCancellationError] = useState("");
     const [isCancelling, setIsCancelling] = useState(false);
-
-    function getFormattedDate() {
-        return formatDate(
-            booking.created_at,
-            {
-                dateStyle: "long",
-                timeStyle: "medium",
-                is12HourFormat: false,
-            }
-        );
-    }
 
     async function handleCancellation() {
         if (isCancelling) {
@@ -83,27 +72,23 @@ export default function BookingCard({
             <p>Booking Id: {booking.id}</p>
             <p>Event Id: {booking.event_id}</p>
             <p>User Id: {booking.user_id}</p>
-            <p>Starts at: {
+            <p>
+                Starts at: {
                 booking.start_time
-                    ? formatDate(booking.start_time, {
-                        dateStyle: "long",
-                        timeStyle: "medium",
-                        is12HourFormat: false,
-                    })
+                    ? formatBookingDate(booking.start_time)
                     : "Unavailable"
-            }</p>
-            <p>Ends at: {
+            }
+            </p>
+            <p>
+                Ends at: {
                 booking.end_time
-                    ? formatDate(booking.end_time, {
-                        dateStyle: "long",
-                        timeStyle: "medium",
-                        is12HourFormat: false,
-                    })
+                    ? formatBookingDate(booking.end_time)
                     : "Unavailable"
-            }</p>
+            }
+            </p>
             <p>Venue: {booking.venue_name ?? "Unavailable"}</p>
             {booking.venue_address && <p>Address: {booking.venue_address}</p>}
-            <p>Booked at: {getFormattedDate()}</p>
+            <p>Booked at: {formatBookingDate(booking.created_at)}</p>
 
             <Button
                 variant="danger"
