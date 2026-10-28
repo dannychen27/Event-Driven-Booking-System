@@ -1,4 +1,5 @@
 import { EventsService } from "../../../../4. backend/src/events/events.service";
+import { EVENT_NOT_FOUND_MESSAGE } from "../../fixtures/errorMessageFixtures";
 import {
     mockEventDoesNotExist,
     mockGetEvent
@@ -42,7 +43,7 @@ describe("EventsService.getEvent", () => {
         mockEventDoesNotExist(db);
 
         await expect(service.getEvent(999))
-            .rejects.toThrow("Event 999 not found");
+            .rejects.toThrow(EVENT_NOT_FOUND_MESSAGE);
 
         expect(db.query).toHaveBeenCalledTimes(1);
         expectNthQuery(db, 1, "FROM events", [999]);

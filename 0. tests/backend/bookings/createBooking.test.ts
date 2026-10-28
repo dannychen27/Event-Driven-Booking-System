@@ -1,5 +1,9 @@
 import { BookingsService } from "../../../4. backend/src/bookings/bookings.service";
 import {
+    EVENT_NOT_FOUND_MESSAGE,
+    USER_NOT_FOUND_MESSAGE,
+} from "../fixtures/errorMessageFixtures";
+import {
     mockNoDuplicateBooking, mockDuplicateBooking,
     mockBookingCount,
     mockNoScheduleConflict, mockScheduleConflict,
@@ -61,7 +65,7 @@ describe("BookingsService.createBooking", () => {
         mockUserDoesNotExist(client);
 
         await expect(service.createBooking(999, 1))
-            .rejects.toThrow("User 999 not found");
+            .rejects.toThrow(USER_NOT_FOUND_MESSAGE);
 
         expect(client.query).toHaveBeenCalledTimes(1);
 
@@ -73,7 +77,7 @@ describe("BookingsService.createBooking", () => {
         mockEventDoesNotExist(client);
 
         await expect(service.createBooking(1, 999))
-            .rejects.toThrow("Event 999 not found");
+            .rejects.toThrow(EVENT_NOT_FOUND_MESSAGE);
 
         expect(client.query).toHaveBeenCalledTimes(2);
 
