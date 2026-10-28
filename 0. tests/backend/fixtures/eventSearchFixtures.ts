@@ -8,6 +8,10 @@ export const keywordSearchEventsFixture = [
     { id: 1, name: "Coffee Meetup" },
 ];
 
+export const COFFEE_MEETUP_SEARCH_RESULT_FIXTURE = [
+    { id: 1, name: "Coffee Meetup" },
+];
+
 export const eventCandidateFixture = [
     {
         id: 1,

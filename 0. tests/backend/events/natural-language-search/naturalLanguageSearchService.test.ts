@@ -9,7 +9,9 @@ import { NaturalLanguageSearchService } from '../../../../4. backend/src/events/
 import {
     SEARCH_START_BOUNDARY,
     SEARCH_LATER_BOUNDARY,
+    COFFEE_MEETUP_SEARCH_RESULT_FIXTURE,
 } from "../../fixtures/eventSearchFixtures";
+import { NATURAL_LANGUAGE_SEARCH_CANDIDATES_FIXTURE } from "../../fixtures/sharedTestFixtures";
 
 describe("NaturalLanguageSearchService", () => {
     let service: NaturalLanguageSearchService;
@@ -24,24 +26,7 @@ describe("NaturalLanguageSearchService", () => {
         rank: jest.Mock;
     };
 
-    const candidates = [
-        {
-            id: 1,
-            name: 'Coffee Meetup',
-            description: 'An informal social gathering over coffee.',
-            venue_name: 'Community Cafe',
-            venue_address: 'Toronto',
-            start_time: '2026-10-24T14:00:00Z',
-        },
-        {
-            id: 2,
-            name: 'Outdoor Yoga',
-            description: 'A relaxing yoga session in a park.',
-            venue_name: 'Central Park',
-            venue_address: 'Toronto',
-            start_time: '2026-10-25T14:00:00Z',
-        },
-    ];
+    const candidates = NATURAL_LANGUAGE_SEARCH_CANDIDATES_FIXTURE;
 
     beforeEach(() => {
         eventsService = {
@@ -84,12 +69,11 @@ describe("NaturalLanguageSearchService", () => {
         });
 
         it('returns the matching events from structured search', async () => {
-            const events = [{ id: 1, name: 'Coffee Meetup' }];
-            eventsService.searchEvents.mockResolvedValueOnce(events);
+            eventsService.searchEvents.mockResolvedValueOnce(COFFEE_MEETUP_SEARCH_RESULT_FIXTURE);
 
             const result = await service.search({ keyword: 'coffee' });
 
-            expect(result).toEqual(events);
+            expect(result).toEqual(COFFEE_MEETUP_SEARCH_RESULT_FIXTURE);
         });
 
         it('rejects invalid structured filters without querying events', async () => {

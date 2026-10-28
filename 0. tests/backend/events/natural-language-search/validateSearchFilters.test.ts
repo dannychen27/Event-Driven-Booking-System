@@ -6,6 +6,7 @@ import {
     SEARCH_START_BOUNDARY,
     SEARCH_END_BOUNDARY,
 } from "../../fixtures/eventSearchFixtures";
+import { MAX_EVENT_SEARCH_KEYWORD_LENGTH } from "../../fixtures/sharedTestFixtures";
 
 describe("validateSearchFilters", () => {
     it("should accept a keyword filter", () => {
@@ -32,8 +33,9 @@ describe("validateSearchFilters", () => {
     });
 
     it("should reject a keyword longer than 100 characters", () => {
-        expect(() => validateSearchFilters({ keyword: "a".repeat(101) }))
-            .toThrow();
+        expect(() => validateSearchFilters({
+            keyword: "a".repeat(MAX_EVENT_SEARCH_KEYWORD_LENGTH + 1)
+        })).toThrow();
     });
 
     it("should reject invalid dates", () => {

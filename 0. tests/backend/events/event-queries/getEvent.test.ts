@@ -5,6 +5,7 @@ import {
     mockGetEvent
 } from "../../helpers/eventsTestHelpers";
 import { expectNthQuery } from "../../../utils/testHelpers";
+import { MOSS_PARK_ESPRESSO_EVENT_FIXTURE } from "../../fixtures/eventFixtures";
 
 
 describe("EventsService.getEvent", () => {
@@ -24,14 +25,7 @@ describe("EventsService.getEvent", () => {
 
         const result = await service.getEvent(1);
 
-        expect(result).toEqual({
-            id: 1,
-            start_time: "2026-09-10T10:00:00Z",
-            end_time: "2026-09-10T11:00:00Z",
-            capacity: 10,
-            venue_name: "Moss Park Espresso",
-            venue_address: "185 Queen St E",
-        });
+        expect(result).toEqual(MOSS_PARK_ESPRESSO_EVENT_FIXTURE);
 
         expect(db.query).toHaveBeenCalledTimes(1);
         expectNthQuery(db, 1, "JOIN venues", [1]);

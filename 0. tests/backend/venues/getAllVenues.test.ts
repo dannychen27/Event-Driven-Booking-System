@@ -1,24 +1,13 @@
 import { VenuesService } from "../../../4. backend/src/venues/venues.service";
 import { DatabaseService } from "../../../4. backend/src/database/database.service";
 
+import { ALL_VENUES_FIXTURE } from "../fixtures/sharedTestFixtures";
+
 describe("VenuesService.getAllVenues", () => {
     it("should return all venues", async () => {
-        const venues = [
-            {
-                id: 1,
-                name: "Venue 1",
-                address: "1 Test Street",
-            },
-            {
-                id: 2,
-                name: "Venue 2",
-                address: "2 Test Street",
-            },
-        ];
-
         const db = {
             query: jest.fn().mockResolvedValueOnce({
-                rows: venues,
+                rows: ALL_VENUES_FIXTURE,
             }),
         } as unknown as DatabaseService;
 
@@ -26,7 +15,7 @@ describe("VenuesService.getAllVenues", () => {
 
         const result = await service.getAllVenues();
 
-        expect(result).toEqual(venues);
+        expect(result).toEqual(ALL_VENUES_FIXTURE);
         expect(db.query).toHaveBeenCalledTimes(1);
     });
 

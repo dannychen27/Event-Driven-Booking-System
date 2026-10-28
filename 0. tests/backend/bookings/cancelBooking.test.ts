@@ -3,6 +3,7 @@ import {
     EVENT_NOT_FOUND_MESSAGE,
     USER_NOT_FOUND_MESSAGE,
 } from "../fixtures/errorMessageFixtures";
+import { BOOKING_RESULT_FIXTURE } from "../fixtures/sharedTestFixtures"
 import {
     mockBookingExists, mockBookingDoesNotExist,
     mockDeletedBooking
@@ -35,12 +36,7 @@ describe("BookingsService.cancelBooking", () => {
 
         const result = await service.cancelBooking(1, 123);
 
-        expect(result).toEqual({
-            id: 123,
-            user_id: 1,
-            event_id: 1,
-            created_at: "2026-09-05T20:00:00Z",
-        });
+        expect(result).toEqual(BOOKING_RESULT_FIXTURE);
 
         expect(db.transaction).toHaveBeenCalledTimes(1);
         expect(client.query).toHaveBeenCalledTimes(4);

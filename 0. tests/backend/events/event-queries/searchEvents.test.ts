@@ -5,7 +5,7 @@ import {
     SEARCH_END_BOUNDARY,
     SEARCH_LATER_BOUNDARY,
     NO_FILTER_EVENTS_FIXTURE,
-    keywordSearchEventsFixture,
+    COFFEE_MEETUP_SEARCH_RESULT_FIXTURE,
     eventCandidateFixture,
 } from "../../fixtures/eventSearchFixtures";
 
@@ -22,11 +22,11 @@ describe("EventsService.searchEvents", () => {
     });
 
     it("should search event and venue names by keyword", async () => {
-        db.query.mockResolvedValueOnce({ rows: keywordSearchEventsFixture });
+        db.query.mockResolvedValueOnce({ rows: COFFEE_MEETUP_SEARCH_RESULT_FIXTURE });
 
         const result = await service.searchEvents({ keyword: "coffee", });
 
-        expect(result).toEqual(keywordSearchEventsFixture);
+        expect(result).toEqual(COFFEE_MEETUP_SEARCH_RESULT_FIXTURE);
         expectNthQuery(
             db,
             1,

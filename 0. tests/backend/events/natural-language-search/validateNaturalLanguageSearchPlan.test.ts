@@ -6,6 +6,7 @@ import {
     SEARCH_START_BOUNDARY,
     SEARCH_END_BOUNDARY,
 } from "../../fixtures/eventSearchFixtures";
+import { MAX_NATURAL_LANGUAGE_INTENT_LENGTH } from "../../fixtures/sharedTestFixtures";
 
 describe("validateNaturalLanguageSearchPlan", () => {
     it("should accept a semantic intent", () => {
@@ -45,7 +46,7 @@ describe("validateNaturalLanguageSearchPlan", () => {
 
     it("should reject an intent longer than 300 characters", () => {
         expect(() => validateNaturalLanguageSearchPlan({
-            intent: "a".repeat(301),
+            intent: "a".repeat(MAX_NATURAL_LANGUAGE_INTENT_LENGTH + 1),
         })).toThrow();
     });
 

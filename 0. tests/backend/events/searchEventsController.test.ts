@@ -5,6 +5,10 @@ import { EventsService } from "../../../4. backend/src/events/events.service";
 import { NaturalLanguageSearchService } from "../../../4. backend/src/events/search/natural-language-search.service";
 
 
+import { COFFEE_MEETUP_SEARCH_RESULT_FIXTURE, } from "../fixtures/eventSearchFixtures";
+import { MAX_EVENT_SEARCH_KEYWORD_LENGTH } from "../fixtures/sharedTestFixtures";
+
+
 describe("EventsController.searchEvents", () => {
     let controller: EventsController;
 
@@ -39,8 +43,9 @@ describe("EventsController.searchEvents", () => {
 
     describe("structured search", () => {
         it("should pass valid filters to the service", async () => {
-            const events = [{ id: 1, name: "Coffee Meetup" }];
-            service.searchEvents.mockResolvedValueOnce(events);
+            service.searchEvents.mockResolvedValueOnce(
+                COFFEE_MEETUP_SEARCH_RESULT_FIXTURE,
+            );
 
             const result = await controller.searchEvents(
                 " coffee ",
@@ -51,7 +56,7 @@ describe("EventsController.searchEvents", () => {
             expect(service.searchEvents).toHaveBeenCalledWith({
                 keyword: "coffee",
             });
-            expect(result).toEqual(events);
+            expect(result).toEqual(COFFEE_MEETUP_SEARCH_RESULT_FIXTURE);
         });
 
         it("should reject an empty keyword", () => {
@@ -64,7 +69,11 @@ describe("EventsController.searchEvents", () => {
 
         it("should reject a keyword longer than 100 characters", () => {
             expect(() =>
-                controller.searchEvents("a".repeat(101), undefined, undefined),
+                controller.searchEvents(
+                    "a".repeat(MAX_EVENT_SEARCH_KEYWORD_LENGTH + 1),
+                    undefined,
+                    undefined,
+                )
             ).toThrow(BadRequestException);
 
             expect(service.searchEvents).not.toHaveBeenCalled();
@@ -97,8 +106,8 @@ describe("EventsController.searchEvents", () => {
 
     describe("natural-language search", () => {
         it("should pass a valid natural-language query to the service", async () => {
-            const events = [{ id: 1, name: "Coffee Meetup" }];
-            naturalLanguageSearchService.searchNaturalLanguage.mockResolvedValue(events);
+            naturalLanguageSearchService.searchNaturalLanguage
+                .mockResolvedValue(COFFEE_MEETUP_SEARCH_RESULT_FIXTURE);
 
             const result = await controller.searchEventsInNaturalLanguage({
                 query: "  Find coffee events  ",
@@ -106,7 +115,7 @@ describe("EventsController.searchEvents", () => {
 
             expect(naturalLanguageSearchService.searchNaturalLanguage)
                 .toHaveBeenCalledWith("Find coffee events");
-            expect(result).toEqual(events);
+            expect(result).toEqual(COFFEE_MEETUP_SEARCH_RESULT_FIXTURE);
         });
 
         it("should reject an empty natural-language query", () => {
