@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 
 
-import { renderModal } from "../helpers/modalTestHelpers";
+import { renderModal } from "../../helpers/modalTestHelpers";
 
 
 describe("Modal", () => {

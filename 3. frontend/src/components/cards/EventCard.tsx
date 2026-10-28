@@ -1,16 +1,16 @@
 import { useState } from "react";
-import type { Event } from "../types/Event";
-import { createBooking, getBookingHistory } from "../api/bookings.ts";
-import "../styles/shared/card.css";
-import "../styles/events/event-card.css";
-import "../styles/shared/card-buttons.css";
-import "../styles/buttons/create-booking-button.css";
-import "../styles/errors/error-message.css";
-import "../styles/errors/success-message.css";
-import "../styles/errors/status-message.css";
-import { Modal } from "./Modal.tsx";
-import BookingForm from "./BookingForm.tsx";
-import { formatDate } from "../utils/Dates.ts";
+import type { Event } from "../../types/Event";
+import { createBooking, getBookingHistory } from "../../api/bookings.ts";
+import "../../styles/shared/card.css";
+import "../../styles/events/event-card.css";
+import "../../styles/shared/card-buttons.css";
+import "../../styles/buttons/create-booking-button.css";
+import "../../styles/errors/error-message.css";
+import "../../styles/errors/success-message.css";
+import "../../styles/errors/status-message.css";
+import { Modal } from "../modals/Modal.tsx";
+import BookingForm from "../forms/BookingForm.tsx";
+import { formatDate } from "../../utils/Dates.ts";
 
 
 interface EventCardProps {

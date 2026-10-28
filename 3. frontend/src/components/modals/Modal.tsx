@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import "../styles/shared/modal.css";
+import "../../styles/shared/modal.css";
 
 
 interface ModalAction {

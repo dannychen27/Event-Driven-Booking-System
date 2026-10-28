@@ -1,6 +1,6 @@
 import type { FormEventHandler } from "react";
-import "../styles/search/ai-search-bar.css";
-import "../styles/shared/event-search-bar-shared.css";
+import "../../styles/search/ai-search-bar.css";
+import "../../styles/shared/event-search-bar-shared.css";
 
 
 const SEARCH_EXAMPLES = [

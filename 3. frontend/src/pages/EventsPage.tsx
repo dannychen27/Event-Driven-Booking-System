@@ -9,9 +9,9 @@ import {
     searchEvents,
     searchEventsNaturalLanguage,
 } from "../api/events";
-import EventCard from "../components/EventCard";
-import EventSearchForm from "../components/EventSearchForm.tsx";
-import AiSearchForm from "../components/AiSearchForm";
+import EventCard from "../components/cards/EventCard";
+import EventSearchForm from "../components/forms/EventSearchForm.tsx";
+import AiSearchForm from "../components/forms/AiSearchForm";
 
 
 export default function EventsPage() {

@@ -3,21 +3,21 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 
-import { existingBookingFixture } from "../fixtures/bookingFixtures";
+import { existingBookingFixture } from "../../fixtures/bookingFixtures";
 
 
-import EventCard from "../../../3. frontend/src/components/EventCard";
-import { createBooking, getBookingHistory } from "../../../3. frontend/src/api/bookings";
-import { eventCardFixture } from "../fixtures/eventFixtures";
+import EventCard from "../../../../3. frontend/src/components/cards/EventCard";
+import { createBooking, getBookingHistory } from "../../../../3. frontend/src/api/bookings";
+import { eventCardFixture } from "../../fixtures/eventFixtures";
 
 
-vi.mock("../../../3. frontend/src/api/bookings", () => ({
+vi.mock("../../../../3. frontend/src/api/bookings", () => ({
     createBooking: vi.fn(),
     getBookingHistory: vi.fn(),
 }));
 
 
-vi.mock("../../../3. frontend/src/components/BookingForm.tsx", () => ({
+vi.mock("../../../../3. frontend/src/components/forms/BookingForm.tsx", () => ({
     default: ({
         onBookingCreated,
     }: {

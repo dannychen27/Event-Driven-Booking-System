@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
 
-import { Modal } from "../../../3. frontend/src/components/Modal";
+import { Modal } from "../../../3. frontend/src/components/modals/Modal";
 
 function ModalBody() {
     return (

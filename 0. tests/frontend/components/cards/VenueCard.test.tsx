@@ -2,8 +2,8 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 
-import VenueCard from "../../../3. frontend/src/components/VenueCard";
-import { venueCardFixture } from "../fixtures/venueFixtures";
+import VenueCard from "../../../../3. frontend/src/components/cards/VenueCard";
+import { venueCardFixture } from "../../fixtures/venueFixtures";
 
 
 describe("VenueCard", () => {

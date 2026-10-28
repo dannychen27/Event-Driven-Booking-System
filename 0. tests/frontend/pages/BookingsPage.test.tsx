@@ -14,7 +14,7 @@ vi.mock("../../../3. frontend/src/api/bookings.ts", () => ({
 }));
 
 
-vi.mock("../../../3. frontend/src/components/BookingCard.tsx", () => (
+vi.mock("../../../3. frontend/src/components/cards/BookingCard.tsx", () => (
     {
         default: (
             {

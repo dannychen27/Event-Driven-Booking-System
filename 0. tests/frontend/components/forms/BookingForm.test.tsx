@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 
-import { renderBookingForm } from "../helpers/bookingFormTestHelpers";
+import { renderBookingForm } from "../../helpers/bookingFormTestHelpers";
 
 
 describe("BookingForm", () => {

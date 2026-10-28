@@ -1,4 +1,4 @@
-import "../styles/bookings/booking-form.css";
+import "../../styles/bookings/booking-form.css";
 import { useState } from "react";
 
 

@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 
-import NavigationBar from "../../../3. frontend/src/components/NavigationBar";
+import NavigationBar from "../../../3. frontend/src/components/navigation/NavigationBar";
 
 
 export function renderNavigationBar({

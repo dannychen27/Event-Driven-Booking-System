@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
 import { vi } from "vitest";
 
-import AiSearchForm from "../../../3. frontend/src/components/AiSearchForm";
+import AiSearchForm from "../../../3. frontend/src/components/forms/AiSearchForm";
 
 
 export function renderAiSearchForm({

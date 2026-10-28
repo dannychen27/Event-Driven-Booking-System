@@ -15,7 +15,7 @@ vi.mock("../../../3. frontend/src/api/venues.ts", () => ({
 }));
 
 
-vi.mock("../../../3. frontend/src/components/VenueCard.tsx", () => ({
+vi.mock("../../../3. frontend/src/components/cards/VenueCard.tsx", () => ({
     default: ({ venue }: { venue: Venue }) => (
         <div>Mock Venue Card: {venue.name}</div>
     ),

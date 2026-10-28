@@ -1,6 +1,6 @@
 import { fireEvent, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { renderAiSearchForm, } from "../helpers/aiSearchFormTestHelpers";
+import { renderAiSearchForm, } from "../../helpers/aiSearchFormTestHelpers";
 
 describe("AiSearchForm", () => {
 

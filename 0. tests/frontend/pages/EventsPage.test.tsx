@@ -28,7 +28,7 @@ vi.mock("../../../3. frontend/src/api/events", () => ({
 }));
 
 
-vi.mock("../../../3. frontend/src/components/EventCard", () => ({
+vi.mock("../../../3. frontend/src/components/cards/EventCard", () => ({
     default: ({ event }: { event: Event }) => (
         <div>Mock Event Card: {event.name}</div>
     ),

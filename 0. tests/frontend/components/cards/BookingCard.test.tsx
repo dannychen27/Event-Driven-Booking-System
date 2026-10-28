@@ -3,12 +3,12 @@ import { describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 
 
-import BookingCard from "../../../3. frontend/src/components/BookingCard";
-import { cancelBooking } from "../../../3. frontend/src/api/bookings";
-import { bookingCardFixture } from "../fixtures/bookingFixtures";
+import BookingCard from "../../../../3. frontend/src/components/cards/BookingCard";
+import { cancelBooking } from "../../../../3. frontend/src/api/bookings";
+import { bookingCardFixture } from "../../fixtures/bookingFixtures";
 
 
-vi.mock("../../../3. frontend/src/api/bookings", () => ({
+vi.mock("../../../../3. frontend/src/api/bookings", () => ({
     cancelBooking: vi.fn(),
 }));
 
