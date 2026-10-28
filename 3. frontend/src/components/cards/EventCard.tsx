@@ -11,6 +11,7 @@ import Button from "../ui/buttons/Button";
 import { Modal } from "../modals/Modal.tsx";
 import BookingForm from "../forms/BookingForm.tsx";
 import { formatDate } from "../../utils/Dates.ts";
+import { getErrorMessage } from "../../utils/Errors.ts";
 
 
 export default function EventCard({ event }: EventCardProps) {
@@ -41,9 +42,7 @@ export default function EventCard({ event }: EventCardProps) {
             }
         } catch (error) {
             setBookingMessage(
-                error instanceof Error
-                    ? error.message
-                    : "Failed to fetch booking history."
+                getErrorMessage(error, "Failed to fetch booking history.")
             );
             setBookingStatus("error");
         }
@@ -59,11 +58,9 @@ export default function EventCard({ event }: EventCardProps) {
             setBookingMessage("Booking created successfully.");
             return true;
         } catch (error) {
-            if (error instanceof Error) {
-                setBookingMessage(error.message);
-            } else {
-                setBookingMessage("Failed to create booking.");
-            }
+            setBookingMessage(
+                getErrorMessage(error, "Failed to create booking.")
+            );
             setBookingStatus("error");
             return false;
         }

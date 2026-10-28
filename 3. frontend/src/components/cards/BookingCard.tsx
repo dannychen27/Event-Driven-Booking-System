@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { BookingCardProps } from "../../types/BookingCardProps.ts";
 import { formatBookingDate } from "../../utils/Dates.ts";
+import { getErrorMessage } from "../../utils/Errors.ts";
 import "../../styles/shared/card.css";
 import "../../styles/bookings/booking-card.css";
 import "../../styles/shared/card-buttons.css";
@@ -31,11 +32,9 @@ export default function BookingCard({
             setShowCancelModal(false);
             onBookingCancelled();
         } catch (error) {
-            if (error instanceof Error) {
-                setCancellationError(error.message);
-            } else {
-                setCancellationError("Failed to cancel booking.");
-            }
+            setCancellationError(
+                getErrorMessage(error, "Failed to cancel booking.")
+            );
         } finally {
             setIsCancelling(false);
         }

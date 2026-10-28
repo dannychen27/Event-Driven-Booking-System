@@ -4,6 +4,7 @@ import "../styles/pages/events-page.css";
 import "../styles/errors/error-message.css";
 import "../styles/errors/status-message.css";
 import "../styles/errors/empty-state-message.css";
+import { getErrorMessage } from "../utils/Errors.ts";
 import {
     getEvents,
     searchEvents,
@@ -32,11 +33,7 @@ export default function EventsPage() {
                 const events = await getEvents();
                 setEvents(events);
             } catch (error) {
-                setError(
-                    error instanceof Error
-                        ? error.message
-                        : "Failed to load events",
-                );
+                setError(getErrorMessage(error, "Failed to load events"));
             } finally {
                 setLoading(false);
             }
@@ -70,11 +67,7 @@ export default function EventsPage() {
         } catch (error) {
             if (requestId !== searchRequestId.current) return;
 
-            setSearchError(
-                error instanceof Error
-                    ? error.message
-                    : "Failed to search events",
-            );
+            setSearchError(getErrorMessage(error, "Failed to search events"));
         } finally {
             if (requestId === searchRequestId.current) {
                 setSearching(false);
@@ -110,9 +103,10 @@ export default function EventsPage() {
             if (requestId !== searchRequestId.current) return;
 
             setSearchError(
-                error instanceof Error
-                    ? error.message
-                    : "Failed to search events with natural language",
+                getErrorMessage(
+                    error,
+                    "Failed to search events with natural language",
+                ),
             );
         } finally {
             if (requestId === searchRequestId.current) {
@@ -138,11 +132,7 @@ export default function EventsPage() {
         } catch (error) {
             if (requestId !== searchRequestId.current) return;
 
-            setSearchError(
-                error instanceof Error
-                    ? error.message
-                    : "Failed to load events",
-            );
+            setError(getErrorMessage(error, "Failed to load events"));
         } finally {
             if (requestId === searchRequestId.current) {
                 setSearching(false);
@@ -155,7 +145,7 @@ export default function EventsPage() {
     }
 
     if (error) {
-        return <p className="error-message">{error}</p>;
+        return <p className="error-message" role="alert">{error}</p>;
     }
 
     return (
