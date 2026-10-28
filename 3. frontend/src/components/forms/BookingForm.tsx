@@ -1,5 +1,6 @@
 import "../../styles/bookings/booking-form.css";
 import { useState } from "react";
+import Button from "../ui/buttons/Button";
 
 
 interface BookingFormProps {
@@ -40,22 +41,24 @@ export default function BookingForm({
             <p>Are you sure you want to book this event?</p>
 
             <div className="booking-form-actions">
-                <button
+                <Button
+                    variant="danger"
                     className="cancel-button"
                     type="button"
                     onClick={onCancel}
                     disabled={isSubmitting}
                 >
                     Cancel
-                </button>
+                </Button>
 
-                <button
+                <Button
+                    variant="success"
                     className="booking-button"
                     type="submit"
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? "Booking..." : "Book Event"}
-                </button>
+                </Button>
             </div>
         </form>
     );

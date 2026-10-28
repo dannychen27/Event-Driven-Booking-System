@@ -1,7 +1,8 @@
 import type { FormEventHandler } from "react";
+import Button from "../ui/buttons/Button";
 import "../../styles/search/ai-search-bar.css";
 import "../../styles/shared/event-search-bar-shared.css";
-
+import "../../styles/shared/button.css";
 
 const SEARCH_EXAMPLES = [
     "Find coffee meetups this weekend",
@@ -43,15 +44,15 @@ export default function AiSearchForm({
                 </span>
 
                 {SEARCH_EXAMPLES.map((example) => (
-                    <button
+                    <Button
                         key={example}
-                        type="button"
+                        variant="pill"
                         className="ai-search-example"
                         disabled={searching}
                         onClick={() => onQueryChange(example)}
                     >
                         {example}
-                    </button>
+                    </Button>
                 ))}
             </div>
 
@@ -64,18 +65,18 @@ export default function AiSearchForm({
                     placeholder="e.g. Find events happening this weekend"
                 />
 
-                <button type="submit" disabled={searching}>
+                <Button type="submit" disabled={searching}>
                     {searching ? "Searching..." : "Ask AI"}
-                </button>
+                </Button>
 
-                <button
-                    type="button"
+                <Button
+                    variant="secondary"
                     className="ai-search-clear"
                     disabled={searching || query.length === 0}
                     onClick={onClearQuery}
                 >
                     Clear query
-                </button>
+                </Button>
             </div>
         </form>
     );

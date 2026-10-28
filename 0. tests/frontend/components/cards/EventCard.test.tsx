@@ -4,11 +4,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 
 import { existingBookingFixture } from "../../fixtures/bookingFixtures";
+import { eventCardFixture } from "../../fixtures/eventFixtures";
 
 
 import EventCard from "../../../../3. frontend/src/components/cards/EventCard";
+import Button from "../../../../3. frontend/src/components/ui/buttons/Button";
 import { createBooking, getBookingHistory } from "../../../../3. frontend/src/api/bookings";
-import { eventCardFixture } from "../../fixtures/eventFixtures";
 
 
 vi.mock("../../../../3. frontend/src/api/bookings", () => ({
@@ -23,9 +24,9 @@ vi.mock("../../../../3. frontend/src/components/forms/BookingForm.tsx", () => ({
     }: {
         onBookingCreated: () => void;
     }) => (
-        <button onClick={onBookingCreated}>
+        <Button onClick={onBookingCreated}>
             Mock Booking Form
-        </button>
+        </Button>
     ),
 }));
 

@@ -4,11 +4,10 @@ import { formatDate } from "../../utils/Dates.ts";
 import "../../styles/shared/card.css";
 import "../../styles/bookings/booking-card.css";
 import "../../styles/shared/card-buttons.css";
-import "../../styles/buttons/cancel-booking-button.css";
-import "../../styles/bookings/booking-card-modal.css";
 import "../../styles/errors/error-message.css";
 import { cancelBooking } from "../../api/bookings.ts";
 import { Modal } from "../modals/Modal.tsx";
+import Button from "../ui/buttons/Button";
 
 
 interface BookingCardProps {
@@ -63,12 +62,14 @@ export default function BookingCard({
         return [
             {
                 label: "Keep Booking",
+                variant: "success" as const,
                 className: "keep-booking-button",
                 disabled: isCancelling,
                 onClick: () => setShowCancelModal(false),
             },
             {
                 label: isCancelling ? "Cancelling..." : "Cancel Booking",
+                variant: "danger" as const,
                 className: "cancel-button",
                 disabled: isCancelling,
                 onClick: handleCancellation,
@@ -104,8 +105,8 @@ export default function BookingCard({
             {booking.venue_address && <p>Address: {booking.venue_address}</p>}
             <p>Booked at: {getFormattedDate()}</p>
 
-            <button
-                className="cancel-button"
+            <Button
+                variant="danger"
                 disabled={isCancelling}
                 onClick={() => {
                     setCancellationError("");
@@ -113,7 +114,7 @@ export default function BookingCard({
                 }}
             >
                 Cancel Booking
-            </button>
+            </Button>
 
             {showCancelModal && (
                 <Modal

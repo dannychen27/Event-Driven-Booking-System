@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import "../../styles/navigation/navbar.css";
+import Button from "../ui/buttons/Button";
 
 
 interface NavigationBarProps {
@@ -16,13 +17,14 @@ export default function NavigationBar(
             <NavLink to="/events">Events</NavLink>
             <NavLink to="/venues">Venues</NavLink>
             <NavLink to="/bookings">My Bookings</NavLink>
-            <button
+            <Button
+                variant="icon"
                 className="theme-toggle"
                 onClick={onToggleDarkMode}
                 aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
             >
                 {darkMode ? "☀" : "☾"}
-            </button>
+            </Button>
         </nav>
     );
 }

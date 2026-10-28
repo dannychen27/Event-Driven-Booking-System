@@ -4,10 +4,10 @@ import { createBooking, getBookingHistory } from "../../api/bookings.ts";
 import "../../styles/shared/card.css";
 import "../../styles/events/event-card.css";
 import "../../styles/shared/card-buttons.css";
-import "../../styles/buttons/create-booking-button.css";
 import "../../styles/errors/error-message.css";
 import "../../styles/errors/success-message.css";
 import "../../styles/errors/status-message.css";
+import Button from "../ui/buttons/Button";
 import { Modal } from "../modals/Modal.tsx";
 import BookingForm from "../forms/BookingForm.tsx";
 import { formatDate } from "../../utils/Dates.ts";
@@ -99,13 +99,13 @@ export default function EventCard({ event }: EventCardProps) {
             </div>
 
             <p>Capacity: {event.capacity}</p>
-            <button
-                className="create-booking-button"
+            <Button
+                variant="success"
                 onClick={handleOpenBookingForm}
                 disabled={bookingStatus === "creating"}
             >
                 Create Booking
-            </button>
+            </Button>
             {alreadyBooked && (
                 <p className="error-message">
                     You already booked this event.

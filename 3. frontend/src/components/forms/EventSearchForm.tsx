@@ -1,7 +1,8 @@
 import type { FormEventHandler } from "react";
+import Button from "../ui/buttons/Button";
 import "../../styles/search/event-search-bar.css";
 import "../../styles/shared/event-search-bar-shared.css";
-
+import "../../styles/shared/button.css";
 
 interface EventSearchFormProps {
     keyword: string;
@@ -25,6 +26,7 @@ export default function EventSearchForm({
     return (
         <form className="event-search-form" onSubmit={onSearch}>
             <label htmlFor="event-search">Search events</label>
+
             <div className="event-search-controls">
                 <input
                     id="event-search"
@@ -33,26 +35,29 @@ export default function EventSearchForm({
                     onChange={(event) => onKeywordChange(event.target.value)}
                     placeholder="e.g. Meet and Greet"
                 />
-                <button type="submit" disabled={searching}>
+
+                <Button type="submit" disabled={searching}>
                     {searching ? "Searching..." : "Search"}
-                </button>
-                <button
-                    type="button"
+                </Button>
+
+                <Button
+                    variant="secondary"
                     className="ai-search-clear"
                     disabled={searching || keyword.length === 0}
                     onClick={onClearQuery}
                 >
                     Clear query
-                </button>
+                </Button>
+
                 {isSearchActive && (
-                    <button
+                    <Button
+                        variant="secondary"
                         className="clear-search-button"
-                        type="button"
                         onClick={onClearSearch}
                         disabled={searching}
                     >
                         Clear search
-                    </button>
+                    </Button>
                 )}
             </div>
         </form>
