@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event";
 
 import BookingCard from "../../../3. frontend/src/components/BookingCard";
 import { cancelBooking } from "../../../3. frontend/src/api/bookings";
-import { mockBooking } from "../../mocks/bookingMocks";
+import { bookingCardFixture } from "../fixtures/bookingFixtures";
 
 
 vi.mock("../../../3. frontend/src/api/bookings", () => ({
@@ -18,7 +18,7 @@ describe("BookingCard", () => {
     it("renders the booking information", () => {
         render(
             <BookingCard
-                booking={mockBooking}
+                booking={bookingCardFixture}
                 onBookingCancelled={() => {}}
             />,
         );
@@ -51,7 +51,7 @@ describe("BookingCard", () => {
     it("renders event and venue details in booking history", () => {
         render(
             <BookingCard
-                booking={mockBooking}
+                booking={bookingCardFixture}
                 onBookingCancelled={() => {}}
             />,
         );
@@ -76,7 +76,7 @@ describe("BookingCard", () => {
 
         render(
             <BookingCard
-                booking={mockBooking}
+                booking={bookingCardFixture}
                 onBookingCancelled={() => {}}
             />,
         );
@@ -109,7 +109,7 @@ describe("BookingCard", () => {
 
         render(
             <BookingCard
-                booking={mockBooking}
+                booking={bookingCardFixture}
                 onBookingCancelled={() => {}}
             />,
         );
@@ -155,7 +155,7 @@ describe("BookingCard", () => {
 
         render(
             <BookingCard
-                booking={mockBooking}
+                booking={bookingCardFixture}
                 onBookingCancelled={() => {}}
             />,
         );
@@ -195,7 +195,7 @@ describe("BookingCard", () => {
 
         render(
             <BookingCard
-                booking={mockBooking}
+                booking={bookingCardFixture}
                 onBookingCancelled={onBookingCancelled}
             />,
         );
@@ -221,8 +221,8 @@ describe("BookingCard", () => {
         await user.click(cancelButtons[1]);
 
         expect(cancelBooking).toHaveBeenCalledWith(
-            mockBooking.user_id,
-            mockBooking.id,
+            bookingCardFixture.user_id,
+            bookingCardFixture.id,
         );
 
         expect(
@@ -243,7 +243,7 @@ describe("BookingCard", () => {
 
         render(
             <BookingCard
-                booking={mockBooking}
+                booking={bookingCardFixture}
                 onBookingCancelled={() => {}}
             />,
         );

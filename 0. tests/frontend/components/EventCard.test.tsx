@@ -8,7 +8,7 @@ import { existingBookingFixture } from "../fixtures/bookingFixtures";
 
 import EventCard from "../../../3. frontend/src/components/EventCard";
 import { createBooking, getBookingHistory } from "../../../3. frontend/src/api/bookings";
-import { mockEvent } from "../../mocks/eventMocks";
+import { eventCardFixture } from "../fixtures/eventFixtures";
 
 
 vi.mock("../../../3. frontend/src/api/bookings", () => ({
@@ -37,7 +37,7 @@ describe("EventCard", () => {
     });
 
     it("renders the event information", () => {
-        render(<EventCard event={mockEvent} />);
+        render(<EventCard event={eventCardFixture} />);
 
         expect(
             screen.getByRole("heading", {
@@ -63,7 +63,7 @@ describe("EventCard", () => {
 
             const user = userEvent.setup();
 
-            render(<EventCard event={mockEvent} />);
+            render(<EventCard event={eventCardFixture} />);
 
             await user.click(
                 screen.getByRole("button", {
@@ -88,7 +88,7 @@ describe("EventCard", () => {
 
         const user = userEvent.setup();
 
-        render(<EventCard event={mockEvent} />);
+        render(<EventCard event={eventCardFixture} />);
 
         await user.click(
             screen.getByRole("button", {
@@ -116,7 +116,7 @@ describe("EventCard", () => {
 
         const user = userEvent.setup();
 
-        render(<EventCard event={mockEvent} />);
+        render(<EventCard event={eventCardFixture} />);
 
         await user.click(
             screen.getByRole("button", {
@@ -141,7 +141,7 @@ describe("EventCard", () => {
 
         const user = userEvent.setup();
 
-        render(<EventCard event={mockEvent} />);
+        render(<EventCard event={eventCardFixture} />);
 
         await user.click(
             screen.getByRole("button", {
@@ -180,7 +180,7 @@ describe("EventCard", () => {
 
         const user = userEvent.setup();
 
-        render(<EventCard event={mockEvent} />);
+        render(<EventCard event={eventCardFixture} />);
 
         await user.click(
             screen.getByRole("button", {
@@ -219,7 +219,7 @@ describe("EventCard", () => {
 
         const user = userEvent.setup();
 
-        render(<EventCard event={mockEvent} />);
+        render(<EventCard event={eventCardFixture} />);
 
         await user.click(
             screen.getByRole("button", {
