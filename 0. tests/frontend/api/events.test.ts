@@ -5,7 +5,7 @@ import {
     searchEvents,
     searchEventsNaturalLanguage,
 } from "../../../3. frontend/src/api/events";
-import { mockFetchResponse } from "../helpers/bookingApiTestHelpers";
+import { mockFetchResponse } from "../helpers/apiTestHelpers";
 import {
     minimalCoffeeMeetupEventFixture,
     minimalTeaMeetupEventFixture

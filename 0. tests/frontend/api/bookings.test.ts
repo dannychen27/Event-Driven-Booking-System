@@ -6,7 +6,7 @@ import {
     cancelBooking,
 } from "../../../3. frontend/src/api/bookings";
 import { apiBookingFixture } from "../fixtures/bookingFixtures";
-import { mockFetchResponse } from "../helpers/bookingApiTestHelpers";
+import { mockFetchResponse } from "../helpers/apiTestHelpers";
 
 afterEach(() => {
     vi.unstubAllGlobals();
