@@ -43,6 +43,35 @@ export const ALL_VENUES_FIXTURE = [
     },
 ];
 
+export const GEMINI_EVENT_RANKING_CANDIDATES_FIXTURE = [
+    {
+        id: 1,
+        name: "Coffee Meetup",
+        description: "An informal gathering to meet people.",
+        venue_name: "Central Cafe",
+        venue_address: "123 Main Street",
+        start_time: "2026-11-01T18:00:00Z",
+    },
+    {
+        id: 2,
+        name: "Outdoor Yoga",
+        description: "A guided outdoor yoga session.",
+        venue_name: "City Park",
+        venue_address: "456 Park Road",
+        start_time: "2026-11-02T10:00:00Z",
+    },
+];
+
+export const GEMINI_EVENT_RANKING_REQUEST_FIXTURE = {
+    query: "Find a relaxing outdoor activity",
+    intent: "An outdoor activity that helps people relax",
+};
+
+export const GEMINI_EVENT_RANKING_MISSING_KEY_FIXTURE = {
+    query: "Find an event",
+    intent: "some intent",
+};
+
 export const BAHEN_CENTRE_VENUE_FIXTURE = {
     id: 1,
     name: "Bahen Centre",

@@ -3,6 +3,11 @@ import {
 } from '../../../../4. backend/src/events/ai/gemini/gemini-event-ranker';
 import { geminiClientConfigFixture } from '../../fixtures/geminiClientConfigFixture';
 import { GEMINI_TEST_API_KEY } from '../../fixtures/geminiTestConstants';
+import {
+    GEMINI_EVENT_RANKING_CANDIDATES_FIXTURE,
+    GEMINI_EVENT_RANKING_MISSING_KEY_FIXTURE,
+    GEMINI_EVENT_RANKING_REQUEST_FIXTURE
+} from "../../fixtures/sharedTestFixtures";
 
 jest.mock('@google/genai', () => ({
     GoogleGenAI: jest.fn().mockImplementation(() => ({
@@ -13,24 +18,7 @@ jest.mock('@google/genai', () => ({
 }));
 
 describe('GeminiEventRanker', () => {
-    const candidates = [
-        {
-            id: 1,
-            name: 'Coffee Meetup',
-            description: 'An informal gathering to meet people.',
-            venue_name: 'Central Cafe',
-            venue_address: '123 Main Street',
-            start_time: '2026-11-01T18:00:00Z',
-        },
-        {
-            id: 2,
-            name: 'Outdoor Yoga',
-            description: 'A guided outdoor yoga session.',
-            venue_name: 'City Park',
-            venue_address: '456 Park Road',
-            start_time: '2026-11-02T10:00:00Z',
-        },
-    ];
+    const candidates = GEMINI_EVENT_RANKING_CANDIDATES_FIXTURE;
 
     it('configures the default Gemini client with a 20-second timeout and 2 attempts', () => {
         const { GoogleGenAI } = jest.requireMock('@google/genai') as {
@@ -57,14 +45,16 @@ describe('GeminiEventRanker', () => {
         expect(generateContent).not.toHaveBeenCalled();
     });
 
-    it('requires an API key when ranking non-empty candidates', async () => {
-        const ranker = new GeminiEventRanker('', undefined);
+    it("requires an API key when ranking non-empty candidates", async () => {
+        const ranker = new GeminiEventRanker("", undefined);
 
         await expect(
-            ranker.rank('Find an event', 'some intent', [
-                { id: 1, name: 'Coffee Meetup' },
-            ]),
-        ).rejects.toThrow('Gemini API key is required');
+            ranker.rank(
+                GEMINI_EVENT_RANKING_MISSING_KEY_FIXTURE.query,
+                GEMINI_EVENT_RANKING_MISSING_KEY_FIXTURE.intent,
+                [{ id: 1, name: "Coffee Meetup" }],
+            ),
+        ).rejects.toThrow("Gemini API key is required");
     });
 
     it('creates a default Gemini client when an API key is provided', () => {
@@ -81,8 +71,8 @@ describe('GeminiEventRanker', () => {
 
         await expect(
             ranker.rank(
-                'Find a relaxing outdoor activity',
-                'An outdoor activity that helps people relax',
+                GEMINI_EVENT_RANKING_REQUEST_FIXTURE.query,
+                GEMINI_EVENT_RANKING_REQUEST_FIXTURE.intent,
                 candidates,
             ),
         ).resolves.toEqual([2, 1]);
