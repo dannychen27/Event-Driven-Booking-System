@@ -32,4 +32,3 @@ export const E2E_FULL_EVENT_FIXTURE = {
 };
 
 export const E2E_NONEXISTENT_EVENT_ID = 999;
-

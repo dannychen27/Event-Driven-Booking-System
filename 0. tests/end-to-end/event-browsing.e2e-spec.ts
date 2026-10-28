@@ -2,7 +2,10 @@ import { INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import request from "supertest";
 import { AppModule } from "../../4. backend/src/app.module";
-import { E2E_TEST_EVENT_FIXTURE } from "./fixtures/eventFixtures";
+import {
+    E2E_FULL_EVENT_FIXTURE,
+    E2E_TEST_EVENT_FIXTURE,
+} from "./fixtures/eventFixtures";
 
 describe("Event browsing (E2E)", () => {
     let app: INestApplication;
@@ -57,13 +60,13 @@ describe("Event browsing (E2E)", () => {
 
     it("should return event availability", async () => {
         const response = await request(app.getHttpServer())
-            .get(`/events/${E2E_TEST_EVENT_FIXTURE.id}/availability`)
+            .get(`/events/${E2E_FULL_EVENT_FIXTURE.id}/availability`)
             .expect(200);
 
         expect(response.body).toMatchObject({
-            capacity: E2E_TEST_EVENT_FIXTURE.capacity,
-            booked: 0,
-            available: E2E_TEST_EVENT_FIXTURE.capacity,
+            capacity: E2E_FULL_EVENT_FIXTURE.capacity,
+            booked: 1,
+            available: 0,
         });
     });
 
