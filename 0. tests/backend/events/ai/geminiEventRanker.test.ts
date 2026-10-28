@@ -2,6 +2,7 @@ import {
     GeminiEventRanker,
 } from '../../../../4. backend/src/events/ai/gemini/gemini-event-ranker';
 import { geminiClientConfigFixture } from '../../fixtures/geminiClientConfigFixture';
+import { GEMINI_TEST_API_KEY } from '../../fixtures/geminiTestConstants';
 
 jest.mock('@google/genai', () => ({
     GoogleGenAI: jest.fn().mockImplementation(() => ({
@@ -36,10 +37,10 @@ describe('GeminiEventRanker', () => {
             GoogleGenAI: jest.Mock;
         };
 
-        new GeminiEventRanker('test-api-key');
+        new GeminiEventRanker(GEMINI_TEST_API_KEY);
 
         expect(GoogleGenAI).toHaveBeenCalledWith(
-            geminiClientConfigFixture('test-api-key'),
+            geminiClientConfigFixture(GEMINI_TEST_API_KEY),
         );
     });
 
@@ -67,14 +68,14 @@ describe('GeminiEventRanker', () => {
     });
 
     it('creates a default Gemini client when an API key is provided', () => {
-        expect(() => new GeminiEventRanker('test-api-key')).not.toThrow();
+        expect(() => new GeminiEventRanker(GEMINI_TEST_API_KEY)).not.toThrow();
     });
 
     it('sends the request and event metadata to Gemini and returns ranked IDs', async () => {
         const generateContent = jest.fn().mockResolvedValue({
             text: '{"eventIds":[2,1]}',
         });
-        const ranker = new GeminiEventRanker('test-api-key', {
+        const ranker = new GeminiEventRanker(GEMINI_TEST_API_KEY, {
             models: { generateContent },
         });
 
@@ -118,7 +119,7 @@ describe('GeminiEventRanker', () => {
 
     it('throws when Gemini returns no ranking text', async () => {
         const generateContent = jest.fn().mockResolvedValue({});
-        const ranker = new GeminiEventRanker('test-api-key', {
+        const ranker = new GeminiEventRanker(GEMINI_TEST_API_KEY, {
             models: { generateContent },
         });
 
@@ -131,7 +132,7 @@ describe('GeminiEventRanker', () => {
         const generateContent = jest.fn().mockRejectedValue(
             new Error('Gemini request failed'),
         );
-        const ranker = new GeminiEventRanker('test-api-key', {
+        const ranker = new GeminiEventRanker(GEMINI_TEST_API_KEY, {
             models: { generateContent },
         });
 
@@ -144,7 +145,7 @@ describe('GeminiEventRanker', () => {
         const generateContent = jest.fn().mockResolvedValue({
             text: '{"eventIds":[1]}',
         });
-        const ranker = new GeminiEventRanker('test-api-key', {
+        const ranker = new GeminiEventRanker(GEMINI_TEST_API_KEY, {
             models: { generateContent },
         });
 

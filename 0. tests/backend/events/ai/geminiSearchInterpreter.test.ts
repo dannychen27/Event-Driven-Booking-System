@@ -3,6 +3,7 @@ import {
     parseNaturalLanguageSearchPlan,
 } from "../../../../4. backend/src/events/ai/gemini/gemini-search-interpreter";
 import { geminiClientConfigFixture } from '../../fixtures/geminiClientConfigFixture';
+import { GEMINI_TEST_API_KEY } from '../../fixtures/geminiTestConstants';
 
 
 jest.mock('@google/genai', () => ({
@@ -21,10 +22,10 @@ describe("GeminiSearchInterpreter", () => {
             GoogleGenAI: jest.Mock;
         };
 
-        new GeminiSearchInterpreter('test-api-key');
+        new GeminiSearchInterpreter(GEMINI_TEST_API_KEY);
 
         expect(GoogleGenAI).toHaveBeenCalledWith(
-            geminiClientConfigFixture('test-api-key'),
+            geminiClientConfigFixture(GEMINI_TEST_API_KEY),
         );
     });
 
