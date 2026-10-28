@@ -2,7 +2,17 @@ export async function getApiErrorMessage(
     response: Response,
     fallbackMessage: string,
 ): Promise<string> {
-    const body = await response.json().catch(() => null);
+    const body: unknown = await response.json().catch(() => null);
 
-    return body?.message ?? fallbackMessage;
+    if (
+        typeof body === "object" &&
+        body !== null &&
+        "message" in body &&
+        typeof body.message === "string" &&
+        body.message.trim().length > 0
+    ) {
+        return body.message;
+    }
+
+    return fallbackMessage;
 }
