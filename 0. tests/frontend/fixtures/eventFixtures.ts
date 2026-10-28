@@ -52,6 +52,11 @@ export const secondInitialRenderEventFixture = {
     capacity: 20,
 };
 
+export const initialRenderEventFixture = [
+    firstInitialRenderEventFixture,
+    secondInitialRenderEventFixture,
+];
+
 export const initialEventFixture = {
     ...INITIAL_EVENT_BASE_FIXTURE,
     start_time: "2026-10-24T10:00:00Z",
@@ -87,6 +92,11 @@ export const coffeeMeetupAtMossParkFixture = {
 export const minimalCoffeeMeetupEventFixture = {
     id: 1,
     name: "Coffee Meetup",
+};
+
+export const minimalTeaMeetupEventFixture = {
+    id: 2,
+    name: "Tea Meetup",
 };
 
 export const reloadFailureInitialEventFixture = {
