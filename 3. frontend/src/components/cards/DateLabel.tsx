@@ -1,0 +1,53 @@
+
+import { formatBookingDate, formatDate } from "../../utils/Dates.ts";
+
+interface DateLabelProps {
+    label: string;
+    dateTime?: string | null;
+    startDateTime?: string | null;
+    endDateTime?: string | null;
+}
+
+interface DateFormatOptions {
+    dateStyle: "medium";
+    timeStyle: "short";
+}
+
+const EVENT_DATE_FORMAT: DateFormatOptions = {
+    dateStyle: "medium",
+    timeStyle: "short",
+};
+
+export function DateLabel({
+    label,
+    dateTime,
+    startDateTime,
+    endDateTime,
+}: DateLabelProps) {
+    const isDateRange =
+        startDateTime !== undefined || endDateTime !== undefined;
+
+    if (!isDateRange) {
+        return (
+            <p>
+                {label}:{" "}
+                {dateTime ? formatBookingDate(dateTime) : "Not set"}
+            </p>
+        );
+    }
+
+    const dateRange =
+        !startDateTime && !endDateTime
+            ? "Date to be announced"
+            : `${startDateTime
+                ? formatDate(startDateTime, EVENT_DATE_FORMAT)
+                : "Not set"} – ${endDateTime
+                ? formatDate(endDateTime, EVENT_DATE_FORMAT)
+                : "Not set"}`;
+    return (
+        <div className="event-datetime">
+            <h3>{label}</h3>
+            <p>{dateRange}</p>
+        </div>
+    );
+}

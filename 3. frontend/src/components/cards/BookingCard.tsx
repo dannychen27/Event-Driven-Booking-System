@@ -1,7 +1,9 @@
 import { useState } from "react";
 import type { BookingCardProps } from "../../types/BookingCardProps.ts";
-import { formatBookingDate } from "../../utils/Dates.ts";
 import { getErrorMessage } from "../../utils/Errors.ts";
+import { getCancelModalButtons } from "./BookingCard.actions";
+import { BookingCardModalBody } from "./BookingCard.modal";
+import { DateLabel } from "./DateLabel.tsx";
 import "../../styles/shared/card.css";
 import "../../styles/bookings/booking-card.css";
 import "../../styles/shared/card-buttons.css";
@@ -9,6 +11,7 @@ import "../../styles/errors/error-message.css";
 import { cancelBooking } from "../../api/bookings.ts";
 import { Modal } from "../modals/Modal.tsx";
 import Button from "../ui/buttons/Button";
+import { InfoLabel } from "./InfoLabel.tsx";
 
 
 export default function BookingCard({
@@ -40,48 +43,23 @@ export default function BookingCard({
         }
     }
 
-    function getCancelModalButtons() {
-        return [
-            {
-                label: "Keep Booking",
-                variant: "success" as const,
-                className: "keep-booking-button",
-                disabled: isCancelling,
-                onClick: () => setShowCancelModal(false),
-            },
-            {
-                label: isCancelling ? "Cancelling..." : "Cancel Booking",
-                variant: "danger" as const,
-                className: "cancel-button",
-                disabled: isCancelling,
-                onClick: handleCancellation,
-            },
-        ];
-    }
-
     return (
         <div className="card booking-card">
             <h2>{booking.event_name ?? `Event ${booking.event_id}`}</h2>
-            <p>Booking Id: {booking.id}</p>
-            <p>Event Id: {booking.event_id}</p>
-            <p>User Id: {booking.user_id}</p>
-            <p>
-                Starts at: {
-                booking.start_time
-                    ? formatBookingDate(booking.start_time)
-                    : "Unavailable"
-            }
-            </p>
-            <p>
-                Ends at: {
-                booking.end_time
-                    ? formatBookingDate(booking.end_time)
-                    : "Unavailable"
-            }
-            </p>
-            <p>Venue: {booking.venue_name ?? "Unavailable"}</p>
-            {booking.venue_address && <p>Address: {booking.venue_address}</p>}
-            <p>Booked at: {formatBookingDate(booking.created_at)}</p>
+
+            <InfoLabel label="Booking Id" value={booking.id} />
+            <InfoLabel label="Event Id" value={booking.event_id} />
+            <InfoLabel label="User Id" value={booking.user_id} />
+            <InfoLabel
+                label="Venue"
+                value={booking.venue_name ?? "Unavailable"}
+            />
+            <DateLabel label="Starts at" dateTime={booking.start_time} />
+            <DateLabel label="Ends at" dateTime={booking.end_time} />
+            {booking.venue_address && (
+                <InfoLabel label="Address" value={booking.venue_address} />
+            )}
+            <DateLabel label="Booked at" dateTime={booking.created_at} />
 
             <Button
                 variant="danger"
@@ -96,18 +74,12 @@ export default function BookingCard({
 
             {showCancelModal && (
                 <Modal
-                    body={
-                        <>
-                            <h2>Cancel Booking?</h2>
-                            <p>This action cannot be undone.</p>
-                            {cancellationError && (
-                                <p className="error-message">
-                                    {cancellationError}
-                                </p>
-                            )}
-                        </>
-                    }
-                    actions={getCancelModalButtons()}
+                    body={<BookingCardModalBody cancellationError={cancellationError} />}
+                    actions={getCancelModalButtons({
+                        isCancelling,
+                        onKeepBooking: () => setShowCancelModal(false),
+                        onCancelBooking: handleCancellation,
+                    })}
                 />
             )}
         </div>

@@ -7,23 +7,24 @@ import "../../styles/shared/card-buttons.css";
 import "../../styles/errors/error-message.css";
 import "../../styles/errors/success-message.css";
 import "../../styles/errors/status-message.css";
+import { InfoLabel } from "./InfoLabel.tsx";
+import { DateLabel } from "./DateLabel.tsx";
+import type { BookingStatus } from "./EventCard.types";
+import { BOOKING_USER_ID } from "./EventCard.constants.ts";
 import Button from "../ui/buttons/Button";
 import { Modal } from "../modals/Modal.tsx";
 import BookingForm from "../forms/BookingForm.tsx";
-import { formatDate } from "../../utils/Dates.ts";
 import { getErrorMessage } from "../../utils/Errors.ts";
 
 
 export default function EventCard({ event }: EventCardProps) {
-    const [bookingStatus, setBookingStatus] = useState<
-        "idle" | "creating" | "success" | "error"
-    >("idle");
+    const [bookingStatus, setBookingStatus] = useState<BookingStatus>("idle");
     const [bookingMessage, setBookingMessage] = useState("");
     const [showBookingForm, setShowBookingForm] = useState(false);
     const [alreadyBooked, setAlreadyBooked] = useState(false);
 
     // hardcoded constants for now...
-    const user_id = 1;  // hardcoded for now...
+    const user_id = BOOKING_USER_ID;  // hardcoded for now...
     // TODO: when we create accounts, we can load that specific user's
     // TODO: bookings (using their own user_id instead of a hardcoded one).
 
@@ -70,27 +71,17 @@ export default function EventCard({ event }: EventCardProps) {
         <div className="card event-card">
             <h2>{event.name}</h2>
 
-            <p>Event Id: {event.id}</p>
+            <InfoLabel label="Event Id" value={event.id} />
+            <InfoLabel label="Venue" value={event.venue_name} />
+            <InfoLabel label="Address" value={event.venue_address} />
 
-            <p>Venue: {event.venue_name}</p>
-            <p>Address: {event.venue_address}</p>
+            <DateLabel
+                label="Date & Time"
+                startDateTime={event.start_time}
+                endDateTime={event.end_time}
+            />
 
-            <div className="event-datetime">
-                <h3>Date & Time</h3>
-                <p>
-                    {formatDate(event.start_time, {
-                        dateStyle: "medium",
-                        timeStyle: "short",
-                    })}
-                    {" – "}
-                    {formatDate(event.end_time, {
-                        dateStyle: "medium",
-                        timeStyle: "short",
-                    })}
-                </p>
-            </div>
-
-            <p>Capacity: {event.capacity}</p>
+            <InfoLabel label="Capacity" value={event.capacity} />
             <Button
                 variant="success"
                 onClick={handleOpenBookingForm}
