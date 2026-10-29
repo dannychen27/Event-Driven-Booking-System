@@ -1,5 +1,5 @@
 import "../../../styles/shared/button.css";
-import type {ButtonProps, ButtonVariant} from "./Button.types.ts";
+import type { ButtonProps, ButtonVariant } from "../../../types/Button.types.ts";
 
 
 function getButtonClassName(variant: ButtonVariant, className: string) {

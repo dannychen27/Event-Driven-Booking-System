@@ -1,5 +1,5 @@
 import "../../styles/search/ai-search-examples.css";
-import type { AiSearchExamplesProps } from "./AiSearchExamples.types.ts";
+import type { AiSearchExamplesProps } from "../../types/AiSearchExamples.types.ts";
 import Button from "../ui/buttons/Button.tsx";
 
 export default function AiSearchExamples({

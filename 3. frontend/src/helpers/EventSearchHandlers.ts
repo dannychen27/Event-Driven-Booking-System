@@ -1,26 +1,8 @@
 import type { FormEvent } from "react";
-import type { Event } from "../types/Event";
-import { getEvents, searchEvents, searchEventsNaturalLanguage } from "../api/events";
-import { getErrorMessage } from "../utils/Errors";
-
-interface SearchHandlerDependencies {
-    query: string;
-    searchRequestId: { current: number };
-    setEvents: (events: Event[]) => void;
-    setSearching: (searching: boolean) => void;
-    setSearchError: (error: string) => void;
-    setIsSearchActive: (active: boolean) => void;
-}
-
-interface ClearSearchDependencies {
-    searchRequestId: { current: number };
-    setEvents: (events: Event[]) => void;
-    setSearching: (searching: boolean) => void;
-    setSearchError: (error: string) => void;
-    setIsSearchActive: (active: boolean) => void;
-    setKeyword: (keyword: string) => void;
-    setNaturalLanguageQuery: (query: string) => void;
-}
+import type { Event } from "../types/Event.ts";
+import { getEvents, searchEvents, searchEventsNaturalLanguage } from "../api/events.ts";
+import { getErrorMessage } from "../utils/Errors.ts";
+import type { ClearSearchDependencies, SearchHandlerDependencies } from "../types/SearchDependencies.types.ts";
 
 async function executeSearch(
     event: FormEvent<HTMLFormElement>,

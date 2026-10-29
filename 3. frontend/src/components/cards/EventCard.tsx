@@ -9,7 +9,7 @@ import "../../styles/errors/success-message.css";
 import "../../styles/errors/status-message.css";
 import { InfoLabel } from "./InfoLabel.tsx";
 import { DateLabel } from "./DateLabel.tsx";
-import type { BookingStatus } from "./EventCard.types";
+import type { BookingStatus } from "../../types/EventCard.types.ts";
 import { BOOKING_USER_ID } from "./EventCard.constants.ts";
 import Button from "../ui/buttons/Button";
 import { Modal } from "../modals/Modal.tsx";

@@ -1,6 +1,5 @@
-interface BookingCardModalBodyProps {
-    cancellationError: string | null;
-}
+import type { BookingCardModalBodyProps } from "../../types/BookingCardModalBodyProps.types.ts";
+
 
 export function BookingCardModalBody({
     cancellationError,

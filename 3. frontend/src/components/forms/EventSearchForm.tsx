@@ -1,6 +1,6 @@
 import "../../styles/search/event-search-bar.css";
 import "../../styles/shared/search-bar-shared.css";
-import type { EventSearchFormProps } from "./EventSearchForm.types.ts";
+import type { EventSearchFormProps } from "../../types/EventSearchForm.types.ts";
 import SearchControls from "./SearchControls.tsx";
 
 export default function EventSearchForm({
