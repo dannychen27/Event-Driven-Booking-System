@@ -1,31 +1,12 @@
 import { useEffect, useState } from "react";
 import type { Booking } from "../types/Booking.ts";
 import { getBookingHistory } from "../api/bookings.ts";
-import BookingCard from "../components/cards/BookingCard.tsx";
 import "../styles/pages/booking-page.css";
 import "../styles/errors/error-message.css";
 import "../styles/errors/status-message.css";
 import "../styles/errors/empty-state-message.css";
+import { displayAllBookings, displayNoBookings } from "../helpers/BookingsPageHelpers.tsx";
 
-
-function displayNoBookings() {
-    return <p className="empty-state-message">No bookings right now.</p>;
-}
-
-function displayAllBookings(
-    bookings: Booking[],
-    setBookings: (value: (((prevState: Booking[]) => Booking[]) | Booking[])) => void
-) {
-    return bookings.map((booking) => (
-        <BookingCard
-            key={booking.id}
-            booking={booking}
-            onBookingCancelled={() => {
-                setBookings(bookings.filter(b => b.id !== booking.id));
-            }}
-        />
-    ));
-}
 
 export default function BookingsPage() {
     const [bookings, setBookings] = useState<Booking[]>([]);

@@ -1,22 +1,11 @@
 import { useEffect, useState } from "react";
 import { getVenues } from "../api/venues.ts";
 import type { Venue } from "../types/Venue.ts";
-import VenueCard from "../components/cards/VenueCard.tsx";
 import "../styles/pages/venues-page.css";
 import "../styles/errors/error-message.css";
 import "../styles/errors/status-message.css";
 import "../styles/errors/empty-state-message.css";
-
-
-function displayNoVenues() {
-    return <p className="empty-state-message">No available venues right now.</p>;
-}
-
-function displayAllVenues(venues: Venue[]) {
-    return venues.map((venue) => (
-        <VenueCard key={venue.id} venue={venue}/>
-    ));
-}
+import { displayAllVenues, displayNoVenues } from "../helpers/VenuesPageHelpers.tsx";
 
 
 export default function VenuesPage() {

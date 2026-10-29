@@ -5,32 +5,11 @@ import "../styles/errors/error-message.css";
 import "../styles/errors/status-message.css";
 import "../styles/errors/empty-state-message.css";
 import { getErrorMessage } from "../utils/Errors.ts";
-import {
-    handleSearch,
-    handleNaturalLanguageSearch,
-    handleClearSearch,
-} from "./EventSearchHandlers.tsx";
-import { getEvents  } from "../api/events";
-import EventCard from "../components/cards/EventCard";
+import { handleClearSearch, handleNaturalLanguageSearch, handleSearch } from "../helpers/EventSearchHandlers.ts";
+import { getEvents } from "../api/events";
 import EventSearchForm from "../components/forms/EventSearchForm.tsx";
 import AiSearchForm from "../components/forms/AiSearchForm";
-
-
-function displayNoEvents(isSearchActive: boolean) {
-    return (
-        <p className="empty-state-message">
-            {isSearchActive
-                ? "No matching events found."
-                : "No available events right now."}
-        </p>
-    );
-}
-
-function displayAllEvents(events: Event[]) {
-    return events.map((event) => (
-        <EventCard key={event.id} event={event}/>
-    ));
-}
+import { displayAllEvents, displayNoEvents } from "../helpers/EventsPageHelpers.tsx";
 
 
 export default function EventsPage() {
