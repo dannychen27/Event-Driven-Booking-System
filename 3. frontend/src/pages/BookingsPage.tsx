@@ -6,7 +6,7 @@ import "../styles/pages/booking-page.css";
 import "../styles/errors/error-message.css";
 import "../styles/errors/status-message.css";
 import "../styles/errors/empty-state-message.css";
-import { displayAllBookings, displayNoBookings } from "../helpers/BookingsPageHelpers.tsx";
+import { displayAllBookings, displayNoBookings } from "../helpers/bookings/BookingsPageHelpers.tsx";
 
 
 export default function BookingsPage() {

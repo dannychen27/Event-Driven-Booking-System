@@ -1,5 +1,5 @@
-import type { Booking } from "../types/Booking.ts";
-import BookingCard from "../components/cards/BookingCard.tsx";
+import type { Booking } from "../../types/Booking.ts";
+import BookingCard from "../../components/cards/BookingCard.tsx";
 
 export function displayNoBookings() {
     return <p className="empty-state-message">No bookings right now.</p>;

@@ -1,5 +1,5 @@
-import type { Venue } from "../types/Venue.ts";
-import VenueCard from "../components/cards/VenueCard.tsx";
+import type { Venue } from "../../types/Venue.ts";
+import VenueCard from "../../components/cards/VenueCard.tsx";
 
 export function displayNoVenues() {
     return <p className="empty-state-message">No available venues right now.</p>;

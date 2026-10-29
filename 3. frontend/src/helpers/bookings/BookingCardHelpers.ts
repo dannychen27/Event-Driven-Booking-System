@@ -1,4 +1,4 @@
-import type { GetCancelModalButtonsParams } from "../types/GetCancelModalButtonsParams.types.ts";
+import type { GetCancelModalButtonsParams } from "../../types/GetCancelModalButtonsParams.types.ts";
 
 export const getCancelModalButtons = ({
     isCancelling,

@@ -1,5 +1,5 @@
-import type { Event } from "../types/Event.ts";
-import EventCard from "../components/cards/EventCard.tsx";
+import type { Event } from "../../types/Event.ts";
+import EventCard from "../../components/cards/EventCard.tsx";
 
 export function displayNoEvents(isSearchActive: boolean) {
     return (

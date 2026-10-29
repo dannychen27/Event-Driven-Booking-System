@@ -14,7 +14,7 @@ import { BOOKING_USER_ID } from "../../constants/bookings/booking.ts";
 import Button from "../ui/buttons/Button";
 import { Modal } from "../modals/Modal.tsx";
 import BookingForm from "../forms/BookingForm.tsx";
-import { getErrorMessage } from "../../helpers/Errors.ts";
+import { getErrorMessage } from "../../helpers/shared/Errors.ts";
 
 
 export default function EventCard({ event }: EventCardProps) {

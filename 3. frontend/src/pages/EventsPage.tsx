@@ -4,12 +4,12 @@ import "../styles/pages/events-page.css";
 import "../styles/errors/error-message.css";
 import "../styles/errors/status-message.css";
 import "../styles/errors/empty-state-message.css";
-import { getErrorMessage } from "../helpers/Errors.ts";
-import { handleClearSearch, handleNaturalLanguageSearch, handleSearch } from "../helpers/EventSearchHelpers.ts";
+import { getErrorMessage } from "../helpers/shared/Errors.ts";
+import { handleClearSearch, handleNaturalLanguageSearch, handleSearch } from "../helpers/search/EventSearchHelpers.ts";
 import { getEvents } from "../api/events";
 import EventSearchForm from "../components/forms/EventSearchForm.tsx";
 import AiSearchForm from "../components/forms/AiSearchForm";
-import { displayAllEvents, displayNoEvents } from "../helpers/EventsPageHelpers.tsx";
+import { displayAllEvents, displayNoEvents } from "../helpers/events/EventsPageHelpers.tsx";
 
 
 export default function EventsPage() {

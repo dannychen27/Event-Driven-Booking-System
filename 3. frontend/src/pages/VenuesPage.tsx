@@ -5,7 +5,7 @@ import "../styles/pages/venues-page.css";
 import "../styles/errors/error-message.css";
 import "../styles/errors/status-message.css";
 import "../styles/errors/empty-state-message.css";
-import { displayAllVenues, displayNoVenues } from "../helpers/VenuesPageHelpers.tsx";
+import { displayAllVenues, displayNoVenues } from "../helpers/venues/VenuesPageHelpers.tsx";
 
 
 export default function VenuesPage() {
