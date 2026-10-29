@@ -1,10 +1,5 @@
-import type { ReactNode } from "react";
+import type { InfoLabelProps } from "../../types/InfoLabelProps.ts";
 
-
-export interface InfoLabelProps {
-    label: string;
-    value: ReactNode;
-}
 
 export function InfoLabel({ label, value }: InfoLabelProps) {
     return <p>{label}: {value}</p>;

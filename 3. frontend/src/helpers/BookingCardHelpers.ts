@@ -1,8 +1,4 @@
-interface GetCancelModalButtonsParams {
-    isCancelling: boolean;
-    onKeepBooking: () => void;
-    onCancelBooking: () => void;
-}
+import type { GetCancelModalButtonsParams } from "../types/GetCancelModalButtonsParams.types.ts";
 
 export const getCancelModalButtons = ({
     isCancelling,
