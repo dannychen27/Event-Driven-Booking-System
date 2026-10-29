@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 
-
 export type ModalActionVariant = "primary" | "secondary" | "success" | "danger";
 
 export interface ModalAction {

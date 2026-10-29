@@ -1,5 +1,5 @@
 import "../../../styles/shared/button.css";
-import type { ButtonProps } from "../../../types/Button.types.ts";
+import type { ButtonProps } from "../../../types/shared/Button.types.ts";
 import { getButtonClassName } from "../../../helpers/shared/ButtonHelpers.ts";
 
 

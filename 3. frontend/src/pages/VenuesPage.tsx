@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getVenues } from "../api/venues.ts";
-import type { Venue } from "../types/Venue.ts";
+import type { Venue } from "../types/venues/Venue.ts";
 import "../styles/pages/venues-page.css";
 import "../styles/errors/error-message.css";
 import "../styles/errors/status-message.css";

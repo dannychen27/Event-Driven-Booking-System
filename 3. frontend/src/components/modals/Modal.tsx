@@ -1,6 +1,6 @@
 import "../../styles/shared/modal.css";
 import Button from "../ui/buttons/Button";
-import type { ModalProps } from "../../types/Modal.types.ts";
+import type { ModalProps } from "../../types/shared/Modal.types.ts";
 
 
 export function Modal({ body, actions = [] }: ModalProps) {

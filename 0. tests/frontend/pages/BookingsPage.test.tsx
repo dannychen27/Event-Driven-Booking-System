@@ -7,7 +7,7 @@ import { bookingHistoryFixture } from "../fixtures/bookingFixtures";
 import Button from "../../../3. frontend/src/components/ui/buttons/Button";
 import BookingsPage from "../../../3. frontend/src/pages/BookingsPage";
 import { getBookingHistory } from "../../../3. frontend/src/api/bookings";
-import type { Booking } from "../../../3. frontend/src/types/Booking.ts";
+import type { Booking } from "../../../3. frontend/src/types/bookings/Booking.ts";
 
 
 vi.mock("../../../3. frontend/src/api/bookings.ts", () => ({

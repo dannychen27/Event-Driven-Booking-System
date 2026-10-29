@@ -1,4 +1,4 @@
-import type { Venue } from "../../../3. frontend/src/types/Venue";
+import type { Venue } from "../../../3. frontend/src/types/venues/Venue";
 
 export const firstVenueFixture: Venue = {
     id: 1,

@@ -1,4 +1,4 @@
-import type { Venue } from "../../types/Venue.ts";
+import type { Venue } from "../../types/venues/Venue.ts";
 import VenueCard from "../../components/cards/VenueCard.tsx";
 
 export function displayNoVenues() {

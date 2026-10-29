@@ -1,6 +1,6 @@
 import type { ChangeEventHandler } from "react";
 import Button from "../ui/buttons/Button";
-import type { SearchControlsProps } from "../../types/SearchControls.types.ts";
+import type { SearchControlsProps } from "../../types/search/SearchControls.types.ts";
 
 
 export default function SearchControls({

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { EventCardProps } from "../../types/EventCardProps.ts";
+import type { EventCardProps } from "../../types/events/EventCard.types.ts";
 import { createBooking, getBookingHistory } from "../../api/bookings.ts";
 import "../../styles/shared/card.css";
 import "../../styles/events/event-card.css";
@@ -9,7 +9,7 @@ import "../../styles/errors/success-message.css";
 import "../../styles/errors/status-message.css";
 import { InfoLabel } from "./InfoLabel.tsx";
 import { DateLabel } from "./DateLabel.tsx";
-import type { BookingStatus } from "../../types/EventCard.types.ts";
+import type { EventBookingStatus } from "../../types/events/EventCard.types.ts";
 import { BOOKING_USER_ID } from "../../constants/bookings/booking.ts";
 import Button from "../ui/buttons/Button";
 import { Modal } from "../modals/Modal.tsx";
@@ -18,7 +18,7 @@ import { getErrorMessage } from "../../helpers/shared/Errors.ts";
 
 
 export default function EventCard({ event }: EventCardProps) {
-    const [bookingStatus, setBookingStatus] = useState<BookingStatus>("idle");
+    const [bookingStatus, setBookingStatus] = useState<EventBookingStatus>("idle");
     const [bookingMessage, setBookingMessage] = useState("");
     const [showBookingForm, setShowBookingForm] = useState(false);
     const [alreadyBooked, setAlreadyBooked] = useState(false);

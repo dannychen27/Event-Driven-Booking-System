@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import "../../styles/navigation/navbar.css";
-import type { NavigationBarProps } from "../../types/NavigationBar.types.ts";
+import type { NavigationBarProps } from "../../types/navigation/NavigationBar.types.ts";
 import Button from "../ui/buttons/Button";
 
 

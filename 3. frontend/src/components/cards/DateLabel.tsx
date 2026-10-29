@@ -1,6 +1,6 @@
 import { formatBookingDate, formatDate } from "../../helpers/shared/DatesHelpers.ts";
 import { EVENT_DATE_FORMAT } from "../../constants/shared/dates.ts";
-import type { DateLabelProps } from "../../types/DateLabelProps.types.ts";
+import type { DateLabelProps } from "../../types/shared/DateLabel.types.ts";
 
 function getDateRange(
     startDateTime: string | null | undefined,

@@ -1,4 +1,4 @@
-import type { InfoLabelProps } from "../../types/InfoLabelProps.ts";
+import type { InfoLabelProps } from "../../types/shared/InfoLabel.types.ts";
 
 
 export function InfoLabel({ label, value }: InfoLabelProps) {

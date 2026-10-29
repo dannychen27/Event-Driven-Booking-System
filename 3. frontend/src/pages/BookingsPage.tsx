@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Booking } from "../types/Booking.ts";
+import type { Booking } from "../types/bookings/Booking.ts";
 import { getBookingHistory } from "../api/bookings.ts";
 import { BOOKING_USER_ID } from "../constants/bookings/booking.ts";
 import "../styles/pages/booking-page.css";

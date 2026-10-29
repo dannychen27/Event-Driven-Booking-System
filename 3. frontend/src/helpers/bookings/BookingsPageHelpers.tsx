@@ -1,4 +1,4 @@
-import type { Booking } from "../../types/Booking.ts";
+import type { Booking } from "../../types/bookings/Booking.ts";
 import BookingCard from "../../components/cards/BookingCard.tsx";
 
 export function displayNoBookings() {

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { Event } from "../types/Event";
+import type { Event } from "../types/events/Event.ts";
 import "../styles/pages/events-page.css";
 import "../styles/errors/error-message.css";
 import "../styles/errors/status-message.css";

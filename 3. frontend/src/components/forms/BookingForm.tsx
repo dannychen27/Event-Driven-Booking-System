@@ -1,6 +1,6 @@
 import "../../styles/bookings/booking-form.css";
 import { useState } from "react";
-import type { BookingFormProps } from "../../types/BookingForm.types.ts";
+import type { BookingFormProps } from "../../types/bookings/BookingForm.types.ts";
 import Button from "../ui/buttons/Button";
 
 

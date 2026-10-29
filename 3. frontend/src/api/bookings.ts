@@ -1,4 +1,4 @@
-import type { Booking } from "../types/Booking.ts"
+import type { Booking } from "../types/bookings/Booking.ts"
 import { API_BASE_URL } from "./apiBaseUrl.ts";
 import { apiRequest } from "./apiRequest.ts";
 

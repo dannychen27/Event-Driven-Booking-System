@@ -1,4 +1,4 @@
-import type { Event } from "./Event.ts";
+import type { Event } from "../events/Event.ts";
 
 export interface SearchHandlerDependencies {
     query: string;

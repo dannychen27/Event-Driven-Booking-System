@@ -1,4 +1,4 @@
-import type { VenueCardProps } from "../../types/VenueCardProps.ts";
+import type { VenueCardProps } from "../../types/venues/VenueCard.types.ts";
 import "../../styles/shared/card.css";
 import "../../styles/venues/venue-card.css";
 import { InfoLabel } from "./InfoLabel.tsx";

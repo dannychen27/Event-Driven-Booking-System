@@ -7,7 +7,7 @@ import {
     searchEvents,
     searchEventsNaturalLanguage
 } from "../../../3. frontend/src/api/events";
-import type { Event } from "../../../3. frontend/src/types/Event";
+import type { Event } from "../../../3. frontend/src/types/events/Event";
 import {
     initialEventFixture,
     initialRenderEventFixture,

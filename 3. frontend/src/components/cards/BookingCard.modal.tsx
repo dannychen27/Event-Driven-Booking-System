@@ -1,4 +1,4 @@
-import type { BookingCardModalBodyProps } from "../../types/BookingCardModalBodyProps.types.ts";
+import type { BookingCardModalBodyProps } from "../../types/bookings/BookingCardModalBody.types.ts";
 
 
 export function BookingCardModalBody({

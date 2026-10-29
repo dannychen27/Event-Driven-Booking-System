@@ -1,4 +1,4 @@
-import type { Event } from "../types/Event.ts";
+import type { Event } from "../types/events/Event.ts";
 import { API_BASE_URL } from "./apiBaseUrl.ts";
 import { apiRequest } from "./apiRequest.ts";
 import { getApiErrorMessage } from "./apiError.ts";

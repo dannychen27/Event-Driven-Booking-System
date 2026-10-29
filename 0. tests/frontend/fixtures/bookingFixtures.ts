@@ -1,5 +1,4 @@
-
-import type { Booking } from "../../../3. frontend/src/types/Booking";
+import type { Booking } from "../../../3. frontend/src/types/bookings/Booking";
 
 import {
     bookingHistoryFixture as sharedBookingHistoryFixture,

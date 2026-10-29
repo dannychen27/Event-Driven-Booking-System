@@ -1,4 +1,4 @@
-import type { Venue } from "../types/Venue.ts";
+import type { Venue } from "../types/venues/Venue.ts";
 import { API_BASE_URL } from "./apiBaseUrl.ts";
 import { apiRequest } from "./apiRequest.ts";
 
