@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getErrorMessage } from "../../../3. frontend/src/utils/Errors.ts";
+import { getErrorMessage } from "../../../3. frontend/src/helpers/Errors.ts";
 
 describe("getErrorMessage", () => {
     it("returns the message from an Error", () => {

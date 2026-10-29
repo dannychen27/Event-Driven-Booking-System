@@ -1,7 +1,7 @@
 import type { FormEvent } from "react";
 import type { Event } from "../types/Event.ts";
 import { getEvents, searchEvents, searchEventsNaturalLanguage } from "../api/events.ts";
-import { getErrorMessage } from "../utils/Errors.ts";
+import { getErrorMessage } from "./Errors.ts";
 import type { ClearSearchDependencies, SearchHandlerDependencies } from "../types/SearchDependencies.types.ts";
 
 async function executeSearch(

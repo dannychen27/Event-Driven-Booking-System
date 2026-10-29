@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { BookingCardProps } from "../../types/BookingCardProps.ts";
-import { getErrorMessage } from "../../utils/Errors.ts";
+import { getErrorMessage } from "../../helpers/Errors.ts";
 import { getCancelModalButtons } from "../../helpers/BookingCardHelpers.ts";
 import { BookingCardModalBody } from "./BookingCard.modal";
 import { DateLabel } from "./DateLabel.tsx";

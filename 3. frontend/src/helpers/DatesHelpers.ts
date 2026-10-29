@@ -1,15 +1,5 @@
-type DateFormatOptions = {
-    dateStyle?: "full" | "long" | "medium" | "short";
-    timeStyle?: "short" | "medium" | "long" | "full";
-    is12HourFormat?: boolean;
-};
-
-// Standard formatting options for booking dates.
-export const BOOKING_DATE_FORMAT_OPTIONS = {
-    dateStyle: "long",
-    timeStyle: "medium",
-    is12HourFormat: false,
-} as const;
+import { BOOKING_DATE_FORMAT_OPTIONS } from "../constants/dates.ts";
+import type { DateFormatOptions } from "../types/Dates.types.ts";
 
 // General-purpose date formatter.
 export function formatDate(

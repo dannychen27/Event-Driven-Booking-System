@@ -4,7 +4,7 @@ import { DateLabel } from "../../../../3. frontend/src/components/cards/DateLabe
 import {
     formatBookingDate,
     formatDate,
-} from "../../../../3. frontend/src/utils/Dates";
+} from "../../../../3. frontend/src/helpers/DatesHelpers";
 
 const DATE_FORMAT = {
     dateStyle: "medium",

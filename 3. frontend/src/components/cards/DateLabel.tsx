@@ -1,6 +1,4 @@
 
-import { formatBookingDate, formatDate } from "../../utils/Dates.ts";
-
 interface DateLabelProps {
     label: string;
     dateTime?: string | null;
@@ -12,6 +10,7 @@ interface DateFormatOptions {
     dateStyle: "medium";
     timeStyle: "short";
 }
+import { formatBookingDate, formatDate } from "../../helpers/DatesHelpers.ts";
 import { EVENT_DATE_FORMAT } from "../../constants/dates.ts";
 
 function getDateRange(startDateTime: string, endDateTime: string) {
