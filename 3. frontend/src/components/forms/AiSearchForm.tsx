@@ -1,7 +1,7 @@
 import "../../styles/search/ai-search-form.css";
 import "../../styles/shared/search-bar-shared.css";
 import type { AiSearchFormProps } from "../../types/AiSearchForm.types.ts";
-import { SEARCH_EXAMPLES } from "../../constants/aiSearch.ts";
+import { SEARCH_EXAMPLES } from "../../constants/search/aiSearch.ts";
 import AiSearchExamples from "./AiSearchExamples.tsx";
 import SearchControls from "./SearchControls.tsx";
 

@@ -10,7 +10,7 @@ import "../../styles/errors/status-message.css";
 import { InfoLabel } from "./InfoLabel.tsx";
 import { DateLabel } from "./DateLabel.tsx";
 import type { BookingStatus } from "../../types/EventCard.types.ts";
-import { BOOKING_USER_ID } from "../../constants/booking.ts";
+import { BOOKING_USER_ID } from "../../constants/bookings/booking.ts";
 import Button from "../ui/buttons/Button";
 import { Modal } from "../modals/Modal.tsx";
 import BookingForm from "../forms/BookingForm.tsx";

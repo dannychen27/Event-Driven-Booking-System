@@ -1,5 +1,5 @@
 import { formatBookingDate, formatDate } from "../../helpers/DatesHelpers.ts";
-import { EVENT_DATE_FORMAT } from "../../constants/dates.ts";
+import { EVENT_DATE_FORMAT } from "../../constants/shared/dates.ts";
 import type { DateLabelProps } from "../../types/DateLabelProps.types.ts";
 
 function getDateRange(

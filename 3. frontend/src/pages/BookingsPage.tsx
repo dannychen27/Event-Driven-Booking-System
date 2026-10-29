@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Booking } from "../types/Booking.ts";
 import { getBookingHistory } from "../api/bookings.ts";
-import { BOOKING_USER_ID } from "../constants/booking.ts";
+import { BOOKING_USER_ID } from "../constants/bookings/booking.ts";
 import "../styles/pages/booking-page.css";
 import "../styles/errors/error-message.css";
 import "../styles/errors/status-message.css";

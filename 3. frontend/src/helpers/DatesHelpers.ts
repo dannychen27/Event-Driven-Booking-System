@@ -1,4 +1,4 @@
-import { BOOKING_DATE_FORMAT_OPTIONS } from "../constants/dates.ts";
+import { BOOKING_DATE_FORMAT_OPTIONS } from "../constants/shared/dates.ts";
 import type { DateFormatOptions } from "../types/Dates.types.ts";
 
 // General-purpose date formatter.
