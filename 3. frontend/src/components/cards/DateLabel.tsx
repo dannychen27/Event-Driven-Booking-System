@@ -12,11 +12,7 @@ interface DateFormatOptions {
     dateStyle: "medium";
     timeStyle: "short";
 }
-
-const EVENT_DATE_FORMAT: DateFormatOptions = {
-    dateStyle: "medium",
-    timeStyle: "short",
-};
+import { EVENT_DATE_FORMAT } from "../../constants/dates.ts";
 
 function getDateRange(startDateTime: string, endDateTime: string) {
     return !startDateTime && !endDateTime

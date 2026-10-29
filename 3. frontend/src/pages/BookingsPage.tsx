@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Booking } from "../types/Booking.ts";
 import { getBookingHistory } from "../api/bookings.ts";
+import { BOOKING_USER_ID } from "../constants/booking.ts";
 import "../styles/pages/booking-page.css";
 import "../styles/errors/error-message.css";
 import "../styles/errors/status-message.css";
@@ -13,7 +14,7 @@ export default function BookingsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    const user_id = 1;  // hardcoded for now...
+    const user_id = BOOKING_USER_ID;  // hardcoded for now...
     // TODO: when we create accounts, we can load that specific user's
     // TODO: bookings (using their own user_id instead of a hardcoded one).
 
