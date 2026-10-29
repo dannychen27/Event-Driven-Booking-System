@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes } from "react";
 
-type ButtonVariant =
+export type ButtonVariant =
     | "primary"
     | "secondary"
     | "pill"

@@ -1,5 +1,12 @@
 import "../../../styles/shared/button.css";
-import type { ButtonProps } from "./Button.types.ts";
+import type {ButtonProps, ButtonVariant} from "./Button.types.ts";
+
+
+function getButtonClassName(variant: ButtonVariant, className: string) {
+    return ["button", `button--${variant}`, className]
+        .filter(Boolean)
+        .join(" ");
+}
 
 export default function Button({
    variant = "primary",
@@ -7,17 +14,11 @@ export default function Button({
    type = "button",
    ...props
 }: ButtonProps) {
-    const classes = [
-        "button",
-        `button--${variant}`,
-        className,
-    ].filter(Boolean).join(" ");
-
     return (
         <button
             {...props}
             type={type}
-            className={classes}
+            className={getButtonClassName(variant, className)}
         />
     );
 }

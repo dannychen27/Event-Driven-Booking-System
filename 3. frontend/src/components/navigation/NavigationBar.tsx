@@ -1,12 +1,7 @@
 import { NavLink } from "react-router-dom";
 import "../../styles/navigation/navbar.css";
+import type { NavigationBarProps } from "./NavigationBar.types";
 import Button from "../ui/buttons/Button";
-
-
-interface NavigationBarProps {
-    darkMode: boolean;
-    onToggleDarkMode: () => void;
-}
 
 
 export default function NavigationBar(

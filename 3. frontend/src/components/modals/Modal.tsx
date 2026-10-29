@@ -1,22 +1,6 @@
-import type { ReactNode } from "react";
 import "../../styles/shared/modal.css";
 import Button from "../ui/buttons/Button";
-
-
-type ModalActionVariant = "primary" | "secondary" | "success" | "danger";
-
-interface ModalAction {
-    label: string;
-    onClick: () => void | Promise<void>;
-    variant?: ModalActionVariant;
-    className?: string;
-    disabled?: boolean;
-}
-
-interface ModalProps {
-    body: ReactNode;
-    actions?: ModalAction[];
-}
+import type { ModalProps } from "./Modal.types.ts";
 
 
 export function Modal({ body, actions = [] }: ModalProps) {
