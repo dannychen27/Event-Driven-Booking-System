@@ -1,5 +1,10 @@
 import { GoogleGenAI } from '@google/genai';
 import { NaturalLanguageSearchPlan } from '../../search/natural-language-search.types';
+import {
+  GEMINI_MODEL,
+  GEMINI_TIMEOUT_MS,
+  GEMINI_MAX_RETRY_ATTEMPTS,
+} from "../../constants/gemini.constants";
 import { validateNaturalLanguageSearchPlan } from '../../search/natural-language-search';
 import { NATURAL_LANGUAGE_SEARCH_SCHEMA } from '../../ai/gemini/gemini-schemas';
 import { GeminiClient } from "../../ai/gemini/gemini.types";
@@ -30,9 +35,9 @@ export class GeminiEventSearchInterpreter {
       this.client = client ?? new GoogleGenAI({
         apiKey,
         httpOptions: {
-          timeout: 20_000,
+          timeout: GEMINI_TIMEOUT_MS,
           retryOptions: {
-            attempts: 2,
+            attempts: GEMINI_MAX_RETRY_ATTEMPTS,
           },
         },
       });
@@ -55,7 +60,7 @@ export class GeminiEventSearchInterpreter {
     }
 
     const response = await this.client.models.generateContent({
-      model: 'gemini-3.5-flash-lite',
+      model: GEMINI_MODEL,
       contents: [
         "Interpret the user's event search request as a natural-language search plan.",
         'Return only fields supported by the schema.',

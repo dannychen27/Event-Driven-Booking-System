@@ -1,12 +1,11 @@
 import {
-    validateSearchFilters,
-} from "../../../../4. backend/src/search/natural-language-search";
-
-import {
     SEARCH_START_BOUNDARY,
     SEARCH_END_BOUNDARY,
 } from "../../fixtures/eventSearchFixtures";
-import { MAX_EVENT_SEARCH_KEYWORD_LENGTH } from "../../fixtures/sharedTestFixtures";
+import {
+    validateSearchFilters,
+} from "../../../../4. backend/src/search/natural-language-search";
+import { MAX_EVENT_SEARCH_KEYWORD_LENGTH } from "../../../../4. backend/src/constants/search.constants";
 
 describe("validateSearchFilters", () => {
     it("should accept a keyword filter", () => {

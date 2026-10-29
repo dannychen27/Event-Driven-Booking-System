@@ -1,1 +1,0 @@
-export const MAX_EVENT_SEARCH_KEYWORD_LENGTH = 100;

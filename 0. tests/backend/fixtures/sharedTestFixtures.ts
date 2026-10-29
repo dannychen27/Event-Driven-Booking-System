@@ -77,6 +77,3 @@ export const BAHEN_CENTRE_VENUE_FIXTURE = {
     name: "Bahen Centre",
     address: "40 St George St",
 };
-
-export const MAX_NATURAL_LANGUAGE_INTENT_LENGTH = 300;
-export const MAX_EVENT_SEARCH_KEYWORD_LENGTH = 100;

@@ -1,13 +1,10 @@
 import { SearchFilters, NaturalLanguageSearchPlan } from './natural-language-search.types';
-import { MAX_EVENT_SEARCH_KEYWORD_LENGTH } from './search.constants';
-
-const ALLOWED_FIELDS = new Set(['keyword', 'startAfter', 'startBefore']);
-
-const ALLOWED_NATURAL_LANGUAGE_FIELDS = new Set([
-  'intent',
-  'startAfter',
-  'startBefore',
-]);
+import {
+  MAX_EVENT_SEARCH_KEYWORD_LENGTH,
+  ALLOWED_NATURAL_LANGUAGE_FIELDS,
+  MAX_NATURAL_LANGUAGE_INTENT_LENGTH,
+  ALLOWED_FIELDS,
+} from '../constants/search.constants';
 
 export function validateSearchFilters(input: unknown): SearchFilters {
   if (typeof input !== 'object' || input === null || Array.isArray(input)) {
@@ -85,7 +82,7 @@ export function validateNaturalLanguageSearchPlan(
     intent !== undefined &&
     (typeof intent !== 'string' ||
       intent.trim().length === 0 ||
-      intent.trim().length > 300)
+      intent.trim().length > MAX_NATURAL_LANGUAGE_INTENT_LENGTH)
   ) {
     throw new Error(
       'intent must be a non-empty string of at most 300 characters',

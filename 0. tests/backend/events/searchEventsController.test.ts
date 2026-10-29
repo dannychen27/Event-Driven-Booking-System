@@ -6,7 +6,10 @@ import { NaturalLanguageSearchService } from "../../../4. backend/src/search/nat
 
 
 import { COFFEE_MEETUP_SEARCH_RESULT_FIXTURE, } from "../fixtures/eventSearchFixtures";
-import { MAX_EVENT_SEARCH_KEYWORD_LENGTH } from "../fixtures/sharedTestFixtures";
+import {
+    MAX_EVENT_SEARCH_KEYWORD_LENGTH,
+    MAX_NATURAL_LANGUAGE_QUERY_LENGTH
+} from "../../../4. backend/src/constants/search.constants";
 
 
 describe("EventsController.searchEvents", () => {
@@ -121,6 +124,17 @@ describe("EventsController.searchEvents", () => {
         it("should reject an empty natural-language query", () => {
             expect(() =>
                 controller.searchEventsInNaturalLanguage({ query: "   " }),
+            ).toThrow(BadRequestException);
+
+            expect(naturalLanguageSearchService.searchNaturalLanguage)
+                .not.toHaveBeenCalled();
+        });
+
+        it("should reject a query longer than the maximum allowed length", () => {
+            expect(() =>
+                controller.searchEventsInNaturalLanguage({
+                    query: "a".repeat(MAX_NATURAL_LANGUAGE_QUERY_LENGTH + 1),
+                }),
             ).toThrow(BadRequestException);
 
             expect(naturalLanguageSearchService.searchNaturalLanguage)

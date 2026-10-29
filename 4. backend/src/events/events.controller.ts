@@ -9,7 +9,10 @@ import {
 } from '@nestjs/common';
 import { EventsService } from './events.service';
 
-import { MAX_EVENT_SEARCH_KEYWORD_LENGTH } from '../search/search.constants';
+import {
+  MAX_EVENT_SEARCH_KEYWORD_LENGTH,
+  MAX_NATURAL_LANGUAGE_QUERY_LENGTH,
+} from '../constants/search.constants';
 
 import { NaturalLanguageSearchService } from '../search/natural-language-search.service';
 
@@ -71,7 +74,7 @@ export class EventsController {
       throw new BadRequestException('query must be a non-empty string');
     }
 
-    if (body.query.trim().length > 500) {
+    if (body.query.trim().length > MAX_NATURAL_LANGUAGE_QUERY_LENGTH) {
       throw new BadRequestException('query must be at most 500 characters');
     }
 
