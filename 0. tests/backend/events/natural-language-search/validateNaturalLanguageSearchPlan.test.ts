@@ -1,6 +1,6 @@
 import {
     validateNaturalLanguageSearchPlan,
-} from "../../../../4. backend/src/events/search/natural-language-search";
+} from "../../../../4. backend/src/search/natural-language-search";
 
 import {
     SEARCH_START_BOUNDARY,

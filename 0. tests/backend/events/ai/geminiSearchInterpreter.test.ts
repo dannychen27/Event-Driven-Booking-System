@@ -1,7 +1,7 @@
 import {
-    GeminiSearchInterpreter,
+    GeminiEventSearchInterpreter,
     parseNaturalLanguageSearchPlan,
-} from "../../../../4. backend/src/events/ai/gemini/gemini-search-interpreter";
+} from "../../../../4. backend/src/events/search/gemini-event-search-interpreter";
 import { geminiClientConfigFixture } from '../../fixtures/geminiClientConfigFixture';
 import { GEMINI_TEST_API_KEY } from '../../fixtures/geminiTestConstants';
 
@@ -22,7 +22,7 @@ describe("GeminiSearchInterpreter", () => {
             GoogleGenAI: jest.Mock;
         };
 
-        new GeminiSearchInterpreter(GEMINI_TEST_API_KEY);
+        new GeminiEventSearchInterpreter(GEMINI_TEST_API_KEY);
 
         expect(GoogleGenAI).toHaveBeenCalledWith(
             geminiClientConfigFixture(GEMINI_TEST_API_KEY),
@@ -34,7 +34,7 @@ describe("GeminiSearchInterpreter", () => {
             text: '{"intent":"coffee events"}',
         });
 
-        const interpreter = new GeminiSearchInterpreter(
+        const interpreter = new GeminiEventSearchInterpreter(
             "test-api-key",
             { models: { generateContent } } as never,
             () => new Date("2026-10-24T16:00:00.000Z"),
@@ -49,7 +49,7 @@ describe("GeminiSearchInterpreter", () => {
     });
 
     it("should reject a missing API key", async () => {
-        const interpreter = new GeminiSearchInterpreter("");
+        const interpreter = new GeminiEventSearchInterpreter("");
 
         await expect(
             interpreter.interpret("Find coffee events"),
@@ -61,7 +61,7 @@ describe("GeminiSearchInterpreter", () => {
             text: '{"intent":"Relaxing outdoor activities"}',
         });
 
-        const interpreter = new GeminiSearchInterpreter(
+        const interpreter = new GeminiEventSearchInterpreter(
             "test-api-key",
             { models: { generateContent } } as never,
         );
@@ -86,7 +86,7 @@ describe("GeminiSearchInterpreter", () => {
             text: '{"intent":"Relaxing outdoor activities"}',
         });
 
-        const interpreter = new GeminiSearchInterpreter(
+        const interpreter = new GeminiEventSearchInterpreter(
             "test-api-key",
             { models: { generateContent } } as never,
         );
@@ -105,7 +105,7 @@ describe("GeminiSearchInterpreter", () => {
             text: '{"venueCategory":"coffee shop"}',
         });
 
-        const interpreter = new GeminiSearchInterpreter(
+        const interpreter = new GeminiEventSearchInterpreter(
             "test-api-key",
             { models: { generateContent } } as never,
         );
@@ -126,7 +126,7 @@ describe("GeminiSearchInterpreter", () => {
             text: JSON.stringify(plan),
         });
 
-        const interpreter = new GeminiSearchInterpreter(
+        const interpreter = new GeminiEventSearchInterpreter(
             "test-api-key",
             { models: { generateContent } } as never,
             () => new Date("2026-10-23T16:00:00.000Z"),
@@ -150,7 +150,7 @@ describe("GeminiSearchInterpreter", () => {
             }),
         });
 
-        const interpreter = new GeminiSearchInterpreter(
+        const interpreter = new GeminiEventSearchInterpreter(
             "test-api-key",
             { models: { generateContent } } as never,
         );
@@ -173,7 +173,7 @@ describe("GeminiSearchInterpreter", () => {
             new Error("Gemini unavailable"),
         );
 
-        const interpreter = new GeminiSearchInterpreter(
+        const interpreter = new GeminiEventSearchInterpreter(
             "test-api-key",
             { models: { generateContent } } as never,
         );

@@ -1,6 +1,6 @@
 import {
     GeminiEventRanker,
-} from '../../../../4. backend/src/events/ai/gemini/gemini-event-ranker';
+} from '../../../../4. backend/src/events/search/gemini-event-ranker';
 import { geminiClientConfigFixture } from '../../fixtures/geminiClientConfigFixture';
 import { GEMINI_TEST_API_KEY } from '../../fixtures/geminiTestConstants';
 import {

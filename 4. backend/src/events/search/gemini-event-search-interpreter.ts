@@ -1,8 +1,8 @@
 import { GoogleGenAI } from '@google/genai';
 import { NaturalLanguageSearchPlan } from '../../search/natural-language-search.types';
 import { validateNaturalLanguageSearchPlan } from '../../search/natural-language-search';
-import { NATURAL_LANGUAGE_SEARCH_SCHEMA } from './gemini-schemas';
-import { GeminiClient } from "./gemini.types";
+import { NATURAL_LANGUAGE_SEARCH_SCHEMA } from '../../ai/gemini/gemini-schemas';
+import { GeminiClient } from "../../ai/gemini/gemini.types";
 
 export function parseNaturalLanguageSearchPlan(
   response: string,
@@ -18,7 +18,7 @@ export function parseNaturalLanguageSearchPlan(
   return validateNaturalLanguageSearchPlan(parsed);
 }
 
-export class GeminiSearchInterpreter {
+export class GeminiEventSearchInterpreter {
   private readonly client: GeminiClient | undefined;
 
   constructor(

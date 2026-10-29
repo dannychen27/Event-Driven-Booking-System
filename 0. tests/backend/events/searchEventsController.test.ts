@@ -2,7 +2,7 @@ import { BadRequestException } from "@nestjs/common";
 import { EventsController } from "../../../4. backend/src/events/events.controller";
 import { EventsService } from "../../../4. backend/src/events/events.service";
 
-import { NaturalLanguageSearchService } from "../../../4. backend/src/events/search/natural-language-search.service";
+import { NaturalLanguageSearchService } from "../../../4. backend/src/search/natural-language-search.service";
 
 
 import { COFFEE_MEETUP_SEARCH_RESULT_FIXTURE, } from "../fixtures/eventSearchFixtures";

@@ -1,7 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
-import { EventCandidate } from '../../events.types';
-import { EVENT_RANKING_SCHEMA } from './gemini-schemas';
-import { GeminiClient } from "./gemini.types";
+import { EventCandidate } from '../events.types';
+import { EVENT_RANKING_SCHEMA } from '../../ai/gemini/gemini-schemas';
+import { GeminiClient } from "../../ai/gemini/gemini.types";
 
 
 export function parseRankedEventIds(

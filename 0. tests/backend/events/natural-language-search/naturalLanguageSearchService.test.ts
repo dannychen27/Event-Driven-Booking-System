@@ -2,9 +2,9 @@ import { ServiceUnavailableException } from '@nestjs/common';
 import { EventsService } from '../../../../4. backend/src/events/events.service';
 
 
-import { GeminiEventRanker } from '../../../../4. backend/src/events/ai/gemini/gemini-event-ranker';
-import { GeminiSearchInterpreter } from '../../../../4. backend/src/events/ai/gemini/gemini-search-interpreter';
-import { NaturalLanguageSearchService } from '../../../../4. backend/src/events/search/natural-language-search.service';
+import { GeminiEventRanker } from '../../../../4. backend/src/events/search/gemini-event-ranker';
+import { GeminiEventSearchInterpreter } from '../../../../4. backend/src/events/search/gemini-event-search-interpreter';
+import { NaturalLanguageSearchService } from '../../../../4. backend/src/search/natural-language-search.service';
 
 import {
     SEARCH_START_BOUNDARY,
@@ -48,7 +48,7 @@ describe("NaturalLanguageSearchService", () => {
 
         service = new NaturalLanguageSearchService(
             eventsService as unknown as EventsService,
-            interpreter as unknown as GeminiSearchInterpreter,
+            interpreter as unknown as GeminiEventSearchInterpreter,
             ranker as unknown as GeminiEventRanker,
         );
     });

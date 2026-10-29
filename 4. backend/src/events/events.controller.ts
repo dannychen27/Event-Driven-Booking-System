@@ -9,9 +9,9 @@ import {
 } from '@nestjs/common';
 import { EventsService } from './events.service';
 
-import { MAX_EVENT_SEARCH_KEYWORD_LENGTH } from './search/search.constants';
+import { MAX_EVENT_SEARCH_KEYWORD_LENGTH } from '../search/search.constants';
 
-import { NaturalLanguageSearchService } from './search/natural-language-search.service';
+import { NaturalLanguageSearchService } from '../search/natural-language-search.service';
 
 @Controller('events')
 export class EventsController {

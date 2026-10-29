@@ -2,14 +2,29 @@ import { formatBookingDate, formatDate } from "../../helpers/DatesHelpers.ts";
 import { EVENT_DATE_FORMAT } from "../../constants/dates.ts";
 import type { DateLabelProps } from "../../types/DateLabelProps.types.ts";
 
-function getDateRange(startDateTime: string, endDateTime: string) {
-    return !startDateTime && !endDateTime
-        ? "Date to be announced"
-        : `${startDateTime
-            ? formatDate(startDateTime, EVENT_DATE_FORMAT)
-            : "Not set"} – ${endDateTime
-            ? formatDate(endDateTime, EVENT_DATE_FORMAT)
-            : "Not set"}`;
+function getDateRange(
+    startDateTime: string | null | undefined,
+    endDateTime: string | null | undefined,
+) {
+    if (!startDateTime && !endDateTime) {
+        return "Date to be announced";
+    }
+
+    let formattedStartDate: string;
+    let formattedEndDate: string;
+    if (startDateTime) {
+        formattedStartDate = formatDate(startDateTime, EVENT_DATE_FORMAT);
+    } else {
+        formattedStartDate = "Not set";
+    }
+
+    if (endDateTime) {
+        formattedEndDate = formatDate(endDateTime, EVENT_DATE_FORMAT);
+    } else {
+        formattedEndDate = "Not set";
+    }
+
+    return `${formattedStartDate} – ${formattedEndDate}`;
 }
 
 export function DateLabel({

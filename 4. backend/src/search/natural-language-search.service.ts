@@ -1,16 +1,16 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
-import { EventsService } from '../events.service';
+import { EventsService } from '../events/events.service';
 
 import { SearchFilters, } from './natural-language-search.types';
 import { validateSearchFilters, } from './natural-language-search';
-import { GeminiSearchInterpreter } from '../ai/gemini/gemini-search-interpreter';
-import { GeminiEventRanker } from '../ai/gemini/gemini-event-ranker';
+import { GeminiEventSearchInterpreter } from '../events/search/gemini-event-search-interpreter';
+import { GeminiEventRanker } from '../events/search/gemini-event-ranker';
 
 @Injectable()
 export class NaturalLanguageSearchService {
   constructor(
     private readonly eventsService: EventsService,
-    private readonly interpreter: GeminiSearchInterpreter,
+    private readonly interpreter: GeminiEventSearchInterpreter,
     private readonly ranker: GeminiEventRanker,
   ) {}
 
