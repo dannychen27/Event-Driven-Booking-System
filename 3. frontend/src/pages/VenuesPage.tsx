@@ -8,6 +8,17 @@ import "../styles/errors/status-message.css";
 import "../styles/errors/empty-state-message.css";
 
 
+function displayNoVenues() {
+    return <p className="empty-state-message">No available venues right now.</p>;
+}
+
+function displayAllVenues(venues: Venue[]) {
+    return venues.map((venue) => (
+        <VenueCard key={venue.id} venue={venue}/>
+    ));
+}
+
+
 export default function VenuesPage() {
     const [venues, setVenues] = useState<Venue[]>([]);
     const [loading, setLoading] = useState(true);
@@ -39,12 +50,7 @@ export default function VenuesPage() {
     return (
         <div className="venues-page">
             <h1>Venues</h1>
-            {venues.length === 0
-                ? <p className="empty-state-message">No available venues right now.</p>
-                : venues.map((venue) => (
-                    <VenueCard key={venue.id} venue={venue} />
-                ))
-            }
+            {venues.length === 0 ? displayNoVenues() : displayAllVenues(venues)}
         </div>
     );
 }

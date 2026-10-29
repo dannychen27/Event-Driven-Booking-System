@@ -8,6 +8,25 @@ import "../styles/errors/status-message.css";
 import "../styles/errors/empty-state-message.css";
 
 
+function displayNoBookings() {
+    return <p className="empty-state-message">No bookings right now.</p>;
+}
+
+function displayAllBookings(
+    bookings: Booking[],
+    setBookings: (value: (((prevState: Booking[]) => Booking[]) | Booking[])) => void
+) {
+    return bookings.map((booking) => (
+        <BookingCard
+            key={booking.id}
+            booking={booking}
+            onBookingCancelled={() => {
+                setBookings(bookings.filter(b => b.id !== booking.id));
+            }}
+        />
+    ));
+}
+
 export default function BookingsPage() {
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
@@ -48,16 +67,9 @@ export default function BookingsPage() {
         <div className="bookings-page">
             <h1>Booking History</h1>
             {bookings.length === 0
-                ? <p className="empty-state-message">No bookings right now.</p>
-                : bookings.map((booking) => (
-                    <BookingCard
-                        key={booking.id}
-                        booking={booking}
-                        onBookingCancelled={() => {
-                            setBookings(bookings.filter(b => b.id !== booking.id));
-                        }}
-                    />
-                ))}
+                ? displayNoBookings()
+                : displayAllBookings(bookings, setBookings)
+            }
         </div>
     );
 }

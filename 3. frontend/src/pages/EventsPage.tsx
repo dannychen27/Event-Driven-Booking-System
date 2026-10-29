@@ -6,13 +6,31 @@ import "../styles/errors/status-message.css";
 import "../styles/errors/empty-state-message.css";
 import { getErrorMessage } from "../utils/Errors.ts";
 import {
-    getEvents,
-    searchEvents,
-    searchEventsNaturalLanguage,
-} from "../api/events";
+    handleSearch,
+    handleNaturalLanguageSearch,
+    handleClearSearch,
+} from "./EventSearchHandlers.tsx";
+import { getEvents  } from "../api/events";
 import EventCard from "../components/cards/EventCard";
 import EventSearchForm from "../components/forms/EventSearchForm.tsx";
 import AiSearchForm from "../components/forms/AiSearchForm";
+
+
+function displayNoEvents(isSearchActive: boolean) {
+    return (
+        <p className="empty-state-message">
+            {isSearchActive
+                ? "No matching events found."
+                : "No available events right now."}
+        </p>
+    );
+}
+
+function displayAllEvents(events: Event[]) {
+    return events.map((event) => (
+        <EventCard key={event.id} event={event}/>
+    ));
+}
 
 
 export default function EventsPage() {
@@ -42,100 +60,6 @@ export default function EventsPage() {
         void fetchEvents();
     }, []);
 
-    async function handleSearch(
-        event: React.FormEvent<HTMLFormElement>,
-    ) {
-        event.preventDefault();
-
-        const trimmedKeyword = keyword.trim();
-        if (!trimmedKeyword) {
-            setSearchError("Enter a keyword to search.");
-            return;
-        }
-
-        const requestId = ++searchRequestId.current;
-
-        setSearching(true);
-        setSearchError("");
-        setIsSearchActive(true);
-
-        try {
-            const results = await searchEvents(trimmedKeyword);
-            if (requestId !== searchRequestId.current) return;
-
-            setEvents(results);
-        } catch (error) {
-            if (requestId !== searchRequestId.current) return;
-
-            setSearchError(getErrorMessage(error, "Failed to search events"));
-        } finally {
-            if (requestId === searchRequestId.current) {
-                setSearching(false);
-            }
-        }
-    }
-
-    async function handleNaturalLanguageSearch(
-        event: React.FormEvent<HTMLFormElement>,
-    ) {
-        event.preventDefault();
-
-        const query = naturalLanguageQuery.trim();
-        if (!query) {
-            setSearchError(
-                "Enter a description of the events you're looking for.",
-            );
-            return;
-        }
-
-        const requestId = ++searchRequestId.current;
-
-        setSearching(true);
-        setSearchError("");
-        setIsSearchActive(true);
-
-        try {
-            const results = await searchEventsNaturalLanguage(query);
-            if (requestId !== searchRequestId.current) return;
-
-            setEvents(results);
-        } catch (error) {
-            if (requestId !== searchRequestId.current) return;
-
-            setSearchError(
-                getErrorMessage(
-                    error,
-                    "Failed to search events with natural language",
-                ),
-            );
-        } finally {
-            if (requestId === searchRequestId.current) {
-                setSearching(false);
-            }
-        }
-    }
-
-    async function handleClearSearch() {
-        const requestId = ++searchRequestId.current;
-
-        setKeyword("");
-        setNaturalLanguageQuery("");
-        setSearchError("");
-        setSearching(false);
-        setIsSearchActive(false);
-
-        try {
-            const results = await getEvents();
-            if (requestId !== searchRequestId.current) return;
-
-            setEvents(results);
-        } catch (error) {
-            if (requestId !== searchRequestId.current) return;
-
-            setSearchError(getErrorMessage(error, "Failed to reload events"));
-        }
-    }
-
     if (loading) {
         return <p className="status-message" role="status">Loading events...</p>;
     }
@@ -155,8 +79,27 @@ export default function EventsPage() {
                     setKeyword(value);
                     setSearchError("");
                 }}
-                onSearch={handleSearch}
-                onClearQuery={handleClearSearch}
+                onSearch={(event) =>
+                    handleSearch(event, {
+                        query: keyword,
+                        searchRequestId,
+                        setEvents,
+                        setSearching,
+                        setSearchError,
+                        setIsSearchActive,
+                    })
+                }
+                onClearQuery={() =>
+                    void handleClearSearch({
+                        searchRequestId,
+                        setEvents,
+                        setSearching,
+                        setSearchError,
+                        setIsSearchActive,
+                        setKeyword,
+                        setNaturalLanguageQuery,
+                    })
+                }
             />
 
             <AiSearchForm
@@ -166,8 +109,27 @@ export default function EventsPage() {
                     setNaturalLanguageQuery(value);
                     setSearchError("");
                 }}
-                onSearch={handleNaturalLanguageSearch}
-                onClearQuery={handleClearSearch}
+                onSearch={(event) =>
+                    handleNaturalLanguageSearch(event, {
+                        query: naturalLanguageQuery,
+                        searchRequestId,
+                        setEvents,
+                        setSearching,
+                        setSearchError,
+                        setIsSearchActive,
+                    })
+                }
+                onClearQuery={() =>
+                    void handleClearSearch({
+                        searchRequestId,
+                        setEvents,
+                        setSearching,
+                        setSearchError,
+                        setIsSearchActive,
+                        setKeyword,
+                        setNaturalLanguageQuery,
+                    })
+                }
             />
 
             {searchError && (
@@ -181,17 +143,9 @@ export default function EventsPage() {
                 </p>
             )}
 
-            {!searching && events.length === 0 ? (
-                <p className="empty-state-message">
-                    {isSearchActive
-                        ? "No matching events found."
-                        : "No available events right now."}
-                </p>
-            ) : (
-                events.map((event) => (
-                    <EventCard key={event.id} event={event} />
-                ))
-            )}
+            {!searching && events.length === 0
+                ? displayNoEvents(isSearchActive)
+                : displayAllEvents(events)}
         </div>
     );
 }
