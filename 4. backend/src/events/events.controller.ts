@@ -9,6 +9,8 @@ import {
 } from '@nestjs/common';
 import { EventsService } from './events.service';
 
+import { MAX_EVENT_SEARCH_KEYWORD_LENGTH } from './search/search.constants';
+
 import { NaturalLanguageSearchService } from './search/natural-language-search.service';
 
 @Controller('events')
@@ -33,7 +35,7 @@ export class EventsController {
       throw new BadRequestException('keyword must not be empty');
     }
 
-    if (keyword !== undefined && keyword.trim().length > 100) {
+    if (keyword !== undefined && keyword.trim().length > MAX_EVENT_SEARCH_KEYWORD_LENGTH) {
       throw new BadRequestException('keyword must be at most 100 characters');
     }
 

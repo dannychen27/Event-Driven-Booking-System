@@ -1,4 +1,5 @@
 import { SearchFilters, NaturalLanguageSearchPlan } from './natural-language-search.types';
+import { MAX_EVENT_SEARCH_KEYWORD_LENGTH } from './search.constants';
 
 const ALLOWED_FIELDS = new Set(['keyword', 'startAfter', 'startBefore']);
 
@@ -27,7 +28,7 @@ export function validateSearchFilters(input: unknown): SearchFilters {
     if (
       typeof keyword !== 'string' ||
       keyword.trim().length === 0 ||
-      keyword.trim().length > 100
+      keyword.trim().length > MAX_EVENT_SEARCH_KEYWORD_LENGTH
     ) {
       throw new Error(
         'keyword must be a non-empty string of at most 100 characters',
