@@ -17,7 +17,7 @@ export function renderAiSearchForm({
 
     const renderResult = render(
         <AiSearchForm
-            query={query}
+            prompt={query}
             searching={searching}
             onQueryChange={onQueryChange}
             onSearch={onSearch}

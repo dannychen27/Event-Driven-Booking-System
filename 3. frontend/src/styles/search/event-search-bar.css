@@ -1,24 +1,14 @@
-.event-search-controls input:focus {
+.search-controls input:focus {
     outline: 2px solid #4285f4;
     outline-offset: 1px;
 }
 
-.event-search-controls .clear-search-button {
-    border-color: var(--border);
-    background: var(--surface);
-    color: var(--text);
-}
-
-.event-search-controls .clear-search-button:hover:not(:disabled) {
-    background: var(--border);
-}
-
 @media (max-width: 520px) {
-    .event-search-controls {
+    .search-controls {
         flex-wrap: wrap;
     }
 
-    .event-search-controls input {
+    .search-controls input {
         flex-basis: 100%;
     }
 }

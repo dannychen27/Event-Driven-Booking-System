@@ -1,16 +1,5 @@
-import type { ButtonHTMLAttributes } from "react";
-
-type ButtonVariant =
-    | "primary"
-    | "secondary"
-    | "pill"
-    | "success"
-    | "danger"
-    | "icon";
-
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-    variant?: ButtonVariant;
-}
+import "../../../styles/shared/button.css";
+import type { ButtonProps } from "./Button.types.ts";
 
 export default function Button({
    variant = "primary",

@@ -1,12 +1,8 @@
 import "../../styles/bookings/booking-form.css";
 import { useState } from "react";
+import type { BookingFormProps } from "./BookingForm.types.ts";
 import Button from "../ui/buttons/Button";
 
-
-interface BookingFormProps {
-    onCancel: () => void;
-    onBookingCreated: () => void | Promise<void>;
-}
 
 export default function BookingForm({
     onCancel,

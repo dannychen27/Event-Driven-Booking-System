@@ -121,8 +121,8 @@ export default function EventsPage() {
         setKeyword("");
         setNaturalLanguageQuery("");
         setSearchError("");
+        setSearching(false);
         setIsSearchActive(false);
-        setSearching(true);
 
         try {
             const results = await getEvents();
@@ -132,11 +132,7 @@ export default function EventsPage() {
         } catch (error) {
             if (requestId !== searchRequestId.current) return;
 
-            setError(getErrorMessage(error, "Failed to load events"));
-        } finally {
-            if (requestId === searchRequestId.current) {
-                setSearching(false);
-            }
+            setSearchError(getErrorMessage(error, "Failed to reload events"));
         }
     }
 
@@ -155,31 +151,23 @@ export default function EventsPage() {
             <EventSearchForm
                 keyword={keyword}
                 searching={searching}
-                isSearchActive={isSearchActive}
                 onKeywordChange={(value) => {
                     setKeyword(value);
                     setSearchError("");
                 }}
                 onSearch={handleSearch}
-                onClearQuery={() => {
-                    setKeyword("");
-                    setSearchError("");
-                }}
-                onClearSearch={handleClearSearch}
+                onClearQuery={handleClearSearch}
             />
 
             <AiSearchForm
-                query={naturalLanguageQuery}
+                prompt={naturalLanguageQuery}
                 searching={searching}
                 onQueryChange={(value) => {
                     setNaturalLanguageQuery(value);
                     setSearchError("");
                 }}
                 onSearch={handleNaturalLanguageSearch}
-                onClearQuery={() => {
-                    setNaturalLanguageQuery("");
-                    setSearchError("");
-                }}
+                onClearQuery={handleClearSearch}
             />
 
             {searchError && (

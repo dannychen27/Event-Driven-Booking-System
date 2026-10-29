@@ -1,25 +1,12 @@
-import type { FormEventHandler } from "react";
-import Button from "../ui/buttons/Button";
-import "../../styles/search/ai-search-bar.css";
-import "../../styles/shared/event-search-bar-shared.css";
-import "../../styles/shared/button.css";
-
-const SEARCH_EXAMPLES = [
-    "Find coffee meetups this weekend",
-    "Show me tech networking events",
-    "Find relaxed events next week",
-];
-
-interface AiSearchFormProps {
-    query: string;
-    searching: boolean;
-    onQueryChange: (value: string) => void;
-    onSearch: FormEventHandler<HTMLFormElement>;
-    onClearQuery: () => void;
-}
+import "../../styles/search/ai-search-form.css";
+import "../../styles/shared/search-bar-shared.css";
+import type { AiSearchFormProps } from "./AiSearchForm.types.ts";
+import { SEARCH_EXAMPLES } from "./AiSearchForm.constants.ts";
+import AiSearchExamples from "./AiSearchExamples.tsx";
+import SearchControls from "./SearchControls.tsx";
 
 export default function AiSearchForm({
-    query,
+    prompt,
     searching,
     onQueryChange,
     onSearch,
@@ -27,7 +14,7 @@ export default function AiSearchForm({
 }: AiSearchFormProps) {
     return (
         <form
-            className="event-search-form ai-search-form"
+            className="search-form ai-search-form"
             onSubmit={onSearch}
         >
             <label htmlFor="natural-language-search">
@@ -38,46 +25,22 @@ export default function AiSearchForm({
                 Describe the events you’re looking for in plain English.
             </p>
 
-            <div className="ai-search-examples">
-                <span className="ai-search-examples-label">
-                    Try an example:
-                </span>
+            <AiSearchExamples
+                examples={SEARCH_EXAMPLES}
+                disabled={searching}
+                onSelectExample={onQueryChange}
+            />
 
-                {SEARCH_EXAMPLES.map((example) => (
-                    <Button
-                        key={example}
-                        variant="pill"
-                        className="ai-search-example"
-                        disabled={searching}
-                        onClick={() => onQueryChange(example)}
-                    >
-                        {example}
-                    </Button>
-                ))}
-            </div>
-
-            <div className="event-search-controls">
-                <input
-                    id="natural-language-search"
-                    type="text"
-                    value={query}
-                    onChange={(event) => onQueryChange(event.target.value)}
-                    placeholder="e.g. Find events happening this weekend"
-                />
-
-                <Button type="submit" disabled={searching}>
-                    {searching ? "Searching..." : "Ask AI"}
-                </Button>
-
-                <Button
-                    variant="secondary"
-                    className="ai-search-clear"
-                    disabled={searching || query.length === 0}
-                    onClick={onClearQuery}
-                >
-                    Clear query
-                </Button>
-            </div>
+            <SearchControls
+                inputId="natural-language-search"
+                query={prompt}
+                searching={searching}
+                placeholder="e.g. Find events happening this weekend"
+                submitLabel="Ask AI"
+                onQueryChange={onQueryChange}
+                onClearQuery={onClearQuery}
+                clearButtonClassName="ai-search-clear"
+            />
         </form>
     );
 }

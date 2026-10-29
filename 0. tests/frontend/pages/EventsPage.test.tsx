@@ -98,7 +98,7 @@ describe("EventsPage", () => {
 
             expect(input).toHaveValue("");
             expect(searchEvents).not.toHaveBeenCalled();
-            expect(getEvents).toHaveBeenCalledTimes(1);
+            expect(getEvents).toHaveBeenCalledTimes(2);
             expect(screen.getByText("Mock Event Card: Coffee Meetup")).toBeInTheDocument();
         });
 
@@ -313,7 +313,7 @@ describe("EventsPage", () => {
 
             expect(input).toHaveValue("");
             expect(searchEventsNaturalLanguage).not.toHaveBeenCalled();
-            expect(getEvents).toHaveBeenCalledTimes(1);
+            expect(getEvents).toHaveBeenCalledTimes(2);
         });
 
         it("clears both search inputs and restores all events", async () => {
@@ -333,7 +333,11 @@ describe("EventsPage", () => {
             fireEvent.click(screen.getByRole("button", { name: "Search" }));
             await screen.findByText("No matching events found.");
 
-            fireEvent.click(screen.getByRole("button", { name: "Clear search" } ));
+            fireEvent.click(
+                within(
+                    screen.getByLabelText("Search events").closest("form") as HTMLFormElement
+                ).getByRole("button", { name: "Clear query" })
+            );
 
             expect(await screen.findByText("Mock Event Card: Initial Event")).toBeInTheDocument();
             expect(screen.getByLabelText("Search events")).toHaveValue("");
@@ -356,7 +360,11 @@ describe("EventsPage", () => {
 
             expect(await screen.findByText("No matching events found."),).toBeInTheDocument();
 
-            fireEvent.click(screen.getByRole("button", { name: "Clear search" } ));
+            fireEvent.click(
+                within(
+                    screen.getByLabelText("Search events").closest("form") as HTMLFormElement
+                ).getByRole("button", { name: "Clear query" })
+            );
 
             expect(await screen.findByRole("alert")).toHaveTextContent("Failed to reload events");
             expect(screen.queryByText("Loading events...")).not.toBeInTheDocument();
