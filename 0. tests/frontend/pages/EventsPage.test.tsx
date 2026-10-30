@@ -18,7 +18,7 @@ import {
     newerSearchResultFixture,
     olderSearchResultFixture,
     reloadFailureInitialEventFixture
-} from "../fixtures/eventFixtures";
+} from "../fixtures/events/eventFixtures";
 import { renderEventsPageWithNoInitialEvents } from "../helpers/EventsPageTestHelpers";
 
 vi.mock("../../../3. frontend/src/api/events", () => ({

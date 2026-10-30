@@ -1,7 +1,7 @@
 import { VenuesService } from "../../../4. backend/src/venues/venues.service";
 import { DatabaseService } from "../../../4. backend/src/database/database.service";
 
-import { ALL_VENUES_FIXTURE } from "../fixtures/sharedTestFixtures";
+import { ALL_VENUES_FIXTURE } from "../fixtures/shared/sharedTestFixtures";
 
 describe("VenuesService.getAllVenues", () => {
     it("should return all venues", async () => {

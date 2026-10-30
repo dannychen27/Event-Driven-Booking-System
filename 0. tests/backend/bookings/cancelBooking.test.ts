@@ -2,8 +2,8 @@ import { BookingsService } from "../../../4. backend/src/bookings/bookings.servi
 import {
     EVENT_NOT_FOUND_MESSAGE,
     USER_NOT_FOUND_MESSAGE,
-} from "../fixtures/errorMessageFixtures";
-import { BOOKING_RESULT_FIXTURE } from "../fixtures/sharedTestFixtures"
+} from "../fixtures/shared/errorMessageFixtures";
+import { BOOKING_RESULT_FIXTURE } from "../fixtures/shared/sharedTestFixtures"
 import {
     mockBookingExists, mockBookingDoesNotExist,
     mockDeletedBooking

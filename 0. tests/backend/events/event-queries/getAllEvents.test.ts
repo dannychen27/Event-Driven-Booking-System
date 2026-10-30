@@ -2,7 +2,7 @@ import { EventsService } from "../../../../4. backend/src/events/events.service"
 import { expectNthQuery } from "../../../utils/testHelpers";
 import { mockGetAllEvents } from "../../helpers/eventsTestHelpers";
 import {DatabaseService} from "../../../../4. backend/src/database/database.service";
-import { allEventsFixture } from "../../fixtures/eventFixtures";
+import { allEventsFixture } from "../../fixtures/events/eventFixtures";
 
 
 describe("EventsService.getAllEvents", () => {

@@ -1,13 +1,13 @@
 import {
     GeminiEventRanker,
 } from '../../../../4. backend/src/events/search/gemini-event-ranker';
-import { geminiClientConfigFixture } from '../../fixtures/geminiClientConfigFixture';
-import { GEMINI_TEST_API_KEY } from '../../fixtures/geminiTestConstants';
+import { geminiClientConfigFixture } from '../../fixtures/gemini/geminiClientConfigFixture';
+import { GEMINI_TEST_API_KEY } from '../../fixtures/gemini/geminiTestConstants';
 import {
     GEMINI_EVENT_RANKING_CANDIDATES_FIXTURE,
     GEMINI_EVENT_RANKING_MISSING_KEY_FIXTURE,
     GEMINI_EVENT_RANKING_REQUEST_FIXTURE
-} from "../../fixtures/sharedTestFixtures";
+} from "../../fixtures/shared/sharedTestFixtures";
 
 jest.mock('@google/genai', () => ({
     GoogleGenAI: jest.fn().mockImplementation(() => ({

@@ -3,8 +3,8 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 
-import { existingBookingFixture } from "../../fixtures/bookingFixtures";
-import { eventCardFixture } from "../../fixtures/eventFixtures";
+import { existingBookingFixture } from "../../fixtures/bookings/bookingFixtures";
+import { eventCardFixture } from "../../fixtures/events/eventFixtures";
 
 
 import EventCard from "../../../../3. frontend/src/components/cards/EventCard";

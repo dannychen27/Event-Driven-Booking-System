@@ -2,8 +2,8 @@ import {
     GeminiEventSearchInterpreter,
 
 } from "../../../../4. backend/src/events/search/gemini-event-search-interpreter";
-import { geminiClientConfigFixture } from '../../fixtures/geminiClientConfigFixture';
-import { GEMINI_TEST_API_KEY } from '../../fixtures/geminiTestConstants';
+import { geminiClientConfigFixture } from '../../fixtures/gemini/geminiClientConfigFixture';
+import { GEMINI_TEST_API_KEY } from '../../fixtures/gemini/geminiTestConstants';
 import {
     parseNaturalLanguageSearchPlan
 } from "../../../../4. backend/src/helpers/events/search/ParseNaturalLanguageSearchInterpreterHelpers";

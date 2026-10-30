@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 
-import { venueListFixture } from "../fixtures/venueFixtures";
+import { venueListFixture } from "../fixtures/venues/venueFixtures";
 
 
 import VenuesPage from "../../../3. frontend/src/pages/VenuesPage";

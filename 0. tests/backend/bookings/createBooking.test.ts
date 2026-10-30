@@ -1,9 +1,9 @@
 import { BookingsService } from "../../../4. backend/src/bookings/bookings.service";
-import { BOOKING_RESULT_FIXTURE } from "../fixtures/sharedTestFixtures";
+import { BOOKING_RESULT_FIXTURE } from "../fixtures/shared/sharedTestFixtures";
 import {
     EVENT_NOT_FOUND_MESSAGE,
     USER_NOT_FOUND_MESSAGE,
-} from "../fixtures/errorMessageFixtures";
+} from "../fixtures/shared/errorMessageFixtures";
 import {
     mockNoDuplicateBooking, mockDuplicateBooking,
     mockBookingCount,

@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 
-import { bookingHistoryFixture } from "../fixtures/bookingFixtures";
+import { bookingHistoryFixture } from "../fixtures/bookings/bookingFixtures";
 
 import Button from "../../../3. frontend/src/components/ui/buttons/Button";
 import BookingsPage from "../../../3. frontend/src/pages/BookingsPage";

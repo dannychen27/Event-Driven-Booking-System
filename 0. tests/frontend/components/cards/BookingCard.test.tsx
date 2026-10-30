@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event";
 
 import BookingCard from "../../../../3. frontend/src/components/cards/BookingCard";
 import { cancelBooking } from "../../../../3. frontend/src/api/bookings";
-import { bookingCardFixture } from "../../fixtures/bookingFixtures";
+import { bookingCardFixture } from "../../fixtures/bookings/bookingFixtures";
 
 
 vi.mock("../../../../3. frontend/src/api/bookings", () => ({

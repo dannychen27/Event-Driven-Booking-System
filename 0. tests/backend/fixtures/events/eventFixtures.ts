@@ -1,4 +1,4 @@
-import { mossParkEspressoFixture } from "./venueFixtures";
+import { mossParkEspressoFixture } from "../venues/venueFixtures";
 
 export const MOSS_PARK_ESPRESSO_EVENT_FIXTURE = {
     id: 1,

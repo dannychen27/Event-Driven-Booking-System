@@ -5,7 +5,7 @@ import { AppModule } from "../../4. backend/src/app.module";
 import {
     E2E_FULL_EVENT_FIXTURE,
     E2E_TEST_EVENT_FIXTURE,
-} from "./fixtures/eventFixtures";
+} from "./fixtures/events/eventFixtures";
 
 describe("Event browsing (E2E)", () => {
     let app: INestApplication;

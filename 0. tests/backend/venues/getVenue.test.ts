@@ -1,8 +1,8 @@
 import { VenuesService } from "../../../4. backend/src/venues/venues.service";
 import { expectNthQuery } from "../../utils/testHelpers";
 import { mockGetVenue, mockVenueDoesNotExist } from "../helpers/venuesTestHelpers";
-import { VENUE_NOT_FOUND_MESSAGE } from "../fixtures/errorMessageFixtures";
-import { BAHEN_CENTRE_VENUE_FIXTURE } from "../fixtures/sharedTestFixtures";
+import { VENUE_NOT_FOUND_MESSAGE } from "../fixtures/shared/errorMessageFixtures";
+import { BAHEN_CENTRE_VENUE_FIXTURE } from "../fixtures/shared/sharedTestFixtures";
 
 
 describe("VenuesService.getVenue", () => {

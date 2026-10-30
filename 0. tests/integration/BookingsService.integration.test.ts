@@ -5,7 +5,7 @@ import {
     BOOKING_SERVICE_INTEGRATION_EVENT_LIST,
     BOOKING_SERVICE_INTEGRATION_EVENTS,
     BOOKING_SERVICE_INTEGRATION_USERS,
-} from "./fixtures/bookingServiceFixtures";
+} from "./fixtures/bookings/bookingServiceFixtures";
 
 
 describe("BookingsService integration", () => {

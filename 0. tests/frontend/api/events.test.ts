@@ -9,7 +9,7 @@ import { mockFetchResponse } from "../helpers/apiTestHelpers";
 import {
     minimalCoffeeMeetupEventFixture,
     minimalTeaMeetupEventFixture
-} from "../fixtures/eventFixtures";
+} from "../fixtures/events/eventFixtures";
 
 afterEach(() => {
     vi.unstubAllGlobals();

@@ -1,9 +1,9 @@
-import type { Booking } from "../../../3. frontend/src/types/bookings/Booking";
+import type { Booking } from "../../../../3. frontend/src/types/bookings/Booking";
 
 import {
     bookingHistoryFixture as sharedBookingHistoryFixture,
     torontoTechMeetupBookingFixture,
-} from "../../fixtures/bookingFixtures";
+} from "../../../fixtures/bookings/bookingFixtures";
 
 export const bookingHistoryFixture: Booking[] = sharedBookingHistoryFixture;
 

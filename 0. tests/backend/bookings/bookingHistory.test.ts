@@ -2,7 +2,7 @@ import { BookingsService } from "../../../4. backend/src/bookings/bookings.servi
 import { mockBookingHistory } from "../helpers/bookingTestHelpers";
 import { mockUserExists, mockUserDoesNotExist } from "../helpers/usersTestHelpers";
 
-import { bookingHistoryFixture } from "../fixtures/bookingHistoryFixtures";
+import { bookingHistoryFixture } from "../fixtures/bookings/bookingHistoryFixtures";
 
 describe("BookingsService.getBookingHistory", () => {
     let service: BookingsService;

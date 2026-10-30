@@ -7,12 +7,12 @@ import {
     E2E_CONFLICTING_EVENT_FIXTURE,
     E2E_FULL_EVENT_FIXTURE, E2E_NONEXISTENT_EVENT_ID,
     E2E_TEST_EVENT_FIXTURE,
-} from "./fixtures/eventFixtures";
+} from "./fixtures/events/eventFixtures";
 import {
     E2E_NONEXISTENT_USER_ID,
     E2E_OTHER_USER_FIXTURE,
     E2E_TEST_USER_FIXTURE,
-} from "./fixtures/userFixtures";
+} from "./fixtures/users/userFixtures";
 
 describe("Booking flow (E2E)", () => {
     let app: INestApplication;

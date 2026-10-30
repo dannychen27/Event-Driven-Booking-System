@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 
 import VenueCard from "../../../../3. frontend/src/components/cards/VenueCard";
-import { venueCardFixture } from "../../fixtures/venueFixtures";
+import { venueCardFixture } from "../../fixtures/venues/venueFixtures";
 
 
 describe("VenueCard", () => {

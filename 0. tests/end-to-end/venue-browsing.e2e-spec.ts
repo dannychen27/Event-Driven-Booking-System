@@ -2,7 +2,7 @@ import { INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import request from "supertest";
 import { AppModule } from "../../4. backend/src/app.module";
-import { E2E_TEST_VENUE_FIXTURE } from "./fixtures/venueFixtures";
+import { E2E_TEST_VENUE_FIXTURE } from "./fixtures/venues/venueFixtures";
 
 describe("Venue browsing (E2E)", () => {
     let app: INestApplication;

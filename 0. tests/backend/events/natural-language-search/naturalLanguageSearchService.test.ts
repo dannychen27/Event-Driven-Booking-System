@@ -10,8 +10,8 @@ import {
     SEARCH_START_BOUNDARY,
     SEARCH_LATER_BOUNDARY,
     COFFEE_MEETUP_SEARCH_RESULT_FIXTURE,
-} from "../../fixtures/eventSearchFixtures";
-import { NATURAL_LANGUAGE_SEARCH_CANDIDATES_FIXTURE } from "../../fixtures/sharedTestFixtures";
+} from "../../fixtures/events/eventSearchFixtures";
+import { NATURAL_LANGUAGE_SEARCH_CANDIDATES_FIXTURE } from "../../fixtures/shared/sharedTestFixtures";
 
 describe("NaturalLanguageSearchService", () => {
     let service: NaturalLanguageSearchService;

@@ -1,4 +1,4 @@
-import { RANKED_EVENT_CANDIDATES_FIXTURE } from "../../fixtures/sharedTestFixtures";
+import { RANKED_EVENT_CANDIDATES_FIXTURE } from "../../fixtures/shared/sharedTestFixtures";
 import { parseRankedEventIds } from "../../../../4. backend/src/helpers/events/search/geminiEventRankerHelpers";
 
 describe('parseRankedEventIds', () => {

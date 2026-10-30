@@ -1,11 +1,11 @@
 import { EventsService } from "../../../../4. backend/src/events/events.service";
-import { EVENT_NOT_FOUND_MESSAGE } from "../../fixtures/errorMessageFixtures";
+import { EVENT_NOT_FOUND_MESSAGE } from "../../fixtures/shared/errorMessageFixtures";
 import {
     mockEventDoesNotExist,
     mockGetEvent
 } from "../../helpers/eventsTestHelpers";
 import { expectNthQuery } from "../../../utils/testHelpers";
-import { MOSS_PARK_ESPRESSO_EVENT_FIXTURE } from "../../fixtures/eventFixtures";
+import { MOSS_PARK_ESPRESSO_EVENT_FIXTURE } from "../../fixtures/events/eventFixtures";
 
 
 describe("EventsService.getEvent", () => {

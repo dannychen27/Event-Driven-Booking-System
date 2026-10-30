@@ -1,7 +1,7 @@
 import {
     GEMINI_TIMEOUT_MS,
     GEMINI_MAX_RETRY_ATTEMPTS,
-} from '../../../4. backend/src/constants/gemini.constants';
+} from '../../../../4. backend/src/constants/gemini.constants';
 
 export const geminiClientConfigFixture = (apiKey: string) => ({
     apiKey,

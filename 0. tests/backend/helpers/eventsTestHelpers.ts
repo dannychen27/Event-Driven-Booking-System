@@ -1,4 +1,4 @@
-import { mossParkEspressoFixture } from "../fixtures/venueFixtures";
+import { mossParkEspressoFixture } from "../fixtures/venues/venueFixtures";
 
 
 export const mockEventExists = (

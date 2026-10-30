@@ -7,7 +7,7 @@ import {
     NO_FILTER_EVENTS_FIXTURE,
     COFFEE_MEETUP_SEARCH_RESULT_FIXTURE,
     eventCandidateFixture,
-} from "../../fixtures/eventSearchFixtures";
+} from "../../fixtures/events/eventSearchFixtures";
 
 describe("EventsService.searchEvents", () => {
     let service: EventsService;

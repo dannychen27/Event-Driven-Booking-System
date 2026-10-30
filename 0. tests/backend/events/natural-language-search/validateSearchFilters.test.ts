@@ -1,7 +1,7 @@
 import {
     SEARCH_START_BOUNDARY,
     SEARCH_END_BOUNDARY,
-} from "../../fixtures/eventSearchFixtures";
+} from "../../fixtures/events/eventSearchFixtures";
 import {
     validateSearchFilters,
 } from "../../../../4. backend/src/search/natural-language-search";

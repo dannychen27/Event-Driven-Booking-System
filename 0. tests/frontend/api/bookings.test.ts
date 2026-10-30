@@ -5,7 +5,7 @@ import {
     getBookingHistory,
     cancelBooking,
 } from "../../../3. frontend/src/api/bookings";
-import { apiBookingFixture } from "../fixtures/bookingFixtures";
+import { apiBookingFixture } from "../fixtures/bookings/bookingFixtures";
 import { mockFetchResponse } from "../helpers/apiTestHelpers";
 
 afterEach(() => {

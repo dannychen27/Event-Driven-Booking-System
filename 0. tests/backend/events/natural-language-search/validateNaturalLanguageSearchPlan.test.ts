@@ -6,7 +6,7 @@ import { MAX_NATURAL_LANGUAGE_INTENT_LENGTH } from "../../../../4. backend/src/c
 import {
     SEARCH_START_BOUNDARY,
     SEARCH_END_BOUNDARY,
-} from "../../fixtures/eventSearchFixtures";
+} from "../../fixtures/events/eventSearchFixtures";
 
 describe("validateNaturalLanguageSearchPlan", () => {
     it("should accept a semantic intent", () => {

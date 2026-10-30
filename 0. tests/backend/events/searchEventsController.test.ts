@@ -5,7 +5,7 @@ import { EventsService } from "../../../4. backend/src/events/events.service";
 import { NaturalLanguageSearchService } from "../../../4. backend/src/search/natural-language-search.service";
 
 
-import { COFFEE_MEETUP_SEARCH_RESULT_FIXTURE, } from "../fixtures/eventSearchFixtures";
+import { COFFEE_MEETUP_SEARCH_RESULT_FIXTURE, } from "../fixtures/events/eventSearchFixtures";
 import {
     MAX_EVENT_SEARCH_KEYWORD_LENGTH,
     MAX_NATURAL_LANGUAGE_QUERY_LENGTH
