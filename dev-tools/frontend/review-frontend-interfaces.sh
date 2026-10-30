@@ -1,11 +1,21 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
-# Run from the repository root.
-# Purpose: Find interface declarations in the frontend for review
-# before converting object-shaped interfaces to type aliases.
+# Find interface declarations in the frontend source for manual review.
+# Run: bash dev-tools/frontend/review-frontend-interfaces.sh
+#
+# AI assistance disclosure:
+# Developed and refined with AI assistance. The author reviewed
+# the implementation and verified its behavior.
 
-FRONTEND="3. frontend/src"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+FRONTEND="$REPO_ROOT/3. frontend/src"
+
+if [[ ! -d "$FRONTEND" ]]; then
+  printf 'ERROR: Frontend source directory not found: %s\n' "$FRONTEND" >&2
+  exit 1
+fi
 
 printf '%s\n' "=== Interfaces in frontend source ==="
 
