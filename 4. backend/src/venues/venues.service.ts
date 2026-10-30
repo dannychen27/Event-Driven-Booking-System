@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Venue } from '../types/venues.types';
 import { DatabaseService } from '../database/database.service';
 
 @Injectable()
@@ -6,11 +7,7 @@ export class VenuesService {
   constructor(private readonly db: DatabaseService) {}
 
   async getAllVenues() {
-    const venueResult = await this.db.query<{
-      id: number;
-      name: string;
-      address: string;
-    }>(`
+    const venueResult = await this.db.query<Venue>(`
             SELECT *
             FROM venues
         `);
@@ -18,11 +15,7 @@ export class VenuesService {
   }
 
   async getVenue(venue_id: number) {
-    const venueResult = await this.db.query<{
-      id: number;
-      name: string;
-      address: string;
-    }>(
+    const venueResult = await this.db.query<Venue>(
       `
             SELECT id, name, address
             FROM venues
