@@ -1,4 +1,4 @@
-import {NaturalLanguageSearchPlan} from "../../../search/natural-language-search.types";
+import {NaturalLanguageSearchPlan} from "../../../types/natural-language-search.types";
 import {parseGeminiJsonResponse} from "./gemini-response-helpers";
 import {validateNaturalLanguageSearchPlan} from "../../../search/natural-language-search";
 

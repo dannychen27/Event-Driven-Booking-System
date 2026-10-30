@@ -1,8 +1,8 @@
 import { GoogleGenAI } from '@google/genai';
-import { NaturalLanguageSearchPlan } from '../../search/natural-language-search.types';
+import { NaturalLanguageSearchPlan } from '../../types/natural-language-search.types';
 import { GEMINI_MODEL } from "../../constants/gemini.constants";
 import { NATURAL_LANGUAGE_SEARCH_SCHEMA } from '../../ai/gemini/gemini-schemas';
-import { GeminiClient } from "../../ai/gemini/gemini.types";
+import { GeminiClient } from "../../types/gemini.types";
 import { formatTorontoDate } from "../../helpers/shared/DateHelpers";
 import { createGeminiClientConfig } from '../../helpers/events/search/gemini-client-config';
 import { parseNaturalLanguageSearchPlan } from "../../helpers/events/search/ParseNaturalLanguageSearchInterpreterHelpers";

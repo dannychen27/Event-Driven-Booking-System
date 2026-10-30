@@ -1,4 +1,4 @@
-import {SearchFilters} from "../../search/natural-language-search.types";
+import {SearchFilters} from "../../types/natural-language-search.types";
 
 export function validateInputFields({
     input,

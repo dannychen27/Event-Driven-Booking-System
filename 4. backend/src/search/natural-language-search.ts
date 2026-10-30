@@ -1,4 +1,4 @@
-import { SearchFilters, NaturalLanguageSearchPlan } from './natural-language-search.types';
+import { SearchFilters, NaturalLanguageSearchPlan } from '../types/natural-language-search.types';
 import {
   MAX_EVENT_SEARCH_KEYWORD_LENGTH,
   ALLOWED_NATURAL_LANGUAGE_FIELDS,

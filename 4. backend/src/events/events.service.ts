@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
-import { EventCandidate } from './events.types';
+import { EventCandidate } from '../types/events.types';
 
 @Injectable()
 export class EventsService {

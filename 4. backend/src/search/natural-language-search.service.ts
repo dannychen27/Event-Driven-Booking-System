@@ -1,7 +1,7 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { EventsService } from '../events/events.service';
 
-import { SearchFilters, } from './natural-language-search.types';
+import { SearchFilters, } from '../types/natural-language-search.types';
 import { validateSearchFilters, } from './natural-language-search';
 import { GeminiEventSearchInterpreter } from '../events/search/gemini-event-search-interpreter';
 import { GeminiEventRanker } from '../events/search/gemini-event-ranker';
