@@ -1,12 +1,12 @@
 import {
     validateNaturalLanguageSearchPlan,
-} from "../../../../4. backend/src/search/natural-language-search";
-import { MAX_NATURAL_LANGUAGE_INTENT_LENGTH } from "../../../../4. backend/src/constants/search.constants";
+} from "../../../4. backend/src/search/natural-language-search";
+import { MAX_NATURAL_LANGUAGE_INTENT_LENGTH } from "../../../4. backend/src/constants/search.constants";
 
 import {
     SEARCH_START_BOUNDARY,
     SEARCH_END_BOUNDARY,
-} from "../../fixtures/events/eventSearchFixtures";
+} from "../fixtures/events/eventSearchFixtures";
 
 describe("validateNaturalLanguageSearchPlan", () => {
     it("should accept a semantic intent", () => {
