@@ -2,7 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import {
     MAX_EVENT_SEARCH_KEYWORD_LENGTH,
     MAX_NATURAL_LANGUAGE_QUERY_LENGTH,
-} from '../constants/search.constants';
+} from '../../constants/search.constants';
 
 export function validateEventSearchKeyword(
     keyword?: string,

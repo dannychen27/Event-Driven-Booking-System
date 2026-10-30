@@ -11,7 +11,7 @@ import {
   validateEventSearchDateRange,
   validateEventSearchKeyword,
   validateNaturalLanguageSearchQuery,
-} from '../helpers/event-search-validation.helpers';
+} from '../helpers/search/event-search-validation.helpers';
 import { NaturalLanguageSearchService } from '../search/natural-language-search.service';
 
 @Controller('events')
