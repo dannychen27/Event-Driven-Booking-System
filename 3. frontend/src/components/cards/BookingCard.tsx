@@ -2,8 +2,8 @@ import { useState } from "react";
 import type { BookingCardProps } from "../../types/bookings/BookingCard.types.ts";
 import { getErrorMessage } from "../../helpers/shared/Errors.ts";
 import { getCancelModalButtons } from "../../helpers/bookings/BookingCardHelpers.ts";
-import { BookingCardModalBody } from "./BookingCard.modal";
-import { DateLabel } from "./DateLabel.tsx";
+import { BookingCardModalBody } from "./BookingCardModalBody.tsx";
+import { DateLabel } from "../ui/labels/DateLabel.tsx";
 import "../../styles/shared/card.css";
 import "../../styles/bookings/booking-card.css";
 import "../../styles/shared/card-buttons.css";
@@ -11,7 +11,7 @@ import "../../styles/errors/error-message.css";
 import { cancelBooking } from "../../api/bookings.ts";
 import { Modal } from "../modals/Modal.tsx";
 import Button from "../ui/buttons/Button";
-import { InfoLabel } from "./InfoLabel.tsx";
+import { InfoLabel } from "../ui/labels/InfoLabel.tsx";
 
 
 export default function BookingCard({

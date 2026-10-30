@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { DateLabel } from "../../../../3. frontend/src/components/cards/DateLabel";
+import { DateLabel } from "../../../../3. frontend/src/components/ui/labels/DateLabel";
 import {
     formatBookingDate,
     formatDate,

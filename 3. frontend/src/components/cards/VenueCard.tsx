@@ -1,7 +1,7 @@
 import type { VenueCardProps } from "../../types/venues/VenueCard.types.ts";
 import "../../styles/shared/card.css";
 import "../../styles/venues/venue-card.css";
-import { InfoLabel } from "./InfoLabel.tsx";
+import { InfoLabel } from "../ui/labels/InfoLabel.tsx";
 
 export default function VenueCard({ venue }: VenueCardProps) {
     return (

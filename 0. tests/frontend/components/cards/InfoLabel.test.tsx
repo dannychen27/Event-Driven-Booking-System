@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { InfoLabel } from "../../../../3. frontend/src/components/cards/InfoLabel";
+import { InfoLabel } from "../../../../3. frontend/src/components/ui/labels/InfoLabel";
 
 describe("InfoLabel", () => {
     it("renders the label and string value", () => {
