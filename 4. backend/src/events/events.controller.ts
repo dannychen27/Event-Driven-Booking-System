@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -8,12 +7,11 @@ import {
   Query,
 } from '@nestjs/common';
 import { EventsService } from './events.service';
-
 import {
-  MAX_EVENT_SEARCH_KEYWORD_LENGTH,
-  MAX_NATURAL_LANGUAGE_QUERY_LENGTH,
-} from '../constants/search.constants';
-
+  validateEventSearchDateRange,
+  validateEventSearchKeyword,
+  validateNaturalLanguageSearchQuery,
+} from '../helpers/event-search-validation.helpers';
 import { NaturalLanguageSearchService } from '../search/natural-language-search.service';
 
 @Controller('events')
@@ -34,32 +32,9 @@ export class EventsController {
     @Query('startAfter') startAfter?: string,
     @Query('startBefore') startBefore?: string,
   ) {
-    if (keyword !== undefined && keyword.trim().length === 0) {
-      throw new BadRequestException('keyword must not be empty');
-    }
+    validateEventSearchKeyword(keyword);
 
-    if (keyword !== undefined && keyword.trim().length > MAX_EVENT_SEARCH_KEYWORD_LENGTH) {
-      throw new BadRequestException('keyword must be at most 100 characters');
-    }
-
-    for (const [name, value] of [
-      ['startAfter', startAfter],
-      ['startBefore', startBefore],
-    ]) {
-      if (value !== undefined && Number.isNaN(Date.parse(value))) {
-        throw new BadRequestException(`${name} must be a valid date`);
-      }
-    }
-
-    if (
-      startAfter !== undefined &&
-      startBefore !== undefined &&
-      Date.parse(startAfter) >= Date.parse(startBefore)
-    ) {
-      throw new BadRequestException(
-        'startAfter must be earlier than startBefore',
-      );
-    }
+    validateEventSearchDateRange({ startAfter, startBefore });
 
     return this.eventsService.searchEvents({
       keyword: keyword?.trim(),
@@ -69,18 +44,9 @@ export class EventsController {
   }
 
   @Post('natural-language-search')
-  searchEventsInNaturalLanguage(@Body() body: { query?: string }) {
-    if (typeof body?.query !== 'string' || !body.query.trim()) {
-      throw new BadRequestException('query must be a non-empty string');
-    }
-
-    if (body.query.trim().length > MAX_NATURAL_LANGUAGE_QUERY_LENGTH) {
-      throw new BadRequestException('query must be at most 500 characters');
-    }
-
-    return this.naturalLanguageSearchService.searchNaturalLanguage(
-      body.query.trim(),
-    );
+  searchEventsInNaturalLanguage(@Body() body: { query?: string } | undefined ) {
+    const query = validateNaturalLanguageSearchQuery(body?.query);
+    return this.naturalLanguageSearchService.searchNaturalLanguage(query);
   }
 
   @Get(':id/availability')
