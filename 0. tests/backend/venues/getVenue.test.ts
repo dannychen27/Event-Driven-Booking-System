@@ -1,6 +1,8 @@
 import { VenuesService } from "../../../4. backend/src/venues/venues.service";
 import { expectNthQuery } from "../../utils/testHelpers";
 import { mockGetVenue, mockVenueDoesNotExist } from "../helpers/venuesTestHelpers";
+import { VENUE_NOT_FOUND_MESSAGE } from "../fixtures/shared/errorMessageFixtures";
+import { BAHEN_CENTRE_VENUE_FIXTURE } from "../fixtures/shared/sharedTestFixtures";
 
 
 describe("VenuesService.getVenue", () => {
@@ -16,11 +18,7 @@ describe("VenuesService.getVenue", () => {
     });
 
     it("should return the requested venue", async () => {
-        const venue = {
-            id: 1,
-            name: "Bahen Centre",
-            address: "40 St George St",
-        };
+        const venue = BAHEN_CENTRE_VENUE_FIXTURE;
         mockGetVenue(db, venue);
 
         const result = await service.getVenue(1);
@@ -35,7 +33,7 @@ describe("VenuesService.getVenue", () => {
         mockVenueDoesNotExist(db);
 
         await expect(service.getVenue(999))
-            .rejects.toThrow("Venue 999 does not exist");
+            .rejects.toThrow(VENUE_NOT_FOUND_MESSAGE);
 
         expect(db.query).toHaveBeenCalledTimes(1);
 

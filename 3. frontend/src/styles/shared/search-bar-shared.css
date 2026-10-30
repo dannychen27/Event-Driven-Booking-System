@@ -1,0 +1,29 @@
+/* Shared form styling */
+.search-form {
+    margin-bottom: 1.5rem;
+}
+
+.search-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+    font-weight: 600;
+}
+
+/* Shared controls layout */
+.search-controls {
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
+}
+
+.search-controls input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+}

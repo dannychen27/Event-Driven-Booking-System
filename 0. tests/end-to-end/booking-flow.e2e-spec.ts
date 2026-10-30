@@ -3,6 +3,16 @@ import { Test, TestingModule } from "@nestjs/testing";
 import request from "supertest";
 import { AppModule } from "../../4. backend/src/app.module";
 
+import {
+    E2E_CONFLICTING_EVENT_FIXTURE,
+    E2E_FULL_EVENT_FIXTURE, E2E_NONEXISTENT_EVENT_ID,
+    E2E_TEST_EVENT_FIXTURE,
+} from "./fixtures/events/eventFixtures";
+import {
+    E2E_NONEXISTENT_USER_ID,
+    E2E_OTHER_USER_FIXTURE,
+    E2E_TEST_USER_FIXTURE,
+} from "./fixtures/users/userFixtures";
 
 describe("Booking flow (E2E)", () => {
     let app: INestApplication;
@@ -23,38 +33,32 @@ describe("Booking flow (E2E)", () => {
     });
 
     it("should allow a user to book and cancel an event", async () => {
-        const eventsResponse = await request(app.getHttpServer())
-            .get("/events")
-            .expect(200);
-
-        expect(eventsResponse.body.length).toBeGreaterThan(0);
-
-        const event = eventsResponse.body[0];
+        const event = E2E_TEST_EVENT_FIXTURE;
+        const user = E2E_TEST_USER_FIXTURE;
 
         const bookingResponse = await request(app.getHttpServer())
             .post(`/events/${event.id}/book`)
             .send({
-                user_id: 1,
-            });
-
-        expect(bookingResponse.status).toBe(201);
+                user_id: user.id,
+            })
+            .expect(201);
 
         const booking = bookingResponse.body;
 
         expect(booking).toMatchObject({
-            user_id: 1,
+            user_id: user.id,
             event_id: event.id,
         });
 
         const historyResponse = await request(app.getHttpServer())
-            .get("/users/1/bookings")
+            .get(`/users/${user.id}/bookings`)
             .expect(200);
 
         expect(historyResponse.body).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
                     id: booking.id,
-                    user_id: 1,
+                    user_id: user.id,
                     event_id: event.id,
                 }),
             ]),
@@ -63,12 +67,12 @@ describe("Booking flow (E2E)", () => {
         await request(app.getHttpServer())
             .delete(`/bookings/${booking.id}`)
             .send({
-                user_id: 1,
+                user_id: user.id,
             })
             .expect(200);
 
         const finalHistoryResponse = await request(app.getHttpServer())
-            .get("/users/1/bookings")
+            .get(`/users/${user.id}/bookings`)
             .expect(200);
 
         expect(finalHistoryResponse.body).not.toEqual(
@@ -82,140 +86,112 @@ describe("Booking flow (E2E)", () => {
 
     it("should reject a booking when the user does not exist", async () => {
         await request(app.getHttpServer())
-            .post("/events/1/book")
+            .post(`/events/${E2E_TEST_EVENT_FIXTURE.id}/book`)
             .send({
-                user_id: 999,
+                user_id: E2E_NONEXISTENT_USER_ID,
             })
             .expect(404);
     });
 
     it("should reject a booking when the event does not exist", async () => {
         await request(app.getHttpServer())
-            .post("/events/999/book")
+            .post(`/events/${E2E_NONEXISTENT_EVENT_ID}/book`)
             .send({
-                user_id: 1,
+                user_id: E2E_TEST_USER_FIXTURE.id,
             })
             .expect(404);
     });
 
     it("should reject cancellation by a non-booking owner", async () => {
+        const owner = E2E_TEST_USER_FIXTURE;
+        const otherUser = E2E_OTHER_USER_FIXTURE;
+
         const bookingResponse = await request(app.getHttpServer())
-            .post("/events/1/book")
+            .post(`/events/${E2E_TEST_EVENT_FIXTURE.id}/book`)
             .send({
-                user_id: 1,
+                user_id: owner.id,
             })
             .expect(201);
 
         const booking = bookingResponse.body;
 
-        const response = await request(app.getHttpServer())
+        await request(app.getHttpServer())
             .delete(`/bookings/${booking.id}`)
             .send({
-                user_id: 2,
-            });
+                user_id: otherUser.id,
+            })
+            .expect(403);
 
-        expect(response.status).toBe(403);
-
-        if (response.status === 403) {
-            await request(app.getHttpServer())
-                .delete(`/bookings/${booking.id}`)
-                .send({
-                    user_id: 1,
-                })
-                .expect(200);
-        }
+        await request(app.getHttpServer())
+            .delete(`/bookings/${booking.id}`)
+            .send({
+                user_id: owner.id,
+            })
+            .expect(200);
     });
 
     it("should reject a duplicate booking", async () => {
-        const eventsResponse = await request(app.getHttpServer())
-            .get("/events")
-            .expect(200);
+        const event = E2E_TEST_EVENT_FIXTURE;
+        const user = E2E_TEST_USER_FIXTURE;
 
-        const event = eventsResponse.body[0];
-
-        // First booking
         const firstBookingResponse = await request(app.getHttpServer())
             .post(`/events/${event.id}/book`)
             .send({
-                user_id: 1,
+                user_id: user.id,
             })
             .expect(201);
 
         const booking = firstBookingResponse.body;
 
-        // Duplicate booking
         await request(app.getHttpServer())
             .post(`/events/${event.id}/book`)
             .send({
-                user_id: 1,
+                user_id: user.id,
             })
             .expect(409);
 
-        // Clean up
         await request(app.getHttpServer())
             .delete(`/bookings/${booking.id}`)
             .send({
-                user_id: 1,
+                user_id: user.id,
             })
             .expect(200);
     });
 
-    async function findConflictingEvents(app: INestApplication) {
-        const eventsResponse = await request(app.getHttpServer())
-            .get("/events")
-            .expect(200);
-
-        const events = eventsResponse.body;
-
-        for (let i = 0; i < events.length; i++) {
-            for (let j = i + 1; j < events.length; j++) {
-                const eventA = events[i];
-                const eventB = events[j];
-
-                if (
-                    new Date(eventA.start_time) < new Date(eventB.end_time) &&
-                    new Date(eventA.end_time) > new Date(eventB.start_time)
-                ) {
-                    return { eventA, eventB };
-                }
-            }
-        }
-
-        throw new Error("No conflicting events found");
-    }
-
     it("should reject a booking that conflicts with another booking", async () => {
-        const { eventA, eventB } = await findConflictingEvents(app);
+        const user = E2E_TEST_USER_FIXTURE;
+        const firstEvent = E2E_TEST_EVENT_FIXTURE;
+        const conflictingEvent = E2E_CONFLICTING_EVENT_FIXTURE;
 
         const firstBookingResponse = await request(app.getHttpServer())
-            .post(`/events/${eventA.id}/book`)
+            .post(`/events/${firstEvent.id}/book`)
             .send({
-                user_id: 1,
+                user_id: user.id,
             })
             .expect(201);
 
         const booking = firstBookingResponse.body;
 
         await request(app.getHttpServer())
-            .post(`/events/${eventB.id}/book`)
+            .post(`/events/${conflictingEvent.id}/book`)
             .send({
-                user_id: 1,
+                user_id: user.id,
             })
             .expect(409);
 
         await request(app.getHttpServer())
             .delete(`/bookings/${booking.id}`)
             .send({
-                user_id: 1,
+                user_id: user.id,
             })
             .expect(200);
     });
 
     it("should reject a booking when the event is fully booked", async () => {
         await request(app.getHttpServer())
-            .post("/events/3/book")
+            .post(`/events/${E2E_FULL_EVENT_FIXTURE.id}/book`)
             .send({
-                user_id: 1,
+                user_id: E2E_OTHER_USER_FIXTURE.id,
             })
             .expect(409);
     });

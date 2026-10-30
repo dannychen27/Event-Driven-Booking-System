@@ -1,0 +1,102 @@
+.button {
+    cursor: pointer;
+}
+
+.button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Primary actions: search and main form submissions. */
+.button--primary {
+    padding: 0.7rem 1rem;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: #2563eb;
+    color: white;
+    font: inherit;
+    font-weight: 600;
+}
+
+.button--primary:hover:not(:disabled) {
+    background: #1d4ed8;
+}
+
+/* Secondary actions: clear, cancel, and neutral modal actions. */
+.button--secondary {
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+}
+
+.button--secondary:hover:not(:disabled) {
+    background: var(--border);
+}
+
+/* Compact AI search suggestions. */
+.button--pill {
+    min-height: 36px;
+    padding: 0.4rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.9rem;
+}
+
+.button--pill:hover:not(:disabled) {
+    border-color: var(--text);
+}
+
+/* Positive actions: create booking, confirm booking. */
+.button--success {
+    padding: 0.75rem 1.25rem;
+    border: 1px solid #28a745;
+    border-radius: 6px;
+    background: white;
+    color: #28a745;
+    font: inherit;
+}
+
+.button--success:hover:not(:disabled) {
+    background: #28a745;
+    color: white;
+}
+
+/* Destructive actions: cancel booking. */
+.button--danger {
+    padding: 0.75rem 1.25rem;
+    border: 1px solid #dc3545;
+    border-radius: 6px;
+    background: white;
+    color: #dc3545;
+    font: inherit;
+}
+
+.button--danger:hover:not(:disabled) {
+    background: #dc3545;
+    color: white;
+}
+
+/* Compact icon-only controls: theme toggle. */
+.button--icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--text);
+    font: inherit;
+    font-size: 1.25rem;
+}
+
+.button--icon:hover:not(:disabled) {
+    opacity: 0.75;
+}

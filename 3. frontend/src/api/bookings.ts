@@ -1,14 +1,12 @@
-import type { Booking } from "../types/Booking.ts"
+import type { Booking } from "../types/bookings/Booking.ts"
 import { API_BASE_URL } from "./apiBaseUrl.ts";
+import { apiRequest } from "./apiRequest.ts";
 
 export async function getBookingHistory(user_id: number): Promise<Booking[]> {
-    const getBookingsResponse = await fetch(
-        `${API_BASE_URL}/users/${user_id}/bookings`
+    return apiRequest<Booking[]>(
+        `${API_BASE_URL}/users/${user_id}/bookings`,
+        `Failed to fetch bookings for user ${user_id}`,
     );
-    if (!getBookingsResponse.ok) {
-        throw new Error(`Failed to fetch bookings for user ${user_id}`);
-    }
-    return getBookingsResponse.json();
 }
 
 
@@ -61,22 +59,19 @@ export async function createBooking(user_id: number, event_id: number): Promise<
 }
 
 
-export async function cancelBooking(user_id: number, booking_id: number): Promise<Booking> {
-    const cancelBookingResponse = await fetch(
+export async function cancelBooking(
+    user_id: number,
+    booking_id: number,
+): Promise<Booking> {
+    return apiRequest<Booking>(
         `${API_BASE_URL}/bookings/${booking_id}`,
+        "Failed to cancel booking",
         {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-                user_id: user_id,
-            }),
-        }
+            body: JSON.stringify({ user_id }),
+        },
     );
-
-    if (!cancelBookingResponse.ok) {
-        throw new Error("Failed to cancel booking");
-    }
-    return cancelBookingResponse.json();
 }

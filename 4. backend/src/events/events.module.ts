@@ -4,9 +4,9 @@ import { EventsController } from './events.controller';
 import { EventsService } from './events.service';
 
 import { ConfigService } from '@nestjs/config';
-import { NaturalLanguageSearchService } from './search/natural-language-search.service';
-import { GeminiSearchInterpreter } from './ai/gemini/gemini-search-interpreter';
-import { GeminiEventRanker } from './ai/gemini/gemini-event-ranker';
+import { NaturalLanguageSearchService } from '../search/natural-language-search.service';
+import { GeminiEventSearchInterpreter } from './search/gemini-event-search-interpreter';
+import { GeminiEventRanker } from './search/gemini-event-ranker';
 
 @Module({
   imports: [DatabaseModule],
@@ -15,9 +15,9 @@ import { GeminiEventRanker } from './ai/gemini/gemini-event-ranker';
     EventsService,
     NaturalLanguageSearchService,
     {
-      provide: GeminiSearchInterpreter,
+      provide: GeminiEventSearchInterpreter,
       useFactory: (configService: ConfigService) =>
-        new GeminiSearchInterpreter(
+        new GeminiEventSearchInterpreter(
           configService.get<string>('GEMINI_API_KEY') ?? '',
         ),
       inject: [ConfigService],

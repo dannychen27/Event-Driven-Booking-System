@@ -1,0 +1,6 @@
+.event-card > .button,
+.booking-card > .button {
+    margin-top: 1rem;
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}

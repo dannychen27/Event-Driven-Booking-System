@@ -1,11 +1,10 @@
-import type { Venue } from "../types/Venue.ts"
+import type { Venue } from "../types/venues/Venue.ts";
 import { API_BASE_URL } from "./apiBaseUrl.ts";
-
+import { apiRequest } from "./apiRequest.ts";
 
 export async function getVenues(): Promise<Venue[]> {
-    const getVenuesResponse = await fetch(`${API_BASE_URL}/venues`);
-    if (!getVenuesResponse.ok) {
-        throw new Error("Failed to fetch venues");
-    }
-    return getVenuesResponse.json();
+    return apiRequest<Venue[]>(
+        `${API_BASE_URL}/venues`,
+        "Failed to fetch venues",
+    );
 }

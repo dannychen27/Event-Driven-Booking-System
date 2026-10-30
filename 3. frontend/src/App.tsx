@@ -2,7 +2,7 @@ import { Navigate, Routes, Route } from "react-router-dom";
 import EventsPage from "./pages/EventsPage";
 import VenuesPage from "./pages/VenuesPage";
 import BookingsPage from "./pages/BookingsPage";
-import NavigationBar from "./components/NavigationBar";
+import NavigationBar from "./components/navigation/NavigationBar";
 import { useState } from "react";
 import "./styles/theme.css";
 

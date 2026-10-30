@@ -4,6 +4,9 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
+import { Booking, BookingHistoryEntry, BookingId, EventBookingCount } from '../types/bookings/bookings.types';
+import { EventLock } from '../types/events/events.types';
+import { UserId } from '../types/users/users.types';
 import { DatabaseService } from '../database/database.service';
 
 @Injectable()
@@ -13,7 +16,7 @@ export class BookingsService {
   async createBooking(user_id: number, event_id: number) {
     return this.db.transaction(async (client) => {
       // check user
-      const userResult = await client.query<{ id: number }>(
+      const userResult = await client.query<UserId>(
         `
                 SELECT id
                 FROM users
@@ -26,12 +29,7 @@ export class BookingsService {
       }
 
       // lock event
-      const eventResult = await client.query<{
-        id: number;
-        start_time: string;
-        end_time: string;
-        capacity: number;
-      }>(
+      const eventResult = await client.query<EventLock>(
         `
                 SELECT id, start_time, end_time, capacity
                 FROM events
@@ -45,7 +43,7 @@ export class BookingsService {
       }
 
       // check duplicate booking
-      const bookingResult = await client.query<{ id: number }>(
+      const bookingResult = await client.query<BookingId>(
         `
                 SELECT id
                 FROM bookings
@@ -62,9 +60,7 @@ export class BookingsService {
 
       // check capacity
       const event = eventResult.rows[0];
-      const numBookingsResult = await client.query<{
-        booking_count: number;
-      }>(
+      const numBookingsResult = await client.query<EventBookingCount>(
         `
                 SELECT COUNT(*) AS booking_count
                 FROM bookings
@@ -78,7 +74,7 @@ export class BookingsService {
       }
 
       // check schedule conflict
-      const conflictResult = await client.query<{ id: number }>(
+      const conflictResult = await client.query<BookingId>(
         `
                 SELECT b.id
                 FROM bookings b
@@ -96,12 +92,7 @@ export class BookingsService {
       }
 
       // insert booking
-      const result = await client.query<{
-        id: number;
-        user_id: number;
-        event_id: number;
-        created_at: string;
-      }>(
+      const result = await client.query<Booking>(
         `
                 INSERT INTO bookings (user_id, event_id)
                 VALUES ($1, $2)
@@ -116,12 +107,7 @@ export class BookingsService {
   async cancelBooking(user_id: number, booking_id: number) {
     return this.db.transaction(async (client) => {
       // check if booking exists
-      const bookingResult = await client.query<{
-        id: number;
-        user_id: number;
-        event_id: number;
-        created_at: string;
-      }>(
+      const bookingResult = await client.query<Booking>(
         `
                 SELECT id, user_id, event_id, created_at
                 FROM bookings
@@ -134,7 +120,7 @@ export class BookingsService {
       }
 
       // check user
-      const userResult = await client.query<{ id: number }>(
+      const userResult = await client.query<UserId>(
         `
                 SELECT id
                 FROM users
@@ -155,12 +141,7 @@ export class BookingsService {
 
       // get and lock event
       const event_id = bookingResult.rows[0].event_id;
-      const eventResult = await client.query<{
-        id: number;
-        start_time: string;
-        end_time: string;
-        capacity: number;
-      }>(
+      const eventResult = await client.query<EventLock>(
         `
                 SELECT id, start_time, end_time, capacity
                 FROM events
@@ -174,12 +155,7 @@ export class BookingsService {
       }
 
       // delete booking
-      const oldBookingResult = await client.query<{
-        id: number;
-        user_id: number;
-        event_id: number;
-        created_at: string;
-      }>(
+      const oldBookingResult = await client.query<Booking>(
         `
                 DELETE FROM bookings
                 WHERE id = $1
@@ -192,7 +168,7 @@ export class BookingsService {
   }
 
   async getBookingHistory(user_id: number) {
-    const userResult = await this.db.query<{ id: number }>(
+    const userResult = await this.db.query<UserId>(
       `
             SELECT id
             FROM users
@@ -208,17 +184,7 @@ export class BookingsService {
     // (most recent at the top -> least recent at the bottom)
 
     // Include event and venue details for booking history.
-    const userBookingResult = await this.db.query<{
-      id: number;
-      user_id: number;
-      event_id: number;
-      created_at: string;
-      event_name: string | null;
-      start_time: string | null;
-      end_time: string | null;
-      venue_name: string | null;
-      venue_address: string | null;
-    }>(
+    const userBookingResult = await this.db.query<BookingHistoryEntry>(
       `
           SELECT
             b.id,

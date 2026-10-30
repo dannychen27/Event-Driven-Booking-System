@@ -1,3 +1,14 @@
+const createBookingRow = (
+    bookingId: number,
+    userId: number,
+    eventId: number,
+) => ({
+    id: bookingId,
+    user_id: userId,
+    event_id: eventId,
+    created_at: "2026-09-05T20:00:00Z",
+});
+
 export const mockBookingExists = (
     client: any,
     bookingId: number,
@@ -5,13 +16,7 @@ export const mockBookingExists = (
     eventId: number,
 ) => {
     client.query.mockResolvedValueOnce({
-        rows: [{
-            id: bookingId,
-            user_id: userId,
-            event_id: eventId,
-            created_at: "2026-09-05T20:00:00Z",
-        },
-        ],
+        rows: [createBookingRow(bookingId, userId, eventId)],
     });
 };
 
@@ -74,14 +79,7 @@ export const mockInsertedBooking = (
     eventId: number,
 ) => {
     client.query.mockResolvedValueOnce({
-        rows: [
-            {
-                id: bookingId,
-                user_id: userId,
-                event_id: eventId,
-                created_at: "2026-09-05T20:00:00Z",
-            },
-        ],
+        rows: [createBookingRow(bookingId, userId, eventId)],
     });
 };
 
@@ -93,14 +91,7 @@ export const mockDeletedBooking = (
     eventId: number,
 ) => {
     client.query.mockResolvedValueOnce({
-        rows: [
-            {
-                id: bookingId,
-                user_id: userId,
-                event_id: eventId,
-                created_at: "2026-09-05T20:00:00Z",
-            },
-        ],
+        rows: [createBookingRow(bookingId, userId, eventId)],
     });
 };
 

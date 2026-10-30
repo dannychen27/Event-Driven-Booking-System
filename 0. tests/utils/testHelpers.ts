@@ -1,8 +1,18 @@
+import type { PoolClient } from "pg";
+
+type QueryExecutor = {
+    query: jest.Mock;
+};
+
+type TransactionDatabase = {
+    transaction?: jest.Mock;
+};
+
 export const expectNthQuery = (
-    queryExecutor: any,
+    queryExecutor: QueryExecutor,
     queryNumber: number,
     sqlFragment: string,
-    params?: any[],
+    params?: unknown[],
 ) => {
     expect(queryExecutor.query).toHaveBeenNthCalledWith(
         queryNumber,
@@ -13,13 +23,13 @@ export const expectNthQuery = (
 
 
 export const mockTransaction = (
-    db: any,
-    client: any,
+    db: TransactionDatabase,
+    client: PoolClient,
 ) => {
-    db.transaction = jest.fn(async (
-        callback: (client: any) => Promise<any>,
-    ) => {
-        return callback(client);
-    });
+    db.transaction = jest.fn(
+        async <T>(callback: (client: PoolClient) => Promise<T>): Promise<T> => {
+            return callback(client);
+        },
+    );
 };
 

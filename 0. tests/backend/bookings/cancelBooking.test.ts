@@ -1,5 +1,10 @@
 import { BookingsService } from "../../../4. backend/src/bookings/bookings.service";
 import {
+    EVENT_NOT_FOUND_MESSAGE,
+    USER_NOT_FOUND_MESSAGE,
+} from "../fixtures/shared/errorMessageFixtures";
+import { BOOKING_RESULT_FIXTURE } from "../fixtures/shared/sharedTestFixtures"
+import {
     mockBookingExists, mockBookingDoesNotExist,
     mockDeletedBooking
 } from "../helpers/bookingTestHelpers";
@@ -31,12 +36,7 @@ describe("BookingsService.cancelBooking", () => {
 
         const result = await service.cancelBooking(1, 123);
 
-        expect(result).toEqual({
-            id: 123,
-            user_id: 1,
-            event_id: 1,
-            created_at: "2026-09-05T20:00:00Z",
-        });
+        expect(result).toEqual(BOOKING_RESULT_FIXTURE);
 
         expect(db.transaction).toHaveBeenCalledTimes(1);
         expect(client.query).toHaveBeenCalledTimes(4);
@@ -71,7 +71,7 @@ describe("BookingsService.cancelBooking", () => {
         mockUserDoesNotExist(client);
 
         await expect(service.cancelBooking(999, 123))
-            .rejects.toThrow("User 999 not found");
+            .rejects.toThrow(USER_NOT_FOUND_MESSAGE);
 
         expect(client.query).toHaveBeenCalledTimes(2);
 
@@ -85,7 +85,7 @@ describe("BookingsService.cancelBooking", () => {
         mockEventDoesNotExist(client);
 
         await expect(service.cancelBooking(1, 123))
-            .rejects.toThrow("Event 999 not found");
+            .rejects.toThrow(EVENT_NOT_FOUND_MESSAGE);
 
         expect(client.query).toHaveBeenCalledTimes(3);
 
