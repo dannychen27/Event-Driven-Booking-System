@@ -6,7 +6,7 @@ import { geminiClientConfigFixture } from '../fixtures/gemini/geminiClientConfig
 import { GEMINI_TEST_API_KEY } from '../fixtures/gemini/geminiTestConstants';
 import {
     parseNaturalLanguageSearchPlan
-} from "../../../4. backend/src/helpers/events/search/ParseNaturalLanguageSearchInterpreterHelpers";
+} from "../../../4. backend/src/events/search/ParseNaturalLanguageSearchInterpreterHelpers";
 
 
 jest.mock('@google/genai', () => ({

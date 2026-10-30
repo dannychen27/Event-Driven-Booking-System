@@ -1,7 +1,7 @@
 import {
     GEMINI_TIMEOUT_MS,
     GEMINI_MAX_RETRY_ATTEMPTS,
-} from '../../../constants/gemini.constants';
+} from './constants/gemini.constants';
 
 export function createGeminiClientConfig(apiKey: string) {
     return {

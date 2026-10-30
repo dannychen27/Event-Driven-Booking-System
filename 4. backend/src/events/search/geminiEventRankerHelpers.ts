@@ -1,5 +1,5 @@
-import { EventCandidate } from "../../../types/events/events.types";
-import { parseGeminiJsonResponse } from "./gemini-response-helpers";
+import { EventCandidate } from "../../types/events/events.types";
+import { parseGeminiJsonResponse } from "../../ai/gemini/gemini-response-helpers";
 
 export function parseRankedEventIds(
     response: string,

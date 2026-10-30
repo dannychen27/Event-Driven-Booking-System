@@ -1,11 +1,11 @@
 import { GoogleGenAI } from '@google/genai';
 import { NaturalLanguageSearchPlan } from '../../types/search/natural-language-search.types';
-import { GEMINI_MODEL } from "../../constants/gemini.constants";
+import { GEMINI_MODEL } from "../../ai/gemini/constants/gemini.constants";
 import { NATURAL_LANGUAGE_SEARCH_SCHEMA } from '../../ai/gemini/gemini-schemas';
 import { GeminiClient } from "../../types/ai/gemini/gemini.types";
 import { formatTorontoDate } from "../../helpers/shared/DateHelpers";
-import { createGeminiClientConfig } from '../../helpers/events/search/gemini-client-config';
-import { parseNaturalLanguageSearchPlan } from "../../helpers/events/search/ParseNaturalLanguageSearchInterpreterHelpers";
+import { createGeminiClientConfig } from '../../ai/gemini/gemini-client-config';
+import { parseNaturalLanguageSearchPlan } from "./ParseNaturalLanguageSearchInterpreterHelpers";
 
 
 export class GeminiEventSearchInterpreter {

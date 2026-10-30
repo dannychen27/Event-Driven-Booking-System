@@ -1,10 +1,10 @@
 import { GoogleGenAI } from '@google/genai';
 import { EventCandidate } from "../../types/events/events.types"
-import { GEMINI_MODEL } from "../../constants/gemini.constants";
+import { GEMINI_MODEL } from "../../ai/gemini/constants/gemini.constants";
 import { EVENT_RANKING_SCHEMA } from '../../ai/gemini/gemini-schemas';
 import { GeminiClient } from "../../types/ai/gemini/gemini.types";
-import { createGeminiClientConfig } from "../../helpers/events/search/gemini-client-config";
-import { parseRankedEventIds } from "../../helpers/events/search/geminiEventRankerHelpers";
+import { createGeminiClientConfig } from "../../ai/gemini/gemini-client-config";
+import { parseRankedEventIds } from "./geminiEventRankerHelpers";
 
 
 export class GeminiEventRanker {
