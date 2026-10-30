@@ -1,27 +1,12 @@
 import { GoogleGenAI } from '@google/genai';
 import { NaturalLanguageSearchPlan } from '../../search/natural-language-search.types';
-import {
-  GEMINI_MODEL,
-  GEMINI_TIMEOUT_MS,
-  GEMINI_MAX_RETRY_ATTEMPTS,
-} from "../../constants/gemini.constants";
-import { validateNaturalLanguageSearchPlan } from '../../search/natural-language-search';
+import { GEMINI_MODEL } from "../../constants/gemini.constants";
 import { NATURAL_LANGUAGE_SEARCH_SCHEMA } from '../../ai/gemini/gemini-schemas';
 import { GeminiClient } from "../../ai/gemini/gemini.types";
+import { formatTorontoDate } from "../../helpers/shared/DateHelpers";
+import { createGeminiClientConfig } from '../../helpers/events/search/gemini-client-config';
+import { parseNaturalLanguageSearchPlan } from "../../helpers/events/search/ParseNaturalLanguageSearchInterpreterHelpers";
 
-export function parseNaturalLanguageSearchPlan(
-  response: string,
-): NaturalLanguageSearchPlan {
-  let parsed: unknown;
-
-  try {
-    parsed = JSON.parse(response);
-  } catch {
-    throw new Error('Gemini returned invalid JSON');
-  }
-
-  return validateNaturalLanguageSearchPlan(parsed);
-}
 
 export class GeminiEventSearchInterpreter {
   private readonly client: GeminiClient | undefined;
@@ -32,15 +17,7 @@ export class GeminiEventSearchInterpreter {
     private readonly now: () => Date = () => new Date(),
   ) {
     if (apiKey.trim()) {
-      this.client = client ?? new GoogleGenAI({
-        apiKey,
-        httpOptions: {
-          timeout: GEMINI_TIMEOUT_MS,
-          retryOptions: {
-            attempts: GEMINI_MAX_RETRY_ATTEMPTS,
-          },
-        },
-      });
+      this.client = client ?? new GoogleGenAI(createGeminiClientConfig(apiKey));
     } else {
       this.client = client;
     }
@@ -72,12 +49,7 @@ export class GeminiEventSearchInterpreter {
         'Use ISO 8601 date strings for date boundaries.',
         'Omit fields the user did not specify or imply.',
         'Interpret relative dates using the current date and timezone below.',
-        `Current date: ${new Intl.DateTimeFormat('en-CA', {
-          timeZone: 'America/Toronto',
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-        }).format(this.now())}`,
+        `Current date: ${formatTorontoDate(this.now())}`,
         'Timezone: America/Toronto.',
         `User request: ${request}`,
       ].join('\n'),

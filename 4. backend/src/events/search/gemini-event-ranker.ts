@@ -1,51 +1,11 @@
 import { GoogleGenAI } from '@google/genai';
 import { EventCandidate } from '../events.types';
-import {
-  GEMINI_MODEL,
-  GEMINI_TIMEOUT_MS,
-  GEMINI_MAX_RETRY_ATTEMPTS,
-} from "../../constants/gemini.constants";
+import { GEMINI_MODEL } from "../../constants/gemini.constants";
 import { EVENT_RANKING_SCHEMA } from '../../ai/gemini/gemini-schemas';
 import { GeminiClient } from "../../ai/gemini/gemini.types";
+import { createGeminiClientConfig } from "../../helpers/events/search/gemini-client-config";
+import { parseRankedEventIds } from "../../helpers/events/search/geminiEventRankerHelpers";
 
-
-export function parseRankedEventIds(
-  response: string,
-  candidates: EventCandidate[],
-): number[] {
-  let parsed: unknown;
-
-  try {
-    parsed = JSON.parse(response);
-  } catch {
-    throw new Error('Gemini returned invalid ranking JSON');
-  }
-
-  if (
-    typeof parsed !== 'object' ||
-    parsed === null ||
-    Array.isArray(parsed) ||
-    !('eventIds' in parsed) ||
-    !Array.isArray(parsed.eventIds) ||
-    !parsed.eventIds.every(
-      (id: unknown) => Number.isSafeInteger(id) && Number(id) > 0,
-    )
-  ) {
-    throw new Error('Gemini returned an invalid event ranking');
-  }
-
-  const candidateIds = new Set(candidates.map((event) => event.id));
-  const rankedIds = parsed.eventIds as number[];
-
-  if (
-    rankedIds.some((id) => !candidateIds.has(id)) ||
-    new Set(rankedIds).size !== rankedIds.length
-  ) {
-    throw new Error('Gemini returned unknown or duplicate event IDs');
-  }
-
-  return rankedIds;
-}
 
 export class GeminiEventRanker {
   private readonly client: GeminiClient | undefined;
@@ -55,15 +15,7 @@ export class GeminiEventRanker {
     client?: GeminiClient,
   ) {
     if (apiKey.trim()) {
-      this.client = client ?? new GoogleGenAI({
-        apiKey,
-        httpOptions: {
-          timeout: GEMINI_TIMEOUT_MS,
-          retryOptions: {
-            attempts: GEMINI_MAX_RETRY_ATTEMPTS,
-          },
-        },
-      });
+      this.client = client ?? new GoogleGenAI(createGeminiClientConfig(apiKey));
     } else {
       this.client = client;
     }

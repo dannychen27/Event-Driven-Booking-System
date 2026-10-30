@@ -5,114 +5,61 @@ import {
   MAX_NATURAL_LANGUAGE_INTENT_LENGTH,
   ALLOWED_FIELDS,
 } from '../constants/search.constants';
+import {
+  validateInputFields,
+  validateOptionalString,
+  validateDateRange,
+  buildDateRangeFilters,
+} from '../helpers/search/natural-language-search.helpers';
 
 export function validateSearchFilters(input: unknown): SearchFilters {
-  if (typeof input !== 'object' || input === null || Array.isArray(input)) {
-    throw new Error('Search filters must be an object');
-  }
+  const inputFields = validateInputFields({
+    input,
+    objectErrorMessage: 'Search filters must be an object',
+    allowedFields: ALLOWED_FIELDS,
+    unsupportedFieldErrorPrefix: 'Unsupported search filter: ',
+  });
 
-  const fields = input as Record<string, unknown>;
+  const { keyword, startAfter, startBefore } = inputFields;
+  const validatedKeyword = validateOptionalString({
+    value: keyword,
+    fieldName: 'keyword',
+    maxLength: MAX_EVENT_SEARCH_KEYWORD_LENGTH,
+  });
 
-  for (const key of Object.keys(fields)) {
-    if (!ALLOWED_FIELDS.has(key)) {
-      throw new Error(`Unsupported search filter: ${key}`);
-    }
-  }
-
-  const { keyword, startAfter, startBefore } = fields;
-
-  if (keyword !== undefined) {
-    if (
-      typeof keyword !== 'string' ||
-      keyword.trim().length === 0 ||
-      keyword.trim().length > MAX_EVENT_SEARCH_KEYWORD_LENGTH
-    ) {
-      throw new Error(
-        'keyword must be a non-empty string of at most 100 characters',
-      );
-    }
-  }
-
-  for (const [name, value] of [
-    ['startAfter', startAfter],
-    ['startBefore', startBefore],
-  ] as const) {
-    if (value !== undefined) {
-      if (typeof value !== 'string' || Number.isNaN(Date.parse(value))) {
-        throw new Error(`${name} must be a valid date`);
-      }
-    }
-  }
-
-  if (
-    startAfter !== undefined &&
-    startBefore !== undefined &&
-    Date.parse(startAfter as string) >= Date.parse(startBefore as string)
-  ) {
-    throw new Error('startAfter must be earlier than startBefore');
-  }
+  validateDateRange({ startAfter, startBefore });
 
   return {
-    ...(keyword !== undefined ? { keyword: keyword.trim() } : {}),
-    ...(startAfter !== undefined ? { startAfter: startAfter as string } : {}),
-    ...(startBefore !== undefined
-      ? { startBefore: startBefore as string }
+    ...(validatedKeyword !== undefined
+      ? { keyword: validatedKeyword }
       : {}),
+    ...buildDateRangeFilters({ startAfter, startBefore }),
   };
 }
 
 export function validateNaturalLanguageSearchPlan(
   input: unknown,
 ): NaturalLanguageSearchPlan {
-  if (typeof input !== 'object' || input === null || Array.isArray(input)) {
-    throw new Error('Natural-language search plan must be an object');
-  }
+  const inputFields = validateInputFields({
+    input,
+    objectErrorMessage: 'Natural-language search plan must be an object',
+    allowedFields: ALLOWED_NATURAL_LANGUAGE_FIELDS,
+    unsupportedFieldErrorPrefix: 'Unsupported natural-language search field: ',
+  });
 
-  const fields = input as Record<string, unknown>;
+  const { intent, startAfter, startBefore } = inputFields;
+  const validatedIntent = validateOptionalString({
+    value: intent,
+    fieldName: 'intent',
+    maxLength: MAX_NATURAL_LANGUAGE_INTENT_LENGTH,
+  });
 
-  for (const key of Object.keys(fields)) {
-    if (!ALLOWED_NATURAL_LANGUAGE_FIELDS.has(key)) {
-      throw new Error(`Unsupported natural-language search field: ${key}`);
-    }
-  }
-
-  const { intent, startAfter, startBefore } = fields;
-
-  if (
-    intent !== undefined &&
-    (typeof intent !== 'string' ||
-      intent.trim().length === 0 ||
-      intent.trim().length > MAX_NATURAL_LANGUAGE_INTENT_LENGTH)
-  ) {
-    throw new Error(
-      'intent must be a non-empty string of at most 300 characters',
-    );
-  }
-
-  for (const [name, value] of [
-    ['startAfter', startAfter],
-    ['startBefore', startBefore],
-  ] as const) {
-    if (value !== undefined) {
-      if (typeof value !== 'string' || Number.isNaN(Date.parse(value))) {
-        throw new Error(`${name} must be a valid date`);
-      }
-    }
-  }
-
-  if (
-    startAfter !== undefined &&
-    startBefore !== undefined &&
-    Date.parse(startAfter as string) >= Date.parse(startBefore as string)
-  ) {
-    throw new Error('startAfter must be earlier than startBefore');
-  }
+  validateDateRange({ startAfter, startBefore });
 
   return {
-    ...(intent !== undefined ? { intent: intent.trim() } : {}),
-    ...(startAfter !== undefined ? { startAfter: startAfter as string } : {}),
-    ...(startBefore !== undefined
-      ? { startBefore: startBefore as string }
+    ...(validatedIntent !== undefined
+      ? { intent: validatedIntent }
       : {}),
+    ...buildDateRangeFilters({ startAfter, startBefore }),
   };
 }
