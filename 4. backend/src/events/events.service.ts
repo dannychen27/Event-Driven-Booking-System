@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { EventCandidate } from '../types/events.types';
+import { buildEventDateRangeFilters } from './events.helpers';
 
 @Injectable()
 export class EventsService {
@@ -68,15 +69,13 @@ export class EventsService {
       );
     }
 
-    if (filters.startAfter) {
-      params.push(filters.startAfter);
-      conditions.push(`e.start_time >= $${params.length}`);
-    }
+    const dateRangeFilters = buildEventDateRangeFilters({
+      startAfter: filters.startAfter,
+      startBefore: filters.startBefore,
+    });
 
-    if (filters.startBefore) {
-      params.push(filters.startBefore);
-      conditions.push(`e.start_time < $${params.length}`);
-    }
+    conditions.push(...dateRangeFilters.conditions);
+    params.push(...dateRangeFilters.params);
 
     const whereClause = conditions.length
       ? `WHERE ${conditions.join(' AND ')}`
@@ -103,18 +102,10 @@ export class EventsService {
     startAfter?: string;
     startBefore?: string;
   }) {
-    const conditions: string[] = [];
-    const params: unknown[] = [];
-
-    if (filters.startAfter) {
-      params.push(filters.startAfter);
-      conditions.push(`e.start_time >= $${params.length}`);
-    }
-
-    if (filters.startBefore) {
-      params.push(filters.startBefore);
-      conditions.push(`e.start_time < $${params.length}`);
-    }
+    const { conditions, params } = buildEventDateRangeFilters({
+      startAfter: filters.startAfter,
+      startBefore: filters.startBefore,
+    });
 
     const whereClause = conditions.length
       ? `WHERE ${conditions.join(' AND ')}`
