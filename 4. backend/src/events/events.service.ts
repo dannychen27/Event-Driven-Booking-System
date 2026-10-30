@@ -72,6 +72,7 @@ export class EventsService {
     const dateRangeFilters = buildEventDateRangeFilters({
       startAfter: filters.startAfter,
       startBefore: filters.startBefore,
+      initialParamCount: params.length,
     });
 
     conditions.push(...dateRangeFilters.conditions);
