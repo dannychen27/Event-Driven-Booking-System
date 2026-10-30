@@ -1,19 +1,33 @@
 #!/usr/bin/env bash
 
 # Backend organization audit for Event-Driven Booking System.
-# Run from the repository root: bash audit-backend.sh
+# Run: bash dev-tools/audits/audit-backend.sh
 # Read-only for project files, except normal test-generated coverage artifacts.
+#
+# AI assistance disclosure:
+# Developed and refined with AI assistance. The author reviewed the
+# implementation and verified its behavior.
 
-set -u
+set -uo pipefail
 
-ROOT="$(pwd)"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+cd "$REPO_ROOT"
+
 TEST_DIR="0. tests/backend"
 BACKEND_DIR="4. backend"
 MAX_TEST_LINES=250
 
 if [[ ! -d "$TEST_DIR" || ! -d "$BACKEND_DIR" ]]; then
-    printf 'ERROR: Run this script from the repository root.\n'
-    printf 'Expected directories: "%s" and "%s"\n' "$TEST_DIR" "$BACKEND_DIR"
+    printf 'ERROR: Expected repository directories were not found.\n'
+    printf 'Repository root: %s\n' "$REPO_ROOT"
+    printf 'Expected: "%s" and "%s"\n' "$TEST_DIR" "$BACKEND_DIR"
+    exit 1
+fi
+
+if [[ ! -d "$BACKEND_DIR/src" ]]; then
+    printf 'ERROR: Backend source directory not found: "%s/src"\n' "$BACKEND_DIR"
     exit 1
 fi
 
