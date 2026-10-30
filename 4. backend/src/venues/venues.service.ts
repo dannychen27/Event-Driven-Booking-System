@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Venue } from '../types/venues.types';
+import { Venue } from '../types/venues/venues.types';
 import { DatabaseService } from '../database/database.service';
 
 @Injectable()

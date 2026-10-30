@@ -3,7 +3,7 @@ import { DatabaseService } from '../database/database.service';
 import {
   EventAvailability,
   EventCandidate,
-} from '../types/events.types';
+} from '../types/events/events.types';
 import { buildEventDateRangeFilters } from './events.helpers';
 
 @Injectable()
