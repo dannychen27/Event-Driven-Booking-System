@@ -1,4 +1,7 @@
-import { SearchFilters, NaturalLanguageSearchPlan } from '../types/search/natural-language-search.types';
+import {
+  SearchFilters,
+  NaturalLanguageSearchPlan,
+} from '../types/search/natural-language-search.types';
 import {
   MAX_EVENT_SEARCH_KEYWORD_LENGTH,
   ALLOWED_NATURAL_LANGUAGE_FIELDS,
@@ -30,9 +33,7 @@ export function validateSearchFilters(input: unknown): SearchFilters {
   validateDateRange({ startAfter, startBefore });
 
   return {
-    ...(validatedKeyword !== undefined
-      ? { keyword: validatedKeyword }
-      : {}),
+    ...(validatedKeyword !== undefined ? { keyword: validatedKeyword } : {}),
     ...buildDateRangeFilters({ startAfter, startBefore }),
   };
 }
@@ -57,9 +58,7 @@ export function validateNaturalLanguageSearchPlan(
   validateDateRange({ startAfter, startBefore });
 
   return {
-    ...(validatedIntent !== undefined
-      ? { intent: validatedIntent }
-      : {}),
+    ...(validatedIntent !== undefined ? { intent: validatedIntent } : {}),
     ...buildDateRangeFilters({ startAfter, startBefore }),
   };
 }

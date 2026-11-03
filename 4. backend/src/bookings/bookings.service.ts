@@ -4,7 +4,12 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { Booking, BookingHistoryEntry, BookingId, EventBookingCount } from '../types/bookings/bookings.types';
+import {
+  Booking,
+  BookingHistoryEntry,
+  BookingId,
+  EventBookingCount,
+} from '../types/bookings/bookings.types';
 import { EventLock } from '../types/events/events.types';
 import { UserId } from '../types/users/users.types';
 import { DatabaseService } from '../database/database.service';

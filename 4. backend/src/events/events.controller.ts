@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { EventsService } from './events.service';
 import {
   validateEventSearchDateRange,
@@ -44,7 +37,7 @@ export class EventsController {
   }
 
   @Post('natural-language-search')
-  searchEventsInNaturalLanguage(@Body() body: { query?: string } | undefined ) {
+  searchEventsInNaturalLanguage(@Body() body: { query?: string } | undefined) {
     const query = validateNaturalLanguageSearchQuery(body?.query);
     return this.naturalLanguageSearchService.searchNaturalLanguage(query);
   }

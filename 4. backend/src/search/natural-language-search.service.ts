@@ -1,8 +1,8 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { EventsService } from '../events/events.service';
 
-import { SearchFilters, } from '../types/search/natural-language-search.types';
-import { validateSearchFilters, } from './natural-language-search';
+import { SearchFilters } from '../types/search/natural-language-search.types';
+import { validateSearchFilters } from './natural-language-search';
 import { GeminiEventSearchInterpreter } from '../events/search/gemini-event-search-interpreter';
 import { GeminiEventRanker } from '../events/search/gemini-event-ranker';
 
@@ -48,7 +48,7 @@ export class NaturalLanguageSearchService {
     } catch (error: unknown) {
       if (error instanceof Error && error.name === 'AbortError') {
         throw new ServiceUnavailableException(
-            'AI search is temporarily unavailable. Please try again later.',
+          'AI search is temporarily unavailable. Please try again later.',
         );
       }
 

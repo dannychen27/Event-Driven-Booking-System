@@ -1,14 +1,14 @@
-import { NaturalLanguageSearchPlan } from "../../types/search/natural-language-search.types";
-import { parseGeminiJsonResponse } from "../../ai/gemini/gemini-response-helpers";
-import { validateNaturalLanguageSearchPlan } from "../../search/natural-language-search";
+import { NaturalLanguageSearchPlan } from '../../types/search/natural-language-search.types';
+import { parseGeminiJsonResponse } from '../../ai/gemini/gemini-response-helpers';
+import { validateNaturalLanguageSearchPlan } from '../../search/natural-language-search';
 
 export function parseNaturalLanguageSearchPlan(
-    response: string,
+  response: string,
 ): NaturalLanguageSearchPlan {
-    const parsed = parseGeminiJsonResponse(
-        response,
-        'Gemini returned invalid JSON',
-    );
+  const parsed = parseGeminiJsonResponse(
+    response,
+    'Gemini returned invalid JSON',
+  );
 
-    return validateNaturalLanguageSearchPlan(parsed);
+  return validateNaturalLanguageSearchPlan(parsed);
 }
