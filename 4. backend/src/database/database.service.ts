@@ -6,10 +6,18 @@ export class DatabaseService implements OnModuleDestroy {
   private readonly pool: Pool;
 
   constructor() {
+    const database = process.env.DB_NAME?.trim();
+
+    if (!database) {
+      throw new Error(
+        'DB_NAME must be explicitly configured. Refusing to connect without a database name.',
+      );
+    }
+
     this.pool = new Pool({
       host: process.env.DB_HOST || 'localhost',
       port: Number(process.env.DB_PORT) || 5432,
-      database: process.env.DB_NAME || 'booking_system',
+      database,
       user: process.env.DB_USER || 'dannychen',
       password: process.env.DB_PASSWORD,
     });
