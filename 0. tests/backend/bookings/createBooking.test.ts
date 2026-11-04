@@ -9,6 +9,7 @@ import {
     mockBookingCount,
     mockNoScheduleConflict, mockScheduleConflict,
     mockInsertedBooking,
+    mockNoActiveHold, mockNoHoldScheduleConflict,
 } from "../helpers/bookingTestHelpers";
 import { mockUserExists, mockUserDoesNotExist } from "../helpers/usersTestHelpers";
 import { mockEventExists, mockEventDoesNotExist } from "../helpers/eventsTestHelpers"
@@ -34,26 +35,34 @@ describe("BookingsService.createBooking", () => {
         mockUserExists(client, 1);
         mockEventExists(client, 1);
         mockNoDuplicateBooking(client);
+        mockNoActiveHold(client);
         mockBookingCount(client, 2);
         mockNoScheduleConflict(client);
+        mockNoHoldScheduleConflict(client);
         mockInsertedBooking(client, 123, 1, 1);
 
         const result = await service.createBooking(1, 1);
 
         expect(result).toEqual(BOOKING_RESULT_FIXTURE);
         expect(db.transaction).toHaveBeenCalledTimes(1);
-        expect(client.query).toHaveBeenCalledTimes(6);
+        expect(client.query).toHaveBeenCalledTimes(8);
 
         expectNthQuery(client, 1, "FROM users", [1]);
         expectNthQuery(client, 2, "FROM events", [1]);
         expectNthQuery(client, 3, "FROM bookings", [1, 1]);
-        expectNthQuery(client, 4, "COUNT(*)", [1]);
-        expectNthQuery(client, 5, "JOIN events", [
+        expectNthQuery(client, 4, "FROM booking_holds", [1, 1]);
+        expectNthQuery(client, 5, "COUNT(*)", [1]);
+        expectNthQuery(client, 6, "JOIN events", [
             1,
             "2026-09-10T11:00:00Z",
             "2026-09-10T10:00:00Z",
         ]);
-        expectNthQuery(client, 6, "INSERT INTO bookings", [1, 1]);
+        expectNthQuery(client, 7, "FROM booking_holds h", [
+            1,
+            "2026-09-10T11:00:00Z",
+            "2026-09-10T10:00:00Z",
+        ]);
+        expectNthQuery(client, 8, "INSERT INTO bookings", [1, 1]);
     });
 
     it("should reject the booking when the user does not exist", async () => {
@@ -99,42 +108,35 @@ describe("BookingsService.createBooking", () => {
         mockUserExists(client, 1);
         mockEventExists(client, 1, 10);
         mockNoDuplicateBooking(client);
+        mockNoActiveHold(client);
         mockBookingCount(client, 10);
 
         await expect(service.createBooking(1, 1))
             .rejects.toThrow("Event 1 is fully booked");
 
-        expect(client.query).toHaveBeenCalledTimes(4);
+        expect(client.query).toHaveBeenCalledTimes(5);
 
-        expectNthQuery(client, 1, "FROM users", [1]);
-        expectNthQuery(client, 2, "FROM events", [1]);
-        expectNthQuery(client, 3, "FROM bookings", [1, 1]);
-        expectNthQuery(client, 4, "COUNT(*)", [1]);
+        expectNthQuery(client, 4, "FROM booking_holds", [1, 1]);
+        expectNthQuery(client, 5, "COUNT(*)", [1]);
     });
 
     it("should reject a booking when the user has a schedule conflict", async () => {
         mockUserExists(client, 1);
-        mockEventExists(
-            client,
-            1,
-            10,
-            "2026-09-10T10:00:00Z",
-            "2026-09-10T11:00:00Z",
-        );
+        mockEventExists(client, 1);
         mockNoDuplicateBooking(client);
-        mockBookingCount(client, 2);
+        mockNoActiveHold(client);
+        mockBookingCount(client, 0);
         mockScheduleConflict(client, 456);
 
-        await expect(service.createBooking(1, 1))
-            .rejects.toThrow("User 1 has a conflicting booking with event 456");
-
-        expect(client.query).toHaveBeenCalledTimes(5);
+        await expect(service.createBooking(1, 1)).rejects
+            .toThrow("User 1 has a conflicting booking with event 456");
 
         expectNthQuery(client, 1, "FROM users", [1]);
         expectNthQuery(client, 2, "FROM events", [1]);
-        expectNthQuery(client, 3, "WHERE user_id = $1", [1, 1]);
-        expectNthQuery(client, 4, "COUNT(*)", [1]);
-        expectNthQuery(client, 5, "JOIN events", [
+        expectNthQuery(client, 3, "FROM bookings", [1, 1]);
+        expectNthQuery(client, 4, "FROM booking_holds", [1, 1]);
+        expectNthQuery(client, 5, "COUNT(*)", [1]);
+        expectNthQuery(client, 6, "JOIN events", [
             1,
             "2026-09-10T11:00:00Z",
             "2026-09-10T10:00:00Z",
