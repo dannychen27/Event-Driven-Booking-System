@@ -1,4 +1,4 @@
-import { ConflictException } from "@nestjs/common";
+import { ConflictException, NotFoundException } from "@nestjs/common";
 import type { PoolClient } from "pg";
 
 import { BookingsService } from "../../4. backend/src/bookings/bookings.service";
@@ -146,9 +146,7 @@ describe("BookingsService integration", () => {
             throw new Error("Expected one concurrent booking to be rejected");
         }
 
-        expect(rejection.reason.message).toBe(
-            `Event ${eventId} is fully booked`,
-        );
+        expect(rejection.reason.message).toBe(`Event ${eventId} is fully booked`);
 
         const result = await db.query(
             `SELECT id FROM bookings WHERE event_id = $1`,
@@ -156,6 +154,44 @@ describe("BookingsService integration", () => {
         );
 
         expect(result.rows).toHaveLength(1);
+    });
+
+    it("allows only one concurrent cancellation of the same booking", async () => {
+        const userId = BOOKING_SERVICE_INTEGRATION_USERS.primary;
+        const eventId = BOOKING_SERVICE_INTEGRATION_EVENTS.standard.id;
+
+        const booking = await service.createBooking(userId, eventId);
+
+        const results = await Promise.allSettled([
+            service.cancelBooking(userId, booking.id),
+            service.cancelBooking(userId, booking.id),
+        ]);
+
+        const fulfilled = results.filter(
+            result => result.status === "fulfilled",
+        );
+
+        const rejected = results.filter(
+            result => result.status === "rejected",
+        );
+
+        expect(fulfilled).toHaveLength(1);
+        expect(rejected).toHaveLength(1);
+
+        const rejection = rejected[0];
+
+        if (rejection.status !== "rejected") {
+            throw new Error("Expected one concurrent cancellation to be rejected");
+        }
+
+        expect(rejection.reason).toBeInstanceOf(NotFoundException);
+
+        const result = await db.query(
+            `SELECT id FROM bookings WHERE id = $1`,
+            [booking.id],
+        );
+
+        expect(result.rows).toHaveLength(0);
     });
 
 

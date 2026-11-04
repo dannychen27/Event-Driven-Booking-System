@@ -111,8 +111,23 @@ export class BookingsService {
   }
 
   async cancelBooking(user_id: number, booking_id: number) {
-    return this.db.transaction(async (client) => {
-      // check if booking exists
+    return this.db.transaction(async client => {
+      // Lock user first to serialize booking operations for this user.
+      const userResult = await client.query<UserId>(
+          `
+            SELECT id
+            FROM users
+            WHERE id = $1
+              FOR UPDATE;
+          `,
+          [user_id],
+      );
+
+      if (userResult.rows.length === 0) {
+        throw new NotFoundException(`User ${user_id} not found`);
+      }
+
+      // Check if booking exists.
       const bookingResult = await client.query<Booking>(
         `
                 SELECT id, user_id, event_id, created_at
@@ -121,31 +136,19 @@ export class BookingsService {
             `,
         [booking_id],
       );
+
       if (bookingResult.rows.length === 0) {
         throw new NotFoundException(`Booking ${booking_id} not found`);
       }
 
-      // check user
-      const userResult = await client.query<UserId>(
-        `
-                SELECT id
-                FROM users
-                WHERE id = $1;
-            `,
-        [user_id],
-      );
-      if (userResult.rows.length === 0) {
-        throw new NotFoundException(`User ${user_id} not found`);
-      }
-
-      // check booking ownership
+      // Check booking ownership.
       if (bookingResult.rows[0].user_id !== user_id) {
         throw new ForbiddenException(
           `User ${user_id} is not authorized to cancel booking ${booking_id}`,
         );
       }
 
-      // get and lock event
+      // Lock event after user.
       const event_id = bookingResult.rows[0].event_id;
       const eventResult = await client.query<EventLock>(
         `
@@ -156,11 +159,12 @@ export class BookingsService {
             `,
         [event_id],
       );
+
       if (eventResult.rows.length === 0) {
         throw new NotFoundException(`Event ${event_id} not found`);
       }
 
-      // delete booking
+      // Delete booking.
       const oldBookingResult = await client.query<Booking>(
         `
                 DELETE FROM bookings
@@ -169,6 +173,10 @@ export class BookingsService {
             `,
         [booking_id],
       );
+
+      if (oldBookingResult.rows.length === 0) {
+        throw new NotFoundException(`Booking ${booking_id} not found`);
+      }
       return oldBookingResult.rows[0];
     });
   }

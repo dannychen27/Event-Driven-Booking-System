@@ -29,8 +29,8 @@ describe("BookingsService.cancelBooking", () => {
     });
 
     it("should successfully cancel a booking", async () => {
-        mockBookingExists(client, 123, 1, 1);
         mockUserExists(client, 1);
+        mockBookingExists(client, 123, 1, 1);
         mockEventExists(client, 1);
         mockDeletedBooking(client, 123, 1, 1);
 
@@ -41,11 +41,12 @@ describe("BookingsService.cancelBooking", () => {
         expect(db.transaction).toHaveBeenCalledTimes(1);
         expect(client.query).toHaveBeenCalledTimes(4);
 
-        // Check booking lookup
-        expectNthQuery(client, 1, "FROM bookings", [123]);
+        // Check user lookup / lock
+        expectNthQuery(client, 1, "FROM users", [1]);
+        expectNthQuery(client, 1, "FOR UPDATE", [1]);
 
-        // Check user lookup
-        expectNthQuery(client, 2, "FROM users", [1]);
+        // Check booking lookup
+        expectNthQuery(client, 2, "FROM bookings", [123]);
 
         // Check event lookup / lock
         expectNthQuery(client, 3, "FROM events", [1]);
@@ -56,32 +57,31 @@ describe("BookingsService.cancelBooking", () => {
     });
 
     it("should reject the cancellation when the booking does not exist", async () => {
+        mockUserExists(client, 1);
         mockBookingDoesNotExist(client);
 
         await expect(service.cancelBooking(1, 999))
             .rejects.toThrow("Booking 999 not found");
 
-        expect(client.query).toHaveBeenCalledTimes(1);
+        expect(client.query).toHaveBeenCalledTimes(2);
 
-        expectNthQuery(client, 1, "FROM bookings", [999]);
+        expectNthQuery(client, 1, "FROM users", [1]);
+        expectNthQuery(client, 2, "FROM bookings", [999]);
     });
 
     it("should reject the cancellation when the user does not exist", async () => {
-        mockBookingExists(client, 123, 1, 1);
         mockUserDoesNotExist(client);
 
         await expect(service.cancelBooking(999, 123))
             .rejects.toThrow(USER_NOT_FOUND_MESSAGE);
 
-        expect(client.query).toHaveBeenCalledTimes(2);
-
-        expectNthQuery(client, 1, "FROM bookings", [123]);
-        expectNthQuery(client, 2, "FROM users", [999]);
+        expect(client.query).toHaveBeenCalledTimes(1);
+        expectNthQuery(client, 1, "FROM users", [999]);
     });
 
     it("should reject the cancellation when the event does not exist", async () => {
-        mockBookingExists(client, 123, 1, 999);
         mockUserExists(client, 1);
+        mockBookingExists(client, 123, 1, 999);
         mockEventDoesNotExist(client);
 
         await expect(service.cancelBooking(1, 123))
@@ -89,15 +89,16 @@ describe("BookingsService.cancelBooking", () => {
 
         expect(client.query).toHaveBeenCalledTimes(3);
 
-        expectNthQuery(client, 1, "FROM bookings", [123]);
-        expectNthQuery(client, 2, "FROM users", [1]);
+        expectNthQuery(client, 1, "FROM users", [1]);
+        expectNthQuery(client, 1, "FOR UPDATE", [1]);
+        expectNthQuery(client, 2, "FROM bookings", [123]);
         expectNthQuery(client, 3, "FROM events", [999]);
     });
 
 
     it("should reject cancellation by a non-booking owner without deleting the booking", async () => {
-        mockBookingExists(client, 123, 1, 1);
         mockUserExists(client, 2);
+        mockBookingExists(client, 123, 1, 1);
 
         await expect(service.cancelBooking(2, 123))
             .rejects.toThrow(
@@ -105,8 +106,10 @@ describe("BookingsService.cancelBooking", () => {
             );
 
         expect(client.query).toHaveBeenCalledTimes(2);
-        expectNthQuery(client, 1, "FROM bookings", [123]);
-        expectNthQuery(client, 2, "FROM users", [2]);
+
+        expectNthQuery(client, 1, "FROM users", [2]);
+        expectNthQuery(client, 1, "FOR UPDATE", [2]);
+        expectNthQuery(client, 2, "FROM bookings", [123]);
 
         expect(
             client.query.mock.calls.some(([query]: [string]) =>
@@ -115,5 +118,19 @@ describe("BookingsService.cancelBooking", () => {
         ).toBe(false);
     });
 
+    it("should reject when the booking disappears before deletion", async () => {
+        mockUserExists(client, 1);
+        mockBookingExists(client, 123, 1, 1);
+        mockEventExists(client, 1);
+
+        // Simulate DELETE ... RETURNING affecting zero rows.
+        client.query.mockResolvedValueOnce({ rows: [] });
+
+        await expect(service.cancelBooking(1, 123))
+            .rejects.toThrow("Booking 123 not found");
+
+        expect(client.query).toHaveBeenCalledTimes(4);
+        expectNthQuery(client, 4, "DELETE FROM bookings", [123]);
+    });
 });
 
