@@ -88,6 +88,43 @@ describe("BookingsService integration", () => {
         ]);
     });
 
+    it("rejects duplicate user-event pairs at the database level", async () => {
+        const userId = BOOKING_SERVICE_INTEGRATION_USERS.primary;
+        const eventId = BOOKING_SERVICE_INTEGRATION_EVENTS.standard.id;
+
+        await db.query(
+            `
+            INSERT INTO bookings (user_id, event_id)
+            VALUES ($1, $2);
+        `,
+            [userId, eventId],
+        );
+
+        await expect(
+            db.query(
+                `
+                INSERT INTO bookings (user_id, event_id)
+                VALUES ($1, $2);
+            `,
+                [userId, eventId],
+            ),
+        ).rejects.toMatchObject({
+            code: "23505",
+        });
+
+        const result = await db.query(
+            `
+                SELECT id
+                FROM bookings
+                WHERE user_id = $1
+                  AND event_id = $2;
+            `,
+            [userId, eventId],
+        );
+
+        expect(result.rows).toHaveLength(1);
+    });
+
     it("rolls back changes when a transaction fails", async () => {
         const userId = BOOKING_SERVICE_INTEGRATION_USERS.primary;
         const eventId = BOOKING_SERVICE_INTEGRATION_EVENTS.rollback.id;
