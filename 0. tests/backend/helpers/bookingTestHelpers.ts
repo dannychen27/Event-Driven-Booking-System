@@ -48,9 +48,27 @@ export const mockDuplicateBooking = (
 export const mockBookingCount = (
     client: any,
     count: number,
+    holdCount: number = 0,
 ) => {
     client.query.mockResolvedValueOnce({
-        rows: [{ booking_count: String(count) }],
+        rows: [{
+            booking_count: String(count),
+            hold_count: String(holdCount),
+        }],
+    });
+};
+
+
+export const mockNoActiveHold = (client: any) => {
+    client.query.mockResolvedValueOnce({
+        rows: [],
+    });
+};
+
+
+export const mockNoHoldScheduleConflict = (client: any) => {
+    client.query.mockResolvedValueOnce({
+        rows: [],
     });
 };
 
@@ -64,10 +82,10 @@ export const mockNoScheduleConflict = (client: any) => {
 
 export const mockScheduleConflict = (
     client: any,
-    bookingId: number,
+    eventId: number,
 ) => {
     client.query.mockResolvedValueOnce({
-        rows: [{ id: bookingId }],
+        rows: [{ event_id: eventId }],
     });
 };
 
