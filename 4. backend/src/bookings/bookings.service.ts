@@ -10,12 +10,17 @@ import {
   BookingId,
   BookingHold,
   BookingHoldId,
-  BookingEventId,
-  EventCapacityCount,
 } from '../types/bookings/bookings.types';
-import { EventLock } from '../types/events/events.types';
 import { UserId } from '../types/users/users.types';
 import { DatabaseService } from '../database/database.service';
+import {
+    assertEventHasCapacity,
+    assertNoActiveHoldConflict,
+    assertNoBookingConflict,
+    expireStaleHold,
+    lockEvent,
+    lockUser,
+} from './bookings.service.helpers';
 
 @Injectable()
 export class BookingsService {
@@ -24,36 +29,10 @@ export class BookingsService {
   async createBooking(user_id: number, event_id: number) {
     return this.db.transaction(async client => {
         // Lock user first to serialize booking operations for this user.
-        const userResult = await client.query<UserId>(
-            `
-            SELECT id
-            FROM users
-            WHERE id = $1
-            FOR UPDATE;
-        `,
-            [user_id],
-        );
-
-        if (userResult.rows.length === 0) {
-            throw new NotFoundException(`User ${user_id} not found`);
-        }
+        await lockUser(client, user_id);
 
         // Lock event after user.
-        const eventResult = await client.query<EventLock>(
-            `
-            SELECT id, start_time, end_time, capacity
-            FROM events
-            WHERE id = $1
-            FOR UPDATE;
-        `,
-            [event_id],
-        );
-
-        if (eventResult.rows.length === 0) {
-            throw new NotFoundException(`Event ${event_id} not found`);
-        }
-
-        const event = eventResult.rows[0];
+        const event = await lockEvent(client, event_id);
 
         // Check duplicate booking.
         const bookingResult = await client.query<BookingId>(
@@ -92,73 +71,13 @@ export class BookingsService {
         }
 
         // Check capacity against bookings and unexpired active holds.
-        const capacityResult = await client.query<EventCapacityCount>(
-            `
-        SELECT
-            (
-                SELECT COUNT(*)
-                FROM bookings
-                WHERE event_id = $1
-            ) AS booking_count,
-            (
-                SELECT COUNT(*)
-                FROM booking_holds
-                WHERE event_id = $1
-                  AND status = 'active'
-                  AND expires_at > statement_timestamp()
-            ) AS hold_count;
-        `,
-            [event_id],
-        );
-
-        const bookingCount = Number(capacityResult.rows[0].booking_count);
-        const holdCount = Number(capacityResult.rows[0].hold_count);
-
-        if (bookingCount + holdCount >= event.capacity) {
-            throw new ConflictException(`Event ${event_id} is fully booked`);
-        }
+        await assertEventHasCapacity(client, event_id, event.capacity);
 
         // Check overlapping bookings.
-        const bookingConflictResult = await client.query<BookingEventId>(
-            `
-            SELECT b.event_id
-            FROM bookings b
-            JOIN events e ON e.id = b.event_id
-            WHERE b.user_id = $1
-              AND e.start_time < $2
-              AND e.end_time > $3
-            LIMIT 1;
-        `,
-            [user_id, event.end_time, event.start_time],
-        );
-
-        if (bookingConflictResult.rows.length > 0) {
-            throw new ConflictException(
-                `User ${user_id} has a conflicting booking with event ${bookingConflictResult.rows[0].event_id}`,
-            );
-        }
+        await assertNoBookingConflict(client, user_id, event, true);
 
         // Check overlapping active holds.
-        const holdConflictResult = await client.query<BookingHoldId>(
-            `
-            SELECT h.id
-            FROM booking_holds h
-            JOIN events e ON e.id = h.event_id
-            WHERE h.user_id = $1
-              AND h.status = 'active'
-              AND h.expires_at > statement_timestamp()
-              AND e.start_time < $2
-              AND e.end_time > $3
-            LIMIT 1;
-        `,
-            [user_id, event.end_time, event.start_time],
-        );
-
-        if (holdConflictResult.rows.length > 0) {
-            throw new ConflictException(
-                `User ${user_id} has a conflicting active hold`,
-            );
-        }
+        await assertNoActiveHoldConflict(client, user_id, event);
 
         // Insert booking.
         const result = await client.query<Booking>(
@@ -177,50 +96,14 @@ export class BookingsService {
   async createHold(user_id: number, event_id: number) {
         return this.db.transaction(async client => {
             // Lock user first to serialize booking operations for this user.
-            const userResult = await client.query<UserId>(
-                `
-            SELECT id
-            FROM users
-            WHERE id = $1
-            FOR UPDATE;
-          `,
-                [user_id],
-            );
-
-            if (userResult.rows.length === 0) {
-                throw new NotFoundException(`User ${user_id} not found`);
-            }
+            await lockUser(client, user_id);
 
             // Lock event after user.
-            const eventResult = await client.query<EventLock>(
-                `
-            SELECT id, start_time, end_time, capacity
-            FROM events
-            WHERE id = $1
-            FOR UPDATE;
-          `,
-                [event_id],
-            );
-
-            if (eventResult.rows.length === 0) {
-                throw new NotFoundException(`Event ${event_id} not found`);
-            }
-
-            const event = eventResult.rows[0];
+            const event = await lockEvent(client, event_id);
 
             // Expire this user's stale hold for this event.
             // This also prevents the partial unique index from blocking a replacement.
-            await client.query(
-                `
-                UPDATE booking_holds
-                SET status = 'expired'
-                WHERE user_id = $1
-                  AND event_id = $2
-                  AND status = 'active'
-                  AND expires_at <= statement_timestamp();
-              `,
-                [user_id, event_id],
-            );
+            await expireStaleHold(client, user_id, event_id);
 
             // Reject an existing booking for this event.
             const bookingResult = await client.query<BookingId>(
@@ -259,73 +142,13 @@ export class BookingsService {
             }
 
             // Check capacity against bookings and unexpired active holds.
-            const capacityResult = await client.query<EventCapacityCount>(
-                `
-            SELECT
-              (
-                SELECT COUNT(*)
-                FROM bookings
-                WHERE event_id = $1
-              ) AS booking_count,
-              (
-                SELECT COUNT(*)
-                FROM booking_holds
-                WHERE event_id = $1
-                  AND status = 'active'
-                  AND expires_at > statement_timestamp()
-              ) AS hold_count;
-            `,
-                [event_id],
-            );
-
-            const bookingCount = Number(capacityResult.rows[0].booking_count);
-            const holdCount = Number(capacityResult.rows[0].hold_count);
-
-            if (bookingCount + holdCount >= event.capacity) {
-                throw new ConflictException(`Event ${event_id} is fully booked`);
-            }
+            await assertEventHasCapacity(client, event_id, event.capacity);
 
             // Check overlapping bookings.
-            const bookingConflictResult = await client.query<BookingId>(
-                `
-                SELECT b.id
-                FROM bookings b
-                JOIN events e ON e.id = b.event_id
-                WHERE b.user_id = $1
-                  AND e.start_time < $2
-                  AND e.end_time > $3
-                LIMIT 1;
-              `,
-                [user_id, event.end_time, event.start_time],
-            );
-
-            if (bookingConflictResult.rows.length > 0) {
-                throw new ConflictException(
-                    `User ${user_id} has a conflicting booking`,
-                );
-            }
+            await assertNoBookingConflict(client, user_id, event, false);
 
             // Check overlapping active holds.
-            const holdConflictResult = await client.query<BookingHoldId>(
-                `
-                SELECT h.id
-                FROM booking_holds h
-                JOIN events e ON e.id = h.event_id
-                WHERE h.user_id = $1
-                  AND h.status = 'active'
-                  AND h.expires_at > statement_timestamp()
-                  AND e.start_time < $2
-                  AND e.end_time > $3
-                LIMIT 1;
-              `,
-                [user_id, event.end_time, event.start_time],
-            );
-
-            if (holdConflictResult.rows.length > 0) {
-                throw new ConflictException(
-                    `User ${user_id} has a conflicting active hold`,
-                );
-            }
+            await assertNoActiveHoldConflict(client, user_id, event);
 
             // Create a hold that expires 10 minutes after insertion.
             const result = await client.query<BookingHold>(
@@ -350,22 +173,105 @@ export class BookingsService {
         });
     }
 
+  async confirmHold(user_id: number, hold_id: number) {
+    return this.db.transaction(async client => {
+        // Look up the hold to discover its owner and event.
+        // This is intentionally non-locking; locks follow user -> event -> hold.
+        const holdReferenceResult = await client.query<BookingHold>(
+            `
+          SELECT id, user_id, event_id, created_at, expires_at, status
+          FROM booking_holds
+          WHERE id = $1;
+        `,
+            [hold_id],
+        );
+
+        if (holdReferenceResult.rows.length === 0) {
+            throw new NotFoundException(`Booking hold ${hold_id} not found`);
+        }
+
+        const holdReference = holdReferenceResult.rows[0];
+
+        // Check ownership before acquiring the remaining locks.
+        if (holdReference.user_id !== user_id) {
+            throw new ForbiddenException(
+                `User ${user_id} is not authorized to confirm booking hold ${hold_id}`,
+            );
+        }
+
+        // Lock user first to serialize booking operations for this user.
+        await lockUser(client, user_id);
+
+        // Lock event after user.
+        await lockEvent(client, holdReference.event_id);
+
+        // Lock and re-read the hold after acquiring the user and event locks.
+        const holdResult = await client.query<BookingHold>(
+            `
+          SELECT id, user_id, event_id, created_at, expires_at, status
+          FROM booking_holds
+          WHERE id = $1
+          FOR UPDATE;
+        `,
+            [hold_id],
+        );
+
+        if (holdResult.rows.length === 0) {
+            throw new NotFoundException(`Booking hold ${hold_id} not found`);
+        }
+
+        const hold = holdResult.rows[0];
+
+        if (hold.user_id !== user_id) {
+            throw new ForbiddenException(
+                `User ${user_id} is not authorized to confirm booking hold ${hold_id}`,
+            );
+        }
+
+        if (hold.status !== 'active') {
+            throw new ConflictException(
+                `Booking hold ${hold_id} is no longer active`,
+            );
+        }
+
+        // Use PostgreSQL's current clock after acquiring the hold lock.
+        // This catches a hold that expires while the transaction waits for locks.
+        const updateResult = await client.query<BookingHoldId>(
+            `
+          UPDATE booking_holds
+          SET status = 'confirmed'
+          WHERE id = $1
+            AND status = 'active'
+            AND expires_at > clock_timestamp()
+          RETURNING id;
+        `,
+            [hold_id],
+        );
+
+        if (updateResult.rows.length === 0) {
+            throw new ConflictException(
+                `Booking hold ${hold_id} has expired`,
+            );
+        }
+
+        // Convert the hold into a booking within the same transaction.
+        const bookingResult = await client.query<Booking>(
+            `
+          INSERT INTO bookings (user_id, event_id)
+          VALUES ($1, $2)
+          RETURNING id, user_id, event_id, created_at;
+        `,
+            [user_id, hold.event_id],
+        );
+
+        return bookingResult.rows[0];
+    });
+  }
+
   async cancelBooking(user_id: number, booking_id: number) {
     return this.db.transaction(async client => {
       // Lock user first to serialize booking operations for this user.
-      const userResult = await client.query<UserId>(
-          `
-            SELECT id
-            FROM users
-            WHERE id = $1
-              FOR UPDATE;
-          `,
-          [user_id],
-      );
-
-      if (userResult.rows.length === 0) {
-        throw new NotFoundException(`User ${user_id} not found`);
-      }
+      await lockUser(client, user_id);
 
       // Check if booking exists.
       const bookingResult = await client.query<Booking>(
@@ -390,19 +296,7 @@ export class BookingsService {
 
       // Lock event after user.
       const event_id = bookingResult.rows[0].event_id;
-      const eventResult = await client.query<EventLock>(
-        `
-                SELECT id, start_time, end_time, capacity
-                FROM events
-                WHERE id = $1
-                FOR UPDATE;
-            `,
-        [event_id],
-      );
-
-      if (eventResult.rows.length === 0) {
-        throw new NotFoundException(`Event ${event_id} not found`);
-      }
+      await lockEvent(client, event_id);
 
       // Delete booking.
       const oldBookingResult = await client.query<Booking>(

@@ -48,4 +48,9 @@ export type BookingEventId = {
   event_id: number;
 };
 
+export type BookingHoldStatusRecord = {
+  status: BookingHoldStatus;
+  expires_at: string | Date;
+};
+
 export type EventCapacityCount = EventBookingCount & EventHoldCount;
