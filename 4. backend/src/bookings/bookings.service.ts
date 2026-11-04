@@ -25,7 +25,8 @@ export class BookingsService {
         `
                 SELECT id
                 FROM users
-                WHERE id = $1;
+                WHERE id = $1
+                    FOR UPDATE;
             `,
         [user_id],
       );

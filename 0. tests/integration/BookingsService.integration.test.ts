@@ -1,3 +1,6 @@
+import { ConflictException } from "@nestjs/common";
+import type { PoolClient } from "pg";
+
 import { BookingsService } from "../../4. backend/src/bookings/bookings.service";
 import { DatabaseService } from "../../4. backend/src/database/database.service";
 import {
@@ -6,6 +9,10 @@ import {
     BOOKING_SERVICE_INTEGRATION_EVENTS,
     BOOKING_SERVICE_INTEGRATION_USERS,
 } from "./fixtures/bookings/bookingServiceFixtures";
+import {
+    createConflictCheckBarrier,
+    createSynchronizedClient,
+} from "./helpers/bookingConcurrencyTestHelpers";
 
 
 describe("BookingsService integration", () => {
@@ -146,6 +153,69 @@ describe("BookingsService integration", () => {
         const result = await db.query(
             `SELECT id FROM bookings WHERE event_id = $1`,
             [eventId],
+        );
+
+        expect(result.rows).toHaveLength(1);
+    });
+
+
+    it("prevents concurrent overlapping bookings for the same user", async () => {
+        const userId = BOOKING_SERVICE_INTEGRATION_USERS.primary;
+        const eventA = BOOKING_SERVICE_INTEGRATION_EVENTS.overlappingA;
+        const eventB = BOOKING_SERVICE_INTEGRATION_EVENTS.overlappingB;
+
+        const originalTransaction = db.transaction.bind(db);
+        const transactionSpy = jest.spyOn(db, "transaction");
+
+        const waitAtBarrier = createConflictCheckBarrier();
+
+        transactionSpy.mockImplementation(
+            async <T>(
+                callback: (client: PoolClient) => Promise<T>,
+            ): Promise<T> => {
+                return originalTransaction(client =>
+                    callback(createSynchronizedClient(client, waitAtBarrier)),
+                );
+            },
+        );
+
+        let results: PromiseSettledResult<Awaited<ReturnType<typeof service.createBooking>>>[];
+        try {
+            results = await Promise.allSettled([
+                service.createBooking(userId, eventA.id),
+                service.createBooking(userId, eventB.id),
+            ]);
+        } finally {
+            transactionSpy.mockRestore();
+        }
+
+        const fulfilled = results.filter(
+            result => result.status === "fulfilled",
+        );
+
+        const rejected = results.filter(
+            result => result.status === "rejected",
+        );
+
+        expect(fulfilled).toHaveLength(1);
+        expect(rejected).toHaveLength(1);
+
+        const rejection = rejected[0];
+
+        if (rejection.status !== "rejected") {
+            throw new Error("Expected one overlapping booking to be rejected");
+        }
+
+        expect(rejection.reason).toBeInstanceOf(ConflictException);
+
+        const result = await db.query(
+            `
+            SELECT id, user_id, event_id
+            FROM bookings
+            WHERE user_id = $1
+              AND event_id = ANY($2::int[]);
+        `,
+            [userId, [eventA.id, eventB.id]],
         );
 
         expect(result.rows).toHaveLength(1);
