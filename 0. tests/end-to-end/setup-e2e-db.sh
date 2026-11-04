@@ -43,6 +43,14 @@ psql \
   --set=ON_ERROR_STOP=1 \
   --file="$PROJECT_ROOT/2. data model/schema.sql"
 
+# Apply indexes.
+psql \
+  --host="$DB_HOST" \
+  --port="$DB_PORT" \
+  --dbname="$DB_NAME" \
+  --set=ON_ERROR_STOP=1 \
+  --file="$PROJECT_ROOT/2. data model/indices/indices.sql"
+
 # Seed deterministic E2E data.
 psql \
   --host="$DB_HOST" \

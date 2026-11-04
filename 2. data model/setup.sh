@@ -15,6 +15,7 @@ dropdb --if-exists "$DB_NAME"
 createdb "$DB_NAME"
 
 psql "$DB_NAME" -f "schema.sql"
+psql "$DB_NAME" -f "indices/indices.sql"
 psql "$DB_NAME" -f "seed data/seed.sql"
 
 echo "Development database ready."
