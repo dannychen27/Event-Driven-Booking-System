@@ -66,6 +66,9 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci --prefix "3. frontend"
 
+      - name: Run database safety tests
+        run: bash "0. tests/database-safety/database-setup-safety.test.sh"
+
       - name: Run unit tests with coverage
         run: npm run coverage
 
