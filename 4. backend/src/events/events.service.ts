@@ -37,15 +37,28 @@ export class EventsService {
 
     const availabilityResult = await this.db.query<EventAvailability>(
       `
-            SELECT
-                e.capacity,
-                COUNT(b.id)::int AS booked,
-                (e.capacity - COUNT(b.id))::int AS available
-            FROM events e
-            LEFT JOIN bookings b
-                ON b.event_id = e.id
-            WHERE e.id = $1
-            GROUP BY e.id, e.capacity;
+          SELECT
+            e.capacity,
+            COALESCE(b.booking_count, 0)::int AS booked,
+            (
+              e.capacity
+                - COALESCE(b.booking_count, 0)
+                - COALESCE(h.hold_count, 0)
+              )::int AS available
+          FROM events e
+                 LEFT JOIN (
+            SELECT event_id, COUNT(*)::int AS booking_count
+            FROM bookings
+            GROUP BY event_id
+          ) b ON b.event_id = e.id
+                 LEFT JOIN (
+            SELECT event_id, COUNT(*)::int AS hold_count
+            FROM booking_holds
+            WHERE status = 'active'
+              AND expires_at > statement_timestamp()
+            GROUP BY event_id
+          ) h ON h.event_id = e.id
+          WHERE e.id = $1;
         `,
       [event_id],
     );

@@ -34,7 +34,23 @@ describe("EventsService.getAvailability", () => {
         expect(db.query).toHaveBeenCalledTimes(2);
 
         expectNthQuery(db, 1, "FROM events", [1]);
-        expectNthQuery(db, 2, "LEFT JOIN bookings", [1]);
+        expectNthQuery(db, 2, "FROM bookings", [1]);
+
+        const availabilityQuery = db.query.mock.calls[1][0] as string;
+
+        // Bookings and holds must be aggregated independently.
+        expect(availabilityQuery).toMatch(
+            /SELECT event_id, COUNT\(\*\)::int AS booking_count\s+FROM bookings\s+GROUP BY event_id/i,
+        );
+
+        expect(availabilityQuery).toMatch(
+            /SELECT event_id, COUNT\(\*\)::int AS hold_count\s+FROM booking_holds\s+WHERE status = 'active'\s+AND expires_at > statement_timestamp\(\)\s+GROUP BY event_id/i,
+        );
+
+        // Availability subtracts both confirmed bookings and active holds.
+        expect(availabilityQuery).toMatch(
+            /e\.capacity\s*-\s*COALESCE\(b\.booking_count,\s*0\)\s*-\s*COALESCE\(h\.hold_count,\s*0\)/i,
+        );
     });
 
     it("should return all spots as available when the event has no bookings", async () => {
@@ -52,7 +68,7 @@ describe("EventsService.getAvailability", () => {
         expect(db.query).toHaveBeenCalledTimes(2);
 
         expectNthQuery(db, 1, "FROM events", [1]);
-        expectNthQuery(db, 2, "LEFT JOIN bookings", [1]);
+        expectNthQuery(db, 2, "FROM bookings", [1]);
     });
 
     it("should reject the request when the event does not exist", async () => {
