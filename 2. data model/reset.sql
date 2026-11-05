@@ -7,6 +7,7 @@
 -- ============================================
 
 -- Drop tables in reverse dependency order.
+DROP TABLE IF EXISTS booking_holds;
 DROP TABLE IF EXISTS bookings;
 DROP TABLE IF EXISTS events;
 DROP TABLE IF EXISTS venues;
@@ -17,4 +18,4 @@ DROP TABLE IF EXISTS users;
 -- DATABASE SETUP
 -- ============================================
 
-\ir "setup.sql"
+\ir 'setup.sql'

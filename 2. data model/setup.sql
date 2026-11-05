@@ -10,13 +10,13 @@
 -- ============================================
 
 -- 1. Create schema / tables
-\ir "schema.sql"
+\ir 'schema.sql'
 
 -- 2. Create indices
-\ir "indices/indices.sql"
+\ir 'indices/indices.sql'
 
 -- 3. Insert seed data
-\ir "seed data/seed.sql"
+\ir 'seed data/seed.sql'
 
 
 -- ============================================
@@ -24,10 +24,10 @@
 -- ============================================
 
 -- 4. INSERT constraint tests
-\ir "tests/constraint tests/1. insert_constraint_tests.sql"
+\ir 'tests/constraint tests/1. insert_constraint_tests.sql'
 
 -- 5. UPDATE constraint tests
-\ir "tests/constraint tests/2. update_constraint_tests.sql"
+\ir 'tests/constraint tests/2. update_constraint_tests.sql'
 
 -- 6. DELETE constraint tests
-\ir "tests/constraint tests/3. delete_constraint_tests.sql"
+\ir 'tests/constraint tests/3. delete_constraint_tests.sql'

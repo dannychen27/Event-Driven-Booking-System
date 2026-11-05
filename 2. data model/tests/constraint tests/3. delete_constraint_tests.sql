@@ -20,10 +20,14 @@ WHERE id = 1;
 -- BOOKINGS --
 
 -- a. booking has no dependent rows
--- should SUCCEED: nothing references bookings
+-- should SUCCEED: nothing references bookings.
+-- Roll back the successful deletion to preserve seed data.
+BEGIN;
+
 DELETE FROM bookings
 WHERE id = 1;
--- it should succeed: nothing references bookings
+
+ROLLBACK;
 
 
 -- VENUES --

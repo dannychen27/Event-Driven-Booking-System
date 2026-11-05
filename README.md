@@ -378,7 +378,7 @@ The endpoint returns a `400 Bad Request` if:
 
 ## Database Setup
 
-- `setup.sh` — drops and recreates `booking_system`, then loads the schema and seed data. It does not create indexes or run constraint tests.
+- `setup.sh` — drops and recreates `booking_system`, then loads the schema, indexes, and development seed data. It does not run constraint tests.
 - `setup.sql` — loads the schema, indexes, seed data, and constraint tests into an existing database.
 - `schema.sql` — defines the database schema.
 - `seed data/seed.sql` — provides seed data for development and testing.
