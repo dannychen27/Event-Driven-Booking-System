@@ -20,3 +20,37 @@ export type BookingHistoryEntry = Booking & {
   venue_name: string | null;
   venue_address: string | null;
 };
+
+export type BookingHoldId = {
+  id: number;
+};
+
+export type BookingHoldStatus =
+    | 'active'
+    | 'confirmed'
+    | 'expired'
+    | 'cancelled';
+
+export type BookingHold = {
+  id: number;
+  user_id: number;
+  event_id: number;
+  created_at: string | Date;
+  expires_at: string | Date;
+  status: BookingHoldStatus;
+};
+
+export type EventHoldCount = {
+  hold_count: string;
+};
+
+export type BookingEventId = {
+  event_id: number;
+};
+
+export type BookingHoldStatusRecord = {
+  status: BookingHoldStatus;
+  expires_at: string | Date;
+};
+
+export type EventCapacityCount = EventBookingCount & EventHoldCount;

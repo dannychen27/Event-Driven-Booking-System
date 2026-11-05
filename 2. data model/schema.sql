@@ -41,3 +41,13 @@ CREATE TABLE bookings (
     UNIQUE (user_id, event_id)
 );
 
+CREATE TABLE booking_holds (
+    id          SERIAL          PRIMARY KEY,
+    user_id     INT             NOT NULL REFERENCES users(id),
+    event_id    INT             NOT NULL REFERENCES events(id),
+    created_at  TIMESTAMPTZ     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    expires_at  TIMESTAMPTZ     NOT NULL,
+    status      VARCHAR(20)     NOT NULL DEFAULT 'active'
+                                CHECK (status IN ('active', 'confirmed', 'expired', 'cancelled')),
+    CHECK (expires_at > created_at)
+);

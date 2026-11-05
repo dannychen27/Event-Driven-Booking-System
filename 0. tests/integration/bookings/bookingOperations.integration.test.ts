@@ -1,21 +1,27 @@
-import { ConflictException, NotFoundException } from "@nestjs/common";
+import {
+    ConflictException,
+    NotFoundException,
+} from "@nestjs/common";
 import type { PoolClient } from "pg";
 
-import { BookingsService } from "../../4. backend/src/bookings/bookings.service";
-import { DatabaseService } from "../../4. backend/src/database/database.service";
+import { BookingsService } from "../../../4. backend/src/bookings/bookings.service";
+import { DatabaseService } from "../../../4. backend/src/database/database.service";
 import {
     BOOKING_SERVICE_INTEGRATION_EVENT_IDS,
     BOOKING_SERVICE_INTEGRATION_EVENT_LIST,
     BOOKING_SERVICE_INTEGRATION_EVENTS,
     BOOKING_SERVICE_INTEGRATION_USERS,
-} from "./fixtures/bookings/bookingServiceFixtures";
+} from "../fixtures/bookings/bookingServiceFixtures";
+import {
+    expectOneFulfilledAndOneRejected,
+} from "../helpers/bookingServiceIntegrationTestHelpers";
 import {
     createConflictCheckBarrier,
     createSynchronizedClient,
-} from "./helpers/bookingConcurrencyTestHelpers";
+} from "../helpers/bookingConcurrencyTestHelpers";
 
 
-describe("BookingsService integration", () => {
+describe("booking operations", () => {
     let db: DatabaseService;
     let service: BookingsService;
 
@@ -44,12 +50,22 @@ describe("BookingsService integration", () => {
 
     afterEach(async () => {
         await db.query(
+            `DELETE FROM booking_holds WHERE event_id = ANY($1::int[])`,
+            [BOOKING_SERVICE_INTEGRATION_EVENT_IDS],
+        );
+
+        await db.query(
             `DELETE FROM bookings WHERE event_id = ANY($1::int[])`,
             [BOOKING_SERVICE_INTEGRATION_EVENT_IDS],
         );
     });
 
     afterAll(async () => {
+        await db.query(
+            `DELETE FROM booking_holds WHERE event_id = ANY($1::int[])`,
+            [BOOKING_SERVICE_INTEGRATION_EVENT_IDS],
+        );
+
         await db.query(
             `DELETE FROM bookings WHERE event_id = ANY($1::int[])`,
             [BOOKING_SERVICE_INTEGRATION_EVENT_IDS],
@@ -166,24 +182,13 @@ describe("BookingsService integration", () => {
             service.createBooking(secondaryUser, eventId),
         ]);
 
-        const fulfilled = results.filter(
-            result => result.status === "fulfilled",
-        );
+        expectOneFulfilledAndOneRejected(results);
 
-        const rejected = results.filter(
-            result => result.status === "rejected",
-        );
-
-        expect(fulfilled).toHaveLength(1);
-        expect(rejected).toHaveLength(1);
-
-        const rejection = rejected[0];
-
-        if (rejection.status !== "rejected") {
-            throw new Error("Expected one concurrent booking to be rejected");
-        }
-
-        expect(rejection.reason.message).toBe(`Event ${eventId} is fully booked`);
+        expect(results.find(result => result.status === "rejected")).toMatchObject({
+            reason: {
+                message: `Event ${eventId} is fully booked`,
+            },
+        });
 
         const result = await db.query(
             `SELECT id FROM bookings WHERE event_id = $1`,
@@ -204,24 +209,14 @@ describe("BookingsService integration", () => {
             service.cancelBooking(userId, booking.id),
         ]);
 
-        const fulfilled = results.filter(
-            result => result.status === "fulfilled",
-        );
+        expectOneFulfilledAndOneRejected(results);
 
-        const rejected = results.filter(
-            result => result.status === "rejected",
-        );
-
-        expect(fulfilled).toHaveLength(1);
-        expect(rejected).toHaveLength(1);
-
-        const rejection = rejected[0];
-
-        if (rejection.status !== "rejected") {
-            throw new Error("Expected one concurrent cancellation to be rejected");
-        }
-
-        expect(rejection.reason).toBeInstanceOf(NotFoundException);
+        expect(results.find(result => result.status === "rejected"))
+            .toEqual(
+                expect.objectContaining({
+                    reason: expect.any(NotFoundException),
+                }),
+            );
 
         const result = await db.query(
             `SELECT id FROM bookings WHERE id = $1`,
@@ -262,24 +257,13 @@ describe("BookingsService integration", () => {
             transactionSpy.mockRestore();
         }
 
-        const fulfilled = results.filter(
-            result => result.status === "fulfilled",
+        expectOneFulfilledAndOneRejected(results);
+
+        expect(results.find(result => result.status === "rejected")).toEqual(
+            expect.objectContaining({
+                reason: expect.any(ConflictException),
+            }),
         );
-
-        const rejected = results.filter(
-            result => result.status === "rejected",
-        );
-
-        expect(fulfilled).toHaveLength(1);
-        expect(rejected).toHaveLength(1);
-
-        const rejection = rejected[0];
-
-        if (rejection.status !== "rejected") {
-            throw new Error("Expected one overlapping booking to be rejected");
-        }
-
-        expect(rejection.reason).toBeInstanceOf(ConflictException);
 
         const result = await db.query(
             `

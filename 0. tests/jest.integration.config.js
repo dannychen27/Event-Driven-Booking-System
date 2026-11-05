@@ -14,6 +14,8 @@ module.exports = {
 
     testEnvironment: "node",
 
+    maxWorkers: 1,
+
     testRegex: "0\\. tests/integration/.*\\.integration\\.test\\.ts$",
 
     moduleFileExtensions: ["js", "json", "ts"],

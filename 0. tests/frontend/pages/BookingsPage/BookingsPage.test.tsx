@@ -2,20 +2,20 @@ import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 
-import { bookingHistoryFixture } from "../fixtures/bookings/bookingFixtures";
+import { bookingHistoryFixture } from "../../fixtures/bookings/bookingFixtures";
 
-import Button from "../../../3. frontend/src/components/ui/buttons/Button";
-import BookingsPage from "../../../3. frontend/src/pages/BookingsPage";
-import { getBookingHistory } from "../../../3. frontend/src/api/bookings";
-import type { Booking } from "../../../3. frontend/src/types/bookings/Booking.ts";
+import Button from "../../../../3. frontend/src/components/ui/buttons/Button";
+import BookingsPage from "../../../../3. frontend/src/pages/BookingsPage";
+import { getBookingHistory } from "../../../../3. frontend/src/api/bookings";
+import type { Booking } from "../../../../3. frontend/src/types/bookings/Booking.ts";
 
 
-vi.mock("../../../3. frontend/src/api/bookings.ts", () => ({
+vi.mock("../../../../3. frontend/src/api/bookings.ts", () => ({
     getBookingHistory: vi.fn(),
 }));
 
 
-vi.mock("../../../3. frontend/src/components/cards/BookingCard.tsx", () => (
+vi.mock("../../../../3. frontend/src/components/cards/BookingCard.tsx", () => (
     {
         default: (
             {

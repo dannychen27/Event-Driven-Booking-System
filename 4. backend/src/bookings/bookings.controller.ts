@@ -13,6 +13,22 @@ export class BookingsController {
     return this.bookingsService.createBooking(body.user_id, Number(event_id));
   }
 
+  @Post('booking-holds/:id/confirm')
+  confirmHold(
+    @Param('id') hold_id: string,
+    @Body() body: { user_id: number },
+  ) {
+    return this.bookingsService.confirmHold(body.user_id, Number(hold_id));
+  }
+
+  @Delete('booking-holds/:id')
+  cancelHold(
+    @Param('id') hold_id: string,
+    @Body() body: { user_id: number },
+  ) {
+    return this.bookingsService.cancelHold(body.user_id, Number(hold_id));
+  }
+
   @Delete('bookings/:id')
   cancelBooking(
     @Param('id') booking_id: string,
