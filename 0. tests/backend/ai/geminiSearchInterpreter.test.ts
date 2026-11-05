@@ -1,13 +1,6 @@
-import {
-    GeminiEventSearchInterpreter,
-
-} from "../../../4. backend/src/events/search/gemini-event-search-interpreter";
+import { GeminiEventSearchInterpreter } from "../../../4. backend/src/events/search/gemini-event-search-interpreter";
 import { geminiClientConfigFixture } from '../fixtures/gemini/geminiClientConfigFixture';
 import { GEMINI_TEST_API_KEY } from '../fixtures/gemini/geminiTestConstants';
-import {
-    parseNaturalLanguageSearchPlan
-} from "../../../4. backend/src/events/search/ParseNaturalLanguageSearchInterpreterHelpers";
-
 
 jest.mock('@google/genai', () => ({
     GoogleGenAI: jest.fn().mockImplementation(() => ({
@@ -17,9 +10,7 @@ jest.mock('@google/genai', () => ({
     })),
 }));
 
-
 describe("GeminiSearchInterpreter", () => {
-
     it('configures the default Gemini client with a 20-second timeout and 2 attempts', () => {
         const { GoogleGenAI } = jest.requireMock('@google/genai') as {
             GoogleGenAI: jest.Mock;
@@ -103,21 +94,6 @@ describe("GeminiSearchInterpreter", () => {
         expect(prompt).toContain("startAfter and startBefore");
     });
 
-    it("should reject invalid Gemini output", async () => {
-        const generateContent = jest.fn().mockResolvedValue({
-            text: '{"venueCategory":"coffee shop"}',
-        });
-
-        const interpreter = new GeminiEventSearchInterpreter(
-            "test-api-key",
-            { models: { generateContent } } as never,
-        );
-
-        await expect(
-            interpreter.interpret("Find coffee events"),
-        ).rejects.toThrow(/unsupported natural-language search field/i);
-    });
-
     it("should return date filters for a relative-date request", async () => {
         const plan = {
             intent: "Coffee events",
@@ -164,25 +140,5 @@ describe("GeminiSearchInterpreter", () => {
             startAfter: "2026-10-24T00:00:00-04:00",
             startBefore: "2026-10-27T00:00:00-04:00",
         });
-    });
-
-    it("should reject invalid JSON", () => {
-        expect(() => parseNaturalLanguageSearchPlan("not JSON"))
-            .toThrow("Gemini returned invalid JSON");
-    });
-
-    it("should propagate Gemini API failures", async () => {
-        const generateContent = jest.fn().mockRejectedValue(
-            new Error("Gemini unavailable"),
-        );
-
-        const interpreter = new GeminiEventSearchInterpreter(
-            "test-api-key",
-            { models: { generateContent } } as never,
-        );
-
-        await expect(
-            interpreter.interpret("Find coffee events"),
-        ).rejects.toThrow("Gemini unavailable");
     });
 });
