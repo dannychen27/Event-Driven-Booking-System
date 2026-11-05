@@ -195,7 +195,20 @@ function countTestDeclarations(sourceFile) {
     return count;
 }
 
+function countShellTestCases(filePath) {
+    const source = fs.readFileSync(filePath, "utf8");
+
+    return source
+        .split(/\r?\n/)
+        .filter((line) => /^\s*#\s*TEST CASE:\s+\S/.test(line))
+        .length;
+}
+
 function countDeclarations(filePath) {
+    if (filePath.toLowerCase().endsWith(".sh")) {
+        return countShellTestCases(filePath);
+    }
+
     if (!isSupportedFile(filePath)) {
         return 0;
     }

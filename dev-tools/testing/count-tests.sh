@@ -189,8 +189,31 @@ test_declaration_counting() {
         "Returns zero for a file without test declarations"
 }
 
+test_shell_case_counting() {
+    local temp_dir="$1"
+    local shell_file="$temp_dir/shell.test.sh"
+
+    cat > "$shell_file" <<'SHELL'
+#!/bin/bash
+
+# TEST CASE: first scenario
+run_first_test
+
+# TEST CASE: second scenario
+run_second_test
+
+echo "# TEST CASE: this is only a string"
+SHELL
+
+    assert_equal "2" "$(count_tests "$shell_file")" \
+        "Counts explicitly marked shell test cases"
+}
+
 test_file_recognition() {
     local result
+
+    if is_test_file "database-setup-safety.test.sh"; then result="yes"; else result="no"; fi
+    assert_equal "yes" "$result" "Recognizes .test.sh files"
 
     if is_test_file "example.test.ts"; then result="yes"; else result="no"; fi
     assert_equal "yes" "$result" "Recognizes .test.ts files"
@@ -283,6 +306,7 @@ run_self_tests() {
     print_section "Utility self-tests"
 
     test_declaration_counting "$sample_file" "$empty_file"
+    test_shell_case_counting "$temp_dir"
     test_file_recognition
     test_malformed_source_reports_parse_error "$temp_dir"
 
@@ -317,9 +341,10 @@ append_test_record() {
     local relative_path
     local category
     local lines
+    local test_type="AST"
 
     if ! is_non_negative_integer "$count"; then
-        print_error "Invalid AST count '$count' for: $file"
+        print_error "Invalid test count '$count' for: $file"
         return 1
     fi
 
@@ -327,8 +352,14 @@ append_test_record() {
     category=$(get_category "$relative_path")
     lines=$(count_lines "$file")
 
-    printf "%s\t%s\t%s\t%s\n" \
-        "$count" "$lines" "$category" "$relative_path"
+    case "$file" in
+        *.sh)
+            test_type="Shell"
+            ;;
+    esac
+
+    printf "%s\t%s\t%s\t%s\t%s\n" \
+        "$count" "$lines" "$category" "$relative_path" "$test_type"
 }
 
 build_inventory_records() {
@@ -416,21 +447,30 @@ print_overall_report() {
     awk -F '\t' '
         {
             files++
-            tests += $1
+            total += $1
             lines += $2
+
+            if ($5 == "Shell") {
+                shell_cases += $1
+            } else {
+                ast_declarations += $1
+            }
         }
         END {
             printf "Test files: %d\n", files
-            printf "Test declarations: %d\n", tests
+            printf "AST declarations: %d\n", ast_declarations
+            printf "Shell test cases: %d\n", shell_cases
+            printf "Total test cases: %d\n", total
             printf "Source lines: %d\n", lines
         }
     ' "$records"
 }
 
 print_inventory_notes() {
-    printf "\nNote: Counts are AST-identified test declarations, not expanded runtime cases.\n"
+    printf "\nNote: TypeScript/JavaScript tests are counted using AST declarations.\n"
     printf "Parameterized declarations such as it.each([...]) count once.\n"
-    printf "Shell test files are inventoried but do not contribute AST declarations.\n"
+    printf "Shell tests are counted using explicit '# TEST CASE:' markers.\n"
+    printf "Shell assertions within a test case are not counted as separate test cases.\n"
 }
 
 print_inventory_report() {
