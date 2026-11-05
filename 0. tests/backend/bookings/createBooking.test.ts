@@ -34,6 +34,10 @@ describe("BookingsService.createBooking", () => {
     it("should successfully create a booking", async () => {
         mockUserExists(client, 1);
         mockEventExists(client, 1);
+
+        // Expire stale holds for the event.
+        client.query.mockResolvedValueOnce({ rows: [] });
+
         mockNoDuplicateBooking(client);
         mockNoActiveHold(client);
         mockBookingCount(client, 2);
@@ -45,24 +49,25 @@ describe("BookingsService.createBooking", () => {
 
         expect(result).toEqual(BOOKING_RESULT_FIXTURE);
         expect(db.transaction).toHaveBeenCalledTimes(1);
-        expect(client.query).toHaveBeenCalledTimes(8);
+        expect(client.query).toHaveBeenCalledTimes(9);
 
         expectNthQuery(client, 1, "FROM users", [1]);
         expectNthQuery(client, 2, "FROM events", [1]);
-        expectNthQuery(client, 3, "FROM bookings", [1, 1]);
-        expectNthQuery(client, 4, "FROM booking_holds", [1, 1]);
-        expectNthQuery(client, 5, "COUNT(*)", [1]);
-        expectNthQuery(client, 6, "JOIN events", [
+        expectNthQuery(client, 3, "UPDATE booking_holds", [1]);
+        expectNthQuery(client, 4, "FROM bookings", [1, 1]);
+        expectNthQuery(client, 5, "FROM booking_holds", [1, 1]);
+        expectNthQuery(client, 6, "COUNT(*)", [1]);
+        expectNthQuery(client, 7, "JOIN events", [
             1,
             "2026-09-10T11:00:00Z",
             "2026-09-10T10:00:00Z",
         ]);
-        expectNthQuery(client, 7, "FROM booking_holds h", [
+        expectNthQuery(client, 8, "FROM booking_holds h", [
             1,
             "2026-09-10T11:00:00Z",
             "2026-09-10T10:00:00Z",
         ]);
-        expectNthQuery(client, 8, "INSERT INTO bookings", [1, 1]);
+        expectNthQuery(client, 9, "INSERT INTO bookings", [1, 1]);
     });
 
     it("should reject the booking when the user does not exist", async () => {
@@ -92,21 +97,30 @@ describe("BookingsService.createBooking", () => {
     it("should reject a duplicate booking", async () => {
         mockUserExists(client, 1);
         mockEventExists(client, 1);
+
+        // Expire stale holds for the event.
+        client.query.mockResolvedValueOnce({ rows: [] });
+
         mockDuplicateBooking(client, 123);
 
         await expect(service.createBooking(1, 1))
             .rejects.toThrow("User 1 has already booked event 1");
 
-        expect(client.query).toHaveBeenCalledTimes(3);
+        expect(client.query).toHaveBeenCalledTimes(4);
 
         expectNthQuery(client, 1, "FROM users", [1]);
         expectNthQuery(client, 2, "FROM events", [1]);
-        expectNthQuery(client, 3, "WHERE user_id = $1", [1, 1]);
+        expectNthQuery(client, 3, "UPDATE booking_holds", [1]);
+        expectNthQuery(client, 4, "FROM bookings", [1, 1]);
     });
 
     it("should reject a booking when the event is at capacity", async () => {
         mockUserExists(client, 1);
         mockEventExists(client, 1, 10);
+
+        // Expire stale holds for the event.
+        client.query.mockResolvedValueOnce({ rows: [] });
+
         mockNoDuplicateBooking(client);
         mockNoActiveHold(client);
         mockBookingCount(client, 10);
@@ -114,15 +128,21 @@ describe("BookingsService.createBooking", () => {
         await expect(service.createBooking(1, 1))
             .rejects.toThrow("Event 1 is fully booked");
 
-        expect(client.query).toHaveBeenCalledTimes(5);
+        expect(client.query).toHaveBeenCalledTimes(6);
 
-        expectNthQuery(client, 4, "FROM booking_holds", [1, 1]);
-        expectNthQuery(client, 5, "COUNT(*)", [1]);
+        expectNthQuery(client, 3, "UPDATE booking_holds", [1]);
+        expectNthQuery(client, 4, "FROM bookings", [1, 1]);
+        expectNthQuery(client, 5, "FROM booking_holds", [1, 1]);
+        expectNthQuery(client, 6, "COUNT(*)", [1]);
     });
 
     it("should reject a booking when the user has a schedule conflict", async () => {
         mockUserExists(client, 1);
         mockEventExists(client, 1);
+
+        // Expire stale holds for the event.
+        client.query.mockResolvedValueOnce({ rows: [] });
+
         mockNoDuplicateBooking(client);
         mockNoActiveHold(client);
         mockBookingCount(client, 0);
@@ -131,12 +151,15 @@ describe("BookingsService.createBooking", () => {
         await expect(service.createBooking(1, 1)).rejects
             .toThrow("User 1 has a conflicting booking with event 456");
 
+        expect(client.query).toHaveBeenCalledTimes(7);
+
         expectNthQuery(client, 1, "FROM users", [1]);
         expectNthQuery(client, 2, "FROM events", [1]);
-        expectNthQuery(client, 3, "FROM bookings", [1, 1]);
-        expectNthQuery(client, 4, "FROM booking_holds", [1, 1]);
-        expectNthQuery(client, 5, "COUNT(*)", [1]);
-        expectNthQuery(client, 6, "JOIN events", [
+        expectNthQuery(client, 3, "UPDATE booking_holds", [1]);
+        expectNthQuery(client, 4, "FROM bookings", [1, 1]);
+        expectNthQuery(client, 5, "FROM booking_holds", [1, 1]);
+        expectNthQuery(client, 6, "COUNT(*)", [1]);
+        expectNthQuery(client, 7, "JOIN events", [
             1,
             "2026-09-10T11:00:00Z",
             "2026-09-10T10:00:00Z",

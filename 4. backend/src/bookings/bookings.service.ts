@@ -34,6 +34,8 @@ export class BookingsService {
         // Lock event after user.
         const event = await lockEvent(client, event_id);
 
+        await expireStaleHold(client, event_id);
+
         // Check duplicate booking.
         const bookingResult = await client.query<BookingId>(
             `
@@ -101,9 +103,8 @@ export class BookingsService {
             // Lock event after user.
             const event = await lockEvent(client, event_id);
 
-            // Expire this user's stale hold for this event.
-            // This also prevents the partial unique index from blocking a replacement.
-            await expireStaleHold(client, user_id, event_id);
+            // Expire stale holds for this event before checking capacity.
+            await expireStaleHold(client, event_id);
 
             // Reject an existing booking for this event.
             const bookingResult = await client.query<BookingId>(
@@ -174,7 +175,7 @@ export class BookingsService {
     }
 
   async confirmHold(user_id: number, hold_id: number) {
-    return this.db.transaction(async client => {
+    const result = await this.db.transaction(async client => {
         // Look up the hold to discover its owner and event.
         // This is intentionally non-locking; locks follow user -> event -> hold.
         const holdReferenceResult = await client.query<BookingHold>(
@@ -192,20 +193,15 @@ export class BookingsService {
 
         const holdReference = holdReferenceResult.rows[0];
 
-        // Check ownership before acquiring the remaining locks.
         if (holdReference.user_id !== user_id) {
             throw new ForbiddenException(
                 `User ${user_id} is not authorized to confirm booking hold ${hold_id}`,
             );
         }
 
-        // Lock user first to serialize booking operations for this user.
         await lockUser(client, user_id);
-
-        // Lock event after user.
         await lockEvent(client, holdReference.event_id);
 
-        // Lock and re-read the hold after acquiring the user and event locks.
         const holdResult = await client.query<BookingHold>(
             `
           SELECT id, user_id, event_id, created_at, expires_at, status
@@ -234,27 +230,26 @@ export class BookingsService {
             );
         }
 
-        // Use PostgreSQL's current clock after acquiring the hold lock.
-        // This catches a hold that expires while the transaction waits for locks.
-        const updateResult = await client.query<BookingHoldId>(
+        // Determine the lifecycle transition using PostgreSQL's current clock.
+        const updateResult = await client.query<BookingHold>(
             `
-          UPDATE booking_holds
-          SET status = 'confirmed'
-          WHERE id = $1
-            AND status = 'active'
-            AND expires_at > clock_timestamp()
-          RETURNING id;
+            UPDATE booking_holds
+            SET status = CASE
+                WHEN expires_at > clock_timestamp() THEN 'confirmed'
+                ELSE 'expired'
+            END
+            WHERE id = $1
+              AND status = 'active'
+            RETURNING id, user_id, event_id, created_at, expires_at, status;
         `,
             [hold_id],
         );
 
-        if (updateResult.rows.length === 0) {
-            throw new ConflictException(
-                `Booking hold ${hold_id} has expired`,
-            );
+        if (updateResult.rows[0].status === 'expired') {
+            // Return instead of throwing so the expiration update commits.
+            return { expired: true as const };
         }
 
-        // Convert the hold into a booking within the same transaction.
         const bookingResult = await client.query<Booking>(
             `
           INSERT INTO bookings (user_id, event_id)
@@ -264,9 +259,103 @@ export class BookingsService {
             [user_id, hold.event_id],
         );
 
-        return bookingResult.rows[0];
+        return { booking: bookingResult.rows[0] };
     });
+
+    if ('expired' in result) {
+        throw new ConflictException(
+            `Booking hold ${hold_id} has expired`,
+        );
+    }
+
+    return result.booking;
   }
+
+  async cancelHold(user_id: number, hold_id: number) {
+    const result = await this.db.transaction(async client => {
+        // Look up the hold to discover its owner and event.
+        const holdReferenceResult = await client.query<BookingHold>(
+            `
+            SELECT id, user_id, event_id, created_at, expires_at, status
+            FROM booking_holds
+            WHERE id = $1;
+        `,
+            [hold_id],
+        );
+
+        if (holdReferenceResult.rows.length === 0) {
+            throw new NotFoundException(`Booking hold ${hold_id} not found`);
+        }
+
+        const holdReference = holdReferenceResult.rows[0];
+
+        if (holdReference.user_id !== user_id) {
+            throw new ForbiddenException(
+                `User ${user_id} is not authorized to cancel booking hold ${hold_id}`,
+            );
+        }
+
+        // Preserve the established user -> event -> hold lock order.
+        await lockUser(client, user_id);
+        await lockEvent(client, holdReference.event_id);
+
+        const holdResult = await client.query<BookingHold>(
+            `
+            SELECT id, user_id, event_id, created_at, expires_at, status
+            FROM booking_holds
+            WHERE id = $1
+            FOR UPDATE;
+        `,
+            [hold_id],
+        );
+
+        if (holdResult.rows.length === 0) {
+            throw new NotFoundException(`Booking hold ${hold_id} not found`);
+        }
+
+        const hold = holdResult.rows[0];
+
+        if (hold.user_id !== user_id) {
+            throw new ForbiddenException(
+                `User ${user_id} is not authorized to cancel booking hold ${hold_id}`,
+            );
+        }
+
+        if (hold.status !== 'active') {
+            throw new ConflictException(
+                `Booking hold ${hold_id} is no longer active`,
+            );
+        }
+
+        const updateResult = await client.query<BookingHold>(
+            `
+            UPDATE booking_holds
+            SET status = CASE
+                WHEN expires_at > clock_timestamp() THEN 'cancelled'
+                ELSE 'expired'
+            END
+            WHERE id = $1
+              AND status = 'active'
+            RETURNING id, user_id, event_id, created_at, expires_at, status;
+        `,
+            [hold_id],
+        );
+
+        if (updateResult.rows[0].status === 'expired') {
+            return { expired: true as const };
+        }
+
+        return { hold: updateResult.rows[0] };
+    });
+
+    if ('expired' in result) {
+        throw new ConflictException(
+            `Booking hold ${hold_id} has expired`,
+        );
+    }
+
+    return result.hold;
+}
 
   async cancelBooking(user_id: number, booking_id: number) {
     return this.db.transaction(async client => {

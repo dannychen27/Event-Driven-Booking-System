@@ -52,19 +52,17 @@ export async function lockEvent(
 
 export async function expireStaleHold(
     client: PoolClient,
-    user_id: number,
     event_id: number,
-) {
+): Promise<void> {
     await client.query(
         `
-        UPDATE booking_holds
-        SET status = 'expired'
-        WHERE user_id = $1
-          AND event_id = $2
-          AND status = 'active'
-          AND expires_at <= statement_timestamp();
-    `,
-        [user_id, event_id],
+            UPDATE booking_holds
+            SET status = 'expired'
+            WHERE event_id = $1
+              AND status = 'active'
+              AND expires_at <= clock_timestamp();
+        `,
+        [event_id],
     );
 }
 
