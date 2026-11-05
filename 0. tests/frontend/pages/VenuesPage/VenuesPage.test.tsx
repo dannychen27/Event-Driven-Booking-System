@@ -2,20 +2,20 @@ import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 
-import { venueListFixture } from "../fixtures/venues/venueFixtures";
+import { venueListFixture } from "../../fixtures/venues/venueFixtures";
 
 
-import VenuesPage from "../../../3. frontend/src/pages/VenuesPage";
-import { getVenues } from "../../../3. frontend/src/api/venues";
-import type { Venue } from "../../../3. frontend/src/types/venues/Venue.ts";
+import VenuesPage from "../../../../3. frontend/src/pages/VenuesPage";
+import { getVenues } from "../../../../3. frontend/src/api/venues";
+import type { Venue } from "../../../../3. frontend/src/types/venues/Venue.ts";
 
 
-vi.mock("../../../3. frontend/src/api/venues.ts", () => ({
+vi.mock("../../../../3. frontend/src/api/venues.ts", () => ({
     getVenues: vi.fn(),
 }));
 
 
-vi.mock("../../../3. frontend/src/components/cards/VenueCard.tsx", () => ({
+vi.mock("../../../../3. frontend/src/components/cards/VenueCard.tsx", () => ({
     default: ({ venue }: { venue: Venue }) => (
         <div>Mock Venue Card: {venue.name}</div>
     ),

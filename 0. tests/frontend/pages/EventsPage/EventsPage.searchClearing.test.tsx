@@ -1,26 +1,26 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import EventsPage from "../../../3. frontend/src/pages/EventsPage";
+import EventsPage from "../../../../3. frontend/src/pages/EventsPage";
 import {
     getEvents,
     searchEvents,
     searchEventsNaturalLanguage
-} from "../../../3. frontend/src/api/events";
-import type { Event } from "../../../3. frontend/src/types/events/Event";
+} from "../../../../3. frontend/src/api/events";
+import type { Event } from "../../../../3. frontend/src/types/events/Event";
 import {
     initialEventFixture,
     minimalCoffeeMeetupEventFixture,
     reloadFailureInitialEventFixture
-} from "../fixtures/events/eventFixtures";
+} from "../../fixtures/events/eventFixtures";
 
-vi.mock("../../../3. frontend/src/api/events", () => ({
+vi.mock("../../../../3. frontend/src/api/events", () => ({
     getEvents: vi.fn(),
     searchEvents: vi.fn(),
     searchEventsNaturalLanguage: vi.fn(),
 }));
 
-vi.mock("../../../3. frontend/src/components/cards/EventCard.tsx", () => ({
+vi.mock("../../../../3. frontend/src/components/cards/EventCard.tsx", () => ({
     default: ({ event }: { event: Event }) => (
         <div>Mock Event Card: {event.name}</div>
     ),
