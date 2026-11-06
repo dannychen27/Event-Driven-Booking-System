@@ -41,6 +41,7 @@ CREATE TABLE bookings (
     UNIQUE (user_id, event_id)
 );
 
+
 CREATE TABLE booking_holds (
     id          SERIAL          PRIMARY KEY,
     user_id     INT             NOT NULL REFERENCES users(id),
@@ -50,4 +51,20 @@ CREATE TABLE booking_holds (
     status      VARCHAR(20)     NOT NULL DEFAULT 'active'
                                 CHECK (status IN ('active', 'confirmed', 'expired', 'cancelled')),
     CHECK (expires_at > created_at)
+);
+
+
+CREATE TABLE idempotency_requests (
+    id                  SERIAL          PRIMARY KEY,
+    user_id             INT             NOT NULL REFERENCES users(id),
+    operation           VARCHAR(50)     NOT NULL
+        CHECK (operation IN ('create_booking', 'confirm_hold')),
+    idempotency_key     VARCHAR(255)    NOT NULL,
+    request_hash        CHAR(64)        NOT NULL
+        CHECK (request_hash ~ '^[a-f0-9]{64}$'),
+    response_status     INT             NOT NULL
+        CHECK (response_status BETWEEN 200 AND 299),
+    response_body       JSONB           NOT NULL,
+    created_at          TIMESTAMPTZ     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, operation, idempotency_key)
 );

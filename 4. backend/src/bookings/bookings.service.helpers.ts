@@ -1,19 +1,25 @@
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
 import type { PoolClient } from 'pg';
+import { createHash } from 'node:crypto';
 
 import {
+    Booking,
     BookingEventId,
     EventCapacityCount,
     BookingHoldId,
 } from '../types/bookings/bookings.types';
+import type {
+    IdempotencyRecord,
+    CreateRequestHashParams,
+    FindIdempotencyRecordParams,
+    SaveIdempotencyRecordParams,
+    ValidateIdempotencyKeyParams,
+} from '../types/bookings/idempotency.types';
 import { EventLock } from '../types/events/events.types';
 import { UserId } from '../types/users/users.types';
 
 
-export async function lockUser(
-    client: PoolClient,
-    user_id: number,
-) {
+export async function lockUser(client: PoolClient, user_id: number) {
     const userResult = await client.query<UserId>(
 `
         SELECT id
@@ -29,10 +35,7 @@ export async function lockUser(
     }
 }
 
-export async function lockEvent(
-    client: PoolClient,
-    event_id: number,
-): Promise<EventLock> {
+export async function lockEvent(client: PoolClient, event_id: number): Promise<EventLock> {
     const eventResult = await client.query<EventLock>(
         `
         SELECT id, start_time, end_time, capacity
@@ -50,10 +53,7 @@ export async function lockEvent(
     return eventResult.rows[0];
 }
 
-export async function expireStaleHold(
-    client: PoolClient,
-    event_id: number,
-): Promise<void> {
+export async function expireStaleHold(client: PoolClient, event_id: number): Promise<void> {
     await client.query(
         `
             UPDATE booking_holds
@@ -153,6 +153,100 @@ export async function assertNoActiveHoldConflict(
     if (holdConflictResult.rows.length > 0) {
         throw new ConflictException(
             `User ${user_id} has a conflicting active hold`,
+        );
+    }
+}
+
+export function createRequestHash({
+    operation,
+    user_id,
+    resource_id,
+}: CreateRequestHashParams): string {
+    const requestPayload = JSON.stringify({
+        operation,
+        user_id,
+        resource_id,
+    });
+
+    return createHash('sha256')
+        .update(requestPayload)
+        .digest('hex');
+}
+
+export async function findIdempotencyRecord({
+    client,
+    user_id,
+    operation,
+    idempotency_key,
+    request_hash,
+}: FindIdempotencyRecordParams): Promise<Booking | null> {
+    const result = await client.query<IdempotencyRecord>(
+        `
+            SELECT request_hash, response_body
+            FROM idempotency_requests
+            WHERE user_id = $1
+              AND operation = $2
+              AND idempotency_key = $3;
+        `,
+        [user_id, operation, idempotency_key],
+    );
+
+    if (result.rows.length === 0) {
+        return null;
+    }
+
+    const record = result.rows[0];
+
+    if (record.request_hash !== request_hash) {
+        throw new ConflictException(
+            'Idempotency-Key was already used with a different request',
+        );
+    }
+
+    return record.response_body;
+}
+
+export async function saveIdempotencyRecord({
+    client,
+    user_id,
+    operation,
+    idempotency_key,
+    request_hash,
+    response_body,
+}: SaveIdempotencyRecordParams): Promise<void> {
+    await client.query(
+        `
+            INSERT INTO idempotency_requests (
+                user_id,
+                operation,
+                idempotency_key,
+                request_hash,
+                response_status,
+                response_body
+            )
+            VALUES ($1, $2, $3, $4, $5, $6);
+        `,
+        [
+            user_id,
+            operation,
+            idempotency_key,
+            request_hash,
+            201,
+            JSON.stringify(response_body),
+        ],
+    );
+}
+
+export function validateIdempotencyKey({
+    key,
+}: ValidateIdempotencyKeyParams): void {
+    if (key === undefined) {
+        return;
+    }
+
+    if (key.trim().length === 0 || key.length > 255) {
+        throw new BadRequestException(
+            'Idempotency-Key must contain between 1 and 255 characters',
         );
     }
 }
