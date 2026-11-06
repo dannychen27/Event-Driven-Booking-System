@@ -237,9 +237,7 @@ export async function saveIdempotencyRecord({
     );
 }
 
-export function validateIdempotencyKey({
-    key,
-}: ValidateIdempotencyKeyParams): void {
+export function validateIdempotencyKey({ key }: ValidateIdempotencyKeyParams): void {
     if (key === undefined) {
         return;
     }
