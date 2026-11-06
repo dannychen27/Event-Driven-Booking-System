@@ -12,6 +12,7 @@ import {
   BookingHoldId,
 } from '../types/bookings/bookings.types';
 import { UserId } from '../types/users/users.types';
+import { IdempotencyOperation } from "../types/bookings/idempotency.types";
 import { DatabaseService } from '../database/database.service';
 import {
     assertEventHasCapacity,
@@ -20,16 +21,42 @@ import {
     expireStaleHold,
     lockEvent,
     lockUser,
+    createRequestHash,
+    validateIdempotencyKey,
+    findIdempotencyRecord,
+    saveIdempotencyRecord,
 } from './bookings.service.helpers';
 
 @Injectable()
 export class BookingsService {
   constructor(private readonly db: DatabaseService) {}
 
-  async createBooking(user_id: number, event_id: number) {
+  async createBooking(user_id: number, event_id: number, idempotency_key?: string) {
+    validateIdempotencyKey({ key: idempotency_key });
+
+    const operation: IdempotencyOperation = 'create_booking';
+      const request_hash = idempotency_key
+          ? createRequestHash({ operation, user_id, resource_id: event_id, })
+          : undefined;
+
     return this.db.transaction(async client => {
         // Lock user first to serialize booking operations for this user.
         await lockUser(client, user_id);
+
+        // ...
+        if (idempotency_key && request_hash) {
+            const existingResponse = await findIdempotencyRecord({
+                client,
+                user_id,
+                operation,
+                idempotency_key,
+                request_hash,
+            });
+
+            if (existingResponse) {
+                return existingResponse;
+            }
+        }
 
         // Lock event after user.
         const event = await lockEvent(client, event_id);
@@ -91,7 +118,20 @@ export class BookingsService {
             [user_id, event_id],
         );
 
-        return result.rows[0];
+        const booking = result.rows[0];
+
+        if (idempotency_key && request_hash) {
+            await saveIdempotencyRecord({
+                client,
+                user_id,
+                operation,
+                idempotency_key,
+                request_hash,
+                response_body: booking,
+            });
+        }
+
+        return booking;
     });
   }
 
@@ -174,7 +214,17 @@ export class BookingsService {
         });
     }
 
-  async confirmHold(user_id: number, hold_id: number) {
+  async confirmHold(user_id: number, hold_id: number, idempotency_key?: string) {
+    validateIdempotencyKey({ key: idempotency_key });
+
+    const operation: IdempotencyOperation = 'confirm_hold';
+      const request_hash = idempotency_key
+          ? createRequestHash({
+              operation,
+              user_id,
+              resource_id: hold_id,
+          })
+          : undefined;
     const result = await this.db.transaction(async client => {
         // Look up the hold to discover its owner and event.
         // This is intentionally non-locking; locks follow user -> event -> hold.
@@ -199,7 +249,25 @@ export class BookingsService {
             );
         }
 
+        // Lock user first to serialize booking operations for this user.
         await lockUser(client, user_id);
+
+        // Replay a previous successful confirmation before checking hold status.
+        if (idempotency_key && request_hash) {
+            const existingResponse = await findIdempotencyRecord({
+                client,
+                user_id,
+                operation,
+                idempotency_key,
+                request_hash,
+            });
+
+            if (existingResponse) {
+                return { booking: existingResponse };
+            }
+        }
+
+        // Preserve the established user -> event -> hold lock order.
         await lockEvent(client, holdReference.event_id);
 
         const holdResult = await client.query<BookingHold>(
@@ -250,6 +318,7 @@ export class BookingsService {
             return { expired: true as const };
         }
 
+        // Create the booking.
         const bookingResult = await client.query<Booking>(
             `
           INSERT INTO bookings (user_id, event_id)
@@ -259,9 +328,24 @@ export class BookingsService {
             [user_id, hold.event_id],
         );
 
-        return { booking: bookingResult.rows[0] };
+        const booking = bookingResult.rows[0];
+
+        // Save the successful response in the same transaction.
+        if (idempotency_key && request_hash) {
+            await saveIdempotencyRecord({
+                client,
+                user_id,
+                operation,
+                idempotency_key,
+                request_hash,
+                response_body: booking,
+            });
+        }
+
+        return { booking };
     });
 
+    // Throw only after the transaction commits the expiration update.
     if ('expired' in result) {
         throw new ConflictException(
             `Booking hold ${hold_id} has expired`,
