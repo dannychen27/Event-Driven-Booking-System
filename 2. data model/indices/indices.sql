@@ -16,3 +16,8 @@ CREATE UNIQUE INDEX idx_booking_holds_one_active_per_user_event
 CREATE INDEX idx_booking_holds_event_expiration
     ON booking_holds(event_id, expires_at)
     WHERE status = 'active';
+
+-- Support global cleanup of expired active holds.
+CREATE INDEX idx_booking_holds_expiration
+    ON booking_holds(expires_at, id)
+    WHERE status = 'active';
