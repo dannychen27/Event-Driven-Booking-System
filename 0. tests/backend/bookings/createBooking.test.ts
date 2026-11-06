@@ -14,7 +14,7 @@ import {
 import { mockUserExists, mockUserDoesNotExist } from "../helpers/usersTestHelpers";
 import { mockEventExists, mockEventDoesNotExist } from "../helpers/eventsTestHelpers"
 import { expectNthQuery, mockTransaction } from "../../utils/testHelpers";
-
+import { createRequestHash } from "../../../4. backend/src/bookings/bookings.service.helpers";
 
 describe("BookingsService.createBooking", () => {
     let service: BookingsService;
@@ -68,6 +68,126 @@ describe("BookingsService.createBooking", () => {
             "2026-09-10T10:00:00Z",
         ]);
         expectNthQuery(client, 9, "INSERT INTO bookings", [1, 1]);
+    });
+
+    it("should save an idempotency record when creating a booking", async () => {
+        const idempotencyKey = "create-booking-123";
+
+        mockUserExists(client, 1);
+
+        // No existing idempotency record.
+        client.query.mockResolvedValueOnce({ rows: [] });
+
+        mockEventExists(client, 1);
+
+        // Expire stale holds for the event.
+        client.query.mockResolvedValueOnce({ rows: [] });
+
+        mockNoDuplicateBooking(client);
+        mockNoActiveHold(client);
+        mockBookingCount(client, 2);
+        mockNoScheduleConflict(client);
+        mockNoHoldScheduleConflict(client);
+        mockInsertedBooking(client, 123, 1, 1);
+
+        // Save the successful idempotency record.
+        client.query.mockResolvedValueOnce({ rows: [] });
+
+        const result = await service.createBooking(1, 1, idempotencyKey);
+
+        expect(result).toEqual(BOOKING_RESULT_FIXTURE);
+        expect(client.query).toHaveBeenCalledTimes(11);
+
+        // User lock precedes idempotency lookup.
+        expectNthQuery(client, 1, "FROM users", [1]);
+        expectNthQuery(client, 2, "FROM idempotency_requests", [
+            1,
+            "create_booking",
+            idempotencyKey,
+        ]);
+
+        // Booking and idempotency record are persisted.
+        expectNthQuery(client, 10, "INSERT INTO bookings", [1, 1]);
+        expectNthQuery(client, 11, "INSERT INTO idempotency_requests", [
+            1,
+            "create_booking",
+            idempotencyKey,
+            createRequestHash({
+                operation: "create_booking",
+                user_id: 1,
+                resource_id: 1,
+            }),
+            201,
+            JSON.stringify(BOOKING_RESULT_FIXTURE),
+        ]);
+    });
+
+    it("should replay the original booking for an identical idempotent request", async () => {
+        const idempotencyKey = "create-booking-123";
+
+        mockUserExists(client, 1);
+
+        client.query.mockResolvedValueOnce({
+            rows: [{
+                request_hash: createRequestHash({
+                    operation: "create_booking",
+                    user_id: 1,
+                    resource_id: 1,
+                }),
+                response_body: BOOKING_RESULT_FIXTURE,
+            }],
+        });
+
+        const result = await service.createBooking(1, 1, idempotencyKey);
+
+        expect(result).toEqual(BOOKING_RESULT_FIXTURE);
+        expect(client.query).toHaveBeenCalledTimes(2);
+
+        expectNthQuery(client, 1, "FROM users", [1]);
+        expectNthQuery(client, 2, "FROM idempotency_requests", [
+            1,
+            "create_booking",
+            idempotencyKey,
+        ]);
+
+        // Replay must not insert another booking or idempotency record.
+        expect(client.query).not.toHaveBeenCalledWith(
+            expect.stringContaining("INSERT INTO bookings"),
+            expect.anything(),
+        );
+        expect(client.query).not.toHaveBeenCalledWith(
+            expect.stringContaining("INSERT INTO idempotency_requests"),
+            expect.anything(),
+        );
+    });
+
+    it("should reject reuse of an idempotency key for a different event", async () => {
+        const idempotencyKey = "create-booking-123";
+
+        mockUserExists(client, 1);
+
+        client.query.mockResolvedValueOnce({
+            rows: [{
+                request_hash: "a".repeat(64),
+                response_body: BOOKING_RESULT_FIXTURE,
+            }],
+        });
+
+        await expect(
+            service.createBooking(1, 2, idempotencyKey),
+        ).rejects.toThrow(
+            "Idempotency-Key was already used with a different request",
+        );
+
+        // The conflict is detected before locking the event.
+        expect(client.query).toHaveBeenCalledTimes(2);
+
+        expectNthQuery(client, 1, "FROM users", [1]);
+        expectNthQuery(client, 2, "FROM idempotency_requests", [
+            1,
+            "create_booking",
+            idempotencyKey,
+        ]);
     });
 
     it("should reject the booking when the user does not exist", async () => {
