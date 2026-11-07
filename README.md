@@ -41,6 +41,7 @@ summer 2022 full-stack development internship at Sky View Suites.
 - Cancel bookings with booking-ownership checks.
 - Enforce booking constraints, including duplicate-booking prevention, schedule-conflict checks, and event-capacity limits.
 - Protect against concurrent overbooking using database transactions and row-level locking.
+- Automatically expire stale booking holds through scheduled background cleanup.
 - Search events using natural-language queries powered by Gemini.
 
 The current implementation uses a layered application architecture.
@@ -170,6 +171,7 @@ The backend runs on `http://localhost:3000` by default.
 - [x] **Booking management**: create and cancel event bookings
 - [x] **Booking history**: view a user's previous and current bookings
 - [x] **Booking validation**: prevent duplicate bookings, schedule conflicts, and bookings that exceed event capacity
+- [x] **Booking hold expiration**: automatically expire stale booking holds through scheduled cleanup.
 
 - [x] **Client-side form validation**: validate booking input before submitting requests
 - [ ] **Responsive user interface**: support common desktop and mobile layouts
@@ -373,6 +375,8 @@ The endpoint returns a `400 Bad Request` if:
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
+| `POST` | `/booking-holds/:id/confirm` | Confirm an active booking hold and create a booking |
+| `DELETE` | `/booking-holds/:id` | Cancel an active booking hold |
 | `DELETE` | `/bookings/:id` | Cancel a booking |
 
 

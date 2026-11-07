@@ -48,6 +48,16 @@ describe("hold confirmation", () => {
 
     afterEach(async () => {
         await db.query(
+            `
+                DELETE FROM idempotency_requests
+                WHERE user_id = $1
+                  AND operation = 'confirm_hold'
+                  AND idempotency_key LIKE 'hold-confirmation-%';
+            `,
+            [BOOKING_SERVICE_INTEGRATION_USERS.primary],
+        );
+
+        await db.query(
             `DELETE FROM booking_holds WHERE event_id = ANY($1::int[])`,
             [BOOKING_SERVICE_INTEGRATION_EVENT_IDS],
         );
@@ -119,6 +129,193 @@ describe("hold confirmation", () => {
     });
 
 
+    it("replays the original booking when the same confirmation key is reused", async () => {
+        const userId = BOOKING_SERVICE_INTEGRATION_USERS.primary;
+        const eventId = BOOKING_SERVICE_INTEGRATION_EVENTS.standard.id;
+        const idempotencyKey = "hold-confirmation-replay-001";
+
+        const hold = await service.createHold(userId, eventId);
+        const firstBooking = await service.confirmHold(userId, hold.id, idempotencyKey);
+        const replayedBooking = await service.confirmHold(userId, hold.id, idempotencyKey);
+
+        const expectedBooking = JSON.parse(JSON.stringify(firstBooking));
+
+        expect(replayedBooking).toEqual(expectedBooking);
+
+        const bookingResult = await db.query(
+            `
+                SELECT id, user_id, event_id
+                FROM bookings
+                WHERE user_id = $1
+                  AND event_id = $2;
+            `,
+            [userId, eventId],
+        );
+
+        expect(bookingResult.rows).toHaveLength(1);
+        expect(bookingResult.rows[0]).toMatchObject({
+            id: firstBooking.id,
+            user_id: userId,
+            event_id: eventId,
+        });
+
+        const holdResult = await db.query(
+            `
+                SELECT status
+                FROM booking_holds
+                WHERE id = $1;
+            `,
+            [hold.id],
+        );
+
+        expect(holdResult.rows).toEqual([{ status: "confirmed" }]);
+
+        const idempotencyResult = await db.query(
+            `
+            SELECT response_status, response_body
+            FROM idempotency_requests
+            WHERE user_id = $1
+              AND operation = 'confirm_hold'
+              AND idempotency_key = $2;
+        `,
+            [userId, idempotencyKey],
+        );
+
+        expect(idempotencyResult.rows).toHaveLength(1);
+        expect(idempotencyResult.rows[0]).toMatchObject({
+            response_status: 201,
+            response_body: expectedBooking,
+        });
+    });
+
+
+    it("replays the original booking for concurrent confirmation requests with the same key", async () => {
+        const userId = BOOKING_SERVICE_INTEGRATION_USERS.primary;
+        const eventId = BOOKING_SERVICE_INTEGRATION_EVENTS.standard.id;
+        const idempotencyKey = "hold-confirmation-concurrent-001";
+
+        const hold = await service.createHold(userId, eventId);
+
+        const [firstBooking, secondBooking] = await Promise.all([
+            service.confirmHold(userId, hold.id, idempotencyKey),
+            service.confirmHold(userId, hold.id, idempotencyKey),
+        ]);
+
+        const expectedBooking = JSON.parse(JSON.stringify(firstBooking));
+
+        expect(secondBooking).toEqual(expectedBooking);
+
+        const bookingResult = await db.query(
+            `
+            SELECT id, user_id, event_id
+            FROM bookings
+            WHERE user_id = $1
+              AND event_id = $2;
+        `,
+            [userId, eventId],
+        );
+
+        expect(bookingResult.rows).toHaveLength(1);
+        expect(bookingResult.rows[0]).toMatchObject({
+            id: firstBooking.id,
+            user_id: userId,
+            event_id: eventId,
+        });
+
+        const holdResult = await db.query(
+            `
+                SELECT status
+                FROM booking_holds
+                WHERE id = $1;
+            `,
+            [hold.id],
+        );
+
+        expect(holdResult.rows).toEqual([{ status: "confirmed" }]);
+
+        const idempotencyResult = await db.query(
+            `
+            SELECT response_status, response_body
+            FROM idempotency_requests
+            WHERE user_id = $1
+              AND operation = 'confirm_hold'
+              AND idempotency_key = $2;
+        `,
+            [userId, idempotencyKey],
+        );
+
+        expect(idempotencyResult.rows).toHaveLength(1);
+        expect(idempotencyResult.rows[0]).toMatchObject({
+            response_status: 201,
+            response_body: expectedBooking,
+        });
+    });
+
+
+    it("rejects reuse of a confirmation key for a different hold", async () => {
+        const userId = BOOKING_SERVICE_INTEGRATION_USERS.primary;
+        const standardEventId = BOOKING_SERVICE_INTEGRATION_EVENTS.standard.id;
+        const capacityOneEventId = BOOKING_SERVICE_INTEGRATION_EVENTS.capacityOne.id;
+        const idempotencyKey = "hold-confirmation-mismatch-001";
+
+        const firstHold = await service.createHold(userId, standardEventId);
+        const secondHold = await service.createHold(userId, capacityOneEventId);
+        const firstBooking = await service.confirmHold(userId, firstHold.id, idempotencyKey);
+
+        await expect(service.confirmHold(userId, secondHold.id, idempotencyKey))
+            .rejects.toBeInstanceOf(ConflictException);
+
+        const bookingResult = await db.query(
+            `
+                SELECT id, user_id, event_id
+                FROM bookings
+                WHERE user_id = $1
+                  AND event_id = ANY($2::int[]);
+            `,
+            [userId, [standardEventId, capacityOneEventId]],
+        );
+
+        expect(bookingResult.rows).toHaveLength(1);
+        expect(bookingResult.rows[0]).toMatchObject({
+            id: firstBooking.id,
+            user_id: userId,
+            event_id: standardEventId,
+        });
+
+        const holdResult = await db.query(
+            `
+                SELECT id, status
+                FROM booking_holds
+                WHERE id = ANY($1::int[])
+                ORDER BY id;
+            `,
+            [[firstHold.id, secondHold.id]],
+        );
+
+        expect(holdResult.rows).toEqual([
+            { id: firstHold.id, status: "confirmed" },
+            { id: secondHold.id, status: "active" },
+        ]);
+
+        const idempotencyResult = await db.query(
+            `
+            SELECT response_status, response_body
+            FROM idempotency_requests
+            WHERE user_id = $1
+              AND operation = 'confirm_hold'
+              AND idempotency_key = $2;
+        `,
+            [userId, idempotencyKey],
+        );
+
+        expect(idempotencyResult.rows).toHaveLength(1);
+        expect(idempotencyResult.rows[0]).toMatchObject({
+            response_status: 201,
+            response_body: JSON.parse(JSON.stringify(firstBooking)),
+        });
+    });
+
+
     it("rolls back hold confirmation when booking insertion fails", async () => {
         const userId = BOOKING_SERVICE_INTEGRATION_USERS.primary;
         const eventId = BOOKING_SERVICE_INTEGRATION_EVENTS.standard.id;
@@ -169,21 +366,19 @@ describe("hold confirmation", () => {
     });
 
 
-    it("rejects confirmation of an expired hold", async () => {
+    it("rejects confirmation of an expired hold without saving an idempotency record", async () => {
         const userId = BOOKING_SERVICE_INTEGRATION_USERS.primary;
         const eventId = BOOKING_SERVICE_INTEGRATION_EVENTS.standard.id;
+        const idempotencyKey = "hold-confirmation-expired-001";
 
         const hold = await service.createHold(userId, eventId);
 
         await expireHold(db, hold.id);
 
-        await expect(
-            service.confirmHold(userId, hold.id),
-        ).rejects.toThrow(
-            `Booking hold ${hold.id} has expired`,
-        );
+        await expect(service.confirmHold(userId, hold.id, idempotencyKey))
+            .rejects.toThrow(`Booking hold ${hold.id} has expired`);
 
-        const result = await db.query(
+        const holdResult = await db.query(
             `
                 SELECT status
                 FROM booking_holds
@@ -192,14 +387,32 @@ describe("hold confirmation", () => {
             [hold.id],
         );
 
-        expect(result.rows).toEqual([{ status: "expired" }]);
+        expect(holdResult.rows).toEqual([{ status: "expired" }]);
 
         const bookingResult = await db.query(
-            `SELECT id FROM bookings WHERE user_id = $1 AND event_id = $2`,
+            `
+                SELECT id
+                FROM bookings
+                WHERE user_id = $1
+                  AND event_id = $2;
+            `,
             [userId, eventId],
         );
 
         expect(bookingResult.rows).toHaveLength(0);
+
+        const idempotencyResult = await db.query(
+            `
+            SELECT id
+            FROM idempotency_requests
+            WHERE user_id = $1
+              AND operation = 'confirm_hold'
+              AND idempotency_key = $2;
+        `,
+            [userId, idempotencyKey],
+        );
+
+        expect(idempotencyResult.rows).toHaveLength(0);
     });
 
 
