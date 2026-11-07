@@ -19,6 +19,7 @@ import {
     expectOneFulfilledAndOneRejected,
     expireHold,
 } from "../helpers/bookingServiceIntegrationTestHelpers";
+import { injectExpiredHoldAfterStaleHoldCleanup } from "./helpers/databaseTestHelpers";
 
 
 describe("hold creation and capacity", () => {
@@ -373,6 +374,45 @@ describe("hold creation and capacity", () => {
                   AND event_id = $2
                 ORDER BY id;
             `,
+            [userId, eventId],
+        );
+
+        expect(result.rows).toEqual([
+            {
+                id: originalHold.id,
+                status: "expired",
+            },
+            {
+                id: replacementHold.id,
+                status: "active",
+            },
+        ]);
+    });
+
+
+    it("replaces a hold that expires after the initial stale-hold cleanup", async () => {
+        const userId = BOOKING_SERVICE_INTEGRATION_USERS.primary;
+        const eventId = BOOKING_SERVICE_INTEGRATION_EVENTS.standard.id;
+
+        const originalHold = await service.createHold(userId, eventId);
+
+        const replacementHold = await injectExpiredHoldAfterStaleHoldCleanup({
+            db,
+            holdId: originalHold.id,
+            callback: _client => service.createHold(userId, eventId),
+        });
+
+        expect(replacementHold.id).not.toBe(originalHold.id);
+        expect(replacementHold.status).toBe("active");
+
+        const result = await db.query(
+            `
+            SELECT id, status
+            FROM booking_holds
+            WHERE user_id = $1
+              AND event_id = $2
+            ORDER BY id;
+        `,
             [userId, eventId],
         );
 

@@ -35,9 +35,9 @@ export class BookingsService {
     validateIdempotencyKey({ key: idempotency_key });
 
     const operation: IdempotencyOperation = 'create_booking';
-      const request_hash = idempotency_key
-          ? createRequestHash({ operation, user_id, resource_id: event_id, })
-          : undefined;
+    const request_hash = idempotency_key
+        ? createRequestHash({ operation, user_id, resource_id: event_id, })
+        : undefined;
 
     return this.db.transaction(async client => {
         // Lock user first to serialize booking operations for this user.
@@ -192,7 +192,9 @@ export class BookingsService {
             await assertNoActiveHoldConflict(client, user_id, event);
 
             // Create a hold that expires 10 minutes after insertion.
-            const result = await client.query<BookingHold>(
+            // DO NOTHING handles an active row that expires between stale-hold
+            // cleanup and insertion but still occupies the partial unique index.
+            const insertHold = () => client.query<BookingHold>(
                 `
                     INSERT INTO booking_holds (
                         user_id,
@@ -206,10 +208,31 @@ export class BookingsService {
                            statement_timestamp(),
                            statement_timestamp() + INTERVAL '10 minutes'
                        )
+                    ON CONFLICT (user_id, event_id)
+                    WHERE status = 'active'
+                    DO NOTHING
                     RETURNING id, user_id, event_id, created_at, expires_at, status;
                 `,
                 [user_id, event_id],
             );
+
+            let result = await insertHold();
+
+            if (result.rows.length === 0) {
+                // The conflicting active row may have expired since the earlier
+                // cleanup and duplicate-hold checks.
+                await expireStaleHold(client, event_id);
+
+                // Retry after releasing any expired row from the partial unique index.
+                result = await insertHold();
+            }
+
+            if (result.rows.length === 0) {
+                throw new ConflictException(
+                    `User ${user_id} already has an active hold for event ${event_id}`,
+                );
+            }
+
             return result.rows[0];
         });
     }
