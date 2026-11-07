@@ -37,10 +37,7 @@ function createClientWithExpiryInjection(
                 return async (...args: Parameters<PoolClient["query"]>) => {
                     const result = await Reflect.apply(target.query, target, args);
 
-                    if (
-                        !state.expiryInjected
-                        && isStaleHoldCleanupQuery(args[0])
-                    ) {
+                    if (!state.expiryInjected && isStaleHoldCleanupQuery(args[0])) {
                         state.expiryInjected = true;
                         await injectExpiredTimestamp(target, holdId);
                     }
