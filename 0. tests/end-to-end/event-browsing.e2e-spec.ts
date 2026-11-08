@@ -75,5 +75,26 @@ describe("Event browsing (E2E)", () => {
             .get("/events/999")
             .expect(404);
     });
+
+    it("should generate and return a request ID", async () => {
+        const response = await request(app.getHttpServer())
+            .get("/events")
+            .expect(200);
+
+        expect(response.headers["x-request-id"]).toMatch(
+            /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+        );
+    });
+
+    it("should preserve a valid incoming request ID", async () => {
+        const requestId = "e2e-request-123";
+
+        const response = await request(app.getHttpServer())
+            .get("/events")
+            .set("X-Request-ID", requestId)
+            .expect(200);
+
+        expect(response.headers["x-request-id"]).toBe(requestId);
+    });
 });
 
