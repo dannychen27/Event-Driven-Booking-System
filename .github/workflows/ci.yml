@@ -78,8 +78,11 @@ jobs:
       - name: Run unit tests with coverage
         run: npm run coverage
 
-      - name: Run end-to-end and integration tests
-        run: npm run test:e2e && npm run test:integration
+      - name: Run end-to-end tests
+        run: npm run test:e2e
+
+      - name: Run integration tests
+        run: npm run test:integration
 
       - name: Upload coverage reports
         if: ${{ !cancelled() }}
