@@ -18,7 +18,10 @@ import {
     expectOneFulfilledAndOneRejected,
     expireHold,
 } from "../helpers/bookingServiceIntegrationTestHelpers";
-import { pauseTransactionAfterQuery } from "./helpers/databaseTestHelpers";
+import {
+    failTransactionAfterQuery,
+    pauseTransactionAfterQuery,
+} from "./helpers/databaseTestHelpers";
 
 
 describe("hold confirmation", () => {
@@ -365,6 +368,117 @@ describe("hold confirmation", () => {
         );
 
         expect(bookingResult.rows[0].count).toBe(1);
+    });
+
+
+    it("rolls back hold confirmation when idempotency record insertion fails", async () => {
+        const userId = BOOKING_SERVICE_INTEGRATION_USERS.primary;
+        const eventId = BOOKING_SERVICE_INTEGRATION_EVENTS.standard.id;
+        const idempotencyKey = "hold-confirmation-rollback-001";
+        const injectedError = new Error("forced idempotency insertion failure");
+
+        const hold = await service.createHold(userId, eventId);
+
+        const restoreFailureInjection = failTransactionAfterQuery(db, {
+            matches: (query: string) =>
+                query.includes("INSERT INTO idempotency_requests"),
+            error: injectedError,
+        });
+
+        try {
+            await expect(service.confirmHold(userId, hold.id, idempotencyKey))
+                .rejects.toBe(injectedError);
+        } finally {
+            restoreFailureInjection();
+        }
+
+        // The hold transition must be rolled back.
+        const holdResult = await db.query<BookingHoldStatusRecord>(
+            `
+            SELECT status, expires_at
+            FROM booking_holds
+            WHERE id = $1;
+        `,
+            [hold.id],
+        );
+
+        expect(holdResult.rows).toHaveLength(1);
+        expect(holdResult.rows[0].status).toBe("active");
+
+        // The booking insertion must also be rolled back.
+        const bookingResult = await db.query<{ count: number }>(
+            `
+            SELECT COUNT(*)::int AS count
+            FROM bookings
+            WHERE user_id = $1
+              AND event_id = $2;
+        `,
+            [userId, eventId],
+        );
+
+        expect(bookingResult.rows[0].count).toBe(0);
+
+        // The failed idempotency record must not persist.
+        const idempotencyResult = await db.query(
+            `
+            SELECT id
+            FROM idempotency_requests
+            WHERE user_id = $1
+              AND operation = 'confirm_hold'
+              AND idempotency_key = $2;
+        `,
+            [userId, idempotencyKey],
+        );
+
+        expect(idempotencyResult.rows).toHaveLength(0);
+
+        // Retrying with the same key should now succeed.
+        const booking = await service.confirmHold(
+            userId,
+            hold.id,
+            idempotencyKey,
+        );
+
+        expect(booking).toMatchObject({
+            user_id: userId,
+            event_id: eventId,
+        });
+
+        const retryHoldResult = await db.query<BookingHoldStatusRecord>(
+            `
+            SELECT status, expires_at
+            FROM booking_holds
+            WHERE id = $1;
+        `,
+            [hold.id],
+        );
+
+        expect(retryHoldResult.rows[0].status).toBe("confirmed");
+
+        const retryBookingResult = await db.query<{ count: number }>(
+            `
+            SELECT COUNT(*)::int AS count
+            FROM bookings
+            WHERE user_id = $1
+              AND event_id = $2;
+        `,
+            [userId, eventId],
+        );
+
+        expect(retryBookingResult.rows[0].count).toBe(1);
+
+        const retryIdempotencyResult = await db.query(
+            `
+            SELECT id
+            FROM idempotency_requests
+            WHERE user_id = $1
+              AND operation = 'confirm_hold'
+              AND idempotency_key = $2;
+        `,
+            [userId, idempotencyKey],
+        );
+
+        expect(retryIdempotencyResult.rows).toHaveLength(1);
     });
 
 

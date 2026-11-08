@@ -1,6 +1,7 @@
 import type { PoolClient } from "pg";
 import type {
     ExpiryInjectionState,
+    FailTransactionAfterQueryOptions,
     InjectExpiredHoldWithCallbackOptions,
     PauseTransactionAfterQueryOptions,
     TransactionGate,
@@ -52,6 +53,39 @@ function createQueryInterceptingClient(
             };
         },
     }) as PoolClient;
+}
+
+export function failTransactionAfterQuery(
+    db: DatabaseService,
+    options: FailTransactionAfterQueryOptions,
+): () => void {
+    const originalTransaction = db.transaction.bind(db);
+
+    const transactionSpy = jest.spyOn(db, "transaction");
+
+    let failureInjected = false;
+
+    transactionSpy.mockImplementation(
+        <T>(callback: (client: PoolClient) => Promise<T>): Promise<T> => {
+            return originalTransaction(client => {
+                const interceptedClient = createQueryInterceptingClient(
+                    client,
+                    async args => {
+                        const query = String(args[0]);
+
+                        if (!failureInjected && options.matches(query)) {
+                            failureInjected = true;
+                            throw options.error;
+                        }
+                    },
+                );
+
+                return callback(interceptedClient);
+            });
+        },
+    );
+
+    return () => transactionSpy.mockRestore();
 }
 
 function createClientWithExpiryInjection(

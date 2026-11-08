@@ -19,6 +19,7 @@ import {
     createConflictCheckBarrier,
     createSynchronizedClient,
 } from "../helpers/bookingConcurrencyTestHelpers";
+import { failTransactionAfterQuery } from "./helpers/databaseTestHelpers";
 
 
 describe("booking operations", () => {
@@ -279,6 +280,85 @@ describe("booking operations", () => {
             response_status: 201,
             response_body: JSON.parse(JSON.stringify(booking)),
         });
+    });
+
+    it("rolls back booking creation when idempotency record insertion fails", async () => {
+        const userId = BOOKING_SERVICE_INTEGRATION_USERS.primary;
+        const eventId = BOOKING_SERVICE_INTEGRATION_EVENTS.standard.id;
+        const idempotencyKey = "booking-operations-rollback-001";
+        const injectedError = new Error("forced idempotency insertion failure");
+
+        const restoreFailureInjection = failTransactionAfterQuery(db, {
+            matches: (query: string) => query.includes("INSERT INTO idempotency_requests"),
+            error: injectedError,
+        });
+
+        try {
+            await expect(service.createBooking(userId, eventId, idempotencyKey))
+                .rejects.toBe(injectedError);
+        } finally {
+            restoreFailureInjection();
+        }
+
+        // Both writes must have been rolled back.
+        const bookingResult = await db.query(
+            `
+                SELECT id
+                FROM bookings
+                WHERE user_id = $1
+                  AND event_id = $2;
+            `,
+            [userId, eventId],
+        );
+
+        expect(bookingResult.rows).toHaveLength(0);
+
+        const idempotencyResult = await db.query(
+            `
+            SELECT id
+            FROM idempotency_requests
+            WHERE user_id = $1
+              AND operation = 'create_booking'
+              AND idempotency_key = $2;
+        `,
+            [userId, idempotencyKey],
+        );
+
+        expect(idempotencyResult.rows).toHaveLength(0);
+
+        // The same key must remain reusable after the failed transaction.
+        const booking = await service.createBooking(userId, eventId, idempotencyKey);
+
+        expect(booking).toMatchObject({
+            user_id: userId,
+            event_id: eventId,
+        });
+
+        const retryBookingResult = await db.query(
+            `
+            SELECT id
+            FROM bookings
+            WHERE user_id = $1
+              AND event_id = $2;
+        `,
+            [userId, eventId],
+        );
+
+        expect(retryBookingResult.rows).toHaveLength(1);
+        expect(retryBookingResult.rows[0].id).toBe(booking.id);
+
+        const retryIdempotencyResult = await db.query(
+            `
+            SELECT id
+            FROM idempotency_requests
+            WHERE user_id = $1
+              AND operation = 'create_booking'
+              AND idempotency_key = $2;
+        `,
+            [userId, idempotencyKey],
+        );
+
+        expect(retryIdempotencyResult.rows).toHaveLength(1);
     });
 
     it("replays the original booking for concurrent requests with the same idempotency key", async () => {

@@ -28,3 +28,8 @@ export type InjectExpiredHoldWithCallbackOptions<T> =
     InjectExpiredHoldOptions & {
         callback: InjectExpiredHoldCallback<T>;
     };
+
+export interface FailTransactionAfterQueryOptions {
+    matches: (query: string) => boolean;
+    error: Error;
+}
