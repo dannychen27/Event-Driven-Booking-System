@@ -3,9 +3,7 @@ import { PoolClient } from 'pg';
 
 const logger = new Logger('DatabaseTransaction');
 
-export async function rollbackTransactionSafely(
-    client: PoolClient,
-): Promise<void> {
+export async function rollbackTransactionSafely(client: PoolClient): Promise<void> {
     try {
         await client.query('ROLLBACK');
     } catch (rollbackError) {

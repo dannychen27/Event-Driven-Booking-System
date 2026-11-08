@@ -6,7 +6,6 @@ import { rollbackTransactionSafely } from './database-transaction.helper';
 @Injectable()
 export class DatabaseService implements OnModuleDestroy {
   private readonly pool: Pool;
-  private readonly logger = new Logger(DatabaseService.name);
 
   constructor() {
     const database = process.env.DB_NAME?.trim();

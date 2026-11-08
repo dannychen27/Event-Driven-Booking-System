@@ -1,4 +1,4 @@
-import type { PoolClient, QueryResult } from "pg";
+import type { QueryResult } from "pg";
 import { Logger } from "@nestjs/common";
 import { DatabaseService } from "../../../4. backend/src/database/database.service";
 
