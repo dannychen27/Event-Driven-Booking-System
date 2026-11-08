@@ -629,6 +629,9 @@ npm run build
 
 I plan to develop the project in three major phases, with each phase building on the previous one.
 
+For the current implementation status, planned improvements, and deferred work,
+see [PROJECT_ROADMAP.md](0.%20documentation/PROJECT_ROADMAP.md).
+
 ### Phase 1 — Make the Booking System Work
 
 **Goal:** Build the core booking system with React, a REST API, and PostgreSQL.
@@ -647,7 +650,7 @@ The core search feature is implemented, but improvements to date interpretation,
 provider error handling, and rate limiting remain.
 
 - [ ] **Improve relative-date interpretation**
-  - [ ] Provide the current date and an explicit timezone to the AI interpreter.
+  - [x] Provide the current date and an explicit timezone to the AI interpreter.
   - [ ] Ensure queries such as "this weekend" produce appropriate `startAfter` and `startBefore` filters.
   - [ ] Add tests for relative-date interpretation and timezone boundaries.
   - [x] Test date-filter validation, including invalid dates and reversed date ranges.
@@ -732,7 +735,7 @@ Notifications   C++ Analytics
 - [ ] Add Docker Compose
 - [ ] Add Kubernetes manifests
 - [ ] Add health checks
-- [ ] Add structured logging
+- [x] Add structured logging
 - [x] Expand API and integration tests
 - [x] Add CI/CD
 - [ ] Add load and failure tests
