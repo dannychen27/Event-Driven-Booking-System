@@ -1,8 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
+import { StructuredLogger } from './observability/structured-logger';
+
+
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
+
+  app.useLogger(app.get(StructuredLogger));
   app.enableShutdownHooks();
 
   // I configured CORS to allow requests specifically
