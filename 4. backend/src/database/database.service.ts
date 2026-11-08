@@ -1,5 +1,7 @@
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { Pool, PoolClient, QueryResult } from 'pg';
+
+import { rollbackTransactionSafely } from './database-transaction.helper';
 
 @Injectable()
 export class DatabaseService implements OnModuleDestroy {
@@ -44,7 +46,7 @@ export class DatabaseService implements OnModuleDestroy {
 
       return result;
     } catch (error) {
-      await client.query('ROLLBACK');
+      await rollbackTransactionSafely(client);
       throw error;
     } finally {
       client.release();
