@@ -17,6 +17,19 @@ import {
     expectOneFulfilledAndOneRejected,
     expireHold,
 } from "../helpers/bookingServiceIntegrationTestHelpers";
+import { pauseTransactionAfterQuery } from "./helpers/databaseTestHelpers";
+import {
+    CONCURRENT_RACE_WINNERS,
+    HOLD_STATUS_UPDATE_MATCHER,
+    USER_ROW_LOCK_WAIT_QUERY,
+    LOCK_WAIT_TIMEOUT_MS,
+    LOCK_WAIT_POLL_INTERVAL_MS,
+} from "./helpers/bookingHoldRaceTestHelpers";
+
+import type {
+    RaceOperation,
+    LockWaitQueryResult,
+} from "../types/bookingHoldRace.types";
 
 
 describe("hold cancellation", () => {
@@ -276,51 +289,112 @@ describe("hold cancellation", () => {
     });
 
 
-    it("allows only one of concurrent cancellation and confirmation to succeed", async () => {
-        const userId = BOOKING_SERVICE_INTEGRATION_USERS.primary;
-        const eventId = BOOKING_SERVICE_INTEGRATION_EVENTS.standard.id;
+    it.each(CONCURRENT_RACE_WINNERS)(
+        "allows %s to win a concurrent cancellation-confirmation race",
+        async firstWinner => {
+            const userId = BOOKING_SERVICE_INTEGRATION_USERS.primary;
+            const eventId = BOOKING_SERVICE_INTEGRATION_EVENTS.standard.id;
 
-        const hold = await service.createHold(userId, eventId);
+            const hold = await service.createHold(userId, eventId);
 
-        const results = await Promise.allSettled([
-            service.cancelHold(userId, hold.id),
-            service.confirmHold(userId, hold.id),
-        ]);
+            const transactionGate = pauseTransactionAfterQuery(db, {
+                matches: HOLD_STATUS_UPDATE_MATCHER
+            });
 
-        expectOneFulfilledAndOneRejected(results);
+            let firstOperation: RaceOperation | undefined;
+            let competingOperation: RaceOperation | undefined;
+            let competingIsWaiting = false;
 
-        expect(results.find(result => result.status === "rejected")).toEqual(
-            expect.objectContaining({
-                reason: expect.any(ConflictException),
-            }),
-        );
+            try {
+                // Start and pause the operation that should win.
+                firstOperation = firstWinner === "cancellation"
+                    ? service.cancelHold(userId, hold.id)
+                    : service.confirmHold(userId, hold.id);
 
-        const holdResult = await db.query<BookingHoldStatusRecord>(
-            `
-                SELECT status, expires_at
-                FROM booking_holds
-                WHERE id = $1;
-            `,
-            [hold.id],
-        );
+                await transactionGate.matched;
 
-        expect(holdResult.rows).toHaveLength(1);
+                // Start the competing operation while the first transaction
+                // still holds the user, event, and hold locks.
+                competingOperation = firstWinner === "cancellation"
+                    ? service.confirmHold(userId, hold.id)
+                    : service.cancelHold(userId, hold.id);
 
-        const bookingResult = await db.query(
-            `
-                SELECT id
-                FROM bookings
-                WHERE user_id = $1
-                  AND event_id = $2;
-            `,
-            [userId, eventId],
-        );
+                // Wait for PostgreSQL to confirm the competing operation
+                // is blocked while acquiring the user-row lock.
+                const deadline = Date.now() + LOCK_WAIT_TIMEOUT_MS;
+                while (Date.now() < deadline) {
+                    const result = await db.query<LockWaitQueryResult>(
+                        USER_ROW_LOCK_WAIT_QUERY
+                    );
 
-        if (holdResult.rows[0].status === "cancelled") {
-            expect(bookingResult.rows).toHaveLength(0);
-        } else {
-            expect(holdResult.rows[0].status).toBe("confirmed");
-            expect(bookingResult.rows).toHaveLength(1);
-        }
-    });
+                    if (result.rows[0].count > 0) {
+                        competingIsWaiting = true;
+                        break;
+                    }
+
+                    await new Promise(resolve => setTimeout(
+                        resolve,
+                        LOCK_WAIT_POLL_INTERVAL_MS
+                    ));
+                }
+            } finally {
+                // Always release the first transaction, even if polling fails.
+                transactionGate.release();
+                transactionGate.restore();
+
+                // Drain both operations before making assertions.
+                if (firstOperation) {
+                    await firstOperation.catch(() => undefined);
+                }
+
+                if (competingOperation) {
+                    await competingOperation.catch(() => undefined);
+                }
+            }
+
+            expect(competingIsWaiting).toBe(true);
+
+            const [firstResult, competingResult] = await Promise.allSettled([
+                firstOperation!,
+                competingOperation!,
+            ]);
+
+            expect(firstResult.status).toBe("fulfilled");
+            expect(competingResult).toEqual(
+                expect.objectContaining({
+                    status: "rejected",
+                    reason: expect.any(ConflictException),
+                }),
+            );
+
+            const holdResult = await db.query<BookingHoldStatusRecord>(
+                `
+                    SELECT status, expires_at
+                    FROM booking_holds
+                    WHERE id = $1;
+                `,
+                [hold.id],
+            );
+
+            expect(holdResult.rows).toHaveLength(1);
+
+            const bookingResult = await db.query<{ id: number }>(
+                `
+                    SELECT id
+                    FROM bookings
+                    WHERE user_id = $1
+                      AND event_id = $2;
+                `,
+                [userId, eventId],
+            );
+
+            if (firstWinner === "cancellation") {
+                expect(holdResult.rows[0].status).toBe("cancelled");
+                expect(bookingResult.rows).toHaveLength(0);
+            } else {
+                expect(holdResult.rows[0].status).toBe("confirmed");
+                expect(bookingResult.rows).toHaveLength(1);
+            }
+        },
+    );
 });
