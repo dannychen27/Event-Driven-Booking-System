@@ -4,6 +4,7 @@ import {
   NestModule,
   RequestMethod,
 } from '@nestjs/common';
+import { APP_FILTER } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 
@@ -14,6 +15,7 @@ import { VenuesModule } from './venues/venues.module';
 import { RequestContextService } from './observability/request-context.service';
 import { RequestIdMiddleware } from './observability/request-id.middleware';
 import { StructuredLogger } from './observability/structured-logger';
+import { GlobalExceptionFilter } from './observability/global-exception.filter';
 
 @Module({
   imports: [
@@ -30,6 +32,10 @@ import { StructuredLogger } from './observability/structured-logger';
     StructuredLogger,
     RequestContextService,
     RequestIdMiddleware,
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+    },
   ],
 })
 
