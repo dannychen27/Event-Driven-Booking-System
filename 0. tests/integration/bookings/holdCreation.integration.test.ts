@@ -4,7 +4,11 @@ import {
 
 import { BookingsService } from "../../../4. backend/src/bookings/bookings.service";
 import { DatabaseService } from "../../../4. backend/src/database/database.service";
-import type { BookingHoldStatusRecord } from "../../../4. backend/src/types/bookings/bookings.types";
+import type {
+    BookingHold,
+    BookingHoldStatusRecord,
+} from "../../../4. backend/src/types/bookings/bookings.types";
+
 import {
     BOOKING_SERVICE_INTEGRATION_EVENT_IDS,
     BOOKING_SERVICE_INTEGRATION_EVENT_LIST,
@@ -19,6 +23,7 @@ import {
     expectOneFulfilledAndOneRejected,
     expireHold,
 } from "../helpers/bookingServiceIntegrationTestHelpers";
+import { injectExpiredHoldAfterStaleHoldCleanup } from "./helpers/databaseTestHelpers";
 
 
 describe("hold creation and capacity", () => {
@@ -198,6 +203,47 @@ describe("hold creation and capacity", () => {
     });
 
 
+    it("allows only one concurrent hold creation for the same user and event", async () => {
+        const userId = BOOKING_SERVICE_INTEGRATION_USERS.primary;
+        const eventId = BOOKING_SERVICE_INTEGRATION_EVENTS.standard.id;
+
+        const results = await Promise.allSettled([
+            service.createHold(userId, eventId),
+            service.createHold(userId, eventId),
+        ]);
+
+        expectOneFulfilledAndOneRejected(results);
+        expect(results.find(result => result.status === "rejected")).toEqual(
+            expect.objectContaining({
+                reason: expect.any(ConflictException),
+            }),
+        );
+
+        const successfulResult = results.find(
+            (result): result is PromiseFulfilledResult<BookingHold> =>
+                result.status === "fulfilled",
+        );
+        if (!successfulResult) {
+            throw new Error("Expected one hold creation to succeed");
+        }
+
+        const result = await db.query<BookingHold>(
+            `
+                SELECT id, user_id, event_id, created_at, expires_at, status
+                FROM booking_holds
+                WHERE user_id = $1
+                  AND event_id = $2
+                  AND status = 'active'
+                  AND expires_at > statement_timestamp();
+            `,
+            [userId, eventId],
+        );
+
+        expect(result.rows).toHaveLength(1);
+        expect(result.rows[0].id).toBe(successfulResult.value.id);
+    });
+
+
     it("rejects holds when event capacity is already full", async () => {
         const userId = BOOKING_SERVICE_INTEGRATION_USERS.primary;
         const eventId = BOOKING_SERVICE_INTEGRATION_EVENTS.capacityOne.id;
@@ -236,6 +282,11 @@ describe("hold creation and capacity", () => {
         ]);
 
         expectOneFulfilledAndOneRejected(results);
+        expect(results.find(result => result.status === "rejected")).toEqual(
+            expect.objectContaining({
+                reason: expect.any(ConflictException),
+            }),
+        );
 
         expect(results.find(result => result.status === "rejected")).toEqual(
             expect.objectContaining({
@@ -373,6 +424,45 @@ describe("hold creation and capacity", () => {
                   AND event_id = $2
                 ORDER BY id;
             `,
+            [userId, eventId],
+        );
+
+        expect(result.rows).toEqual([
+            {
+                id: originalHold.id,
+                status: "expired",
+            },
+            {
+                id: replacementHold.id,
+                status: "active",
+            },
+        ]);
+    });
+
+
+    it("replaces a hold that expires after the initial stale-hold cleanup", async () => {
+        const userId = BOOKING_SERVICE_INTEGRATION_USERS.primary;
+        const eventId = BOOKING_SERVICE_INTEGRATION_EVENTS.standard.id;
+
+        const originalHold = await service.createHold(userId, eventId);
+
+        const replacementHold = await injectExpiredHoldAfterStaleHoldCleanup({
+            db,
+            holdId: originalHold.id,
+            callback: _client => service.createHold(userId, eventId),
+        });
+
+        expect(replacementHold.id).not.toBe(originalHold.id);
+        expect(replacementHold.status).toBe("active");
+
+        const result = await db.query(
+            `
+            SELECT id, status
+            FROM booking_holds
+            WHERE user_id = $1
+              AND event_id = $2
+            ORDER BY id;
+        `,
             [userId, eventId],
         );
 
