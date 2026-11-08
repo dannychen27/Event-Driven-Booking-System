@@ -66,14 +66,23 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci --prefix "3. frontend"
 
+      - name: Build backend
+        run: npm run build --prefix "4. backend"
+
+      - name: Build frontend
+        run: npm run build --prefix "3. frontend"
+
       - name: Run database safety tests
         run: bash "0. tests/database-safety/database-setup-safety.test.sh"
 
       - name: Run unit tests with coverage
         run: npm run coverage
 
-      - name: Run end-to-end and integration tests
-        run: npm run test:e2e && npm run test:integration
+      - name: Run end-to-end tests
+        run: npm run test:e2e
+
+      - name: Run integration tests
+        run: npm run test:integration
 
       - name: Upload coverage reports
         if: ${{ !cancelled() }}

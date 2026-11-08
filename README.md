@@ -140,7 +140,7 @@ The environment variables control the following database connection settings:
 
 Ensure PostgreSQL is running, then follow the [Database Setup](#database-setup) instructions below.
 
-For a quick local setup, the `setup.sh` script recreates `booking_system` and loads the schema and seed data.
+For a quick local setup, the `setup.sh` script recreates `booking_system` and loads the schema, indexes, and seed data.
 **It deletes existing data in that database**, so use it only when you intend to reset it.
 
 ### 4. Start the application
@@ -226,32 +226,111 @@ Primary keys, foreign keys, constraints, and indexes support data integrity.
 Booking operations use database transactions and row-level locking to help
 prevent conflicting operations and concurrent overbooking.
 
+The `DatabaseService` manages transaction lifecycle and PostgreSQL
+connection handling, while booking services execute business operations
+within those transactions.
+
 ### Request Flow
 
 A typical request follows this path:
 
-```text
-React Frontend
-      │
-      ▼
-REST API Request
-      │
-      ▼
-NestJS Controller
-      │
-      ▼
-NestJS Service
-      │
-      ▼
-PostgreSQL
-      │
-      ▼
-Response to Frontend
+```mermaid
+flowchart TD
+  FE["React Frontend"]
+  API["NestJS REST API"]
+  CTRL["NestJS Controllers"]
+
+  FE --> API --> CTRL
+
+  CTRL --> BS["BookingsService"]
+  CTRL --> ES["Events and Venues Services"]
+
+  BS --> DS["DatabaseService"]
+  ES --> DS
+
+  subgraph TX["Booking transaction"]
+    direction TB
+    BEGIN["BEGIN"]
+    USERLOCK["Lock user row"]
+    IDEM["Check idempotency key and request hash<br/>(where applicable)"]
+    RESOURCELOCK["Lock event and hold rows<br/>(where applicable)"]
+    VALID["Validate ownership, status,<br/>availability and capacity"]
+    WRITE["Create, confirm or cancel<br/>booking or hold"]
+    SAVE["Persist idempotency response<br/>(where applicable)"]
+    COMMIT["COMMIT"]
+
+    BEGIN --> USERLOCK
+    USERLOCK --> IDEM
+    IDEM --> RESOURCELOCK
+    RESOURCELOCK --> VALID
+    VALID --> WRITE
+    WRITE --> SAVE
+    SAVE --> COMMIT
+  end
+
+  DS --> BEGIN
+  COMMIT --> DS
+
+  subgraph WORKER["Background hold expiration"]
+    CRON["Scheduled expiration worker"]
+    CLEAN["Batch cleanup using<br/>FOR UPDATE SKIP LOCKED"]
+    CRON --> CLEAN
+  end
+
+  CLEAN --> DS
+
+  DS <--> PG[("PostgreSQL")]
+
+  PG --- USERS["Users and events"]
+  PG --- BOOK["Bookings"]
+  PG --- HOLDS["Booking holds"]
+  PG --- IDEMREC["Idempotency requests"]
 ```
+
+> Transaction steps vary by operation.
+> Idempotency checks and response persistence apply to booking creation and hold confirmation;
+> row locks are acquired as required by each operation.
 
 - The controller receives the request and delegates processing to the appropriate service.
 - The service applies business rules and coordinates database operations, such as reading from and writing to the database.
 - The controller then returns the backend response to the frontend.
+
+
+### Booking Lifecycle and Reliability
+
+#### Booking Creation
+
+- A booking request starts a database transaction.
+- The service locks the relevant user and event rows to serialize conflicting operations.
+- It checks for an existing idempotency record when an idempotency key is supplied.
+- It expires stale holds and validates capacity, existing bookings, and overlapping active holds.
+- The booking and its idempotency response are persisted in the same transaction.
+- The transaction commits only after all required operations succeed.
+
+#### Temporary Booking Holds
+
+- A user can create a temporary hold on an event.
+- Holds expire automatically after 10 minutes if they are not confirmed.
+- Active holds count toward event capacity and participate in availability checks.
+- Partial unique indexes prevent a user from holding the same event more than once.
+- A scheduled background worker periodically expires stale holds in batches using `FOR UPDATE SKIP LOCKED`.
+
+#### Hold Confirmation and Cancellation
+
+- Confirming a hold validates ownership and locks the relevant user, event, and hold rows.
+- A successful confirmation creates a booking and updates the hold within the same transaction.
+- An expired hold is marked expired before the request returns a conflict response.
+- Hold cancellation similarly validates ownership and updates the hold status transactionally.
+- Booking cancellation removes the booking within a transaction after ownership validation and the necessary row locking.
+
+#### Idempotency and Transaction Safety
+
+- Booking creation and hold confirmation support idempotency keys.
+- Idempotency records are scoped to the user and operation.
+- Repeating a request with the same key and request payload replays the stored response.
+- Reusing a key with a different request payload returns a conflict.
+- Booking changes and their corresponding idempotency records are committed atomically.
+- Database transactions roll back on failure, and database connections are released after transaction completion.
 
 
 ### Why Event-Driven Architecture?
@@ -382,7 +461,7 @@ The endpoint returns a `400 Bad Request` if:
 
 ## Database Setup
 
-- `setup.sh` — drops and recreates `booking_system`, then loads the schema and seed data. It does not create indexes or run constraint tests.
+- `setup.sh` — drops and recreates `booking_system`, then loads the schema, indexes, and seed data. It does not run constraint tests.
 - `setup.sql` — loads the schema, indexes, seed data, and constraint tests into an existing database.
 - `schema.sql` — defines the database schema.
 - `seed data/seed.sql` — provides seed data for development and testing.
@@ -654,11 +733,11 @@ Notifications   C++ Analytics
 - [ ] Add Kubernetes manifests
 - [ ] Add health checks
 - [ ] Add structured logging
-- [ ] Expand API and integration tests
-- [ ] Add CI/CD
+- [x] Expand API and integration tests
+- [x] Add CI/CD
 - [ ] Add load and failure tests
-- [ ] Add an architecture diagram
-- [ ] Expand project documentation
+- [x] Add an architecture diagram
+- [x] Expand project documentation
 
 
 I intend to stop once these phases are complete rather than continuously

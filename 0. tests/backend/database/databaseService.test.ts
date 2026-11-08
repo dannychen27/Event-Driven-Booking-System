@@ -61,6 +61,24 @@ describe("DatabaseService", () => {
             expect(MockPool).not.toHaveBeenCalled();
         });
 
+        it("should reject a missing DB_USER", () => {
+            delete process.env.DB_USER;
+
+            expect(() => new DatabaseService()).toThrow(
+                "DB_USER must be explicitly configured."
+            );
+            expect(MockPool).not.toHaveBeenCalled();
+        });
+
+        it("should reject a blank DB_USER", () => {
+            process.env.DB_USER = "   ";
+
+            expect(() => new DatabaseService()).toThrow(
+                "DB_USER must be explicitly configured."
+            );
+            expect(MockPool).not.toHaveBeenCalled();
+        });
+
         it("should reject a blank DB_NAME", () => {
             process.env.DB_NAME = "   ";
 
@@ -82,10 +100,9 @@ describe("DatabaseService", () => {
             expect(service).toBeInstanceOf(DatabaseService);
         });
 
-        it("should use default connection options when optional variables are absent", () => {
+        it("should use default host and port when optional variables are absent", () => {
             delete process.env.DB_HOST;
             delete process.env.DB_PORT;
-            delete process.env.DB_USER;
             delete process.env.DB_PASSWORD;
 
             service = new DatabaseService();
@@ -94,7 +111,7 @@ describe("DatabaseService", () => {
                 host: "localhost",
                 port: 5432,
                 database: "booking_system_test",
-                user: "dannychen",
+                user: "test_user",
                 password: undefined,
             });
         });

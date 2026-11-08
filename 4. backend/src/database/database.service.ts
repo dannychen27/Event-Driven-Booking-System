@@ -9,6 +9,7 @@ export class DatabaseService implements OnModuleDestroy {
 
   constructor() {
     const database = process.env.DB_NAME?.trim();
+    const user = process.env.DB_USER?.trim();
 
     if (!database) {
       throw new Error(
@@ -16,11 +17,17 @@ export class DatabaseService implements OnModuleDestroy {
       );
     }
 
+    if (!user) {
+      throw new Error(
+        'DB_USER must be explicitly configured. Refusing to connect without a database user.',
+      );
+    }
+
     this.pool = new Pool({
       host: process.env.DB_HOST || 'localhost',
       port: Number(process.env.DB_PORT) || 5432,
       database,
-      user: process.env.DB_USER || 'dannychen',
+      user,
       password: process.env.DB_PASSWORD,
     });
   }
