@@ -23,6 +23,17 @@ module.exports = {
         "4. backend/node_modules",
     ],
 
+    setupFiles: [
+        require.resolve(
+            "dotenv/config",
+            {
+                paths: [
+                    path.resolve("4. backend"),
+                ],
+            },
+        ),
+    ],
+
     transform: {
         "^.+\\.(t|j)s$": [
             tsJestPath,
