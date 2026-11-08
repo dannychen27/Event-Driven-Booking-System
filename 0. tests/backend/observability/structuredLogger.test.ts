@@ -52,6 +52,34 @@ describe('StructuredLogger', () => {
         expect(getLoggedEntry(stdoutSpy).message).toEqual(message);
     });
 
+    it('should safely handle circular references', () => {
+        const circular: { self?: unknown } = {};
+        circular.self = circular;
+
+        expect(() => logger.log({
+            event: 'booking.created',
+            details: circular,
+        })).not.toThrow();
+
+        expect(getLoggedEntry(stdoutSpy)).toMatchObject({
+            level: 'log',
+            message: '[Log record omitted: serialization failed]',
+            serializationError: 'Unable to serialize structured log record',
+        });
+    });
+
+    it('should safely handle BigInt values', () => {
+        expect(() => logger.log({
+            bookingId: 123n,
+        })).not.toThrow();
+
+        expect(getLoggedEntry(stdoutSpy)).toMatchObject({
+            level: 'log',
+            message: '[Log record omitted: serialization failed]',
+            serializationError: 'Unable to serialize structured log record',
+        });
+    });
+
     it('should include the context supplied to a standard log method', () => {
         logger.log('Booking created', 'BookingsService');
 

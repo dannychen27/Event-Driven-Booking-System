@@ -7,4 +7,5 @@ export type LogEntry = {
     message: unknown;
     stack?: string;
     additionalParams?: unknown[];
+    serializationError?: string;
 };

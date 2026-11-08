@@ -5,6 +5,21 @@ import { LogEntry } from "./structured-logger.types";
 export class StructuredLogger implements LoggerService {
   private enabledLevels = new Set<LogLevel>(ALL_LOG_LEVELS);
 
+  private serializeEntry(entry: LogEntry): string {
+    try {
+      return JSON.stringify(entry);
+    } catch {
+      const fallback: LogEntry = {
+        timestamp: entry.timestamp,
+        level: entry.level,
+        message: '[Log record omitted: serialization failed]',
+        serializationError: 'Unable to serialize structured log record',
+      };
+
+      return JSON.stringify(fallback);
+    }
+  }
+
   log(message: any, ...optionalParams: any[]): void {
     this.write('log', message, optionalParams);
   }
@@ -62,7 +77,7 @@ export class StructuredLogger implements LoggerService {
       level === 'warn' || level === 'error' || level === 'fatal'
         ? process.stderr
         : process.stdout;
-    output.write(`${JSON.stringify(entry)}\n`);
+    output.write(`${this.serializeEntry(entry)}\n`);
   }
 
   private addStandardParameters(entry: LogEntry, optionalParams: unknown[]): void {
