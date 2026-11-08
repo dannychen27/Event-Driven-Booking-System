@@ -140,7 +140,7 @@ The environment variables control the following database connection settings:
 
 Ensure PostgreSQL is running, then follow the [Database Setup](#database-setup) instructions below.
 
-For a quick local setup, the `setup.sh` script recreates `booking_system` and loads the schema and seed data.
+For a quick local setup, the `setup.sh` script recreates `booking_system` and loads the schema, indexes, and seed data.
 **It deletes existing data in that database**, so use it only when you intend to reset it.
 
 ### 4. Start the application
@@ -382,7 +382,7 @@ The endpoint returns a `400 Bad Request` if:
 
 ## Database Setup
 
-- `setup.sh` — drops and recreates `booking_system`, then loads the schema and seed data. It does not create indexes or run constraint tests.
+- `setup.sh` — drops and recreates `booking_system`, then loads the schema, indexes, and seed data. It does not run constraint tests.
 - `setup.sql` — loads the schema, indexes, seed data, and constraint tests into an existing database.
 - `schema.sql` — defines the database schema.
 - `seed data/seed.sql` — provides seed data for development and testing.
