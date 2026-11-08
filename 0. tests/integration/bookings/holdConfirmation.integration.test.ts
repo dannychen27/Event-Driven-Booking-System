@@ -6,6 +6,7 @@ import {
 
 import { BookingsService } from "../../../4. backend/src/bookings/bookings.service";
 import { DatabaseService } from "../../../4. backend/src/database/database.service";
+import { BookingHoldExpirationService } from "../../../4. backend/src/bookings/booking-hold-expiration.service";
 import type { BookingHoldStatusRecord } from "../../../4. backend/src/types/bookings/bookings.types";
 import {
     BOOKING_SERVICE_INTEGRATION_EVENT_IDS,
@@ -17,6 +18,7 @@ import {
     expectOneFulfilledAndOneRejected,
     expireHold,
 } from "../helpers/bookingServiceIntegrationTestHelpers";
+import { pauseTransactionAfterQuery } from "./helpers/databaseTestHelpers";
 
 
 describe("hold confirmation", () => {
@@ -687,5 +689,139 @@ describe("hold confirmation", () => {
         );
 
         expect(bookingResult.rows).toHaveLength(0);
+    });
+
+
+    it("allows confirmation to win while the expiration worker skips the locked hold", async () => {
+        const userId = BOOKING_SERVICE_INTEGRATION_USERS.primary;
+        const eventId = BOOKING_SERVICE_INTEGRATION_EVENTS.standard.id;
+
+        const hold = await service.createHold(userId, eventId);
+        const expirationService = new BookingHoldExpirationService(db);
+
+        // Give confirmation enough time to reach its status transition.
+        await db.query(
+            `
+            UPDATE booking_holds
+            SET expires_at = statement_timestamp() + INTERVAL '3 seconds'
+            WHERE id = $1;
+        `,
+            [hold.id],
+        );
+
+        const transactionGate = pauseTransactionAfterQuery(db, {
+            matches: query =>
+                query.includes("UPDATE booking_holds")
+                && query.includes("SET status = CASE"),
+        });
+
+        let confirmation: ReturnType<BookingsService["confirmHold"]> | undefined;
+        let worker: ReturnType<BookingHoldExpirationService["expireExpiredHolds"]> | undefined;
+        try {
+            // Start confirmation and wait until its status update has succeeded.
+            confirmation = service.confirmHold(userId, hold.id);
+
+            await transactionGate.matched;
+
+            // Wait until PostgreSQL considers the hold expired.
+            let holdHasExpired = false;
+            const deadline = Date.now() + 5000;
+
+            while (Date.now() < deadline) {
+                const result = await db.query<{ expired: boolean }>(
+                    `
+                    SELECT expires_at <= clock_timestamp() AS expired
+                    FROM booking_holds
+                    WHERE id = $1;
+                `,
+                    [hold.id],
+                );
+
+                if (result.rows[0].expired) {
+                    holdHasExpired = true;
+                    break;
+                }
+
+                await new Promise(resolve => setTimeout(resolve, 10));
+            }
+
+            expect(holdHasExpired).toBe(true);
+
+            // Confirmation still owns the hold-row lock.
+            // The expiration worker should skip the locked row.
+            worker = expirationService.expireExpiredHolds();
+
+            let timeout: ReturnType<typeof setTimeout> | undefined;
+
+            const workerCompleted = await Promise.race([
+                worker.then(() => true),
+                new Promise<boolean>(resolve => {
+                    timeout = setTimeout(() => resolve(false), 3000);
+                }),
+            ]);
+
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+
+            expect(workerCompleted).toBe(true);
+        } finally {
+            // Always release confirmation, even if an assertion fails.
+            transactionGate.release();
+            transactionGate.restore();
+
+            // Drain outstanding operations.
+            if (confirmation) {
+                await confirmation.catch(() => undefined);
+            }
+
+            if (worker) {
+                await worker.catch(() => undefined);
+            }
+        }
+
+        const booking = await confirmation!;
+
+        expect(booking).toMatchObject({
+            user_id: userId,
+            event_id: eventId,
+        });
+
+        const holdResult = await db.query(
+            `
+            SELECT status
+            FROM booking_holds
+            WHERE id = $1;
+        `,
+            [hold.id],
+        );
+
+        expect(holdResult.rows).toEqual([{ status: "confirmed" }]);
+
+        const bookingResult = await db.query<{ count: number }>(
+            `
+            SELECT COUNT(*)::int AS count
+            FROM bookings
+            WHERE user_id = $1
+              AND event_id = $2;
+        `,
+            [userId, eventId],
+        );
+
+        expect(bookingResult.rows[0].count).toBe(1);
+
+        // A subsequent worker execution must leave the confirmed hold alone.
+        await expirationService.expireExpiredHolds();
+
+        const finalHoldResult = await db.query(
+            `
+            SELECT status
+            FROM booking_holds
+            WHERE id = $1;
+        `,
+            [hold.id],
+        );
+
+        expect(finalHoldResult.rows).toEqual([{ status: "confirmed" }]);
     });
 });
