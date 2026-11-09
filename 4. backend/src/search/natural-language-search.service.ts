@@ -3,6 +3,7 @@ import { EventsService } from '../events/events.service';
 
 import { SearchFilters } from '../types/search/natural-language-search.types';
 import { validateSearchFilters } from './natural-language-search';
+import { resolveRelativeDateRange } from './relative-date-range.resolver';
 import { GeminiEventSearchInterpreter } from '../events/search/gemini-event-search-interpreter';
 import { GeminiEventRanker } from '../events/search/gemini-event-ranker';
 
@@ -23,10 +24,15 @@ export class NaturalLanguageSearchService {
     try {
       const plan = await this.interpreter.interpret(request);
 
-      const candidates = await this.eventsService.searchEventCandidates({
-        startAfter: plan.startAfter,
-        startBefore: plan.startBefore,
-      });
+      const dateFilters = plan.relativeDate
+        ? resolveRelativeDateRange(plan.relativeDate, new Date())
+        : {
+            startAfter: plan.startAfter,
+            startBefore: plan.startBefore,
+          };
+
+      const candidates =
+        await this.eventsService.searchEventCandidates(dateFilters);
 
       if (!plan.intent?.trim() || candidates.length === 0) {
         return candidates;

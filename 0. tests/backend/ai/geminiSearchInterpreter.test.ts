@@ -91,14 +91,16 @@ describe("GeminiSearchInterpreter", () => {
 
         expect(prompt).toContain("semantic event preferences");
         expect(prompt).toContain("literal keywords");
-        expect(prompt).toContain("startAfter and startBefore");
+        expect(prompt).toContain("structured relativeDate object");
+        expect(prompt).toContain("Do not calculate absolute date boundaries");
+        expect(prompt).toContain("For explicit absolute dates or date ranges");
+        expect(prompt).toContain("Timezone: America/Toronto.");
     });
 
-    it("should return date filters for a relative-date request", async () => {
+    it("should return a structured relative-date plan for a relative-date request", async () => {
         const plan = {
             intent: "Coffee events",
-            startAfter: "2026-10-24T00:00:00-04:00",
-            startBefore: "2026-10-27T00:00:00-04:00",
+            relativeDate: { kind: "THIS_WEEKEND" },
         };
 
         const generateContent = jest.fn().mockResolvedValue({
@@ -121,12 +123,13 @@ describe("GeminiSearchInterpreter", () => {
         );
     });
 
-    it("should allow date-only requests without an intent", async () => {
+    it("should allow relative-date-only requests without an intent", async () => {
+        const plan = {
+            relativeDate: { kind: "THIS_WEEKEND" },
+        };
+
         const generateContent = jest.fn().mockResolvedValue({
-            text: JSON.stringify({
-                startAfter: "2026-10-24T00:00:00-04:00",
-                startBefore: "2026-10-27T00:00:00-04:00",
-            }),
+            text: JSON.stringify(plan),
         });
 
         const interpreter = new GeminiEventSearchInterpreter(
@@ -136,9 +139,26 @@ describe("GeminiSearchInterpreter", () => {
 
         await expect(
             interpreter.interpret("Show me events this weekend"),
-        ).resolves.toEqual({
+        ).resolves.toEqual(plan);
+    });
+
+    it("should preserve absolute date boundaries for explicit dates", async () => {
+        const plan = {
             startAfter: "2026-10-24T00:00:00-04:00",
             startBefore: "2026-10-27T00:00:00-04:00",
+        };
+
+        const generateContent = jest.fn().mockResolvedValue({
+            text: JSON.stringify(plan),
         });
+
+        const interpreter = new GeminiEventSearchInterpreter(
+            "test-api-key",
+            { models: { generateContent } } as never,
+        );
+
+        await expect(
+            interpreter.interpret("Show me events from October 24 to October 26"),
+        ).resolves.toEqual(plan);
     });
 });

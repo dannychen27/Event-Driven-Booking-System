@@ -49,6 +49,10 @@ describe("NaturalLanguageSearchService", () => {
         );
     });
 
+    afterEach(() => {
+        jest.useRealTimers();
+    });
+
     it('retrieves date-filtered candidates and returns them in semantic ranking order', async () => {
         const result = await service.searchNaturalLanguage(
             'Find something relaxing outdoors this weekend',
@@ -116,5 +120,39 @@ describe("NaturalLanguageSearchService", () => {
         );
 
         expect(result).toEqual([]);
+    });
+
+    it('resolves a relative TODAY filter using the Toronto calendar date', async () => {
+        jest.useFakeTimers();
+        jest.setSystemTime(new Date('2026-11-08T17:00:00.000Z'));
+
+        interpreter.interpret.mockResolvedValueOnce({
+            intent: 'outdoor activities',
+            relativeDate: { kind: 'TODAY' },
+        });
+
+        await service.searchNaturalLanguage('Find events today');
+
+        expect(eventsService.searchEventCandidates).toHaveBeenCalledWith({
+            startAfter: '2026-11-08T05:00:00.000Z',
+            startBefore: '2026-11-09T05:00:00.000Z',
+        });
+    });
+
+    it('resolves THIS_WEEKEND to the current Toronto weekend, even on Sunday', async () => {
+        jest.useFakeTimers();
+        jest.setSystemTime(new Date('2026-11-08T17:00:00.000Z'));
+
+        interpreter.interpret.mockResolvedValueOnce({
+            intent: 'outdoor activities',
+            relativeDate: { kind: 'THIS_WEEKEND' },
+        });
+
+        await service.searchNaturalLanguage('Find events this weekend');
+
+        expect(eventsService.searchEventCandidates).toHaveBeenCalledWith({
+            startAfter: '2026-11-07T05:00:00.000Z',
+            startBefore: '2026-11-09T05:00:00.000Z',
+        });
     });
 });
