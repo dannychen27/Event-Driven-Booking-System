@@ -72,4 +72,76 @@ describe("NaturalLanguageSearchService", () => {
 
         expect(eventsService.searchEvents).not.toHaveBeenCalled();
     });
+
+    it.each([
+        { includePastEvents: true, includeFutureEvents: true },
+        { includePastEvents: false, includeFutureEvents: true },
+        { includePastEvents: true, includeFutureEvents: false },
+        { includePastEvents: false, includeFutureEvents: false },
+    ])('preserves past/future inclusion settings: %j',
+        async (flags) => {
+        await service.search(flags);
+
+        expect(eventsService.searchEvents).toHaveBeenCalledWith(flags);
+        expect(eventsService.searchEventCandidates).not.toHaveBeenCalled();
+    });
+
+    it.each([
+        { includePastEvents: 'false' },
+        { includePastEvents: 0 },
+        { includeFutureEvents: 'true' },
+        { includeFutureEvents: 1 },
+    ])('rejects non-boolean past/future inclusion settings: %j',
+        async (flags) => {
+        await expect(service.search(flags)).rejects.toThrow();
+
+        expect(eventsService.searchEvents).not.toHaveBeenCalled();
+    });
+
+    it.each([
+        { timeOfDay: 'EARLY_MORNING' },
+        { timeOfDay: 'MORNING' },
+        { timeOfDay: 'AFTERNOON' },
+        { timeOfDay: 'EVENING' },
+        { timeOfDay: 'NIGHT' },
+    ])('preserves valid time-of-day filters: %j', async (filter) => {
+        await service.search(filter);
+
+        expect(eventsService.searchEvents).toHaveBeenCalledWith(filter);
+    });
+
+    it.each([
+        { timeRange: { startTime: '20:00' } },
+        { timeRange: { endTime: '10:00' } },
+        { timeRange: { startTime: '22:00', endTime: '02:00' } },
+        {
+            timeOfDay: 'EVENING',
+            timeRange: { startTime: '19:00', endTime: '20:00' },
+        },
+    ])('preserves valid explicit time ranges: %j',
+        async (filter) => {
+        await service.search(filter);
+
+        expect(eventsService.searchEvents).toHaveBeenCalledWith(filter);
+    });
+
+    it.each([
+        { timeOfDay: 'LATE_NIGHT' },
+        { timeOfDay: 12 },
+        { timeOfDay: null },
+        { timeRange: {} },
+        { timeRange: { startTime: undefined } },
+        { timeRange: { endTime: undefined } },
+        { timeRange: { startTime: '24:00' } },
+        { timeRange: { endTime: '12:60' } },
+        { timeRange: { startTime: '9:00' } },
+        { timeRange: { startTime: '18:00', endTime: '18:00' } },
+        { timeRange: { startTime: '18:00', finishTime: '20:00' } },
+        { timeRange: null },
+    ])('rejects invalid time filters: %j',
+        async (filter) => {
+        await expect(service.search(filter)).rejects.toThrow();
+
+        expect(eventsService.searchEvents).not.toHaveBeenCalled();
+    });
 });

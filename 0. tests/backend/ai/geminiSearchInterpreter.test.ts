@@ -95,6 +95,24 @@ describe("GeminiSearchInterpreter", () => {
         expect(prompt).toContain("Do not calculate absolute date boundaries");
         expect(prompt).toContain("For explicit absolute dates or date ranges");
         expect(prompt).toContain("Timezone: America/Toronto.");
+
+        expect(prompt).toContain("Interpret relative dates using the current date and timezone below.");
+
+        expect(prompt).toContain("TIME INTERPRETATION");
+        expect(prompt).toContain("Interpret all event times in the America/Toronto timezone.");
+        expect(prompt).toContain("EARLY_MORNING (05:00–08:00)");
+        expect(prompt).toContain("MORNING (08:00–12:00)");
+        expect(prompt).toContain("AFTERNOON (12:00–17:00)");
+        expect(prompt).toContain("EVENING (17:00–21:00)");
+        expect(prompt).toContain("NIGHT (21:00–05:00 the following day)");
+
+        expect(prompt).toContain('For requests such as "after 8 PM", use startTime: "20:00".');
+        expect(prompt).toContain('For requests such as "before 10 AM", use endTime: "10:00".');
+        expect(prompt).toContain('startTime: "22:00" and endTime: "02:00"');
+
+        expect(prompt).toContain("start-inclusive and end-exclusive boundaries");
+        expect(prompt).toContain("backend will apply their intersection");
+        expect(prompt).toContain("Omit timeOfDay and timeRange when the user expresses no time preference.");
     });
 
     it("should return a structured relative-date plan for a relative-date request", async () => {

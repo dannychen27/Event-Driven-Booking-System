@@ -32,7 +32,13 @@ export class NaturalLanguageSearchService {
           };
 
       const candidates =
-        await this.eventsService.searchEventCandidates(dateFilters);
+        await this.eventsService.searchEventCandidates({
+          ...dateFilters,
+          includePastEvents: plan.includePastEvents,
+          includeFutureEvents: plan.includeFutureEvents,
+          timeOfDay: plan.timeOfDay,
+          timeRange: plan.timeRange,
+        });
 
       if (!plan.intent?.trim() || candidates.length === 0) {
         return candidates;

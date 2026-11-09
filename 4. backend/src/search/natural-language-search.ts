@@ -17,6 +17,9 @@ import {
   validateOptionalString,
   validateDateRange,
   buildDateRangeFilters,
+  validateOptionalBoolean,
+  validateOptionalTimeOfDay,
+  validateOptionalTimeRange,
 } from '../helpers/search/natural-language-search.helpers';
 
 export function validateSearchFilters(input: unknown): SearchFilters {
@@ -27,11 +30,34 @@ export function validateSearchFilters(input: unknown): SearchFilters {
     unsupportedFieldErrorPrefix: 'Unsupported search filter: ',
   });
 
-  const { keyword, startAfter, startBefore } = inputFields;
+  const {
+    keyword,
+    startAfter,
+    startBefore,
+    timeOfDay,
+    timeRange,
+    includePastEvents,
+    includeFutureEvents,
+  } = inputFields;
   const validatedKeyword = validateOptionalString({
     value: keyword,
     fieldName: 'keyword',
     maxLength: MAX_EVENT_SEARCH_KEYWORD_LENGTH,
+  });
+  const validatedIncludePastEvents = validateOptionalBoolean({
+    value: includePastEvents,
+    fieldName: 'includePastEvents',
+  });
+  const validatedIncludeFutureEvents = validateOptionalBoolean({
+    value: includeFutureEvents,
+    fieldName: 'includeFutureEvents',
+  });
+
+  const validatedTimeOfDay = validateOptionalTimeOfDay({
+    value: timeOfDay,
+  });
+  const validatedTimeRange = validateOptionalTimeRange({
+    value: timeRange,
   });
 
   validateDateRange({ startAfter, startBefore });
@@ -39,6 +65,18 @@ export function validateSearchFilters(input: unknown): SearchFilters {
   return {
     ...(validatedKeyword !== undefined ? { keyword: validatedKeyword } : {}),
     ...buildDateRangeFilters({ startAfter, startBefore }),
+    ...(validatedIncludePastEvents !== undefined
+      ? { includePastEvents: validatedIncludePastEvents }
+      : {}),
+    ...(validatedIncludeFutureEvents !== undefined
+      ? { includeFutureEvents: validatedIncludeFutureEvents }
+      : {}),
+    ...(validatedTimeOfDay !== undefined
+      ? { timeOfDay: validatedTimeOfDay }
+      : {}),
+    ...(validatedTimeRange !== undefined
+      ? { timeRange: validatedTimeRange }
+      : {}),
   };
 }
 
@@ -151,11 +189,35 @@ export function validateNaturalLanguageSearchPlan(
     unsupportedFieldErrorPrefix: 'Unsupported natural-language search field: ',
   });
 
-  const { intent, startAfter, startBefore, relativeDate } = inputFields;
+  const {
+    intent,
+    startAfter,
+    startBefore,
+    relativeDate,
+    timeOfDay,
+    timeRange,
+    includePastEvents,
+    includeFutureEvents,
+  } = inputFields;
   const validatedIntent = validateOptionalString({
     value: intent,
     fieldName: 'intent',
     maxLength: MAX_NATURAL_LANGUAGE_INTENT_LENGTH,
+  });
+  const validatedIncludePastEvents = validateOptionalBoolean({
+    value: includePastEvents,
+    fieldName: 'includePastEvents',
+  });
+  const validatedIncludeFutureEvents = validateOptionalBoolean({
+    value: includeFutureEvents,
+    fieldName: 'includeFutureEvents',
+  });
+
+  const validatedTimeOfDay = validateOptionalTimeOfDay({
+    value: timeOfDay,
+  });
+  const validatedTimeRange = validateOptionalTimeRange({
+    value: timeRange,
   });
 
   validateDateRange({ startAfter, startBefore });
@@ -179,6 +241,18 @@ export function validateNaturalLanguageSearchPlan(
     ...buildDateRangeFilters({ startAfter, startBefore }),
     ...(validatedRelativeDate !== undefined
       ? { relativeDate: validatedRelativeDate }
+      : {}),
+    ...(validatedIncludePastEvents !== undefined
+      ? { includePastEvents: validatedIncludePastEvents }
+      : {}),
+    ...(validatedIncludeFutureEvents !== undefined
+      ? { includeFutureEvents: validatedIncludeFutureEvents }
+      : {}),
+    ...(validatedTimeOfDay !== undefined
+      ? { timeOfDay: validatedTimeOfDay }
+      : {}),
+    ...(validatedTimeRange !== undefined
+      ? { timeRange: validatedTimeRange }
       : {}),
   };
 }

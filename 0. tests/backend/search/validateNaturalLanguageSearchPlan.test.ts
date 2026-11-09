@@ -33,6 +33,65 @@ describe("validateNaturalLanguageSearchPlan", () => {
         expect(validateNaturalLanguageSearchPlan({})).toEqual({});
     });
 
+    it.each([
+        { includePastEvents: true, includeFutureEvents: true },
+        { includePastEvents: false, includeFutureEvents: true },
+        { includePastEvents: true, includeFutureEvents: false },
+        { includePastEvents: false, includeFutureEvents: false },
+    ])("should accept past/future inclusion settings: %j", (flags) => {
+        expect(validateNaturalLanguageSearchPlan(flags)).toEqual(flags);
+    });
+
+    it.each([
+        { includePastEvents: "false" },
+        { includePastEvents: 0 },
+        { includePastEvents: null },
+        { includeFutureEvents: "true" },
+        { includeFutureEvents: 1 },
+        { includeFutureEvents: null },
+    ])("should reject non-boolean past/future inclusion settings: %j", (flags) => {
+        expect(() => validateNaturalLanguageSearchPlan(flags)).toThrow();
+    });
+
+    it.each([
+        { timeOfDay: 'EARLY_MORNING' },
+        { timeOfDay: 'MORNING' },
+        { timeOfDay: 'AFTERNOON' },
+        { timeOfDay: 'EVENING' },
+        { timeOfDay: 'NIGHT' },
+    ])('preserves valid time-of-day filters: %j', (plan) => {
+        expect(validateNaturalLanguageSearchPlan(plan)).toMatchObject(plan);
+    });
+
+    it.each([
+        { timeRange: { startTime: '20:00' } },
+        { timeRange: { endTime: '10:00' } },
+        { timeRange: { startTime: '22:00', endTime: '02:00' } },
+        {
+            timeOfDay: 'EVENING',
+            timeRange: { startTime: '19:00', endTime: '20:00' },
+        },
+    ])('preserves valid explicit time ranges: %j', (plan) => {
+        expect(validateNaturalLanguageSearchPlan(plan)).toMatchObject(plan);
+    });
+
+    it.each([
+        { timeOfDay: 'LATE_NIGHT' },
+        { timeOfDay: 12 },
+        { timeOfDay: null },
+        { timeRange: {} },
+        { timeRange: { startTime: undefined } },
+        { timeRange: { endTime: undefined } },
+        { timeRange: { startTime: '24:00' } },
+        { timeRange: { endTime: '12:60' } },
+        { timeRange: { startTime: '9:00' } },
+        { timeRange: { startTime: '18:00', endTime: '18:00' } },
+        { timeRange: { startTime: '18:00', finishTime: '20:00' } },
+        { timeRange: null },
+    ])('rejects invalid time filters: %j', (plan) => {
+        expect(() => validateNaturalLanguageSearchPlan(plan)).toThrow();
+    });
+
     it("should trim surrounding whitespace from intent", () => {
         expect(validateNaturalLanguageSearchPlan({
             intent: "  relaxing outdoor activities  ",

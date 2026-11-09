@@ -56,11 +56,35 @@ export const NATURAL_LANGUAGE_SEARCH_SCHEMA = {
       },
       required: ['kind'],
     },
+    includePastEvents: { type: 'BOOLEAN' },
+    includeFutureEvents: { type: 'BOOLEAN' },
+    timeOfDay: {
+      type: 'STRING',
+      enum: [
+        'EARLY_MORNING',
+        'MORNING',
+        'AFTERNOON',
+        'EVENING',
+        'NIGHT',
+      ],
+    },
+    timeRange: {
+      type: 'OBJECT',
+      properties: {
+        startTime: { type: 'STRING' },
+        endTime: { type: 'STRING' },
+      },
+      propertyOrdering: ['startTime', 'endTime'],
+    },
   },
   propertyOrdering: [
     'intent',
     'startAfter',
     'startBefore',
     'relativeDate',
+    'includePastEvents',
+    'includeFutureEvents',
+    'timeOfDay',
+    'timeRange',
   ],
 };

@@ -64,6 +64,10 @@ describe("NaturalLanguageSearchService", () => {
         expect(eventsService.searchEventCandidates).toHaveBeenCalledWith({
             startAfter: SEARCH_START_BOUNDARY,
             startBefore: SEARCH_LATER_BOUNDARY,
+            includePastEvents: undefined,
+            includeFutureEvents: undefined,
+            timeOfDay: undefined,
+            timeRange: undefined,
         });
         expect(ranker.rank).toHaveBeenCalledWith(
             'Find something relaxing outdoors this weekend',
@@ -86,6 +90,10 @@ describe("NaturalLanguageSearchService", () => {
         expect(eventsService.searchEventCandidates).toHaveBeenCalledWith({
             startAfter: SEARCH_START_BOUNDARY,
             startBefore: undefined,
+            includePastEvents: undefined,
+            includeFutureEvents: undefined,
+            timeOfDay: undefined,
+            timeRange: undefined,
         });
         expect(result).toEqual(candidates);
         expect(ranker.rank).not.toHaveBeenCalled();
@@ -136,6 +144,10 @@ describe("NaturalLanguageSearchService", () => {
         expect(eventsService.searchEventCandidates).toHaveBeenCalledWith({
             startAfter: '2026-11-08T05:00:00.000Z',
             startBefore: '2026-11-09T05:00:00.000Z',
+            includePastEvents: undefined,
+            includeFutureEvents: undefined,
+            timeOfDay: undefined,
+            timeRange: undefined,
         });
     });
 
@@ -153,6 +165,81 @@ describe("NaturalLanguageSearchService", () => {
         expect(eventsService.searchEventCandidates).toHaveBeenCalledWith({
             startAfter: '2026-11-07T05:00:00.000Z',
             startBefore: '2026-11-09T05:00:00.000Z',
+            includePastEvents: undefined,
+            includeFutureEvents: undefined,
+            timeOfDay: undefined,
+            timeRange: undefined,
         });
+    });
+
+    it('forwards false inclusion preferences to candidate retrieval', async () => {
+        interpreter.interpret.mockResolvedValueOnce({
+            intent: 'outdoor activities',
+            includePastEvents: undefined,
+            includeFutureEvents: undefined,
+            timeOfDay: undefined,
+            timeRange: undefined,
+        });
+
+        await service.searchNaturalLanguage('Find future and past events');
+
+        expect(eventsService.searchEventCandidates).toHaveBeenCalledWith({
+            startAfter: undefined,
+            startBefore: undefined,
+            includePastEvents: undefined,
+            includeFutureEvents: undefined,
+            timeOfDay: undefined,
+            timeRange: undefined,
+        });
+    });
+
+    it('forwards true inclusion preferences to candidate retrieval', async () => {
+        interpreter.interpret.mockResolvedValueOnce({
+            intent: 'outdoor activities',
+            includePastEvents: true,
+            includeFutureEvents: true,
+        });
+
+        await service.searchNaturalLanguage('Find all events');
+
+        expect(eventsService.searchEventCandidates).toHaveBeenCalledWith({
+            startAfter: undefined,
+            startBefore: undefined,
+            includePastEvents: true,
+            includeFutureEvents: true,
+            timeOfDay: undefined,
+            timeRange: undefined,
+        });
+    });
+
+    it("forwards time-of-day and explicit time-range filters before ranking", async () => {
+        interpreter.interpret.mockResolvedValueOnce({
+            intent: "evening activities",
+            timeOfDay: "EVENING",
+            timeRange: {
+                startTime: "18:00",
+                endTime: "20:00",
+            },
+        });
+
+        await service.searchNaturalLanguage("Find evening events between 6 and 8");
+
+        expect(eventsService.searchEventCandidates).toHaveBeenCalledWith({
+            startAfter: undefined,
+            startBefore: undefined,
+            includePastEvents: undefined,
+            includeFutureEvents: undefined,
+            timeOfDay: "EVENING",
+            timeRange: {
+                startTime: "18:00",
+                endTime: "20:00",
+            },
+        });
+
+        expect(ranker.rank).toHaveBeenCalledWith(
+            "Find evening events between 6 and 8",
+            "evening activities",
+            candidates,
+        );
     });
 });
