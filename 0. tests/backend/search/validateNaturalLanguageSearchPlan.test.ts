@@ -8,6 +8,9 @@ import {
     SEARCH_END_BOUNDARY,
 } from "../fixtures/events/eventSearchFixtures";
 
+
+const NUM_DAYS_IN_CALENDAR_YEAR = 365;
+
 describe("validateNaturalLanguageSearchPlan", () => {
     it("should accept a semantic intent", () => {
         expect(validateNaturalLanguageSearchPlan({
@@ -73,5 +76,101 @@ describe("validateNaturalLanguageSearchPlan", () => {
     it("should reject non-object input", () => {
         expect(() => validateNaturalLanguageSearchPlan(null)).toThrow();
         expect(() => validateNaturalLanguageSearchPlan([])).toThrow();
+    });
+
+    it.each([
+        { kind: "TODAY" },
+        { kind: "TOMORROW" },
+        { kind: "YESTERDAY" },
+        { kind: "THIS_WEEKEND" },
+        { kind: "NEXT_WEEKEND" },
+        { kind: "DAYS_FROM_NOW", days: 3 },
+        { kind: "DAYS_AGO", days: 2 },
+        { kind: "WEEKDAY", weekday: "FRIDAY", occurrence: "NEXT" },
+        { kind: "WEEKDAY", weekday: "MONDAY", occurrence: "THIS" },
+        { kind: "WEEKDAY", weekday: "SUNDAY", occurrence: "LAST" },
+        { kind: "NEXT_BUSINESS_DAY" },
+        { kind: "PREVIOUS_BUSINESS_DAY" },
+        { kind: "BUSINESS_DAYS_FROM_NOW", days: 5 },
+        { kind: "BUSINESS_DAYS_AGO", days: 2 },
+    ])("should accept valid relative date: %j", (relativeDate) => {
+        expect(validateNaturalLanguageSearchPlan({
+            intent: "concerts",
+            relativeDate,
+        })).toEqual({
+            intent: "concerts",
+            relativeDate,
+        });
+    });
+
+    it.each([0, -1, 1.5, NUM_DAYS_IN_CALENDAR_YEAR + 1])(
+        "should reject an invalid calendar/business-day offset: %s",
+        (days) => {
+            expect(() => validateNaturalLanguageSearchPlan({
+                relativeDate: {
+                    kind: "DAYS_FROM_NOW",
+                    days,
+                },
+            })).toThrow();
+        },
+    );
+
+    it("should reject an offset variant with missing days", () => {
+        expect(() => validateNaturalLanguageSearchPlan({
+            relativeDate: { kind: "DAYS_FROM_NOW" },
+        })).toThrow();
+    });
+
+    it("should reject invalid weekday values", () => {
+        expect(() => validateNaturalLanguageSearchPlan({
+            relativeDate: {
+                kind: "WEEKDAY",
+                weekday: "FUNDAY",
+                occurrence: "NEXT",
+            },
+        })).toThrow();
+    });
+
+    it("should reject invalid weekday occurrences", () => {
+        expect(() => validateNaturalLanguageSearchPlan({
+            relativeDate: {
+                kind: "WEEKDAY",
+                weekday: "FRIDAY",
+                occurrence: "SOMEDAY",
+            },
+        })).toThrow();
+    });
+
+    it("should reject unsupported relative date kinds", () => {
+        expect(() => validateNaturalLanguageSearchPlan({
+            relativeDate: { kind: "NEXT_MONTH" },
+        })).toThrow();
+    });
+
+    it("should reject unexpected fields in relative date variants", () => {
+        expect(() => validateNaturalLanguageSearchPlan({
+            relativeDate: {
+                kind: "TODAY",
+                days: 1,
+            },
+        })).toThrow();
+    });
+
+    it("should reject relative dates combined with absolute date boundaries", () => {
+        expect(() => validateNaturalLanguageSearchPlan({
+            relativeDate: { kind: "TODAY" },
+            startAfter: SEARCH_START_BOUNDARY,
+        })).toThrow(/cannot combine/i);
+
+        expect(() => validateNaturalLanguageSearchPlan({
+            relativeDate: { kind: "TODAY" },
+            startBefore: SEARCH_END_BOUNDARY,
+        })).toThrow(/cannot combine/i);
+    });
+
+    it("should reject null relative dates", () => {
+        expect(() => validateNaturalLanguageSearchPlan({
+            relativeDate: null,
+        })).toThrow();
     });
 });

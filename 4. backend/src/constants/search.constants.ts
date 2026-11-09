@@ -8,4 +8,5 @@ export const ALLOWED_NATURAL_LANGUAGE_FIELDS = new Set([
   'intent',
   'startAfter',
   'startBefore',
+  'relativeDate',
 ]);
