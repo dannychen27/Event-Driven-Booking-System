@@ -6,10 +6,7 @@ import { NaturalLanguageSearchService } from "../../../../4. backend/src/search/
 
 
 import { COFFEE_MEETUP_SEARCH_RESULT_FIXTURE, } from "../../fixtures/events/eventSearchFixtures";
-import {
-    MAX_EVENT_SEARCH_KEYWORD_LENGTH,
-    MAX_NATURAL_LANGUAGE_QUERY_LENGTH
-} from "../../../../4. backend/src/constants/search.constants";
+import { MAX_EVENT_SEARCH_KEYWORD_LENGTH } from "../../../../4. backend/src/constants/search.constants";
 
 
 describe("EventsController.searchEvents", () => {
@@ -108,37 +105,92 @@ describe("EventsController.searchEvents", () => {
     });
 
     describe("natural-language search", () => {
-        it("should pass a valid natural-language query to the service", async () => {
-            naturalLanguageSearchService.searchNaturalLanguage
-                .mockResolvedValue(COFFEE_MEETUP_SEARCH_RESULT_FIXTURE);
-
-            const result = await controller.searchEventsInNaturalLanguage({
+        it("should pass the complete structured request to the service", async () => {
+            const request = {
                 query: "  Find coffee events  ",
-            });
+                filters: {
+                    date: {
+                        state: "selected" as const,
+                        value: {
+                            startDate: "2026-11-10",
+                            endDate: "2026-11-12",
+                        },
+                    },
+                },
+            };
+
+            const response = {
+                status: "success",
+                events: COFFEE_MEETUP_SEARCH_RESULT_FIXTURE,
+                appliedFilters: {},
+            };
+
+            naturalLanguageSearchService.searchNaturalLanguage
+                .mockResolvedValueOnce(response);
+
+            const result =
+                await controller.searchEventsInNaturalLanguage(request);
 
             expect(naturalLanguageSearchService.searchNaturalLanguage)
-                .toHaveBeenCalledWith("Find coffee events");
-            expect(result).toEqual(COFFEE_MEETUP_SEARCH_RESULT_FIXTURE);
+                .toHaveBeenCalledWith(request);
+            expect(result).toEqual(response);
         });
 
-        it("should reject an empty natural-language query", () => {
-            expect(() =>
-                controller.searchEventsInNaturalLanguage({ query: "   " }),
-            ).toThrow(BadRequestException);
+        it("should pass a calendar-only request to the service", async () => {
+            const request = {
+                filters: {
+                    time: {
+                        state: "selected" as const,
+                        value: {
+                            timeOfDay: "EVENING" as const,
+                        },
+                    },
+                },
+            };
+
+            naturalLanguageSearchService.searchNaturalLanguage
+                .mockResolvedValueOnce({
+                    status: "success",
+                    events: [],
+                    appliedFilters: {},
+                });
+
+            await controller.searchEventsInNaturalLanguage(request);
 
             expect(naturalLanguageSearchService.searchNaturalLanguage)
-                .not.toHaveBeenCalled();
+                .toHaveBeenCalledWith(request);
         });
 
-        it("should reject a query longer than the maximum allowed length", () => {
-            expect(() =>
-                controller.searchEventsInNaturalLanguage({
-                    query: "a".repeat(MAX_NATURAL_LANGUAGE_QUERY_LENGTH + 1),
-                }),
-            ).toThrow(BadRequestException);
+        it("should return clarification responses from the service unchanged", async () => {
+            const response = {
+                status: "clarification_required",
+                conflicts: [
+                    {
+                        category: "date",
+                        aiInterpretation: "Tomorrow",
+                        userSelection: "November 12, 2026",
+                    },
+                ],
+            };
 
-            expect(naturalLanguageSearchService.searchNaturalLanguage)
-                .not.toHaveBeenCalled();
+            naturalLanguageSearchService.searchNaturalLanguage
+                .mockResolvedValueOnce(response);
+
+            const result =
+                await controller.searchEventsInNaturalLanguage({
+                    query: "Find events tomorrow",
+                    filters: {
+                        date: {
+                            state: "selected",
+                            value: {
+                                startDate: "2026-11-12",
+                                endDate: "2026-11-12",
+                            },
+                        },
+                    },
+                });
+
+            expect(result).toEqual(response);
         });
     });
 });

@@ -5,7 +5,7 @@ import {
   EventCandidate,
 } from '../types/events/events.types';
 import { buildEventDateRangeFilters } from './events.helpers';
-import { TimeOfDay, TimeRange } from '../types/search/time-range.types';
+import {TimeInterval, TimeOfDay, TimeRange } from '../types/search/time-range.types';
 
 
 @Injectable()
@@ -128,6 +128,7 @@ export class EventsService {
     includeFutureEvents?: boolean;
     timeOfDay?: TimeOfDay;
     timeRange?: TimeRange;
+    timeIntervals?: TimeInterval[];
   }) {
     const { conditions, params } = buildEventDateRangeFilters({
       startAfter: filters.startAfter,
@@ -136,6 +137,7 @@ export class EventsService {
       includeFutureEvents: filters.includeFutureEvents,
       timeOfDay: filters.timeOfDay,
       timeRange: filters.timeRange,
+      timeIntervals: filters.timeIntervals,
     });
 
     const whereClause = conditions.length

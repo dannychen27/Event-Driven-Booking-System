@@ -3,7 +3,6 @@ import { EventsService } from './events.service';
 import {
   validateEventSearchDateRange,
   validateEventSearchKeyword,
-  validateNaturalLanguageSearchQuery,
 } from '../helpers/search/event-search-validation.helpers';
 import { NaturalLanguageSearchService } from '../search/natural-language-search.service';
 
@@ -37,9 +36,8 @@ export class EventsController {
   }
 
   @Post('natural-language-search')
-  searchEventsInNaturalLanguage(@Body() body: { query?: string } | undefined) {
-    const query = validateNaturalLanguageSearchQuery(body?.query);
-    return this.naturalLanguageSearchService.searchNaturalLanguage(query);
+  searchEventsInNaturalLanguage(@Body() body: unknown) {
+    return this.naturalLanguageSearchService.searchNaturalLanguage(body);
   }
 
   @Get(':id/availability')

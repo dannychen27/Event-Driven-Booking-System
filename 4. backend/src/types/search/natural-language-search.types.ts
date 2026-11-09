@@ -1,4 +1,4 @@
-import { TimeOfDay, TimeRange } from './time-range.types';
+import { TimeOfDay, TimeRange, TimeInterval } from './time-range.types';
 import { RelativeDateRange } from './relative-date-range.types';
 
 export type SearchFilters = {
@@ -7,6 +7,7 @@ export type SearchFilters = {
   startBefore?: string;
   timeOfDay?: TimeOfDay;
   timeRange?: TimeRange;
+  timeIntervals?: TimeInterval[];
   includePastEvents?: boolean;
   includeFutureEvents?: boolean;
 };
