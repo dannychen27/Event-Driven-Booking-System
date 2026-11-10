@@ -35,6 +35,17 @@ describe("CalendarSearchControls", () => {
         );
     }
 
+    function getPeriodButton(
+        bound: "After" | "Before",
+        period: "AM" | "PM",
+    ) {
+        return within(
+            screen.getByRole("group", {
+                name: `${bound} AM or PM`,
+            }),
+        ).getByRole("button", { name: period });
+    }
+
     it("renders all five time-of-day choices as pill buttons", () => {
         renderControls();
 
@@ -158,12 +169,20 @@ describe("CalendarSearchControls", () => {
         });
     });
 
-    it("stores an After time directly in 24-hour HH:mm format", () => {
+    it("stores an After time in 24-hour HH:mm format", () => {
         renderControls();
 
-        fireEvent.change(screen.getByLabelText("After time"), {
-            target: { value: "18:30" },
+        fireEvent.change(screen.getByLabelText("After hour"), {
+            target: { value: "6" },
         });
+
+        fireEvent.change(screen.getByLabelText("After minute"), {
+            target: { value: "30" },
+        });
+
+        fireEvent.click(getPeriodButton("After", "PM"));
+
+        fireEvent.blur(screen.getByLabelText("After minute"));
 
         expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
             state: "selected",
@@ -178,9 +197,17 @@ describe("CalendarSearchControls", () => {
     it("stores a Before midnight time correctly", () => {
         renderControls();
 
-        fireEvent.change(screen.getByLabelText("Before time"), {
-            target: { value: "00:15" },
+        fireEvent.change(screen.getByLabelText("Before hour"), {
+            target: { value: "12" },
         });
+
+        fireEvent.change(screen.getByLabelText("Before minute"), {
+            target: { value: "15" },
+        });
+
+        fireEvent.click(getPeriodButton("Before", "AM"));
+
+        fireEvent.blur(screen.getByLabelText("Before minute"));
 
         expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
             state: "selected",
@@ -195,9 +222,17 @@ describe("CalendarSearchControls", () => {
     it("stores noon correctly", () => {
         renderControls();
 
-        fireEvent.change(screen.getByLabelText("After time"), {
-            target: { value: "12:00" },
+        fireEvent.change(screen.getByLabelText("After hour"), {
+            target: { value: "12" },
         });
+
+        fireEvent.change(screen.getByLabelText("After minute"), {
+            target: { value: "00" },
+        });
+
+        fireEvent.click(getPeriodButton("After", "PM"));
+
+        fireEvent.blur(screen.getByLabelText("After minute"));
 
         expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
             state: "selected",
@@ -209,7 +244,7 @@ describe("CalendarSearchControls", () => {
         });
     });
 
-    it("renders existing time bounds in the native time inputs", () => {
+    it("renders existing time bounds in the 12-hour time inputs", () => {
         renderControls({
             timeSelection: {
                 state: "selected",
@@ -222,8 +257,109 @@ describe("CalendarSearchControls", () => {
             },
         });
 
-        expect(screen.getByLabelText("After time")).toHaveValue("18:30");
-        expect(screen.getByLabelText("Before time")).toHaveValue("22:15");
+        expect(screen.getByLabelText("After hour")).toHaveValue("06");
+        expect(screen.getByLabelText("After minute")).toHaveValue("30");
+
+        expect(getPeriodButton("After", "PM")).toHaveAttribute(
+            "aria-pressed",
+            "true",
+        );
+
+        expect(screen.getByLabelText("Before hour")).toHaveValue("10");
+        expect(screen.getByLabelText("Before minute")).toHaveValue("15");
+
+        expect(getPeriodButton("Before", "PM")).toHaveAttribute(
+            "aria-pressed",
+            "true",
+        );
+    });
+
+    it("does not increment the hour beyond 12", () => {
+        renderControls({
+            timeSelection: {
+                state: "selected",
+                value: {
+                    timeRange: { startTime: "12:00" },
+                },
+            },
+        });
+
+        expect(
+            screen.getByRole("button", { name: "Increase After hour" }),
+        ).toBeDisabled();
+
+        expect(screen.getByLabelText("After hour")).toHaveValue("12");
+    });
+
+    it("does not decrement the hour below 1", () => {
+        renderControls({
+            timeSelection: {
+                state: "selected",
+                value: {
+                    timeRange: { startTime: "01:00" },
+                },
+            },
+        });
+
+        expect(
+            screen.getByRole("button", { name: "Decrease After hour" }),
+        ).toBeDisabled();
+    });
+
+    it("does not increment minutes beyond 59", () => {
+        renderControls({
+            timeSelection: {
+                state: "selected",
+                value: {
+                    timeRange: { startTime: "18:59" },
+                },
+            },
+        });
+
+        expect(
+            screen.getByRole("button", { name: "Increase After minute" }),
+        ).toBeDisabled();
+    });
+
+    it("does not decrement minutes below 00", () => {
+        renderControls({
+            timeSelection: {
+                state: "selected",
+                value: {
+                    timeRange: { startTime: "18:00" },
+                },
+            },
+        });
+
+        expect(
+            screen.getByRole("button", { name: "Decrease After minute" }),
+        ).toBeDisabled();
+    });
+
+    it("converts midnight to 00:00", () => {
+        renderControls();
+
+        fireEvent.click(getPeriodButton("After", "AM"));
+
+        expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
+            state: "selected",
+            value: {
+                timeRange: { startTime: "00:00" },
+            },
+        });
+    });
+
+    it("converts noon to 12:00", () => {
+        renderControls();
+
+        fireEvent.click(getPeriodButton("After", "PM"));
+
+        expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
+            state: "selected",
+            value: {
+                timeRange: { startTime: "12:00" },
+            },
+        });
     });
 
     it("preserves an existing time-of-day selection when updating a clock bound", () => {
@@ -236,9 +372,15 @@ describe("CalendarSearchControls", () => {
             },
         });
 
-        fireEvent.change(screen.getByLabelText("After time"), {
-            target: { value: "08:00" },
+        fireEvent.change(screen.getByLabelText("After hour"), {
+            target: { value: "08" },
         });
+
+        fireEvent.change(screen.getByLabelText("After minute"), {
+            target: { value: "00" },
+        });
+
+        fireEvent.blur(screen.getByLabelText("After minute"));
 
         expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
             state: "selected",
@@ -264,9 +406,17 @@ describe("CalendarSearchControls", () => {
             },
         });
 
-        fireEvent.change(screen.getByLabelText("After time"), {
-            target: { value: "19:00" },
+        fireEvent.change(screen.getByLabelText("After hour"), {
+            target: { value: "07" },
         });
+
+        fireEvent.change(screen.getByLabelText("After minute"), {
+            target: { value: "00" },
+        });
+
+        fireEvent.click(getPeriodButton("After", "PM"));
+
+        fireEvent.blur(screen.getByLabelText("After minute"));
 
         expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
             state: "selected",
@@ -307,8 +457,10 @@ describe("CalendarSearchControls", () => {
             }),
         ).toBeDisabled();
 
-        expect(screen.getByLabelText("After time")).toBeDisabled();
-        expect(screen.getByLabelText("Before time")).toBeDisabled();
+        expect(screen.getByLabelText("After hour")).toBeDisabled();
+        expect(screen.getByLabelText("After minute")).toBeDisabled();
+        expect(screen.getByLabelText("Before hour")).toBeDisabled();
+        expect(screen.getByLabelText("Before minute")).toBeDisabled();
 
         expect(
             screen.getByRole("button", { name: "Clear time" }),

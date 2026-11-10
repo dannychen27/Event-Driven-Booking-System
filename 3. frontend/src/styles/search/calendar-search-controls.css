@@ -223,3 +223,113 @@
         transition: none;
     }
 }
+
+/* Custom bounded time picker */
+.calendar-time-picker-fields {
+    display: flex;
+    align-items: end;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.calendar-time-segment {
+    display: grid;
+    gap: 0.25rem;
+    min-width: 0;
+}
+
+.calendar-time-segment > label {
+    font-size: 0.75rem;
+    color: var(--text);
+}
+
+.calendar-time-segment-controls {
+    display: grid;
+    grid-template-rows: 24px 40px 24px;
+    justify-items: center;
+    gap: 2px;
+}
+
+.calendar-time-segment-controls input {
+    box-sizing: border-box;
+    width: 54px;
+    min-height: 40px;
+    padding: 0.4rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    font-size: 1rem;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.calendar-time-segment-controls button {
+    width: 32px;
+    min-height: 24px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.calendar-time-segment-controls button:disabled {
+    cursor: not-allowed;
+    opacity: 0.35;
+}
+
+.calendar-time-segment-controls input:focus-visible,
+.calendar-time-segment-controls button:focus-visible,
+.calendar-time-period button:focus-visible {
+    outline: 2px solid #22c55e;
+    outline-offset: 2px;
+}
+
+.calendar-time-separator {
+    padding-bottom: 0.65rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.calendar-time-period {
+    display: flex;
+    align-self: end;
+    gap: 2px;
+    padding-bottom: 0;
+}
+
+.calendar-time-period button {
+    min-height: 40px;
+    padding: 0.4rem 0.5rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.calendar-time-period button:first-child {
+    border-radius: 6px 0 0 6px;
+}
+
+.calendar-time-period button:last-child {
+    border-radius: 0 6px 6px 0;
+}
+
+.calendar-time-period button[aria-pressed="true"] {
+    border-color: #166534;
+    background: #15803d;
+    color: #fff;
+    font-weight: 600;
+}
+
+.calendar-time-period button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
