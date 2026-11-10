@@ -55,6 +55,11 @@
     font: inherit;
 }
 
+#app.dark-mode .calendar-search-fields input[type="date"],
+#app.dark-mode .calendar-search-fields input[type="time"] {
+    color-scheme: dark;
+}
+
 .calendar-search-clear {
     padding: 0.35rem 0.55rem;
     border: 1px solid var(--border);
