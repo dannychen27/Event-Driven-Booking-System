@@ -45,7 +45,7 @@
 
 .calendar-search-fields input,
 .calendar-search-fields select,
-.calendar-time-picker select {
+.calendar-time-picker input[type="time"] {
     box-sizing: border-box;
     width: 100%;
     min-height: 42px;
@@ -58,7 +58,7 @@
 }
 
 #app.dark-mode .calendar-search-fields input[type="date"],
-#app.dark-mode .calendar-time-picker select {
+#app.dark-mode .calendar-time-picker input[type="time"] {
     color-scheme: dark;
 }
 
@@ -127,16 +127,19 @@
     opacity: 0.5;
 }
 
+/* Before / After time range */
 .calendar-time-range {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.75rem;
+    align-items: start;
 }
 
 .calendar-time-picker {
     display: grid;
     gap: 0.4rem;
     min-width: 0;
+    max-width: 100%;
 }
 
 .calendar-time-picker-heading {
@@ -153,20 +156,27 @@
 
 .calendar-time-picker-fields {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
-    gap: 0.35rem;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.4rem;
+    min-width: 0;
 }
 
 .calendar-time-picker-fields label {
+    display: block;
     min-width: 0;
     margin: 0;
 }
 
-.calendar-time-picker select {
+.calendar-time-picker input[type="time"] {
+    display: block;
+    width: 100%;
     min-width: 0;
-    padding: 0.5rem 0.35rem;
+    min-height: 40px;
+    padding: 0.45rem 0.55rem;
+    font-size: 0.85rem;
 }
 
+/* Clear buttons */
 .calendar-search-clear,
 .calendar-time-clear {
     padding: 0.35rem 0.55rem;
@@ -197,9 +207,14 @@
     border: 0;
 }
 
+/* Narrow screens */
 @media (max-width: 480px) {
     .calendar-time-range {
         grid-template-columns: minmax(0, 1fr);
+    }
+
+    .calendar-time-picker {
+        width: 100%;
     }
 }
 

@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import CalendarSearchControls from "../../../../3. frontend/src/components/forms/CalendarSearchControls";
 import type {
     CalendarDateRange,
@@ -10,6 +10,10 @@ import type {
 describe("CalendarSearchControls", () => {
     const onDateSelectionChange = vi.fn();
     const onTimeSelectionChange = vi.fn();
+
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
 
     function renderControls({
         dateSelection,
@@ -154,19 +158,11 @@ describe("CalendarSearchControls", () => {
         });
     });
 
-    it("converts an After selection from 12-hour input to 24-hour API format", () => {
+    it("stores an After time directly in 24-hour HH:mm format", () => {
         renderControls();
 
-        fireEvent.change(screen.getByLabelText("After hour"), {
-            target: { value: "6" },
-        });
-
-        fireEvent.change(screen.getByLabelText("After minute"), {
-            target: { value: "30" },
-        });
-
-        fireEvent.change(screen.getByLabelText("After AM/PM"), {
-            target: { value: "PM" },
+        fireEvent.change(screen.getByLabelText("After time"), {
+            target: { value: "18:30" },
         });
 
         expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
@@ -179,19 +175,11 @@ describe("CalendarSearchControls", () => {
         });
     });
 
-    it("converts midnight correctly for the Before selection", () => {
+    it("stores a Before midnight time correctly", () => {
         renderControls();
 
-        fireEvent.change(screen.getByLabelText("Before hour"), {
-            target: { value: "12" },
-        });
-
-        fireEvent.change(screen.getByLabelText("Before minute"), {
-            target: { value: "15" },
-        });
-
-        fireEvent.change(screen.getByLabelText("Before AM/PM"), {
-            target: { value: "AM" },
+        fireEvent.change(screen.getByLabelText("Before time"), {
+            target: { value: "00:15" },
         });
 
         expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
@@ -204,19 +192,11 @@ describe("CalendarSearchControls", () => {
         });
     });
 
-    it("converts noon correctly", () => {
+    it("stores noon correctly", () => {
         renderControls();
 
-        fireEvent.change(screen.getByLabelText("After hour"), {
-            target: { value: "12" },
-        });
-
-        fireEvent.change(screen.getByLabelText("After minute"), {
-            target: { value: "00" },
-        });
-
-        fireEvent.change(screen.getByLabelText("After AM/PM"), {
-            target: { value: "PM" },
+        fireEvent.change(screen.getByLabelText("After time"), {
+            target: { value: "12:00" },
         });
 
         expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
@@ -229,25 +209,21 @@ describe("CalendarSearchControls", () => {
         });
     });
 
-    it("provides bounded hour and minute choices", () => {
-        renderControls();
+    it("renders existing time bounds in the native time inputs", () => {
+        renderControls({
+            timeSelection: {
+                state: "selected",
+                value: {
+                    timeRange: {
+                        startTime: "18:30",
+                        endTime: "22:15",
+                    },
+                },
+            },
+        });
 
-        const hourOptions = within(
-            screen.getByLabelText("After hour"),
-        ).getAllByRole("option");
-
-        const minuteOptions = within(
-            screen.getByLabelText("After minute"),
-        ).getAllByRole("option");
-
-        expect(hourOptions).toHaveLength(13);
-        expect(minuteOptions).toHaveLength(61);
-
-        expect(hourOptions[1]).toHaveValue("1");
-        expect(hourOptions[12]).toHaveValue("12");
-
-        expect(minuteOptions[1]).toHaveValue("00");
-        expect(minuteOptions[60]).toHaveValue("59");
+        expect(screen.getByLabelText("After time")).toHaveValue("18:30");
+        expect(screen.getByLabelText("Before time")).toHaveValue("22:15");
     });
 
     it("preserves an existing time-of-day selection when updating a clock bound", () => {
@@ -260,16 +236,8 @@ describe("CalendarSearchControls", () => {
             },
         });
 
-        fireEvent.change(screen.getByLabelText("After hour"), {
-            target: { value: "8" },
-        });
-
-        fireEvent.change(screen.getByLabelText("After minute"), {
-            target: { value: "00" },
-        });
-
-        fireEvent.change(screen.getByLabelText("After AM/PM"), {
-            target: { value: "AM" },
+        fireEvent.change(screen.getByLabelText("After time"), {
+            target: { value: "08:00" },
         });
 
         expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
@@ -278,6 +246,34 @@ describe("CalendarSearchControls", () => {
                 timeOfDay: ["MORNING", "EVENING"],
                 timeRange: {
                     startTime: "08:00",
+                },
+            },
+        });
+    });
+
+    it("preserves the opposite clock bound when updating one bound", () => {
+        renderControls({
+            timeSelection: {
+                state: "selected",
+                value: {
+                    timeRange: {
+                        startTime: "18:30",
+                        endTime: "22:15",
+                    },
+                },
+            },
+        });
+
+        fireEvent.change(screen.getByLabelText("After time"), {
+            target: { value: "19:00" },
+        });
+
+        expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
+            state: "selected",
+            value: {
+                timeRange: {
+                    startTime: "19:00",
+                    endTime: "22:15",
                 },
             },
         });
@@ -311,9 +307,8 @@ describe("CalendarSearchControls", () => {
             }),
         ).toBeDisabled();
 
-        expect(screen.getByLabelText("After hour")).toBeDisabled();
-        expect(screen.getByLabelText("After minute")).toBeDisabled();
-        expect(screen.getByLabelText("After AM/PM")).toBeDisabled();
+        expect(screen.getByLabelText("After time")).toBeDisabled();
+        expect(screen.getByLabelText("Before time")).toBeDisabled();
 
         expect(
             screen.getByRole("button", { name: "Clear time" }),

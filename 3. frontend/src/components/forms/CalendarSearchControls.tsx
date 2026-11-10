@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import type {
     CalendarDateRange,
     CalendarTimeSelection,
@@ -27,65 +26,6 @@ const TIME_OF_DAY_OPTIONS: { value: TimeOfDay; label: string }[] = [
     { value: "NIGHT", label: "Night (9 PM–5 AM)" },
 ];
 
-const HOURS = Array.from({ length: 12 }, (_, index) =>
-    String(index + 1),
-);
-
-const MINUTES = Array.from({ length: 60 }, (_, index) =>
-    String(index).padStart(2, "0"),
-);
-
-type TimeParts = {
-    hour: string;
-    minute: string;
-    period: string;
-};
-
-const EMPTY_TIME_PARTS: TimeParts = {
-    hour: "",
-    minute: "",
-    period: "",
-};
-
-function parseTime(value?: string): TimeParts {
-    if (!value) {
-        return { ...EMPTY_TIME_PARTS };
-    }
-
-    const [hourString, minute] = value.split(":");
-    const hour = Number(hourString);
-
-    if (
-        !Number.isInteger(hour) ||
-        hour < 0 ||
-        hour > 23 ||
-        !/^\d{2}$/.test(minute ?? "")
-    ) {
-        return { ...EMPTY_TIME_PARTS };
-    }
-
-    return {
-        hour: String(hour % 12 || 12),
-        minute,
-        period: hour >= 12 ? "PM" : "AM",
-    };
-}
-
-function formatTime(parts: TimeParts): string | undefined {
-    if (!parts.hour || !parts.minute || !parts.period) {
-        return undefined;
-    }
-
-    const selectedHour = Number(parts.hour);
-    let hour = selectedHour % 12;
-
-    if (parts.period === "PM") {
-        hour += 12;
-    }
-
-    return `${String(hour).padStart(2, "0")}:${parts.minute}`;
-}
-
 interface TimePickerProps {
     label: "After" | "Before";
     value?: string;
@@ -99,32 +39,9 @@ function TimePicker({
     disabled,
     onChange,
 }: TimePickerProps) {
-    const [parts, setParts] = useState<TimeParts>(() =>
-        parseTime(value),
-    );
-
-    useEffect(() => {
-        setParts(parseTime(value));
-    }, [value]);
-
-    function updatePart(key: keyof TimeParts, nextValue: string) {
-        const nextParts = {
-            ...parts,
-            [key]: nextValue,
-        };
-
-        setParts(nextParts);
-        onChange(formatTime(nextParts));
-    }
-
     function clearTime() {
-        setParts({ ...EMPTY_TIME_PARTS });
         onChange(undefined);
     }
-
-    const hasSelection = Boolean(
-        parts.hour || parts.minute || parts.period,
-    );
 
     return (
         <div className="calendar-time-picker">
@@ -136,7 +53,7 @@ function TimePicker({
                 <button
                     type="button"
                     className="calendar-time-clear"
-                    disabled={disabled || !hasSelection}
+                    disabled={disabled || !value}
                     onClick={clearTime}
                     aria-label={`Clear ${label} time`}
                 >
@@ -147,62 +64,18 @@ function TimePicker({
             <div className="calendar-time-picker-fields">
                 <label>
                     <span className="visually-hidden">
-                        {label} hour
+                        {label} time
                     </span>
-                    <select
-                        aria-label={`${label} hour`}
-                        value={parts.hour}
+                    <input
+                        type="time"
+                        aria-label={`${label} time`}
+                        value={value ?? ""}
                         disabled={disabled}
+                        step={60}
                         onChange={(event) =>
-                            updatePart("hour", event.target.value)
+                            onChange(event.target.value || undefined)
                         }
-                    >
-                        <option value="">Hour</option>
-                        {HOURS.map((hour) => (
-                            <option key={hour} value={hour}>
-                                {hour}
-                            </option>
-                        ))}
-                    </select>
-                </label>
-
-                <label>
-                    <span className="visually-hidden">
-                        {label} minute
-                    </span>
-                    <select
-                        aria-label={`${label} minute`}
-                        value={parts.minute}
-                        disabled={disabled}
-                        onChange={(event) =>
-                            updatePart("minute", event.target.value)
-                        }
-                    >
-                        <option value="">Min</option>
-                        {MINUTES.map((minute) => (
-                            <option key={minute} value={minute}>
-                                {minute}
-                            </option>
-                        ))}
-                    </select>
-                </label>
-
-                <label>
-                    <span className="visually-hidden">
-                        {label} AM/PM
-                    </span>
-                    <select
-                        aria-label={`${label} AM/PM`}
-                        value={parts.period}
-                        disabled={disabled}
-                        onChange={(event) =>
-                            updatePart("period", event.target.value)
-                        }
-                    >
-                        <option value="">AM/PM</option>
-                        <option value="AM">AM</option>
-                        <option value="PM">PM</option>
-                    </select>
+                    />
                 </label>
             </div>
         </div>
@@ -404,9 +277,9 @@ export default function CalendarSearchControls({
                     role="group"
                     aria-label="Time of day"
                 >
-    <span className="calendar-time-of-day-legend">
-        Time of day
-    </span>
+                    <span className="calendar-time-of-day-legend">
+                        Time of day
+                    </span>
 
                     <div className="calendar-time-of-day-options">
                         {TIME_OF_DAY_OPTIONS.map((option) => {
