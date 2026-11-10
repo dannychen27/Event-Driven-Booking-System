@@ -226,6 +226,16 @@ export default function CalendarSearchControls({
             ? timeSelection.value
             : undefined;
 
+    const hasDateFilter = Boolean(
+        selectedDate?.startDate || selectedDate?.endDate,
+    );
+
+    const hasTimeFilter = Boolean(
+        selectedTime?.timeOfDay?.length ||
+        selectedTime?.timeRange?.startTime ||
+        selectedTime?.timeRange?.endTime,
+    );
+
     function updateDateRange(startDate: string, endDate: string) {
         if (!startDate && !endDate) {
             onDateSelectionChange(undefined);
@@ -328,7 +338,7 @@ export default function CalendarSearchControls({
                     <button
                         type="button"
                         className="calendar-search-clear"
-                        disabled={disabled || !dateSelection}
+                        disabled={disabled || !hasDateFilter}
                         onClick={() =>
                             onDateSelectionChange({ state: "cleared" })
                         }
@@ -380,7 +390,7 @@ export default function CalendarSearchControls({
                     <button
                         type="button"
                         className="calendar-search-clear"
-                        disabled={disabled || !timeSelection}
+                        disabled={disabled || !hasTimeFilter}
                         onClick={() =>
                             onTimeSelectionChange({ state: "cleared" })
                         }

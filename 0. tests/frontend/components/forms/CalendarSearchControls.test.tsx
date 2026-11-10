@@ -294,4 +294,87 @@ describe("CalendarSearchControls", () => {
         expect(screen.getByRole("button", { name: "Clear time" }))
             .toBeDisabled();
     });
+
+    it("disables Clear date when no date filter is active", () => {
+        renderControls();
+
+        expect(
+            screen.getByRole("button", { name: "Clear date" }),
+        ).toBeDisabled();
+    });
+
+    it("enables Clear date when a date range is selected", () => {
+        renderControls({
+            dateSelection: {
+                state: "selected",
+                value: {
+                    startDate: "2026-11-10",
+                    endDate: "2026-11-12",
+                },
+            },
+        });
+
+        expect(
+            screen.getByRole("button", { name: "Clear date" }),
+        ).toBeEnabled();
+    });
+
+    it("disables Clear time when no time filter is active", () => {
+        renderControls();
+
+        expect(
+            screen.getByRole("button", { name: "Clear time" }),
+        ).toBeDisabled();
+    });
+
+    it("enables Clear time when time-of-day periods are selected", () => {
+        renderControls({
+            timeSelection: {
+                state: "selected",
+                value: {
+                    timeOfDay: ["MORNING", "EVENING"],
+                },
+            },
+        });
+
+        expect(
+            screen.getByRole("button", { name: "Clear time" }),
+        ).toBeEnabled();
+    });
+
+    it("enables Clear time when only a clock-time bound is selected", () => {
+        renderControls({
+            timeSelection: {
+                state: "selected",
+                value: {
+                    timeRange: {
+                        startTime: "18:30",
+                    },
+                },
+            },
+        });
+
+        expect(
+            screen.getByRole("button", { name: "Clear time" }),
+        ).toBeEnabled();
+    });
+
+    it("keeps Clear buttons disabled after their filters are explicitly cleared", () => {
+        renderControls({
+            dateSelection: {
+                state: "cleared",
+            },
+            timeSelection: {
+                state: "cleared",
+            },
+        });
+
+        expect(
+            screen.getByRole("button", { name: "Clear date" }),
+        ).toBeDisabled();
+
+        expect(
+            screen.getByRole("button", { name: "Clear time" }),
+        ).toBeDisabled();
+    });
 });
