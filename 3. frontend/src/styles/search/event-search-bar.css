@@ -5,10 +5,14 @@
 
 @media (max-width: 520px) {
     .search-controls {
-        flex-wrap: wrap;
+        flex-direction: column;
+        align-items: stretch;
     }
 
-    .search-controls input {
-        flex-basis: 100%;
+    .search-controls input,
+    .search-controls button {
+        box-sizing: border-box;
+        width: 100%;
+        min-width: 0;
     }
 }
