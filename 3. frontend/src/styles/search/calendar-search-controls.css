@@ -43,7 +43,8 @@
 }
 
 .calendar-search-fields input,
-.calendar-search-fields select {
+.calendar-search-fields select,
+.calendar-time-picker select {
     box-sizing: border-box;
     width: 100%;
     min-height: 42px;
@@ -56,11 +57,89 @@
 }
 
 #app.dark-mode .calendar-search-fields input[type="date"],
-#app.dark-mode .calendar-search-fields input[type="time"] {
+#app.dark-mode .calendar-time-picker select {
     color-scheme: dark;
 }
 
-.calendar-search-clear {
+.calendar-time-of-day {
+    display: grid;
+    gap: 0.6rem;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.calendar-time-of-day legend {
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.calendar-time-of-day-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1rem;
+}
+
+.calendar-time-of-day-options label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.calendar-time-of-day-options input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--primary);
+}
+
+.calendar-time-range {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.calendar-time-picker {
+    display: grid;
+    gap: 0.4rem;
+    min-width: 0;
+}
+
+.calendar-time-picker-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.calendar-time-picker-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.calendar-time-picker-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.35rem;
+}
+
+.calendar-time-picker-fields label {
+    min-width: 0;
+    margin: 0;
+}
+
+.calendar-time-picker select {
+    min-width: 0;
+    padding: 0.5rem 0.35rem;
+}
+
+.calendar-search-clear,
+.calendar-time-clear {
     padding: 0.35rem 0.55rem;
     border: 1px solid var(--border);
     border-radius: 6px;
@@ -71,7 +150,26 @@
     cursor: pointer;
 }
 
-.calendar-search-clear:disabled {
+.calendar-search-clear:disabled,
+.calendar-time-clear:disabled {
     cursor: not-allowed;
     opacity: 0.45;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (max-width: 480px) {
+    .calendar-time-range {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }

@@ -235,9 +235,9 @@ describe("Natural-language search", () => {
             target: { value: "2026-11-10" },
         });
 
-        fireEvent.change(screen.getByLabelText("Time of day"), {
-            target: { value: "MORNING" },
-        });
+        fireEvent.click(
+            screen.getByLabelText("Morning (8 AM–12 PM)"),
+        );
 
         fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
 
@@ -289,7 +289,7 @@ describe("Natural-language search", () => {
                 time: {
                     state: "selected",
                     value: {
-                        timeOfDay: "MORNING",
+                        timeOfDay: ["MORNING"],
                     },
                 },
             },
@@ -308,7 +308,7 @@ describe("Natural-language search", () => {
                 time: {
                     state: "selected",
                     value: {
-                        timeOfDay: "MORNING",
+                        timeOfDay: ["MORNING"],
                     },
                 },
             },

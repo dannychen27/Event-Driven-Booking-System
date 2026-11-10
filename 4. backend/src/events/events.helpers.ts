@@ -1,4 +1,4 @@
-import { TimeOfDay, TimeRange, TimeInterval } from '../types/search/time-range.types';
+import { TimeRange, TimeInterval } from '../types/search/time-range.types';
 
 function formatMinuteOfDay(minute: number): string {
   const hours = Math.floor(minute / 60);
@@ -58,7 +58,6 @@ export function buildEventDateRangeFilters({
   startBefore,
   includePastEvents,
   includeFutureEvents,
-  timeOfDay,
   timeRange,
   timeIntervals,
   initialParamCount = 0,
@@ -67,7 +66,6 @@ export function buildEventDateRangeFilters({
   startBefore?: string;
   includePastEvents?: boolean;
   includeFutureEvents?: boolean;
-  timeOfDay?: TimeOfDay;
   timeRange?: TimeRange;
   timeIntervals?: TimeInterval[];
   initialParamCount?: number;
@@ -99,17 +97,6 @@ export function buildEventDateRangeFilters({
   }
 
   const localEventTime = "(e.start_time AT TIME ZONE 'America/Toronto')::time";
-  const timeOfDayConditions: Record<TimeOfDay, string> = {
-    EARLY_MORNING: `${localEventTime} >= TIME '05:00' AND ${localEventTime} < TIME '08:00'`,
-    MORNING: `${localEventTime} >= TIME '08:00' AND ${localEventTime} < TIME '12:00'`,
-    AFTERNOON: `${localEventTime} >= TIME '12:00' AND ${localEventTime} < TIME '17:00'`,
-    EVENING: `${localEventTime} >= TIME '17:00' AND ${localEventTime} < TIME '21:00'`,
-    NIGHT: `(${localEventTime} >= TIME '21:00' OR ${localEventTime} < TIME '05:00')`,
-  };
-
-  if (timeOfDay) {
-    conditions.push(`(${timeOfDayConditions[timeOfDay]})`);
-  }
 
   if (timeRange) {
     const { startTime, endTime } = timeRange;

@@ -142,7 +142,7 @@ describe("EventsController.searchEvents", () => {
                     time: {
                         state: "selected" as const,
                         value: {
-                            timeOfDay: "EVENING" as const,
+                            timeOfDay: ["EVENING"] as const,
                         },
                     },
                 },

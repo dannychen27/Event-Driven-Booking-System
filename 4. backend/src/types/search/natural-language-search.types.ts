@@ -5,7 +5,7 @@ export type SearchFilters = {
   keyword?: string;
   startAfter?: string;
   startBefore?: string;
-  timeOfDay?: TimeOfDay;
+  timeOfDay?: TimeOfDay[];
   timeRange?: TimeRange;
   timeIntervals?: TimeInterval[];
   includePastEvents?: boolean;
@@ -17,7 +17,7 @@ export type NaturalLanguageSearchPlan = {
   startAfter?: string;
   startBefore?: string;
   relativeDate?: RelativeDateRange;
-  timeOfDay?: TimeOfDay;
+  timeOfDay?: TimeOfDay[];
   timeRange?: TimeRange;
   includePastEvents?: boolean;
   includeFutureEvents?: boolean;

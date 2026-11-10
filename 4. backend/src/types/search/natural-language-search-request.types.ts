@@ -17,7 +17,7 @@ export type CalendarDateRange = {
 };
 
 export type CalendarTimeSelection = {
-    timeOfDay?: TimeOfDay;
+    timeOfDay?: TimeOfDay[];
     timeRange?: TimeRange;
 };
 

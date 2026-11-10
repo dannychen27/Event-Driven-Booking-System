@@ -3,34 +3,82 @@ import { buildEventDateRangeFilters } from '../../../4. backend/src/events/event
 describe('buildEventDateRangeFilters', () => {
     const localTime = "(e.start_time AT TIME ZONE 'America/Toronto')::time";
 
-    describe('timeOfDay', () => {
+    describe('timeIntervals', () => {
 
         it.each([
-            ['EARLY_MORNING', ">= TIME '05:00'", "< TIME '08:00'"],
-            ['MORNING', ">= TIME '08:00'", "< TIME '12:00'"],
-            ['AFTERNOON', ">= TIME '12:00'", "< TIME '17:00'"],
-            ['EVENING', ">= TIME '17:00'", "< TIME '21:00'"],
-        ] as const)('filters %s using its local-time boundaries',
-            (period, start, end) => {
+            [
+                'EARLY_MORNING',
+                [{ startMinute: 300, endMinute: 480 }],
+                ['05:00', '08:00'],
+            ],
+            [
+                'MORNING',
+                [{ startMinute: 480, endMinute: 720 }],
+                ['08:00', '12:00'],
+            ],
+            [
+                'AFTERNOON',
+                [{ startMinute: 720, endMinute: 1020 }],
+                ['12:00', '17:00'],
+            ],
+            [
+                'EVENING',
+                [{ startMinute: 1020, endMinute: 1260 }],
+                ['17:00', '21:00'],
+            ],
+        ] as const)(
+            'filters %s using its local-time boundaries',
+            (_period, timeIntervals, expectedParams) => {
                 const result = buildEventDateRangeFilters({
-                    timeOfDay: period,
+                    timeIntervals: [...timeIntervals],
                 });
 
                 expect(result.conditions).toHaveLength(1);
-                expect(result.conditions[0]).toContain(`${localTime} ${start}`);
-                expect(result.conditions[0]).toContain(`${localTime} ${end}`);
-                expect(result.params).toEqual([]);
-            }
+                expect(result.conditions[0]).toContain(`${localTime} >= $1::time`);
+                expect(result.conditions[0]).toContain(`${localTime} < $2::time`);
+                expect(result.params).toEqual([...expectedParams]);
+            },
         );
 
         it('uses an OR condition for NIGHT', () => {
             const result = buildEventDateRangeFilters({
-                timeOfDay: 'NIGHT',
+                timeIntervals: [
+                    { startMinute: 0, endMinute: 300 },
+                    { startMinute: 1260, endMinute: 1440 },
+                ],
             });
 
-            expect(result.conditions[0]).toContain(`${localTime} >= TIME '21:00'`);
+            expect(result.conditions).toHaveLength(1);
             expect(result.conditions[0]).toContain(' OR ');
-            expect(result.conditions[0]).toContain(`${localTime} < TIME '05:00'`);
+            expect(result.conditions[0]).toContain(`${localTime} < $1::time`);
+            expect(result.conditions[0]).toContain(`${localTime} >= $2::time`);
+            expect(result.params).toEqual(['05:00', '21:00']);
+        });
+
+        it('uses OR for multiple disjoint periods', () => {
+            const result = buildEventDateRangeFilters({
+                timeIntervals: [
+                    { startMinute: 480, endMinute: 720 },
+                    { startMinute: 1020, endMinute: 1260 },
+                ],
+            });
+
+            expect(result.conditions[0]).toContain(' OR ');
+            expect(result.params).toEqual([
+                '08:00',
+                '12:00',
+                '17:00',
+                '21:00',
+            ]);
+        });
+
+        it('returns no events for an empty interval set', () => {
+            const result = buildEventDateRangeFilters({
+                timeIntervals: [],
+            });
+
+            expect(result.conditions).toEqual(['FALSE']);
+            expect(result.params).toEqual([]);
         });
     });
 
@@ -95,16 +143,23 @@ describe('buildEventDateRangeFilters', () => {
         });
     });
 
-    it('combines named periods and explicit ranges as separate conditions', () => {
+    it('intersects named periods and explicit ranges as separate conditions', () => {
         const result = buildEventDateRangeFilters({
-            timeOfDay: 'EVENING',
             timeRange: { startTime: '18:00', endTime: '20:00' },
+            timeIntervals: [
+                { startMinute: 1020, endMinute: 1260 },
+            ],
         });
 
         expect(result.conditions).toHaveLength(2);
-        expect(result.conditions[0]).toContain("TIME '17:00'");
-        expect(result.conditions[1]).toContain('$1::time');
-        expect(result.conditions[1]).toContain('$2::time');
-        expect(result.params).toEqual(['18:00', '20:00']);
+        expect(result.conditions[0]).toContain('$1::time');
+        expect(result.conditions[1]).toContain('$3::time');
+        expect(result.conditions[1]).toContain('$4::time');
+        expect(result.params).toEqual([
+            '18:00',
+            '20:00',
+            '17:00',
+            '21:00',
+        ]);
     });
 });

@@ -62,14 +62,17 @@ export const NATURAL_LANGUAGE_SEARCH_SCHEMA = {
     includePastEvents: { type: 'BOOLEAN' },
     includeFutureEvents: { type: 'BOOLEAN' },
     timeOfDay: {
-      type: 'STRING',
-      enum: [
-        'EARLY_MORNING',
-        'MORNING',
-        'AFTERNOON',
-        'EVENING',
-        'NIGHT',
-      ],
+      type: 'ARRAY',
+      items: {
+        type: 'STRING',
+        enum: [
+          'EARLY_MORNING',
+          'MORNING',
+          'AFTERNOON',
+          'EVENING',
+          'NIGHT',
+        ],
+      },
     },
     timeRange: {
       type: 'OBJECT',

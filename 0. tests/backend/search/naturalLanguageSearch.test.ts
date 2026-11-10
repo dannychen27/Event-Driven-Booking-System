@@ -360,7 +360,7 @@ describe("NaturalLanguageSearchService", () => {
     it('intersects AI time-of-day and explicit time-range filters before ranking', async () => {
         interpreter.interpret.mockResolvedValueOnce({
             intent: 'evening activities',
-            timeOfDay: 'EVENING',
+            timeOfDay: ['EVENING'],
             timeRange: {
                 startTime: '18:00',
                 endTime: '20:00',
@@ -394,6 +394,41 @@ describe("NaturalLanguageSearchService", () => {
         });
     });
 
+    it('supports multiple AI time-of-day periods during candidate retrieval', async () => {
+        interpreter.interpret.mockResolvedValueOnce({
+            intent: 'morning or evening activities',
+            timeOfDay: ['MORNING', 'EVENING'],
+        });
+
+        const query = 'Find morning or evening events';
+
+        const result = await service.searchNaturalLanguage({ query });
+
+        expect(eventsService.searchEventCandidates).toHaveBeenCalledWith({
+            ...expectedUnrestrictedTimeFilters,
+            timeIntervals: [
+                { startMinute: 480, endMinute: 720 },
+                { startMinute: 1020, endMinute: 1260 },
+            ],
+        });
+
+        expect(ranker.rank).toHaveBeenCalledWith(
+            query,
+            'morning or evening activities',
+            candidates,
+        );
+
+        expect(result).toMatchObject({
+            status: 'success',
+            appliedFilters: {
+                timeIntervals: [
+                    { startMinute: 480, endMinute: 720 },
+                    { startMinute: 1020, endMinute: 1260 },
+                ],
+            },
+        });
+    });
+
     it('runs a calendar-only search without invoking the interpreter or ranker', async () => {
         const result = await service.searchNaturalLanguage({
             filters: {
@@ -407,7 +442,7 @@ describe("NaturalLanguageSearchService", () => {
                 time: {
                     state: 'selected',
                     value: {
-                        timeOfDay: 'EVENING',
+                        timeOfDay: ['EVENING'],
                     },
                 },
             },
@@ -506,7 +541,7 @@ describe("NaturalLanguageSearchService", () => {
     it('returns a time conflict without querying candidates or ranking', async () => {
         interpreter.interpret.mockResolvedValueOnce({
             intent: 'evening activities',
-            timeOfDay: 'EVENING',
+            timeOfDay: ['EVENING'],
         });
 
         const result = await service.searchNaturalLanguage({
@@ -515,7 +550,7 @@ describe("NaturalLanguageSearchService", () => {
                 time: {
                     state: 'selected',
                     value: {
-                        timeOfDay: 'MORNING',
+                        timeOfDay: ['MORNING'],
                     },
                 },
             },
@@ -543,7 +578,7 @@ describe("NaturalLanguageSearchService", () => {
         interpreter.interpret.mockResolvedValueOnce({
             intent: 'evening activities',
             relativeDate: { kind: 'TODAY' },
-            timeOfDay: 'EVENING',
+            timeOfDay: ['EVENING'],
         });
 
         const result = await service.searchNaturalLanguage({
@@ -559,7 +594,7 @@ describe("NaturalLanguageSearchService", () => {
                 time: {
                     state: 'selected',
                     value: {
-                        timeOfDay: 'MORNING',
+                        timeOfDay: ['MORNING'],
                     },
                 },
             },
@@ -681,7 +716,7 @@ describe("NaturalLanguageSearchService", () => {
     it('uses the explicitly selected time after the user resolves a time conflict', async () => {
         interpreter.interpret.mockResolvedValueOnce({
             intent: 'evening activities',
-            timeOfDay: 'EVENING',
+            timeOfDay: ['EVENING'],
         });
 
         const result = await service.searchNaturalLanguage({
@@ -690,7 +725,7 @@ describe("NaturalLanguageSearchService", () => {
                 time: {
                     state: 'selected',
                     value: {
-                        timeOfDay: 'MORNING',
+                        timeOfDay: ['MORNING'],
                     },
                 },
             },
@@ -718,7 +753,7 @@ describe("NaturalLanguageSearchService", () => {
         interpreter.interpret.mockResolvedValueOnce({
             intent: 'evening activities',
             relativeDate: { kind: 'TODAY' },
-            timeOfDay: 'EVENING',
+            timeOfDay: ['EVENING'],
         });
 
         const result = await service.searchNaturalLanguage({

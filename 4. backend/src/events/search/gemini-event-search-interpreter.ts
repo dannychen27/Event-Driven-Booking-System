@@ -70,13 +70,15 @@ export class GeminiEventSearchInterpreter {
 
         'TIME INTERPRETATION',
         'Interpret all event times in the America/Toronto timezone.',
-        'Use timeOfDay for named periods: EARLY_MORNING (05:00–08:00), MORNING (08:00–12:00), AFTERNOON (12:00–17:00), EVENING (17:00–21:00), and NIGHT (21:00–05:00 the following day).',
-        'These named periods use start-inclusive and end-exclusive boundaries.',
+        'Use timeOfDay as an array of one or more named periods: EARLY_MORNING (05:00–08:00), MORNING (08:00–12:00), AFTERNOON (12:00–17:00), EVENING (17:00–21:00), and NIGHT (21:00–05:00 the following day).',
+        'When the user requests multiple named periods, include every requested period in the timeOfDay array. For example, "morning or evening" means ["MORNING", "EVENING"].',
+        'Multiple timeOfDay periods are combined using OR: an event may match any selected period.',
+        'Named periods use start-inclusive and end-exclusive boundaries.',
         'Use timeRange for explicit clock-time constraints, with startTime and endTime formatted as HH:mm.',
         'For requests such as "after 8 PM", use startTime: "20:00". For requests such as "before 10 AM", use endTime: "10:00".',
         'For explicit ranges crossing midnight, such as "between 10 PM and 2 AM", use startTime: "22:00" and endTime: "02:00".',
         'Time ranges use start-inclusive and end-exclusive boundaries; a range crossing midnight wraps into the following day.',
-        'Both timeOfDay and timeRange may be returned when the user specifies both; the backend will apply their intersection.',
+        'Both timeOfDay and timeRange may be returned when the user specifies both; the backend will intersect the timeRange with the union of the selected periods.',
         'Omit timeOfDay and timeRange when the user expresses no time preference.',
 
         '',

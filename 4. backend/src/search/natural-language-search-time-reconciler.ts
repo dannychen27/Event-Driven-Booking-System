@@ -4,19 +4,20 @@ import {
     SearchFilterConflict,
     SearchFilterResolution,
 } from '../types/search/natural-language-search-request.types';
-
 import {
     TimeOfDay,
     TimeRange,
     TimeInterval,
 } from '../types/search/time-range.types';
 
+import { buildTimeOfDayIntervals } from './time-of-day-intervals';
+
 const MINUTES_PER_DAY = 24 * 60;
 
 export type NormalizedTimeInterval = TimeInterval;
 
 type TimeReconciliationInput = {
-    aiTimeOfDay?: TimeOfDay;
+    aiTimeOfDay?: TimeOfDay[];
     aiTimeRange?: TimeRange;
     selection?: ExplicitSelection<CalendarTimeSelection>;
     resolution?: SearchFilterResolution;
@@ -30,20 +31,6 @@ export type TimeReconciliationResult =
     | {
     conflict: SearchFilterConflict;
     intervals?: never;
-};
-
-const TIME_OF_DAY_INTERVALS: Record<
-    TimeOfDay,
-    NormalizedTimeInterval[]
-> = {
-    EARLY_MORNING: [{ startMinute: 300, endMinute: 480 }],
-    MORNING: [{ startMinute: 480, endMinute: 720 }],
-    AFTERNOON: [{ startMinute: 720, endMinute: 1020 }],
-    EVENING: [{ startMinute: 1020, endMinute: 1260 }],
-    NIGHT: [
-        { startMinute: 0, endMinute: 300 },
-        { startMinute: 1260, endMinute: MINUTES_PER_DAY },
-    ],
 };
 
 function parseTime(time: string): number {
@@ -159,16 +146,10 @@ function timeRangeToIntervals(
 }
 
 function buildConstraintIntervals(
-    timeOfDay?: TimeOfDay,
+    timeOfDay?: TimeOfDay[],
     timeRange?: TimeRange,
 ): NormalizedTimeInterval[] | undefined {
-    let intervals: NormalizedTimeInterval[] | undefined;
-
-    if (timeOfDay !== undefined) {
-        intervals = TIME_OF_DAY_INTERVALS[timeOfDay].map(
-            (interval) => ({ ...interval }),
-        );
-    }
+    let intervals = buildTimeOfDayIntervals(timeOfDay);
 
     if (timeRange !== undefined) {
         const rangeIntervals = timeRangeToIntervals(timeRange);
@@ -182,7 +163,7 @@ function buildConstraintIntervals(
 }
 
 function buildAiIntervals(
-    timeOfDay?: TimeOfDay,
+    timeOfDay?: TimeOfDay[],
     timeRange?: TimeRange,
 ): NormalizedTimeInterval[] | undefined {
     return buildConstraintIntervals(timeOfDay, timeRange);
@@ -234,12 +215,14 @@ function formatIntervals(
         .join(' and ');
 }
 
-function formatTimeOfDay(value?: TimeOfDay): string {
-    if (value === undefined) return '';
+function formatTimeOfDay(value?: TimeOfDay[]): string {
+    if (value === undefined) {
+        return '';
+    }
 
     return value
-        .toLowerCase()
-        .replace('_', ' ');
+        .map((period) => period.toLowerCase().replace('_', ' '))
+        .join(' or ');
 }
 
 function formatTimeRange(value?: TimeRange): string {
@@ -256,7 +239,7 @@ function formatTimeRange(value?: TimeRange): string {
 }
 
 function formatAiInterpretation(
-    timeOfDay?: TimeOfDay,
+    timeOfDay?: TimeOfDay[],
     timeRange?: TimeRange,
 ): string {
     const parts = [

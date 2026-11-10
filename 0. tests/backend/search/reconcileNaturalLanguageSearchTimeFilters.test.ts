@@ -25,7 +25,7 @@ describe('reconcileTimeFilter', () => {
         it('should use the AI time-of-day when the calendar is untouched', () => {
             expect(
                 reconcileTimeFilter({
-                    aiTimeOfDay: 'EVENING',
+                    aiTimeOfDay: ['EVENING'],
                 }),
             ).toEqual({
                 intervals: [
@@ -38,7 +38,7 @@ describe('reconcileTimeFilter', () => {
             expect(
                 reconcileTimeFilter({
                     selection: makeSelection({
-                        timeOfDay: 'MORNING',
+                        timeOfDay: ['MORNING'],
                     }),
                 }),
             ).toEqual({
@@ -48,12 +48,27 @@ describe('reconcileTimeFilter', () => {
             });
         });
 
+        it('should preserve multiple disjoint calendar time-of-day periods', () => {
+            expect(
+                reconcileTimeFilter({
+                    selection: makeSelection({
+                        timeOfDay: ['MORNING', 'EVENING'],
+                    }),
+                }),
+            ).toEqual({
+                intervals: [
+                    { startMinute: 480, endMinute: 720 },
+                    { startMinute: 1020, endMinute: 1260 },
+                ],
+            });
+        });
+
         it('should intersect matching time-of-day selections', () => {
             expect(
                 reconcileTimeFilter({
-                    aiTimeOfDay: 'EVENING',
+                    aiTimeOfDay: ['EVENING'],
                     selection: makeSelection({
-                        timeOfDay: 'EVENING',
+                        timeOfDay: ['EVENING'],
                     }),
                 }),
             ).toEqual({
@@ -66,7 +81,7 @@ describe('reconcileTimeFilter', () => {
         it('should intersect evening with an explicit 18:00–20:00 range', () => {
             expect(
                 reconcileTimeFilter({
-                    aiTimeOfDay: 'EVENING',
+                    aiTimeOfDay: ['EVENING'],
                     selection: makeSelection({
                         timeRange: {
                             startTime: '18:00',
@@ -105,7 +120,7 @@ describe('reconcileTimeFilter', () => {
         it('should intersect both time-of-day and time-range constraints', () => {
             expect(
                 reconcileTimeFilter({
-                    aiTimeOfDay: 'EVENING',
+                    aiTimeOfDay: ['EVENING'],
                     aiTimeRange: {
                         startTime: '18:00',
                         endTime: '22:00',
@@ -142,6 +157,19 @@ describe('reconcileTimeFilter', () => {
             ).toEqual({
                 intervals: [
                     { startMinute: 0, endMinute: 600 },
+                ],
+            });
+        });
+
+        it('should preserve multiple disjoint AI time-of-day periods as OR intervals', () => {
+            expect(
+                reconcileTimeFilter({
+                    aiTimeOfDay: ['MORNING', 'EVENING'],
+                }),
+            ).toEqual({
+                intervals: [
+                    { startMinute: 480, endMinute: 720 },
+                    { startMinute: 1020, endMinute: 1260 },
                 ],
             });
         });
@@ -190,7 +218,7 @@ describe('reconcileTimeFilter', () => {
         it('should intersect a cross-midnight range with NIGHT', () => {
             expect(
                 reconcileTimeFilter({
-                    aiTimeOfDay: 'NIGHT',
+                    aiTimeOfDay: ['NIGHT'],
                     aiTimeRange: {
                         startTime: '22:00',
                         endTime: '02:00',
@@ -212,7 +240,7 @@ describe('reconcileTimeFilter', () => {
                         endTime: '08:00',
                     },
                     selection: makeSelection({
-                        timeOfDay: 'EARLY_MORNING',
+                        timeOfDay: ['EARLY_MORNING'],
                     }),
                 }),
             ).toEqual({
@@ -227,9 +255,9 @@ describe('reconcileTimeFilter', () => {
 
         it('should request clarification for evening versus morning', () => {
             const result = reconcileTimeFilter({
-                aiTimeOfDay: 'EVENING',
+                aiTimeOfDay: ['EVENING'],
                 selection: makeSelection({
-                    timeOfDay: 'MORNING',
+                    timeOfDay: ['MORNING'],
                 }),
             });
 
@@ -266,7 +294,7 @@ describe('reconcileTimeFilter', () => {
             };
 
             const result = reconcileTimeFilter({
-                aiTimeOfDay: 'EVENING',
+                aiTimeOfDay: ['EVENING'],
                 selection,
             });
 
@@ -294,9 +322,9 @@ describe('reconcileTimeFilter', () => {
         it('should use the AI interpretation when resolution is ai', () => {
             expect(
                 reconcileTimeFilter({
-                    aiTimeOfDay: 'EVENING',
+                    aiTimeOfDay: ['EVENING'],
                     selection: makeSelection({
-                        timeOfDay: 'MORNING',
+                        timeOfDay: ['MORNING'],
                     }),
                     resolution: 'ai',
                 }),
@@ -310,9 +338,9 @@ describe('reconcileTimeFilter', () => {
         it('should use the calendar interpretation when resolution is selection', () => {
             expect(
                 reconcileTimeFilter({
-                    aiTimeOfDay: 'EVENING',
+                    aiTimeOfDay: ['EVENING'],
                     selection: makeSelection({
-                        timeOfDay: 'MORNING',
+                        timeOfDay: ['MORNING'],
                     }),
                     resolution: 'selection',
                 }),
@@ -330,7 +358,7 @@ describe('reconcileTimeFilter', () => {
 
             expect(
                 reconcileTimeFilter({
-                    aiTimeOfDay: 'EVENING',
+                    aiTimeOfDay: ['EVENING'],
                     selection,
                     resolution: 'selection',
                 }),
@@ -346,7 +374,7 @@ describe('reconcileTimeFilter', () => {
 
             expect(
                 reconcileTimeFilter({
-                    aiTimeOfDay: 'EVENING',
+                    aiTimeOfDay: ['EVENING'],
                     selection,
                     resolution: 'ai',
                 }),

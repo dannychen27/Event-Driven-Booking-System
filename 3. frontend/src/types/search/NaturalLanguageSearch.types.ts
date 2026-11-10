@@ -21,7 +21,7 @@ export type SearchFilters = {
     keyword?: string;
     startAfter?: string;
     startBefore?: string;
-    timeOfDay?: TimeOfDay;
+    timeOfDay?: TimeOfDay[];
     timeRange?: TimeRange;
     timeIntervals?: TimeInterval[];
     includePastEvents?: boolean;
@@ -43,7 +43,7 @@ export type CalendarDateRange = {
 };
 
 export type CalendarTimeSelection = {
-    timeOfDay?: TimeOfDay;
+    timeOfDay?: TimeOfDay[];
     timeRange?: TimeRange;
 };
 

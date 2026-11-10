@@ -1,9 +1,10 @@
+import { useEffect, useState } from "react";
 import type {
     CalendarDateRange,
     CalendarTimeSelection,
     ExplicitSelection,
+    TimeOfDay,
 } from "../../types/search/NaturalLanguageSearch.types.ts";
-import type { TimeOfDay } from "../../types/search/NaturalLanguageSearch.types.ts";
 import "../../styles/search/calendar-search-controls.css";
 
 interface CalendarSearchControlsProps {
@@ -25,6 +26,188 @@ const TIME_OF_DAY_OPTIONS: { value: TimeOfDay; label: string }[] = [
     { value: "EVENING", label: "Evening (5 PM–9 PM)" },
     { value: "NIGHT", label: "Night (9 PM–5 AM)" },
 ];
+
+const HOURS = Array.from({ length: 12 }, (_, index) =>
+    String(index + 1),
+);
+
+const MINUTES = Array.from({ length: 60 }, (_, index) =>
+    String(index).padStart(2, "0"),
+);
+
+type TimeParts = {
+    hour: string;
+    minute: string;
+    period: string;
+};
+
+const EMPTY_TIME_PARTS: TimeParts = {
+    hour: "",
+    minute: "",
+    period: "",
+};
+
+function parseTime(value?: string): TimeParts {
+    if (!value) {
+        return { ...EMPTY_TIME_PARTS };
+    }
+
+    const [hourString, minute] = value.split(":");
+    const hour = Number(hourString);
+
+    if (
+        !Number.isInteger(hour) ||
+        hour < 0 ||
+        hour > 23 ||
+        !/^\d{2}$/.test(minute ?? "")
+    ) {
+        return { ...EMPTY_TIME_PARTS };
+    }
+
+    return {
+        hour: String(hour % 12 || 12),
+        minute,
+        period: hour >= 12 ? "PM" : "AM",
+    };
+}
+
+function formatTime(parts: TimeParts): string | undefined {
+    if (!parts.hour || !parts.minute || !parts.period) {
+        return undefined;
+    }
+
+    const selectedHour = Number(parts.hour);
+    let hour = selectedHour % 12;
+
+    if (parts.period === "PM") {
+        hour += 12;
+    }
+
+    return `${String(hour).padStart(2, "0")}:${parts.minute}`;
+}
+
+interface TimePickerProps {
+    label: "After" | "Before";
+    value?: string;
+    disabled: boolean;
+    onChange: (value: string | undefined) => void;
+}
+
+function TimePicker({
+    label,
+    value,
+    disabled,
+    onChange,
+}: TimePickerProps) {
+    const [parts, setParts] = useState<TimeParts>(() =>
+        parseTime(value),
+    );
+
+    useEffect(() => {
+        setParts(parseTime(value));
+    }, [value]);
+
+    function updatePart(key: keyof TimeParts, nextValue: string) {
+        const nextParts = {
+            ...parts,
+            [key]: nextValue,
+        };
+
+        setParts(nextParts);
+        onChange(formatTime(nextParts));
+    }
+
+    function clearTime() {
+        setParts({ ...EMPTY_TIME_PARTS });
+        onChange(undefined);
+    }
+
+    const hasSelection = Boolean(
+        parts.hour || parts.minute || parts.period,
+    );
+
+    return (
+        <div className="calendar-time-picker">
+            <div className="calendar-time-picker-heading">
+                <span className="calendar-time-picker-label">
+                    {label}
+                </span>
+
+                <button
+                    type="button"
+                    className="calendar-time-clear"
+                    disabled={disabled || !hasSelection}
+                    onClick={clearTime}
+                    aria-label={`Clear ${label} time`}
+                >
+                    Clear
+                </button>
+            </div>
+
+            <div className="calendar-time-picker-fields">
+                <label>
+                    <span className="visually-hidden">
+                        {label} hour
+                    </span>
+                    <select
+                        aria-label={`${label} hour`}
+                        value={parts.hour}
+                        disabled={disabled}
+                        onChange={(event) =>
+                            updatePart("hour", event.target.value)
+                        }
+                    >
+                        <option value="">Hour</option>
+                        {HOURS.map((hour) => (
+                            <option key={hour} value={hour}>
+                                {hour}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+
+                <label>
+                    <span className="visually-hidden">
+                        {label} minute
+                    </span>
+                    <select
+                        aria-label={`${label} minute`}
+                        value={parts.minute}
+                        disabled={disabled}
+                        onChange={(event) =>
+                            updatePart("minute", event.target.value)
+                        }
+                    >
+                        <option value="">Min</option>
+                        {MINUTES.map((minute) => (
+                            <option key={minute} value={minute}>
+                                {minute}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+
+                <label>
+                    <span className="visually-hidden">
+                        {label} AM/PM
+                    </span>
+                    <select
+                        aria-label={`${label} AM/PM`}
+                        value={parts.period}
+                        disabled={disabled}
+                        onChange={(event) =>
+                            updatePart("period", event.target.value)
+                        }
+                    >
+                        <option value="">AM/PM</option>
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+    );
+}
 
 export default function CalendarSearchControls({
    dateSelection,
@@ -80,8 +263,21 @@ export default function CalendarSearchControls({
             ...updates,
         };
 
-        if (!nextSelection.timeOfDay && !nextSelection.timeRange?.startTime &&
-            !nextSelection.timeRange?.endTime) {
+        if ("timeRange" in updates) {
+            const range = updates.timeRange;
+
+            nextSelection.timeRange =
+                range?.startTime || range?.endTime
+                    ? range
+                    : undefined;
+        }
+
+        if (
+            (!nextSelection.timeOfDay ||
+                nextSelection.timeOfDay.length === 0) &&
+            !nextSelection.timeRange?.startTime &&
+            !nextSelection.timeRange?.endTime
+        ) {
             onTimeSelectionChange(undefined);
             return;
         }
@@ -92,8 +288,40 @@ export default function CalendarSearchControls({
         });
     }
 
+    function updateTimeBound(
+        bound: "startTime" | "endTime",
+        value: string | undefined,
+    ) {
+        const nextRange = {
+            ...selectedTime?.timeRange,
+            [bound]: value,
+        };
+
+        updateTimeSelection({
+            timeRange: nextRange,
+        });
+    }
+
+    function toggleTimeOfDay(
+        timeOfDay: TimeOfDay,
+        checked: boolean,
+    ) {
+        const current = selectedTime?.timeOfDay ?? [];
+
+        const next = checked
+            ? [...current, timeOfDay]
+            : current.filter((value) => value !== timeOfDay);
+
+        updateTimeSelection({
+            timeOfDay: next.length > 0 ? next : undefined,
+        });
+    }
+
     return (
-        <section className="calendar-search-controls" aria-label="Date and time filters">
+        <section
+            className="calendar-search-controls"
+            aria-label="Date and time filters"
+        >
             <div className="calendar-search-section">
                 <div className="calendar-search-section-heading">
                     <h3>Date</h3>
@@ -161,65 +389,53 @@ export default function CalendarSearchControls({
                     </button>
                 </div>
 
-                <div className="calendar-search-fields">
-                    <div>
-                        <label htmlFor="search-time-of-day">Time of day</label>
-                        <select
-                            id="search-time-of-day"
-                            value={selectedTime?.timeOfDay ?? ""}
-                            disabled={disabled}
-                            onChange={(event) =>
-                                updateTimeSelection({
-                                    timeOfDay: event.target.value
-                                        ? event.target.value as TimeOfDay
-                                        : undefined,
-                                })
-                            }
-                        >
-                            <option value="">Any time</option>
-                            {TIME_OF_DAY_OPTIONS.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                <fieldset
+                    className="calendar-time-of-day"
+                    disabled={disabled}
+                >
+                    <legend>Time of day</legend>
 
-                    <div>
-                        <label htmlFor="search-start-time">After</label>
-                        <input
-                            id="search-start-time"
-                            type="time"
-                            value={selectedTime?.timeRange?.startTime ?? ""}
-                            disabled={disabled}
-                            onChange={(event) =>
-                                updateTimeSelection({
-                                    timeRange: {
-                                        ...selectedTime?.timeRange,
-                                        startTime: event.target.value || undefined,
-                                    },
-                                })
-                            }
-                        />
+                    <div className="calendar-time-of-day-options">
+                        {TIME_OF_DAY_OPTIONS.map((option) => (
+                            <label key={option.value}>
+                                <input
+                                    type="checkbox"
+                                    checked={
+                                        selectedTime?.timeOfDay?.includes(
+                                            option.value,
+                                        ) ?? false
+                                    }
+                                    onChange={(event) =>
+                                        toggleTimeOfDay(
+                                            option.value,
+                                            event.target.checked,
+                                        )
+                                    }
+                                />
+                                <span>{option.label}</span>
+                            </label>
+                        ))}
                     </div>
+                </fieldset>
 
-                    <div>
-                        <label htmlFor="search-end-time">Before</label>
-                        <input
-                            id="search-end-time"
-                            type="time"
-                            value={selectedTime?.timeRange?.endTime ?? ""}
-                            disabled={disabled}
-                            onChange={(event) =>
-                                updateTimeSelection({
-                                    timeRange: {
-                                        ...selectedTime?.timeRange,
-                                        endTime: event.target.value || undefined,
-                                    },
-                                })
-                            }
-                        />
-                    </div>
+                <div className="calendar-time-range">
+                    <TimePicker
+                        label="After"
+                        value={selectedTime?.timeRange?.startTime}
+                        disabled={disabled}
+                        onChange={(value) =>
+                            updateTimeBound("startTime", value)
+                        }
+                    />
+
+                    <TimePicker
+                        label="Before"
+                        value={selectedTime?.timeRange?.endTime}
+                        disabled={disabled}
+                        onChange={(value) =>
+                            updateTimeBound("endTime", value)
+                        }
+                    />
                 </div>
             </div>
         </section>

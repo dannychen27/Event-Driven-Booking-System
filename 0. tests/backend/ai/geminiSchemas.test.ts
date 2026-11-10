@@ -15,16 +15,19 @@ describe("NATURAL_LANGUAGE_SEARCH_SCHEMA", () => {
             .toEqual({ type: "BOOLEAN" });
     });
 
-    it("should expose time-of-day as an optional enum", () => {
+    it("should expose time-of-day as an optional array of enum values", () => {
         expect(NATURAL_LANGUAGE_SEARCH_SCHEMA.properties.timeOfDay).toEqual({
-            type: "STRING",
-            enum: [
-                "EARLY_MORNING",
-                "MORNING",
-                "AFTERNOON",
-                "EVENING",
-                "NIGHT",
-            ],
+            type: "ARRAY",
+            items: {
+                type: "STRING",
+                enum: [
+                    "EARLY_MORNING",
+                    "MORNING",
+                    "AFTERNOON",
+                    "EVENING",
+                    "NIGHT",
+                ],
+            },
         });
     });
 

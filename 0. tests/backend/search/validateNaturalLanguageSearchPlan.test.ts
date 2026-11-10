@@ -1,6 +1,9 @@
 import {
     validateNaturalLanguageSearchPlan,
 } from "../../../4. backend/src/search/natural-language-search";
+import {
+    validateNaturalLanguageSearchRequest,
+} from "../../../4. backend/src/search/natural-language-search-request.validation";
 import { MAX_NATURAL_LANGUAGE_INTENT_LENGTH } from "../../../4. backend/src/constants/search.constants";
 
 import {
@@ -54,11 +57,13 @@ describe("validateNaturalLanguageSearchPlan", () => {
     });
 
     it.each([
-        { timeOfDay: 'EARLY_MORNING' },
-        { timeOfDay: 'MORNING' },
-        { timeOfDay: 'AFTERNOON' },
-        { timeOfDay: 'EVENING' },
-        { timeOfDay: 'NIGHT' },
+        { timeOfDay: ['EARLY_MORNING'] },
+        { timeOfDay: ['MORNING'] },
+        { timeOfDay: ['AFTERNOON'] },
+        { timeOfDay: ['EVENING'] },
+        { timeOfDay: ['NIGHT'] },
+        { timeOfDay: ['MORNING', 'EVENING'] },
+        { timeOfDay: ['EARLY_MORNING', 'MORNING', 'AFTERNOON'] },
     ])('preserves valid time-of-day filters: %j', (plan) => {
         expect(validateNaturalLanguageSearchPlan(plan)).toMatchObject(plan);
     });
@@ -68,7 +73,7 @@ describe("validateNaturalLanguageSearchPlan", () => {
         { timeRange: { endTime: '10:00' } },
         { timeRange: { startTime: '22:00', endTime: '02:00' } },
         {
-            timeOfDay: 'EVENING',
+            timeOfDay: ['EVENING'],
             timeRange: { startTime: '19:00', endTime: '20:00' },
         },
     ])('preserves valid explicit time ranges: %j', (plan) => {
@@ -88,6 +93,11 @@ describe("validateNaturalLanguageSearchPlan", () => {
         { timeRange: { startTime: '18:00', endTime: '18:00' } },
         { timeRange: { startTime: '18:00', finishTime: '20:00' } },
         { timeRange: null },
+        { timeOfDay: 'EVENING' },
+        { timeOfDay: [] },
+        { timeOfDay: ['LATE_NIGHT'] },
+        { timeOfDay: ['EVENING', 'EVENING'] },
+        { timeOfDay: ['EVENING', 12] },
     ])('rejects invalid time filters: %j', (plan) => {
         expect(() => validateNaturalLanguageSearchPlan(plan)).toThrow();
     });

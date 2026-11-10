@@ -194,19 +194,19 @@ describe("EventsService.searchEvents", () => {
     });
 
     it("should filter by time of day using Toronto local time", async () => {
-        await service.searchEvents({ timeOfDay: "EVENING" });
+        await service.searchEvents({ timeOfDay: ["EVENING"] });
 
         expectNthQuery(
             db,
             1,
-            "(e.start_time AT TIME ZONE 'America/Toronto')::time >= TIME '17:00'",
-            [],
+            "(e.start_time AT TIME ZONE 'America/Toronto')::time >= $1::time",
+            ["17:00", "21:00"],
         );
         expectNthQuery(
             db,
             1,
-            "(e.start_time AT TIME ZONE 'America/Toronto')::time < TIME '21:00'",
-            [],
+            "(e.start_time AT TIME ZONE 'America/Toronto')::time < $2::time",
+            ["17:00", "21:00"],
         );
     });
 
@@ -293,18 +293,53 @@ describe("EventsService.searchEventCandidates", () => {
 
     it("should apply time filters to candidate retrieval", async () => {
         await service.searchEventCandidates({
-            timeOfDay: "NIGHT",
+            timeOfDay: ["NIGHT"],
             timeRange: { startTime: "22:00", endTime: "02:00" },
         });
 
         const sql = db.query.mock.calls[0][0] as string;
 
-        expect(sql).toContain("TIME '21:00'");
-        expect(sql).toContain("TIME '05:00'");
-        expect(sql).toContain(" OR ");
         expect(sql).toContain("$1::time");
         expect(sql).toContain("$2::time");
+        expect(sql).toContain("$3::time");
+        expect(sql).toContain("$4::time");
+        expect(sql).toContain(" OR ");
 
-        expect(db.query.mock.calls[0][1]).toEqual(["22:00", "02:00"]);
+        expect(db.query.mock.calls[0][1]).toEqual([
+            "22:00",
+            "02:00",
+            "05:00",
+            "21:00",
+        ]);
+    });
+
+    it("should prioritize reconciled time intervals over time-of-day filters", async () => {
+        await service.searchEventCandidates({
+            timeOfDay: ["NIGHT"],
+            timeIntervals: [
+                { startMinute: 480, endMinute: 720 },
+            ],
+        });
+
+        const sql = db.query.mock.calls[0][0] as string;
+
+        expect(sql).toContain("$1::time");
+        expect(sql).toContain("$2::time");
+        expect(sql).not.toContain("$3::time");
+
+        expect(db.query.mock.calls[0][1]).toEqual(["08:00", "12:00"]);
+    });
+
+    it("should preserve empty reconciled intervals as an empty result", async () => {
+        await service.searchEventCandidates({
+            timeOfDay: ["MORNING"],
+            timeIntervals: [],
+        });
+
+        const sql = db.query.mock.calls[0][0] as string;
+
+        expect(sql).toContain("FALSE");
+        expect(sql).not.toContain("TIME '08:00'");
+        expect(sql).not.toContain("TIME '12:00'");
     });
 });

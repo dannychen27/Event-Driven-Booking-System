@@ -111,7 +111,7 @@ describe("GeminiSearchInterpreter", () => {
         expect(prompt).toContain('startTime: "22:00" and endTime: "02:00"');
 
         expect(prompt).toContain("start-inclusive and end-exclusive boundaries");
-        expect(prompt).toContain("backend will apply their intersection");
+        expect(prompt).toContain("backend will intersect the timeRange with the union of the selected periods.",);
         expect(prompt).toContain("Omit timeOfDay and timeRange when the user expresses no time preference.");
     });
 

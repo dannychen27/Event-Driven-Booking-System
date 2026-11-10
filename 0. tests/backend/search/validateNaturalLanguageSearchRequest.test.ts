@@ -1,4 +1,3 @@
-
 import { BadRequestException } from '@nestjs/common';
 
 import {
@@ -45,7 +44,7 @@ describe('validateNaturalLanguageSearchRequest', () => {
                     time: {
                         state: 'selected',
                         value: {
-                            timeOfDay: 'EVENING',
+                            timeOfDay: ['EVENING'],
                         },
                     },
                 },
@@ -54,7 +53,7 @@ describe('validateNaturalLanguageSearchRequest', () => {
                     time: {
                         state: 'selected',
                         value: {
-                            timeOfDay: 'EVENING',
+                            timeOfDay: ['EVENING'],
                         },
                     },
                 },
@@ -133,7 +132,7 @@ describe('validateNaturalLanguageSearchRequest', () => {
                     time: {
                         state: 'selected',
                         value: {
-                            timeOfDay: 'EVENING',
+                            timeOfDay: ['EVENING'],
                             timeRange: {
                                 startTime: '18:00',
                                 endTime: '20:00',
@@ -171,7 +170,7 @@ describe('validateNaturalLanguageSearchRequest', () => {
                     time: {
                         state: 'selected',
                         value: {
-                            timeOfDay: 'EVENING',
+                            timeOfDay: ['EVENING'],
                         },
                     },
                 },
@@ -198,6 +197,28 @@ describe('validateNaturalLanguageSearchRequest', () => {
                     time: 'selection',
                 },
             })).toBeDefined();
+        });
+
+        it('should accept multiple selected time-of-day periods', () => {
+            expect(validateNaturalLanguageSearchRequest({
+                filters: {
+                    time: {
+                        state: 'selected',
+                        value: {
+                            timeOfDay: ['MORNING', 'EVENING'],
+                        },
+                    },
+                },
+            })).toMatchObject({
+                filters: {
+                    time: {
+                        state: 'selected',
+                        value: {
+                            timeOfDay: ['MORNING', 'EVENING'],
+                        },
+                    },
+                },
+            });
         });
     });
 

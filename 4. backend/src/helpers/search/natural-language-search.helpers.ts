@@ -75,16 +75,25 @@ export function validateOptionalTimeOfDay({
   value
 }: {
   value: unknown;
-}): TimeOfDay | undefined {
+}): TimeOfDay[] | undefined {
   if (value === undefined) {
     return undefined;
   }
 
-  if (typeof value !== 'string' || !VALID_TIME_OF_DAYS.has(value as TimeOfDay)) {
-    throw new Error('timeOfDay is invalid');
+  if (
+      !Array.isArray(value) ||
+      value.length === 0 ||
+      value.some(
+          (period) =>
+              typeof period !== 'string' ||
+              !VALID_TIME_OF_DAYS.has(period as TimeOfDay),
+      ) ||
+      new Set(value).size !== value.length
+  ) {
+    throw new Error('timeOfDay must be a non-empty array of unique valid periods');
   }
 
-  return value as TimeOfDay;
+  return value as TimeOfDay[];
 }
 
 function validateTimeString({
