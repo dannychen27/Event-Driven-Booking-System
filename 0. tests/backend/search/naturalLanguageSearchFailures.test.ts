@@ -48,9 +48,8 @@ describe("NaturalLanguageSearchService", () => {
     it('maps interpreter service-unavailable errors to ServiceUnavailableException', async () => {
         interpreter.interpret.mockRejectedValueOnce({ status: 503 });
 
-        await expect(
-            service.searchNaturalLanguage('Find coffee events'),
-        ).rejects.toThrow(ServiceUnavailableException);
+        await expect(service.searchNaturalLanguage({ query: 'Find coffee events' }))
+            .rejects.toThrow(ServiceUnavailableException);
 
         expect(eventsService.searchEventCandidates).not.toHaveBeenCalled();
         expect(ranker.rank).not.toHaveBeenCalled();
@@ -59,9 +58,8 @@ describe("NaturalLanguageSearchService", () => {
     it('maps ranker service-unavailable errors to ServiceUnavailableException', async () => {
         ranker.rank.mockRejectedValueOnce({ status: 503 });
 
-        await expect(
-            service.searchNaturalLanguage('Find coffee events'),
-        ).rejects.toThrow(ServiceUnavailableException);
+        await expect(service.searchNaturalLanguage({ query: 'Find coffee events' }))
+            .rejects.toThrow(ServiceUnavailableException);
     });
 
     it('returns a controlled unavailable error when Gemini interpretation times out', async () => {
@@ -69,9 +67,8 @@ describe("NaturalLanguageSearchService", () => {
         timeoutError.name = 'AbortError';
         interpreter.interpret.mockRejectedValueOnce(timeoutError);
 
-        await expect(
-            service.searchNaturalLanguage('Find coffee events'),
-        ).rejects.toThrow(ServiceUnavailableException);
+        await expect(service.searchNaturalLanguage({ query: 'Find coffee events' }))
+            .rejects.toThrow(ServiceUnavailableException);
 
         expect(eventsService.searchEventCandidates).not.toHaveBeenCalled();
         expect(ranker.rank).not.toHaveBeenCalled();
@@ -84,9 +81,8 @@ describe("NaturalLanguageSearchService", () => {
             }),
         );
 
-        await expect(
-            service.searchNaturalLanguage('Find coffee events'),
-        ).rejects.toThrow(ServiceUnavailableException);
+        await expect(service.searchNaturalLanguage({ query: 'Find coffee events' }))
+            .rejects.toThrow(ServiceUnavailableException);
     });
 
     it('returns a controlled unavailable error when Gemini returns 504', async () => {
@@ -97,9 +93,8 @@ describe("NaturalLanguageSearchService", () => {
 
         interpreter.interpret.mockRejectedValueOnce(deadlineError);
 
-        await expect(
-            service.searchNaturalLanguage('Find coffee events'),
-        ).rejects.toThrow(ServiceUnavailableException);
+        await expect(service.searchNaturalLanguage({ query: 'Find coffee events' }))
+            .rejects.toThrow(ServiceUnavailableException);
 
         expect(eventsService.searchEventCandidates).not.toHaveBeenCalled();
         expect(ranker.rank).not.toHaveBeenCalled();

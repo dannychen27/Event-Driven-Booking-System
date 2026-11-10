@@ -64,11 +64,28 @@ describe("searchEvents", () => {
 });
 
 describe("searchEventsNaturalLanguage", () => {
-    it("sends a POST request with the natural-language query", async () => {
-        const events = [minimalCoffeeMeetupEventFixture];
-        const fetchMock = mockFetchResponse(events);
+    const request = {
+        query: "Find coffee events",
+        filters: {
+            date: {
+                state: "selected" as const,
+                value: {
+                    startDate: "2026-11-14",
+                    endDate: "2026-11-15",
+                },
+            },
+        },
+    };
 
-        await searchEventsNaturalLanguage("Find coffee events");
+    it("sends a POST request with the complete search request", async () => {
+        const response = {
+            status: "success",
+            events: [minimalCoffeeMeetupEventFixture],
+            appliedFilters: {},
+        };
+        const fetchMock = mockFetchResponse(response);
+
+        await searchEventsNaturalLanguage(request);
 
         expect(fetchMock).toHaveBeenCalledWith(
             "http://localhost:3000/events/natural-language-search",
@@ -77,19 +94,38 @@ describe("searchEventsNaturalLanguage", () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                    query: "Find coffee events",
-                }),
+                body: JSON.stringify(request),
             },
         );
     });
 
-    it("returns events from a successful response", async () => {
-        const events = [minimalCoffeeMeetupEventFixture];
-        mockFetchResponse(events);
+    it("returns a successful search response", async () => {
+        const response = {
+            status: "success" as const,
+            events: [minimalCoffeeMeetupEventFixture],
+            appliedFilters: {},
+        };
+        mockFetchResponse(response);
 
-        await expect(searchEventsNaturalLanguage("Find coffee events"))
-            .resolves.toEqual(events);
+        await expect(searchEventsNaturalLanguage(request))
+            .resolves.toEqual(response);
+    });
+
+    it("returns a clarification response without treating it as events", async () => {
+        const response = {
+            status: "clarification_required" as const,
+            conflicts: [
+                {
+                    category: "date" as const,
+                    aiInterpretation: "Tomorrow",
+                    userSelection: "November 16, 2026",
+                },
+            ],
+        };
+        mockFetchResponse(response);
+
+        await expect(searchEventsNaturalLanguage(request))
+            .resolves.toEqual(response);
     });
 
     it("preserves the backend error message when the request fails", async () => {
@@ -100,8 +136,10 @@ describe("searchEventsNaturalLanguage", () => {
             { ok: false },
         );
 
-        await expect(searchEventsNaturalLanguage("Find coffee events"))
-            .rejects.toThrow("AI search is temporarily unavailable. Please try again later.");
+        await expect(searchEventsNaturalLanguage(request))
+            .rejects.toThrow(
+                "AI search is temporarily unavailable. Please try again later.",
+            );
     });
 
     it("uses a fallback message when the error response cannot be parsed", async () => {
@@ -110,7 +148,9 @@ describe("searchEventsNaturalLanguage", () => {
             rejectJson: true,
         });
 
-        await expect(searchEventsNaturalLanguage("Find coffee events"))
-            .rejects.toThrow("Failed to search events with natural language");
+        await expect(searchEventsNaturalLanguage(request))
+            .rejects.toThrow(
+                "Failed to search events with natural language",
+            );
     });
 });

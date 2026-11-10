@@ -1,4 +1,6 @@
 import { SearchFilters } from '../../types/search/natural-language-search.types';
+import { TimeOfDay, TimeRange } from '../../types/search/time-range.types';
+import { VALID_TIME_OF_DAYS } from "./natural-language-search.helpers.constants";
 
 export function validateInputFields({
   input,
@@ -49,6 +51,119 @@ export function validateOptionalString({
   }
 
   return value.trim();
+}
+
+export function validateOptionalBoolean({
+  value,
+  fieldName,
+}: {
+  value: unknown;
+  fieldName: string;
+}): boolean | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (typeof value !== 'boolean') {
+    throw new Error(`${fieldName} must be a boolean`);
+  }
+
+  return value;
+}
+
+export function validateOptionalTimeOfDay({
+  value
+}: {
+  value: unknown;
+}): TimeOfDay[] | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (
+      !Array.isArray(value) ||
+      value.length === 0 ||
+      value.some(
+          (period) =>
+              typeof period !== 'string' ||
+              !VALID_TIME_OF_DAYS.has(period as TimeOfDay),
+      ) ||
+      new Set(value).size !== value.length
+  ) {
+    throw new Error('timeOfDay must be a non-empty array of unique valid periods');
+  }
+
+  return value as TimeOfDay[];
+}
+
+function validateTimeString({
+  value,
+  fieldName,
+}: {
+  value: unknown;
+  fieldName: string;
+}): string {
+  if (
+      typeof value !== 'string' ||
+      !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(value)
+  ) {
+    throw new Error(`${fieldName} must be a valid HH:mm time`);
+  }
+
+  return value;
+}
+
+export function validateOptionalTimeRange({
+  value,
+}: {
+  value: unknown;
+}): TimeRange | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    throw new Error('timeRange must be an object');
+  }
+
+  const range = value as Record<string, unknown>;
+  const keys = Object.keys(range);
+
+  if (
+      keys.length === 0 ||
+      keys.some((key) => !['startTime', 'endTime'].includes(key))
+  ) {
+    throw new Error('timeRange must contain startTime or endTime only');
+  }
+
+  if (range.startTime === undefined && range.endTime === undefined) {
+    throw new Error('timeRange must contain at least one time boundary');
+  }
+
+  const startTime =
+    range.startTime !== undefined
+      ? validateTimeString({
+        value: range.startTime,
+        fieldName: 'timeRange.startTime',
+      })
+      : undefined;
+
+  const endTime =
+    range.endTime !== undefined
+      ? validateTimeString({
+        value: range.endTime,
+        fieldName: 'timeRange.endTime',
+      })
+      : undefined;
+
+  if (startTime !== undefined && startTime === endTime) {
+    throw new Error('timeRange startTime and endTime must differ');
+  }
+
+  return {
+    ...(startTime !== undefined ? { startTime } : {}),
+    ...(endTime !== undefined ? { endTime } : {}),
+  };
 }
 
 export function validateDateRange({

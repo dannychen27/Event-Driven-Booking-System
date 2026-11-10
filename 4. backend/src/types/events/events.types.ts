@@ -7,6 +7,18 @@ export type EventCandidate = {
   start_time?: string | Date;
 };
 
+export type EventWithVenue = {
+  id: number;
+  name: string;
+  venue_id: number;
+  venue_name: string;
+  venue_address: string;
+  start_time: string | Date;
+  end_time: string | Date;
+  capacity: number;
+  description?: string | null;
+};
+
 export type EventAvailability = {
   capacity: number;
   booked: number;
@@ -22,10 +34,4 @@ export type EventLock = {
   start_time: string | Date;
   end_time: string | Date;
   capacity: number;
-};
-
-export type EventWithVenue = {
-  // Event columns plus:
-  venue_name: string;
-  venue_address: string;
 };

@@ -60,7 +60,11 @@ describe("Clearing search", () => {
     it("clears both search inputs and restores all events", async () => {
         vi.mocked(getEvents).mockResolvedValue([initialEventFixture]);
         vi.mocked(searchEvents).mockResolvedValue([]);
-        vi.mocked(searchEventsNaturalLanguage).mockResolvedValue([]);
+        vi.mocked(searchEventsNaturalLanguage).mockResolvedValue({
+            status: "success",
+            events: [],
+            appliedFilters: {},
+        });
 
         render(<EventsPage />);
 

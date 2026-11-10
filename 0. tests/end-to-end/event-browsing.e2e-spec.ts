@@ -96,5 +96,51 @@ describe("Event browsing (E2E)", () => {
 
         expect(response.headers["x-request-id"]).toBe(requestId);
     });
+
+    it("should support calendar-only natural-language searches", async () => {
+        const response = await request(app.getHttpServer())
+            .post("/events/natural-language-search")
+            .send({
+                filters: {
+                    date: {
+                        state: "selected",
+                        value: {
+                            startDate: "2026-09-10",
+                            endDate: "2026-09-10",
+                        },
+                    },
+                },
+            })
+            .expect(201);
+
+        expect(response.body.status).toBe("success");
+
+        expect(response.body.events.map((event: { id: number }) => event.id))
+            .toEqual([1, 2, 3]);
+
+        expect(response.body.events).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    id: 1,
+                    name: "E2E Test Event",
+                    venue_name: "E2E Test Venue",
+                    venue_address: "1 Test Street",
+                }),
+                expect.objectContaining({
+                    id: 2,
+                    name: "E2E Conflicting Event",
+                }),
+                expect.objectContaining({
+                    id: 3,
+                    name: "E2E Full Event",
+                }),
+            ]),
+        );
+
+        expect(response.body.appliedFilters).toMatchObject({
+            startAfter: "2026-09-10T04:00:00.000Z",
+            startBefore: "2026-09-11T04:00:00.000Z",
+        });
+    });
 });
 

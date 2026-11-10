@@ -139,4 +139,207 @@ describe("EventsService.searchEvents", () => {
         expect(sql).not.toContain('e.start_time <');
         expect(sql).not.toContain('ILIKE');
     });
+
+    it("should exclude past events when includePastEvents is false", async () => {
+        await service.searchEvents({ includePastEvents: false });
+
+        expectNthQuery(
+            db,
+            1,
+            "e.start_time >= statement_timestamp()",
+            [],
+        );
+    });
+
+    it("should exclude future events when includeFutureEvents is false", async () => {
+        await service.searchEvents({ includeFutureEvents: false });
+
+        expectNthQuery(
+            db,
+            1,
+            "e.start_time < statement_timestamp()",
+            [],
+        );
+    });
+
+    it("should exclude both past and future events when both flags are false", async () => {
+        await service.searchEvents({
+            includePastEvents: false,
+            includeFutureEvents: false,
+        });
+
+        expectNthQuery(
+            db,
+            1,
+            "e.start_time >= statement_timestamp()",
+            [],
+        );
+        expectNthQuery(
+            db,
+            1,
+            "e.start_time < statement_timestamp()",
+            [],
+        );
+    });
+
+    it("should preserve all events when both inclusion flags are true", async () => {
+        await service.searchEvents({
+            includePastEvents: true,
+            includeFutureEvents: true,
+        });
+
+        const sql = db.query.mock.calls[0][0] as string;
+        expect(sql).not.toContain("statement_timestamp()");
+        expect(sql).not.toContain("WHERE");
+    });
+
+    it("should filter by time of day using Toronto local time", async () => {
+        await service.searchEvents({ timeOfDay: ["EVENING"] });
+
+        expectNthQuery(
+            db,
+            1,
+            "(e.start_time AT TIME ZONE 'America/Toronto')::time >= $1::time",
+            ["17:00", "21:00"],
+        );
+        expectNthQuery(
+            db,
+            1,
+            "(e.start_time AT TIME ZONE 'America/Toronto')::time < $2::time",
+            ["17:00", "21:00"],
+        );
+    });
+
+    it("should filter by an explicit time range and parameterize its values", async () => {
+        await service.searchEvents({
+            timeRange: { startTime: "18:00", endTime: "21:00" },
+        });
+
+        expectNthQuery(
+            db,
+            1,
+            "(e.start_time AT TIME ZONE 'America/Toronto')::time >= $1::time",
+            ["18:00", "21:00"],
+        );
+        expectNthQuery(
+            db,
+            1,
+            "(e.start_time AT TIME ZONE 'America/Toronto')::time < $2::time",
+            ["18:00", "21:00"],
+        );
+    });
+
+    it("should preserve parameter ordering when keyword, date, and time filters are combined", async () => {
+        await service.searchEvents({
+            keyword: "coffee",
+            startAfter: SEARCH_START_BOUNDARY,
+            timeRange: { startTime: "18:00", endTime: "21:00" },
+        });
+
+        expectNthQuery(
+            db,
+            1,
+            "WHERE (e.name ILIKE $1 OR v.name ILIKE $1) AND e.start_time >= $2",
+            ["%coffee%", SEARCH_START_BOUNDARY, "18:00", "21:00"],
+        );
+
+        expectNthQuery(
+            db,
+            1,
+            "(e.start_time AT TIME ZONE 'America/Toronto')::time >= $3::time",
+            ["%coffee%", SEARCH_START_BOUNDARY, "18:00", "21:00"],
+        );
+
+        expectNthQuery(
+            db,
+            1,
+            "(e.start_time AT TIME ZONE 'America/Toronto')::time < $4::time",
+            ["%coffee%", SEARCH_START_BOUNDARY, "18:00", "21:00"],
+        );
+    });
+});
+
+describe("EventsService.searchEventCandidates", () => {
+    let service: EventsService;
+    let db: any;
+
+    beforeEach(() => {
+        db = {
+            query: jest.fn().mockResolvedValue({ rows: [] }),
+        };
+
+        service = new EventsService(db);
+    });
+
+    it("should apply past and future inclusion filters to candidates", async () => {
+        await service.searchEventCandidates({
+            includePastEvents: false,
+            includeFutureEvents: false,
+        });
+
+        expectNthQuery(
+            db,
+            1,
+            "e.start_time >= statement_timestamp()",
+            [],
+        );
+        expectNthQuery(
+            db,
+            1,
+            "e.start_time < statement_timestamp()",
+            [],
+        );
+    });
+
+    it("should apply time filters to candidate retrieval", async () => {
+        await service.searchEventCandidates({
+            timeOfDay: ["NIGHT"],
+            timeRange: { startTime: "22:00", endTime: "02:00" },
+        });
+
+        const sql = db.query.mock.calls[0][0] as string;
+
+        expect(sql).toContain("$1::time");
+        expect(sql).toContain("$2::time");
+        expect(sql).toContain("$3::time");
+        expect(sql).toContain("$4::time");
+        expect(sql).toContain(" OR ");
+
+        expect(db.query.mock.calls[0][1]).toEqual([
+            "22:00",
+            "02:00",
+            "05:00",
+            "21:00",
+        ]);
+    });
+
+    it("should prioritize reconciled time intervals over time-of-day filters", async () => {
+        await service.searchEventCandidates({
+            timeOfDay: ["NIGHT"],
+            timeIntervals: [
+                { startMinute: 480, endMinute: 720 },
+            ],
+        });
+
+        const sql = db.query.mock.calls[0][0] as string;
+
+        expect(sql).toContain("$1::time");
+        expect(sql).toContain("$2::time");
+        expect(sql).not.toContain("$3::time");
+
+        expect(db.query.mock.calls[0][1]).toEqual(["08:00", "12:00"]);
+    });
+
+    it("should preserve empty reconciled intervals as an empty result", async () => {
+        await service.searchEventCandidates({
+            timeOfDay: ["MORNING"],
+            timeIntervals: [],
+        });
+
+        const sql = db.query.mock.calls[0][0] as string;
+
+        expect(sql).toContain("FALSE");
+        expect(sql).not.toContain("TIME '08:00'");
+        expect(sql).not.toContain("TIME '12:00'");
+    });
 });

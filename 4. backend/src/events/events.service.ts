@@ -2,9 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import {
   EventAvailability,
-  EventCandidate,
+  EventWithVenue,
 } from '../types/events/events.types';
+import { TimeInterval, TimeOfDay, TimeRange } from '../types/search/time-range.types';
 import { buildEventDateRangeFilters } from './events.helpers';
+import { buildTimeOfDayIntervals } from '../search/time-of-day-intervals';
+
 
 @Injectable()
 export class EventsService {
@@ -70,6 +73,10 @@ export class EventsService {
     keyword?: string;
     startAfter?: string;
     startBefore?: string;
+    includePastEvents?: boolean;
+    includeFutureEvents?: boolean;
+    timeOfDay?: TimeOfDay[];
+    timeRange?: TimeRange;
   }) {
     const conditions: string[] = [];
     const params: unknown[] = [];
@@ -84,6 +91,10 @@ export class EventsService {
     const dateRangeFilters = buildEventDateRangeFilters({
       startAfter: filters.startAfter,
       startBefore: filters.startBefore,
+      includePastEvents: filters.includePastEvents,
+      includeFutureEvents: filters.includeFutureEvents,
+      timeIntervals: buildTimeOfDayIntervals(filters.timeOfDay),
+      timeRange: filters.timeRange,
       initialParamCount: params.length,
     });
 
@@ -114,17 +125,30 @@ export class EventsService {
   async searchEventCandidates(filters: {
     startAfter?: string;
     startBefore?: string;
+    includePastEvents?: boolean;
+    includeFutureEvents?: boolean;
+    timeOfDay?: TimeOfDay[];
+    timeRange?: TimeRange;
+    timeIntervals?: TimeInterval[];
   }) {
+    const timeIntervals = filters.timeIntervals !== undefined
+      ? filters.timeIntervals
+      : buildTimeOfDayIntervals(filters.timeOfDay);
+
     const { conditions, params } = buildEventDateRangeFilters({
       startAfter: filters.startAfter,
       startBefore: filters.startBefore,
+      includePastEvents: filters.includePastEvents,
+      includeFutureEvents: filters.includeFutureEvents,
+      timeIntervals,
+      timeRange: filters.timeRange,
     });
 
     const whereClause = conditions.length
       ? `WHERE ${conditions.join(' AND ')}`
       : '';
 
-    const result = await this.db.query<EventCandidate>(
+    const result = await this.db.query<EventWithVenue>(
       `
         SELECT
           e.*,
