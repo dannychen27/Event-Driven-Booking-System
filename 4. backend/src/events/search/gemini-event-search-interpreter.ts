@@ -56,6 +56,7 @@ export class GeminiEventSearchInterpreter {
         'Do not calculate absolute date boundaries for relative-date expressions.',
         'Omit startAfter and startBefore when using relativeDate.',
         'Use TODAY, TOMORROW, or YESTERDAY for those calendar-day expressions.',
+        'Use THIS_WEEK, NEXT_WEEK, or LAST_WEEK for calendar-week expressions. Weeks run Sunday through Saturday in the America/Toronto timezone.',
         'Use THIS_WEEKEND or NEXT_WEEKEND for weekend expressions.',
         'Use DAYS_FROM_NOW or DAYS_AGO for calendar-day offsets.',
         'Use WEEKDAY with weekday and occurrence THIS, NEXT, or LAST for named weekdays.',

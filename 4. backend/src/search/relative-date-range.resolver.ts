@@ -1,8 +1,5 @@
 import { DateTime } from 'luxon';
-import {
-    RelativeDateRange,
-    Weekday,
-} from '../types/search/relative-date-range.types';
+import { RelativeDateRange, Weekday } from '../types/search/relative-date-range.types';
 
 const TORONTO_TIMEZONE = 'America/Toronto';
 const MAX_DATE_OFFSET_DAYS = 365;
@@ -57,6 +54,10 @@ function addBusinessDays(
     return result;
 }
 
+function getSundayOfWeek(date: DateTime): DateTime {
+    return date.minus({ days: date.weekday % 7 });
+}
+
 function resolveWeekday(
     today: DateTime,
     weekday: Weekday,
@@ -99,45 +100,67 @@ export function resolveRelativeDateRange(
         throw new Error('Reference date must be valid');
     }
 
-    const today = DateTime.fromJSDate(
-        referenceDate, {
+    const today = DateTime.fromJSDate(referenceDate, {
         zone: TORONTO_TIMEZONE,
     }).startOf('day');
 
     let start: DateTime;
+    let end: DateTime;
 
     switch (relativeDate.kind) {
         case 'TODAY':
             start = today;
+            end = start.plus({ days: 1 });
             break;
 
         case 'TOMORROW':
             start = today.plus({ days: 1 });
+            end = start.plus({ days: 1 });
             break;
 
         case 'YESTERDAY':
             start = today.minus({ days: 1 });
+            end = start.plus({ days: 1 });
+            break;
+
+        case 'THIS_WEEK':
+            start = getSundayOfWeek(today);
+            end = start.plus({ days: 7 });
+            break;
+
+        case 'NEXT_WEEK':
+            start = getSundayOfWeek(today).plus({ days: 7 });
+            end = start.plus({ days: 7 });
+            break;
+
+        case 'LAST_WEEK':
+            start = getSundayOfWeek(today).minus({ days: 7 });
+            end = start.plus({ days: 7 });
             break;
 
         case 'DAYS_FROM_NOW':
             validateOffset(relativeDate.days);
             start = today.plus({ days: relativeDate.days });
+            end = start.plus({ days: 1 });
             break;
 
         case 'DAYS_AGO':
             validateOffset(relativeDate.days);
             start = today.minus({ days: relativeDate.days });
+            end = start.plus({ days: 1 });
             break;
 
         case 'THIS_WEEKEND': {
             const monday = today.minus({ days: today.weekday - 1 });
             start = monday.plus({ days: 5 });
+            end = start.plus({ days: 2 });
             break;
         }
 
         case 'NEXT_WEEKEND': {
             const monday = today.minus({ days: today.weekday - 1 });
             start = monday.plus({ days: 12 });
+            end = start.plus({ days: 2 });
             break;
         }
 
@@ -147,35 +170,35 @@ export function resolveRelativeDateRange(
                 relativeDate.weekday,
                 relativeDate.occurrence,
             );
+            end = start.plus({ days: 1 });
             break;
 
         case 'NEXT_BUSINESS_DAY':
             start = addBusinessDays(today, 1, 1);
+            end = start.plus({ days: 1 });
             break;
 
         case 'PREVIOUS_BUSINESS_DAY':
             start = addBusinessDays(today, 1, -1);
+            end = start.plus({ days: 1 });
             break;
 
         case 'BUSINESS_DAYS_FROM_NOW':
             validateOffset(relativeDate.days);
             start = addBusinessDays(today, relativeDate.days, 1);
+            end = start.plus({ days: 1 });
             break;
 
         case 'BUSINESS_DAYS_AGO':
             validateOffset(relativeDate.days);
             start = addBusinessDays(today, relativeDate.days, -1);
+            end = start.plus({ days: 1 });
             break;
 
         default: {
-            const exhaustiveCheck: never = relativeDate;
-            throw new Error(`Unsupported relative date: ${exhaustiveCheck}`);
+            throw new Error(`Unsupported relative date: ${relativeDate}`);
         }
     }
-
-    const end = relativeDate.kind.includes('WEEKEND')
-        ? start.plus({ days: 2 })
-        : start.plus({ days: 1 });
 
     return {
         startAfter: toUtcIso(start),

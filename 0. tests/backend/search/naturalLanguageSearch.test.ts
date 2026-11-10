@@ -216,6 +216,115 @@ describe("NaturalLanguageSearchService", () => {
         });
     });
 
+    it('resolves NEXT_WEEK to the full Sunday-through-Saturday Toronto calendar week', async () => {
+        jest.useFakeTimers();
+        jest.setSystemTime(new Date('2026-11-09T17:00:00.000Z'));
+
+        interpreter.interpret.mockResolvedValueOnce({
+            intent: 'outdoor activities',
+            relativeDate: { kind: 'NEXT_WEEK' },
+        });
+
+        const result = await service.searchNaturalLanguage({
+            query: 'Find outdoor events next week',
+        });
+
+        expect(eventsService.searchEventCandidates).toHaveBeenCalledWith({
+            startAfter: '2026-11-15T05:00:00.000Z',
+            startBefore: '2026-11-22T05:00:00.000Z',
+            includePastEvents: undefined,
+            includeFutureEvents: undefined,
+            timeIntervals: undefined,
+        });
+
+        expect(result).toMatchObject({
+            status: 'success',
+            appliedFilters: {
+                startAfter: '2026-11-15T05:00:00.000Z',
+                startBefore: '2026-11-22T05:00:00.000Z',
+            },
+        });
+
+        expect(ranker.rank).toHaveBeenCalledTimes(1);
+    });
+
+    it('intersects NEXT_WEEK with a compatible calendar date selection', async () => {
+        jest.useFakeTimers();
+        jest.setSystemTime(new Date('2026-11-09T17:00:00.000Z'));
+
+        interpreter.interpret.mockResolvedValueOnce({
+            intent: 'outdoor activities',
+            relativeDate: { kind: 'NEXT_WEEK' },
+        });
+
+        const result = await service.searchNaturalLanguage({
+            query: 'Find outdoor events next week',
+            filters: {
+                date: {
+                    state: 'selected',
+                    value: {
+                        startDate: '2026-11-16',
+                        endDate: '2026-11-18',
+                    },
+                },
+            },
+        });
+
+        expect(eventsService.searchEventCandidates).toHaveBeenCalledWith({
+            startAfter: '2026-11-16T05:00:00.000Z',
+            startBefore: '2026-11-19T05:00:00.000Z',
+            includePastEvents: undefined,
+            includeFutureEvents: undefined,
+            timeIntervals: undefined,
+        });
+
+        expect(result).toMatchObject({
+            status: 'success',
+            appliedFilters: {
+                startAfter: '2026-11-16T05:00:00.000Z',
+                startBefore: '2026-11-19T05:00:00.000Z',
+            },
+        });
+
+        expect(ranker.rank).toHaveBeenCalledTimes(1);
+    });
+
+    it('returns a date conflict when the calendar selection falls outside NEXT_WEEK', async () => {
+        jest.useFakeTimers();
+        jest.setSystemTime(new Date('2026-11-09T17:00:00.000Z'));
+
+        interpreter.interpret.mockResolvedValueOnce({
+            intent: 'outdoor activities',
+            relativeDate: { kind: 'NEXT_WEEK' },
+        });
+
+        const result = await service.searchNaturalLanguage({
+            query: 'Find outdoor events next week',
+            filters: {
+                date: {
+                    state: 'selected',
+                    value: {
+                        startDate: '2026-11-22',
+                        endDate: '2026-11-22',
+                    },
+                },
+            },
+        });
+
+        expect(result).toMatchObject({
+            status: 'clarification_required',
+            conflicts: [
+                {
+                    category: 'date',
+                },
+            ],
+        });
+
+        expect(eventsService.searchEventCandidates).not.toHaveBeenCalled();
+        expect(eventsService.searchEvents).not.toHaveBeenCalled();
+        expect(ranker.rank).not.toHaveBeenCalled();
+    });
+
     it('forwards unspecified inclusion preferences to candidate retrieval', async () => {
         interpreter.interpret.mockResolvedValueOnce({
             intent: 'outdoor activities',

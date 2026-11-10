@@ -92,6 +92,60 @@ describe('resolveRelativeDateRange', () => {
         });
     });
 
+    describe('calendar weeks', () => {
+
+        it('resolves this week from Sunday through Saturday', () => {
+            expectRange(
+                { kind: 'THIS_WEEK' },
+                '2026-11-01T04:00:00.000Z',
+                '2026-11-08T05:00:00.000Z',
+            );
+        });
+
+        it('resolves next week from Sunday through Saturday', () => {
+            expectRange(
+                { kind: 'NEXT_WEEK' },
+                '2026-11-08T05:00:00.000Z',
+                '2026-11-15T05:00:00.000Z',
+            );
+        });
+
+        it('resolves last week from Sunday through Saturday', () => {
+            expectRange(
+                { kind: 'LAST_WEEK' },
+                '2026-10-25T04:00:00.000Z',
+                '2026-11-01T04:00:00.000Z',
+            );
+        });
+
+        it('resolves next week correctly when today is Monday', () => {
+            expectRange(
+                { kind: 'NEXT_WEEK' },
+                '2026-11-15T05:00:00.000Z',
+                '2026-11-22T05:00:00.000Z',
+                new Date('2026-11-09T17:00:00.000Z'),
+            );
+        });
+
+        it('resolves a week containing the spring DST transition', () => {
+            expectRange(
+                { kind: 'THIS_WEEK' },
+                '2026-03-08T05:00:00.000Z',
+                '2026-03-15T04:00:00.000Z',
+                new Date('2026-03-11T16:00:00.000Z'),
+            );
+        });
+
+        it('resolves a week containing the fall DST transition', () => {
+            expectRange(
+                { kind: 'THIS_WEEK' },
+                '2026-11-01T04:00:00.000Z',
+                '2026-11-08T05:00:00.000Z',
+                new Date('2026-11-04T17:00:00.000Z'),
+            );
+        });
+    });
+
     describe('named weekdays', () => {
         it('resolves this weekday within the current week', () => {
             expectRange(
