@@ -1,4 +1,8 @@
 import type { Event } from "../types/events/Event.ts";
+import type {
+    NaturalLanguageSearchRequest,
+    NaturalLanguageSearchResponse,
+} from "../types/search/NaturalLanguageSearch.types.ts";
 import { API_BASE_URL } from "./apiBaseUrl.ts";
 import { apiRequest } from "./apiRequest.ts";
 import { getApiErrorMessage } from "./apiError.ts";
@@ -22,8 +26,8 @@ export async function searchEvents(
 }
 
 export async function searchEventsNaturalLanguage(
-    query: string,
-): Promise<Event[]> {
+    request: NaturalLanguageSearchRequest,
+): Promise<NaturalLanguageSearchResponse> {
     const response = await fetch(
         `${API_BASE_URL}/events/natural-language-search`,
         {
@@ -31,7 +35,7 @@ export async function searchEventsNaturalLanguage(
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ query }),
+            body: JSON.stringify(request),
         },
     );
 
@@ -44,5 +48,5 @@ export async function searchEventsNaturalLanguage(
         );
     }
 
-    return response.json();
+    return response.json() as Promise<NaturalLanguageSearchResponse>;
 }

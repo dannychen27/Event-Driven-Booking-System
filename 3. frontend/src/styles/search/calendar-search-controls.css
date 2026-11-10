@@ -1,0 +1,72 @@
+.calendar-search-controls {
+    display: grid;
+    gap: 1rem;
+    margin: 1.25rem 0;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.calendar-search-section {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.calendar-search-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.calendar-search-section-heading h3 {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.calendar-search-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.calendar-search-fields > div {
+    display: grid;
+    flex: 1 1 150px;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.calendar-search-fields label {
+    margin: 0;
+    font-size: 0.85rem;
+}
+
+.calendar-search-fields input,
+.calendar-search-fields select {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 42px;
+    padding: 0.55rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+}
+
+.calendar-search-clear {
+    padding: 0.35rem 0.55rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.calendar-search-clear:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}

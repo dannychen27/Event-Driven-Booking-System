@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { searchEventsNaturalLanguage } from "../../../../3. frontend/src/api/events";
 import type { Event } from "../../../../3. frontend/src/types/events/Event";
+import type { NaturalLanguageSearchResponse } from "../../../../3. frontend/src/types/search/NaturalLanguageSearch.types";
 import { naturalLanguageSearchResultFixture } from "../../fixtures/events/eventFixtures";
 import { renderEventsPageWithNoInitialEvents } from "../../helpers/EventsPageTestHelpers";
 
@@ -18,50 +19,61 @@ vi.mock("../../../../3. frontend/src/components/cards/EventCard.tsx", () => ({
     ),
 }));
 
+const successfulResponse = (
+    events: Event[],
+): NaturalLanguageSearchResponse => ({
+    status: "success",
+    events,
+    appliedFilters: {},
+});
+
 beforeEach(() => {
     vi.clearAllMocks();
 });
 
 describe("Natural-language search", () => {
     it("searches events using a natural-language query", async () => {
-        vi.mocked(searchEventsNaturalLanguage).mockResolvedValue([
-            naturalLanguageSearchResultFixture
-        ]);
+        vi.mocked(searchEventsNaturalLanguage).mockResolvedValue(
+            successfulResponse([
+                naturalLanguageSearchResultFixture as Event,
+            ]),
+        );
 
         await renderEventsPageWithNoInitialEvents();
 
         fireEvent.change(screen.getByLabelText("Search with AI"), {
-            target: { value: "  Find coffee events this weekend  " }
+            target: { value: "  Find coffee events this weekend  " },
         });
         fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
 
         expect(
-            await screen.findByText("Mock Event Card: Coffee Meetup")
+            await screen.findByText("Mock Event Card: Coffee Meetup"),
         ).toBeInTheDocument();
-        expect(searchEventsNaturalLanguage).toHaveBeenCalledWith(
-            "Find coffee events this weekend"
-        );
+
+        expect(searchEventsNaturalLanguage).toHaveBeenCalledWith({
+            query: "Find coffee events this weekend",
+        });
     });
 
     it("shows the loading state while natural-language search is pending", async () => {
-        let resolveSearch!: (events: Event[]) => void;
+        let resolveSearch!: (response: NaturalLanguageSearchResponse) => void;
 
         vi.mocked(searchEventsNaturalLanguage).mockReturnValue(
-            new Promise<Event[]>((resolve) => {
+            new Promise<NaturalLanguageSearchResponse>((resolve) => {
                 resolveSearch = resolve;
-            })
+            }),
         );
 
         await renderEventsPageWithNoInitialEvents();
 
         fireEvent.change(screen.getByLabelText("Search with AI"), {
-            target: { value: "Find coffee events" }
+            target: { value: "Find coffee events" },
         });
         fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
 
         // Both search buttons show "Searching..." and are disabled.
         const searchingButtons = screen.getAllByRole("button", {
-            name: "Searching..."
+            name: "Searching...",
         });
 
         expect(searchingButtons).toHaveLength(2);
@@ -75,34 +87,35 @@ describe("Natural-language search", () => {
         expect(searchEventsNaturalLanguage).toHaveBeenCalledTimes(1);
 
         expect(screen.getByRole("status")).toHaveTextContent(
-            "Searching events..."
+            "Searching events...",
         );
 
-        // Resolve the pending request and verify the loading state disappears.
-        resolveSearch([]);
+        resolveSearch(successfulResponse([]));
 
         expect(
-            await screen.findByText("No matching events found.")
+            await screen.findByText("No matching events found."),
         ).toBeInTheDocument();
         expect(
-            screen.queryByText("Searching events...")
+            screen.queryByText("Searching events..."),
         ).not.toBeInTheDocument();
     });
 
     it("shows a message when natural-language search returns no matching events", async () => {
-        vi.mocked(searchEventsNaturalLanguage).mockResolvedValue([]);
+        vi.mocked(searchEventsNaturalLanguage).mockResolvedValue(
+            successfulResponse([]),
+        );
 
         await renderEventsPageWithNoInitialEvents();
 
         fireEvent.change(screen.getByLabelText("Search with AI"), {
             target: {
-                value: "Find events about underwater basket weaving"
-            }
+                value: "Find events about underwater basket weaving",
+            },
         });
         fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
 
         expect(
-            await screen.findByText("No matching events found.")
+            await screen.findByText("No matching events found."),
         ).toBeInTheDocument();
     });
 
@@ -110,30 +123,30 @@ describe("Natural-language search", () => {
         await renderEventsPageWithNoInitialEvents();
 
         fireEvent.change(screen.getByLabelText("Search with AI"), {
-            target: { value: "   " }
+            target: { value: "   " },
         });
         fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
 
         expect(await screen.findByRole("alert")).toHaveTextContent(
-            "Enter a description of the events you're looking for."
+            "Enter a description of the events you're looking for.",
         );
         expect(searchEventsNaturalLanguage).not.toHaveBeenCalled();
     });
 
     it("shows an error when natural-language search fails", async () => {
         vi.mocked(searchEventsNaturalLanguage).mockRejectedValue(
-            new Error("Failed to search events with natural language")
+            new Error("Failed to search events with natural language"),
         );
 
         await renderEventsPageWithNoInitialEvents();
 
         fireEvent.change(screen.getByLabelText("Search with AI"), {
-            target: { value: "Find coffee events" }
+            target: { value: "Find coffee events" },
         });
         fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
 
         expect(await screen.findByRole("alert")).toHaveTextContent(
-            "Failed to search events with natural language"
+            "Failed to search events with natural language",
         );
         expect(screen.queryByRole("status")).not.toBeInTheDocument();
         expect(screen.getByRole("button", { name: "Search" })).toBeEnabled();
@@ -143,23 +156,27 @@ describe("Natural-language search", () => {
     it("recovers when natural-language search succeeds after a failure", async () => {
         vi.mocked(searchEventsNaturalLanguage)
             .mockRejectedValueOnce(
-                new Error("Failed to search events with natural language")
+                new Error("Failed to search events with natural language"),
             )
-            .mockResolvedValueOnce([naturalLanguageSearchResultFixture]);
+            .mockResolvedValueOnce(
+                successfulResponse([
+                    naturalLanguageSearchResultFixture as Event,
+                ]),
+            );
 
         await renderEventsPageWithNoInitialEvents();
 
         fireEvent.change(screen.getByLabelText("Search with AI"), {
-            target: { value: "Find coffee events" }
+            target: { value: "Find coffee events" },
         });
         fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
 
         expect(await screen.findByRole("alert")).toHaveTextContent(
-            "Failed to search events with natural language"
+            "Failed to search events with natural language",
         );
 
         fireEvent.change(screen.getByLabelText("Search with AI"), {
-            target: { value: "Find coffee meetups" }
+            target: { value: "Find coffee meetups" },
         });
 
         expect(screen.queryByRole("alert")).not.toBeInTheDocument();
@@ -167,7 +184,7 @@ describe("Natural-language search", () => {
         fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
 
         expect(
-            await screen.findByText("Mock Event Card: Coffee Meetup")
+            await screen.findByText("Mock Event Card: Coffee Meetup"),
         ).toBeInTheDocument();
         expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });
@@ -179,11 +196,189 @@ describe("Natural-language search", () => {
 
         fireEvent.click(
             screen.getByRole("button", {
-                name: "Find coffee meetups this weekend"
-            })
+                name: "Find coffee meetups this weekend",
+            }),
         );
 
         expect(input).toHaveValue("Find coffee meetups this weekend");
         expect(searchEventsNaturalLanguage).not.toHaveBeenCalled();
+    });
+
+    it("asks the user to resolve date and time conflicts before retrying the search", async () => {
+        const clarificationResponse: NaturalLanguageSearchResponse = {
+            status: "clarification_required",
+            conflicts: [
+                {
+                    category: "date",
+                    aiInterpretation: "Tomorrow",
+                    userSelection: "November 10, 2026",
+                },
+                {
+                    category: "time",
+                    aiInterpretation: "Evening",
+                    userSelection: "Morning",
+                },
+            ],
+        };
+
+        vi.mocked(searchEventsNaturalLanguage)
+            .mockResolvedValueOnce(clarificationResponse)
+            .mockResolvedValueOnce(successfulResponse([]));
+
+        await renderEventsPageWithNoInitialEvents();
+
+        fireEvent.change(screen.getByLabelText("Search with AI"), {
+            target: { value: "Find evening events tomorrow" },
+        });
+
+        fireEvent.change(screen.getByLabelText("From"), {
+            target: { value: "2026-11-10" },
+        });
+
+        fireEvent.change(screen.getByLabelText("Time of day"), {
+            target: { value: "MORNING" },
+        });
+
+        fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
+
+        expect(
+            await screen.findByRole("heading", {
+                name: "Please clarify your search",
+            }),
+        ).toBeInTheDocument();
+
+        expect(screen.getByText("Tomorrow")).toBeInTheDocument();
+        expect(screen.getByText("Evening")).toBeInTheDocument();
+
+        const applyButton = screen.getByRole("button", {
+            name: "Apply choices",
+        });
+
+        expect(applyButton).toBeDisabled();
+
+        fireEvent.click(
+            screen.getByRole("radio", {
+                name: "Use AI interpretation (date)",
+            }),
+        );
+
+        fireEvent.click(
+            screen.getByRole("radio", {
+                name: "Use calendar selection (time)",
+            }),
+        );
+
+        expect(applyButton).toBeEnabled();
+
+        fireEvent.click(applyButton);
+
+        expect(
+            await screen.findByText("No matching events found."),
+        ).toBeInTheDocument();
+
+        expect(searchEventsNaturalLanguage).toHaveBeenNthCalledWith(1, {
+            query: "Find evening events tomorrow",
+            filters: {
+                date: {
+                    state: "selected",
+                    value: {
+                        startDate: "2026-11-10",
+                        endDate: "2026-11-10",
+                    },
+                },
+                time: {
+                    state: "selected",
+                    value: {
+                        timeOfDay: "MORNING",
+                    },
+                },
+            },
+        });
+
+        expect(searchEventsNaturalLanguage).toHaveBeenNthCalledWith(2, {
+            query: "Find evening events tomorrow",
+            filters: {
+                date: {
+                    state: "selected",
+                    value: {
+                        startDate: "2026-11-10",
+                        endDate: "2026-11-10",
+                    },
+                },
+                time: {
+                    state: "selected",
+                    value: {
+                        timeOfDay: "MORNING",
+                    },
+                },
+            },
+            resolutions: {
+                date: "ai",
+                time: "selection",
+            },
+        });
+    });
+
+    it("supports a calendar-only search without a natural-language query", async () => {
+        vi.mocked(searchEventsNaturalLanguage).mockResolvedValue(
+            successfulResponse([]),
+        );
+
+        await renderEventsPageWithNoInitialEvents();
+
+        fireEvent.change(screen.getByLabelText("From"), {
+            target: { value: "2026-11-10" },
+        });
+
+        fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
+
+        expect(
+            await screen.findByText("No matching events found."),
+        ).toBeInTheDocument();
+
+        expect(searchEventsNaturalLanguage).toHaveBeenCalledWith({
+            filters: {
+                date: {
+                    state: "selected",
+                    value: {
+                        startDate: "2026-11-10",
+                        endDate: "2026-11-10",
+                    },
+                },
+            },
+        });
+    });
+
+    it("sends an explicitly cleared date filter when the query is retained", async () => {
+        vi.mocked(searchEventsNaturalLanguage).mockResolvedValue(
+            successfulResponse([]),
+        );
+
+        await renderEventsPageWithNoInitialEvents();
+
+        fireEvent.change(screen.getByLabelText("Search with AI"), {
+            target: { value: "Find interesting events" },
+        });
+
+        fireEvent.change(screen.getByLabelText("From"), {
+            target: { value: "2026-11-10" },
+        });
+
+        fireEvent.click(screen.getByRole("button", { name: "Clear date" }));
+
+        fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
+
+        expect(
+            await screen.findByText("No matching events found."),
+        ).toBeInTheDocument();
+
+        expect(searchEventsNaturalLanguage).toHaveBeenCalledWith({
+            query: "Find interesting events",
+            filters: {
+                date: {
+                    state: "cleared",
+                },
+            },
+        });
     });
 });

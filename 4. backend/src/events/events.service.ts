@@ -3,9 +3,10 @@ import { DatabaseService } from '../database/database.service';
 import {
   EventAvailability,
   EventCandidate,
+  EventWithVenue,
 } from '../types/events/events.types';
 import { buildEventDateRangeFilters } from './events.helpers';
-import {TimeInterval, TimeOfDay, TimeRange } from '../types/search/time-range.types';
+import { TimeInterval, TimeOfDay, TimeRange } from '../types/search/time-range.types';
 
 
 @Injectable()
@@ -144,7 +145,7 @@ export class EventsService {
       ? `WHERE ${conditions.join(' AND ')}`
       : '';
 
-    const result = await this.db.query<EventCandidate>(
+    const result = await this.db.query<EventWithVenue>(
       `
         SELECT
           e.*,
