@@ -3,7 +3,7 @@ module.exports = {
 
     testEnvironment: "node",
 
-    testRegex: "0\\. tests/backend/.*\\.test\\.ts$",
+    testRegex: "0\\. tests/(backend|shared)/.*\\.test\\.ts$",
 
     moduleFileExtensions: ["js", "json", "ts"],
 
