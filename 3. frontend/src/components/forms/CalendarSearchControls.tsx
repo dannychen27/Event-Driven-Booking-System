@@ -7,6 +7,8 @@ import type {
 } from "../../types/search/NaturalLanguageSearch.types.ts";
 import "../../styles/search/calendar-search-controls.css";
 
+type TimeFormat = "12h" | "24h";
+
 interface CalendarSearchControlsProps {
     dateSelection: ExplicitSelection<CalendarDateRange> | undefined;
     timeSelection: ExplicitSelection<CalendarTimeSelection> | undefined;
@@ -30,14 +32,15 @@ const TIME_OF_DAY_OPTIONS: { value: TimeOfDay; label: string }[] = [
 interface TimePickerProps {
     label: "After" | "Before";
     value?: string;
+    format: TimeFormat;
     disabled: boolean;
     onChange: (value: string | undefined) => void;
 }
 
-function parseTime(value?: string) {
+function parseTime(value?: string, format: TimeFormat = "12h") {
     if (!value || !/^([01]\d|2[0-3]):[0-5]\d$/.test(value)) {
         return {
-            hour: "12",
+            hour: format === "24h" ? "00" : "12",
             minute: "00",
             period: "AM" as const,
         };
@@ -46,7 +49,9 @@ function parseTime(value?: string) {
     const [hours, minutes] = value.split(":").map(Number);
 
     return {
-        hour: String(hours % 12 || 12).padStart(2, "0"),
+        hour: format === "24h"
+            ? String(hours).padStart(2, "0")
+            : String(hours % 12 || 12).padStart(2, "0"),
         minute: String(minutes).padStart(2, "0"),
         period: (hours >= 12 ? "PM" : "AM") as "AM" | "PM",
     };
@@ -59,21 +64,25 @@ function clamp(value: number, min: number, max: number) {
 function TimePicker({
     label,
     value,
+    format,
     disabled,
     onChange,
 }: TimePickerProps) {
-    const parsed = parseTime(value);
+    const parsed = parseTime(value, format);
 
     const [hour, setHour] = useState(parsed.hour);
     const [minute, setMinute] = useState(parsed.minute);
     const [period, setPeriod] = useState(parsed.period);
 
+    const minHour = format === "24h" ? 0 : 1;
+    const maxHour = format === "24h" ? 23 : 12;
+
     useEffect(() => {
-        const next = parseTime(value);
+        const next = parseTime(value, format);
         setHour(next.hour);
         setMinute(next.minute);
         setPeriod(next.period);
-    }, [value]);
+    }, [value, format]);
 
     function commitTime(
         nextHour: string,
@@ -81,9 +90,9 @@ function TimePicker({
         nextPeriod: "AM" | "PM",
     ) {
         const normalizedHour = clamp(
-            Number.parseInt(nextHour, 10) || 1,
-            1,
-            12,
+            Number.parseInt(nextHour, 10) || 0,
+            minHour,
+            maxHour,
         );
 
         const normalizedMinute = clamp(
@@ -92,8 +101,9 @@ function TimePicker({
             59,
         );
 
-        const hour24 =
-            normalizedHour === 12
+        const hour24 = format === "24h"
+            ? normalizedHour
+            : normalizedHour === 12
                 ? nextPeriod === "AM" ? 0 : 12
                 : nextPeriod === "PM"
                     ? normalizedHour + 12
@@ -112,9 +122,7 @@ function TimePicker({
 
     function changeHour(amount: number) {
         const next = clamp(
-            (Number.parseInt(hour, 10) || 1) + amount,
-            1,
-            12,
+            (Number.parseInt(hour, 10) || 0) + amount, minHour, maxHour
         );
 
         commitTime(String(next), minute, period);
@@ -170,7 +178,7 @@ function TimePicker({
                         <button
                             type="button"
                             aria-label={`Increase ${label} hour`}
-                            disabled={disabled || Number(hour) >= 12}
+                            disabled={disabled || Number(hour) >= maxHour}
                             onClick={() => changeHour(1)}
                         >
                             +
@@ -201,7 +209,7 @@ function TimePicker({
                         <button
                             type="button"
                             aria-label={`Decrease ${label} hour`}
-                            disabled={disabled || Number(hour) <= 1}
+                            disabled={disabled || Number(hour) <= minHour}
                             onClick={() => changeHour(-1)}
                         >
                             −
@@ -261,35 +269,37 @@ function TimePicker({
                     </div>
                 </div>
 
-                <div
-                    className="calendar-time-period"
-                    role="group"
-                    aria-label={`${label} AM or PM`}
-                >
-                    <button
-                        type="button"
-                        aria-pressed={period === "AM"}
-                        disabled={disabled}
-                        onClick={() => {
-                            setPeriod("AM");
-                            commitTime(hour, minute, "AM");
-                        }}
+                {format === "12h" && (
+                    <div
+                        className="calendar-time-period"
+                        role="group"
+                        aria-label={`${label} AM or PM`}
                     >
-                        AM
-                    </button>
+                        <button
+                            type="button"
+                            aria-pressed={period === "AM"}
+                            disabled={disabled}
+                            onClick={() => {
+                                setPeriod("AM");
+                                commitTime(hour, minute, "AM");
+                            }}
+                        >
+                            AM
+                        </button>
 
-                    <button
-                        type="button"
-                        aria-pressed={period === "PM"}
-                        disabled={disabled}
-                        onClick={() => {
-                            setPeriod("PM");
-                            commitTime(hour, minute, "PM");
-                        }}
-                    >
-                        PM
-                    </button>
-                </div>
+                        <button
+                            type="button"
+                            aria-pressed={period === "PM"}
+                            disabled={disabled}
+                            onClick={() => {
+                                setPeriod("PM");
+                                commitTime(hour, minute, "PM");
+                            }}
+                        >
+                            PM
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -302,6 +312,8 @@ export default function CalendarSearchControls({
    onDateSelectionChange,
    onTimeSelectionChange,
 }: CalendarSearchControlsProps) {
+    const [timeFormat, setTimeFormat] = useState<TimeFormat>("12h");
+
     const selectedDate =
         dateSelection?.state === "selected"
             ? dateSelection.value
@@ -473,16 +485,43 @@ export default function CalendarSearchControls({
             <div className="calendar-search-section">
                 <div className="calendar-search-section-heading">
                     <h3>Time</h3>
-                    <button
-                        type="button"
-                        className="calendar-search-clear"
-                        disabled={disabled || !hasTimeFilter}
-                        onClick={() =>
-                            onTimeSelectionChange({ state: "cleared" })
-                        }
-                    >
-                        Clear time
-                    </button>
+
+                    <div className="calendar-time-heading-actions">
+                        <div
+                            className="calendar-time-format"
+                            role="group"
+                            aria-label="Time format"
+                        >
+                            <button
+                                type="button"
+                                aria-pressed={timeFormat === "12h"}
+                                disabled={disabled}
+                                onClick={() => setTimeFormat("12h")}
+                            >
+                                12h
+                            </button>
+
+                            <button
+                                type="button"
+                                aria-pressed={timeFormat === "24h"}
+                                disabled={disabled}
+                                onClick={() => setTimeFormat("24h")}
+                            >
+                                24h
+                            </button>
+                        </div>
+
+                        <button
+                            type="button"
+                            className="calendar-search-clear"
+                            disabled={disabled || !hasTimeFilter}
+                            onClick={() =>
+                                onTimeSelectionChange({ state: "cleared" })
+                            }
+                        >
+                            Clear time
+                        </button>
+                    </div>
                 </div>
 
                 <div
@@ -522,6 +561,7 @@ export default function CalendarSearchControls({
                     <TimePicker
                         label="After"
                         value={selectedTime?.timeRange?.startTime}
+                        format={timeFormat}
                         disabled={disabled}
                         onChange={(value) =>
                             updateTimeBound("startTime", value)
@@ -531,6 +571,7 @@ export default function CalendarSearchControls({
                     <TimePicker
                         label="Before"
                         value={selectedTime?.timeRange?.endTime}
+                        format={timeFormat}
                         disabled={disabled}
                         onChange={(value) =>
                             updateTimeBound("endTime", value)

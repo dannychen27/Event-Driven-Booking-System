@@ -549,4 +549,147 @@ describe("CalendarSearchControls", () => {
             screen.getByRole("button", { name: "Clear time" }),
         ).toBeDisabled();
     });
+
+    it("defaults to 12-hour display format", () => {
+        renderControls();
+
+        expect(
+            screen.getByRole("button", { name: "12h" }),
+        ).toHaveAttribute("aria-pressed", "true");
+
+        expect(
+            screen.getByRole("button", { name: "24h" }),
+        ).toHaveAttribute("aria-pressed", "false");
+
+        expect(screen.getByLabelText("After hour")).toHaveValue("12");
+        expect(getPeriodButton("After", "AM")).toBeInTheDocument();
+    });
+
+    it("switches an existing time to 24-hour display without changing its stored value", () => {
+        renderControls({
+            timeSelection: {
+                state: "selected",
+                value: {
+                    timeRange: {
+                        startTime: "18:30",
+                        endTime: "00:15",
+                    },
+                },
+            },
+        });
+
+        fireEvent.click(screen.getByRole("button", { name: "24h" }));
+
+        expect(screen.getByLabelText("After hour")).toHaveValue("18");
+        expect(screen.getByLabelText("After minute")).toHaveValue("30");
+        expect(screen.getByLabelText("Before hour")).toHaveValue("00");
+        expect(screen.getByLabelText("Before minute")).toHaveValue("15");
+
+        expect(
+            screen.queryByRole("group", { name: "After AM or PM" }),
+        ).not.toBeInTheDocument();
+
+        expect(
+            screen.queryByRole("group", { name: "Before AM or PM" }),
+        ).not.toBeInTheDocument();
+
+        expect(onTimeSelectionChange).not.toHaveBeenCalled();
+    });
+
+    it("switches back to 12-hour display without changing the stored value", () => {
+        renderControls({
+            timeSelection: {
+                state: "selected",
+                value: {
+                    timeRange: {
+                        startTime: "18:30",
+                    },
+                },
+            },
+        });
+
+        fireEvent.click(screen.getByRole("button", { name: "24h" }));
+        fireEvent.click(screen.getByRole("button", { name: "12h" }));
+
+        expect(screen.getByLabelText("After hour")).toHaveValue("06");
+        expect(screen.getByLabelText("After minute")).toHaveValue("30");
+
+        expect(getPeriodButton("After", "PM")).toHaveAttribute(
+            "aria-pressed",
+            "true",
+        );
+
+        expect(onTimeSelectionChange).not.toHaveBeenCalled();
+    });
+
+    it("stores a time entered in 24-hour mode without AM/PM conversion", () => {
+        renderControls();
+
+        fireEvent.click(screen.getByRole("button", { name: "24h" }));
+
+        fireEvent.change(screen.getByLabelText("After hour"), {
+            target: { value: "18" },
+        });
+
+        fireEvent.change(screen.getByLabelText("After minute"), {
+            target: { value: "45" },
+        });
+
+        fireEvent.blur(screen.getByLabelText("After minute"));
+
+        expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
+            state: "selected",
+            value: {
+                timeRange: {
+                    startTime: "18:45",
+                },
+            },
+        });
+    });
+
+    it("allows midnight and prevents hours outside 00–23 in 24-hour mode", () => {
+        renderControls({
+            timeSelection: {
+                state: "selected",
+                value: {
+                    timeRange: {
+                        startTime: "00:00",
+                    },
+                },
+            },
+        });
+
+        fireEvent.click(screen.getByRole("button", { name: "24h" }));
+
+        expect(screen.getByLabelText("After hour")).toHaveValue("00");
+
+        expect(
+            screen.getByRole("button", { name: "Decrease After hour" }),
+        ).toBeDisabled();
+
+        fireEvent.click(
+            screen.getByRole("button", { name: "Increase After hour" }),
+        );
+
+        expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
+            state: "selected",
+            value: {
+                timeRange: {
+                    startTime: "01:00",
+                },
+            },
+        });
+    });
+
+    it("disables the time format toggle when the controls are disabled", () => {
+        renderControls({ disabled: true });
+
+        expect(
+            screen.getByRole("button", { name: "12h" }),
+        ).toBeDisabled();
+
+        expect(
+            screen.getByRole("button", { name: "24h" }),
+        ).toBeDisabled();
+    });
 });
