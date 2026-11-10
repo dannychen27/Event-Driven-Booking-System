@@ -565,6 +565,105 @@ describe("CalendarSearchControls", () => {
         expect(getPeriodButton("After", "AM")).toBeInTheDocument();
     });
 
+    it("updates time-of-day labels when switching between 12-hour and 24-hour formats", () => {
+        renderControls();
+
+        // Default 12-hour labels.
+        expect(
+            screen.getByRole("button", {
+                name: "Early morning (5 AM–8 AM)",
+            }),
+        ).toBeInTheDocument();
+
+        // Switch to 24-hour labels.
+        fireEvent.click(screen.getByRole("button", { name: "24h" }));
+
+        const twentyFourHourLabels = [
+            "Early morning (05:00–08:00)",
+            "Morning (08:00–12:00)",
+            "Afternoon (12:00–17:00)",
+            "Evening (17:00–21:00)",
+            "Night (21:00–05:00)",
+        ];
+
+        for (const label of twentyFourHourLabels) {
+            expect(
+                screen.getByRole("button", { name: label }),
+            ).toBeInTheDocument();
+        }
+
+        expect(
+            screen.queryByRole("button", {
+                name: "Early morning (5 AM–8 AM)",
+            }),
+        ).not.toBeInTheDocument();
+
+        // Switch back to 12-hour labels.
+        fireEvent.click(screen.getByRole("button", { name: "12h" }));
+
+        expect(
+            screen.getByRole("button", {
+                name: "Early morning (5 AM–8 AM)",
+            }),
+        ).toBeInTheDocument();
+
+        expect(
+            screen.queryByRole("button", {
+                name: "Early morning (05:00–08:00)",
+            }),
+        ).not.toBeInTheDocument();
+    });
+
+    it("preserves selected time-of-day periods when switching display formats", () => {
+        renderControls({
+            timeSelection: {
+                state: "selected",
+                value: {
+                    timeOfDay: ["MORNING", "EVENING"],
+                },
+            },
+        });
+
+        fireEvent.click(screen.getByRole("button", { name: "24h" }));
+
+        expect(
+            screen.getByRole("button", {
+                name: "Morning (08:00–12:00)",
+            }),
+        ).toHaveAttribute("aria-pressed", "true");
+
+        expect(
+            screen.getByRole("button", {
+                name: "Evening (17:00–21:00)",
+            }),
+        ).toHaveAttribute("aria-pressed", "true");
+
+        expect(
+            screen.getByRole("button", {
+                name: "Afternoon (12:00–17:00)",
+            }),
+        ).toHaveAttribute("aria-pressed", "false");
+
+        // Display-format changes must not update the underlying selection.
+        expect(onTimeSelectionChange).not.toHaveBeenCalled();
+
+        fireEvent.click(screen.getByRole("button", { name: "12h" }));
+
+        expect(
+            screen.getByRole("button", {
+                name: "Morning (8 AM–12 PM)",
+            }),
+        ).toHaveAttribute("aria-pressed", "true");
+
+        expect(
+            screen.getByRole("button", {
+                name: "Evening (5 PM–9 PM)",
+            }),
+        ).toHaveAttribute("aria-pressed", "true");
+
+        expect(onTimeSelectionChange).not.toHaveBeenCalled();
+    });
+
     it("switches an existing time to 24-hour display without changing its stored value", () => {
         renderControls({
             timeSelection: {

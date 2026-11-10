@@ -6,6 +6,8 @@ import type {
     TimeOfDay,
 } from "../../types/search/NaturalLanguageSearch.types.ts";
 import "../../styles/search/calendar-search-controls.css";
+import { getTimeOfDayOptions } from "../../helpers/search/TimeOfDayOptions.ts";
+
 
 type TimeFormat = "12h" | "24h";
 
@@ -21,13 +23,6 @@ interface CalendarSearchControlsProps {
     ) => void;
 }
 
-const TIME_OF_DAY_OPTIONS: { value: TimeOfDay; label: string }[] = [
-    { value: "EARLY_MORNING", label: "Early morning (5 AM–8 AM)" },
-    { value: "MORNING", label: "Morning (8 AM–12 PM)" },
-    { value: "AFTERNOON", label: "Afternoon (12 PM–5 PM)" },
-    { value: "EVENING", label: "Evening (5 PM–9 PM)" },
-    { value: "NIGHT", label: "Night (9 PM–5 AM)" },
-];
 
 interface TimePickerProps {
     label: "After" | "Before";
@@ -534,7 +529,7 @@ export default function CalendarSearchControls({
                     </span>
 
                     <div className="calendar-time-of-day-options">
-                        {TIME_OF_DAY_OPTIONS.map((option) => {
+                        {getTimeOfDayOptions(timeFormat).map((option) => {
                             const selected =
                                 selectedTime?.timeOfDay?.includes(option.value) ??
                                 false;
