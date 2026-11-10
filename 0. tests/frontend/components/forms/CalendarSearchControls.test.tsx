@@ -31,49 +31,66 @@ describe("CalendarSearchControls", () => {
         );
     }
 
-    it("renders all five time-of-day choices", () => {
+    it("renders all five time-of-day choices as pill buttons", () => {
         renderControls();
 
         const group = screen.getByRole("group", {
             name: "Time of day",
         });
 
-        expect(
-            within(group).getByLabelText(
-                "Early morning (5 AM–8 AM)",
-            ),
-        ).toBeInTheDocument();
+        const options = [
+            "Early morning (5 AM–8 AM)",
+            "Morning (8 AM–12 PM)",
+            "Afternoon (12 PM–5 PM)",
+            "Evening (5 PM–9 PM)",
+            "Night (9 PM–5 AM)",
+        ];
+
+        for (const option of options) {
+            expect(
+                within(group).getByRole("button", { name: option }),
+            ).toBeInTheDocument();
+        }
+
+        expect(within(group).getAllByRole("button")).toHaveLength(5);
+    });
+
+    it("exposes selected and unselected periods through aria-pressed", () => {
+        renderControls({
+            timeSelection: {
+                state: "selected",
+                value: {
+                    timeOfDay: ["MORNING", "EVENING"],
+                },
+            },
+        });
 
         expect(
-            within(group).getByLabelText(
-                "Morning (8 AM–12 PM)",
-            ),
-        ).toBeInTheDocument();
+            screen.getByRole("button", {
+                name: "Morning (8 AM–12 PM)",
+            }),
+        ).toHaveAttribute("aria-pressed", "true");
 
         expect(
-            within(group).getByLabelText(
-                "Afternoon (12 PM–5 PM)",
-            ),
-        ).toBeInTheDocument();
+            screen.getByRole("button", {
+                name: "Evening (5 PM–9 PM)",
+            }),
+        ).toHaveAttribute("aria-pressed", "true");
 
         expect(
-            within(group).getByLabelText(
-                "Evening (5 PM–9 PM)",
-            ),
-        ).toBeInTheDocument();
-
-        expect(
-            within(group).getByLabelText(
-                "Night (9 PM–5 AM)",
-            ),
-        ).toBeInTheDocument();
+            screen.getByRole("button", {
+                name: "Afternoon (12 PM–5 PM)",
+            }),
+        ).toHaveAttribute("aria-pressed", "false");
     });
 
     it("allows multiple time-of-day periods to be selected", () => {
         const { rerender } = renderControls();
 
         fireEvent.click(
-            screen.getByLabelText("Morning (8 AM–12 PM)"),
+            screen.getByRole("button", {
+                name: "Morning (8 AM–12 PM)",
+            }),
         );
 
         expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
@@ -100,7 +117,9 @@ describe("CalendarSearchControls", () => {
         );
 
         fireEvent.click(
-            screen.getByLabelText("Evening (5 PM–9 PM)"),
+            screen.getByRole("button", {
+                name: "Evening (5 PM–9 PM)",
+            }),
         );
 
         expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
@@ -122,7 +141,9 @@ describe("CalendarSearchControls", () => {
         });
 
         fireEvent.click(
-            screen.getByLabelText("Morning (8 AM–12 PM)"),
+            screen.getByRole("button", {
+                name: "Morning (8 AM–12 PM)",
+            }),
         );
 
         expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
@@ -285,14 +306,18 @@ describe("CalendarSearchControls", () => {
         renderControls({ disabled: true });
 
         expect(
-            screen.getByLabelText("Morning (8 AM–12 PM)"),
+            screen.getByRole("button", {
+                name: "Morning (8 AM–12 PM)",
+            }),
         ).toBeDisabled();
 
         expect(screen.getByLabelText("After hour")).toBeDisabled();
         expect(screen.getByLabelText("After minute")).toBeDisabled();
         expect(screen.getByLabelText("After AM/PM")).toBeDisabled();
-        expect(screen.getByRole("button", { name: "Clear time" }))
-            .toBeDisabled();
+
+        expect(
+            screen.getByRole("button", { name: "Clear time" }),
+        ).toBeDisabled();
     });
 
     it("disables Clear date when no date filter is active", () => {

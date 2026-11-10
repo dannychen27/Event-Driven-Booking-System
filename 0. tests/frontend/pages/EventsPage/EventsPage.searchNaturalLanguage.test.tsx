@@ -236,7 +236,9 @@ describe("Natural-language search", () => {
         });
 
         fireEvent.click(
-            screen.getByLabelText("Morning (8 AM–12 PM)"),
+            screen.getByRole("button", {
+                name: "Morning (8 AM–12 PM)",
+            }),
         );
 
         fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));

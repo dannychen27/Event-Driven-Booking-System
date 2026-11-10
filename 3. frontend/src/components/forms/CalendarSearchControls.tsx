@@ -399,34 +399,38 @@ export default function CalendarSearchControls({
                     </button>
                 </div>
 
-                <fieldset
+                <div
                     className="calendar-time-of-day"
-                    disabled={disabled}
+                    role="group"
+                    aria-label="Time of day"
                 >
-                    <legend>Time of day</legend>
+    <span className="calendar-time-of-day-legend">
+        Time of day
+    </span>
 
                     <div className="calendar-time-of-day-options">
-                        {TIME_OF_DAY_OPTIONS.map((option) => (
-                            <label key={option.value}>
-                                <input
-                                    type="checkbox"
-                                    checked={
-                                        selectedTime?.timeOfDay?.includes(
-                                            option.value,
-                                        ) ?? false
+                        {TIME_OF_DAY_OPTIONS.map((option) => {
+                            const selected =
+                                selectedTime?.timeOfDay?.includes(option.value) ??
+                                false;
+
+                            return (
+                                <button
+                                    key={option.value}
+                                    type="button"
+                                    className="calendar-time-of-day-option"
+                                    aria-pressed={selected}
+                                    disabled={disabled}
+                                    onClick={() =>
+                                        toggleTimeOfDay(option.value, !selected)
                                     }
-                                    onChange={(event) =>
-                                        toggleTimeOfDay(
-                                            option.value,
-                                            event.target.checked,
-                                        )
-                                    }
-                                />
-                                <span>{option.label}</span>
-                            </label>
-                        ))}
+                                >
+                                    {option.label}
+                                </button>
+                            );
+                        })}
                     </div>
-                </fieldset>
+                </div>
 
                 <div className="calendar-time-range">
                     <TimePicker
