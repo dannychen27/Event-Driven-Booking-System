@@ -1,23 +1,8 @@
-import { TimeInterval, TimeOfDay } from '../types/search/time-range.types';
-
-const TIME_OF_DAY_INTERVALS: Record<TimeOfDay, TimeInterval[]> = {
-    EARLY_MORNING: [
-        { startMinute: 300, endMinute: 480 },
-    ],
-    MORNING: [
-        { startMinute: 480, endMinute: 720 },
-    ],
-    AFTERNOON: [
-        { startMinute: 720, endMinute: 1020 },
-    ],
-    EVENING: [
-        { startMinute: 1020, endMinute: 1260 },
-    ],
-    NIGHT: [
-        { startMinute: 0, endMinute: 300 },
-        { startMinute: 1260, endMinute: 1440 },
-    ],
-};
+import {
+    getTimeOfDayIntervals,
+    type TimeOfDay,
+    type TimeInterval,
+} from '../../../5. shared/src/time-of-day';
 
 function normalizeIntervals(intervals: TimeInterval[]): TimeInterval[] {
     const sortedIntervals = [...intervals].sort(
@@ -60,9 +45,7 @@ export function buildTimeOfDayIntervals(
     }
 
     const intervals = timeOfDay.flatMap(
-        (period) => TIME_OF_DAY_INTERVALS[period].map(
-            (interval) => ({ ...interval }),
-        ),
+        (period) => getTimeOfDayIntervals(period),
     );
 
     return normalizeIntervals(intervals);

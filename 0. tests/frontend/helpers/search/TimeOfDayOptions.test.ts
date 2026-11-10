@@ -57,7 +57,8 @@ describe("TimeOfDayOptions", () => {
         ]);
     });
 
-    it("formats a changed range consistently in both display formats", () => {        const changedRange = {
+    it("formats a changed range consistently in both display formats", () => {
+        const changedRange = {
             startMinute: 18 * 60,
             endMinute: 22 * 60,
         };
