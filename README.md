@@ -66,6 +66,7 @@ a distributed architecture.
 
 | Layer | Technologies |
 | --- | --- |
+| Frontend (alternative) | Angular, TypeScript |
 | Event streaming | Apache Kafka |
 | Systems language | C++ |
 | Containerization | Docker |
@@ -555,11 +556,11 @@ npm test
 | Integration | `npm run test:integration` |
 | End-to-end | `npm run test:e2e` |
 
-The integration and end-to-end test commands automatically recreate the 
-`booking_system_test` database, load the schema, and seed test data before 
+The integration and end-to-end test commands automatically recreate the
+`booking_system_test` database, load the schema, and seed test data before
 running their respective test suites.
 
-Ensure PostgreSQL is running and accessible with the required connection 
+Ensure PostgreSQL is running and accessible with the required connection
 settings before running these commands.
 
 
@@ -574,7 +575,7 @@ npm run coverage
 This runs the backend Jest coverage suite followed by the frontend
 Vitest coverage suite.
 
-GitHub Actions publishes detailed HTML coverage reports and 
+GitHub Actions publishes detailed HTML coverage reports and
 uploads coverage reports as downloadable workflow artifacts.
 
 View the latest published coverage reports:
@@ -582,7 +583,7 @@ View the latest published coverage reports:
 - [Frontend coverage report](https://dannychen27.github.io/Event-Driven-Booking-System/frontend/)
 - [Coverage workflow runs and artifacts](https://github.com/dannychen27/Event-Driven-Booking-System/actions/workflows/coverage-pages.yml)
 
-Backend coverage is measured using Jest, 
+Backend coverage is measured using Jest,
 while frontend coverage uses Vitest with the V8 coverage provider.
 Aggregate figures include test-support files and other files included by each coverage configuration.
 
@@ -656,15 +657,14 @@ provider error handling, and rate limiting remain.
   - [x] Test date-filter validation, including invalid dates and reversed date ranges.
 
 - [ ] **Harden AI provider error handling**
-  - [x] Detect a missing API key and throw a clear error.
-  - [x] Map a provider `503` failure to a `ServiceUnavailableException`.
-  - [x] Return a generic client-facing message for the handled `503` failure.
+  - [x] Detect missing API-key configuration.
+  - [x] Test missing API-key detection.
+  - [x] Map provider `503` failures to a `ServiceUnavailableException`.
+  - [x] Return a generic client-facing message for handled `503` failures.
   - [ ] Return an appropriate, actionable client-facing error for missing API-key configuration.
   - [ ] Normalize other upstream provider failures into appropriate HTTP responses.
   - [ ] Retain useful server-side diagnostics without exposing internal provider details to clients.
-  - [x] Test missing API-key handling.
-  - [x] Test the handled 503 provider-failure scenario.
-  - [ ] Add tests for other provider failures and client-facing error messages.
+  - [ ] Add tests for additional provider failures and client-facing error responses.
 
 - [ ] **Add rate limiting to the AI search endpoint**
   - [ ] Protect `POST /events/natural-language-search` against excessive requests.
@@ -675,6 +675,20 @@ provider error handling, and rate limiting remain.
   - [ ] Confirm the configured Gemini model responds successfully using the free-tier configuration.
   - [ ] Test a representative natural-language query end to end.
   - [ ] Verify that provider failures produce the expected client-facing error response.
+
+
+### Planned Frontend Expansion — Angular
+
+**Goal:** Develop an alternative Angular frontend while preserving the existing React implementation.
+
+- [ ] Create a separate `feature/angular-frontend` branch.
+- [ ] Reimplement existing React components and application workflows using Angular.
+- [ ] Reuse the existing NestJS backend, PostgreSQL database, and Gemini API integration.
+- [ ] Preserve existing API contracts and application behavior.
+- [ ] Port frontend unit tests and verify feature parity.
+
+I will maintain the Angular implementation independently from the existing
+React frontend, with both implementations sharing the same backend.
 
 
 ### Phase 2 — Make It Distributed
