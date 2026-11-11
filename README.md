@@ -66,6 +66,7 @@ a distributed architecture.
 
 | Layer | Technologies |
 | --- | --- |
+| Frontend (alternative) | Angular, TypeScript |
 | Event streaming | Apache Kafka |
 | Systems language | C++ |
 | Containerization | Docker |
@@ -656,15 +657,14 @@ provider error handling, and rate limiting remain.
   - [x] Test date-filter validation, including invalid dates and reversed date ranges.
 
 - [ ] **Harden AI provider error handling**
-  - [x] Detect a missing API key and throw a clear error.
-  - [x] Map a provider `503` failure to a `ServiceUnavailableException`.
-  - [x] Return a generic client-facing message for the handled `503` failure.
+  - [x] Detect missing API-key configuration.
+  - [x] Test missing API-key detection.
+  - [x] Map provider `503` failures to a `ServiceUnavailableException`.
+  - [x] Return a generic client-facing message for handled `503` failures.
   - [ ] Return an appropriate, actionable client-facing error for missing API-key configuration.
   - [ ] Normalize other upstream provider failures into appropriate HTTP responses.
   - [ ] Retain useful server-side diagnostics without exposing internal provider details to clients.
-  - [x] Test missing API-key handling.
-  - [x] Test the handled 503 provider-failure scenario.
-  - [ ] Add tests for other provider failures and client-facing error messages.
+  - [ ] Add tests for additional provider failures and client-facing error responses.
 
 - [ ] **Add rate limiting to the AI search endpoint**
   - [ ] Protect `POST /events/natural-language-search` against excessive requests.
@@ -675,6 +675,20 @@ provider error handling, and rate limiting remain.
   - [ ] Confirm the configured Gemini model responds successfully using the free-tier configuration.
   - [ ] Test a representative natural-language query end to end.
   - [ ] Verify that provider failures produce the expected client-facing error response.
+
+
+### Planned Frontend Expansion — Angular
+
+**Goal:** Develop an alternative Angular frontend while preserving the existing React implementation.
+
+- [ ] Create a separate `feature/angular-frontend` branch.
+- [ ] Reimplement existing React components and application workflows using Angular.
+- [ ] Reuse the existing NestJS backend, PostgreSQL database, and Gemini API integration.
+- [ ] Preserve existing API contracts and application behavior.
+- [ ] Port frontend unit tests and verify feature parity.
+
+I will maintain the Angular implementation independently from the existing 
+React frontend, with both implementations sharing the same backend.
 
 
 ### Phase 2 — Make It Distributed
