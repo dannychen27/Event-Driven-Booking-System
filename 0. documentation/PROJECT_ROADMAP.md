@@ -40,6 +40,21 @@ Merged in PR #19.
 - [x] Global exception filter for unexpected server errors.
 - [x] Runtime verification and automated unit/E2E tests.
 
+### Calendar and AI Search Integration
+
+Merged in PR #21.
+
+- [x] Integrate calendar controls with natural-language event search.
+- [x] Implement relative-date resolution and validation.
+- [x] Reconcile explicit calendar filters with AI-inferred filters.
+- [x] Require clarification when calendar and AI filters conflict.
+- [x] Support Sunday-through-Saturday interpretation of "next week".
+- [x] Add multi-select time-of-day filters.
+- [x] Implement a bounded custom time picker.
+- [x] Support toggleable 12-hour and 24-hour display formats.
+- [x] Extract shared frontend/backend time-of-day definitions and intervals.
+- [x] Polish calendar and search controls, including dark-mode visibility.
+
 ## 3. Planned Bonus Work
 
 ### README CI Badges
@@ -79,6 +94,51 @@ Distinguish between:
 
 Use the existing structured logging infrastructure rather than introducing a separate logging system.
 
+## Planned Frontend Framework Migration — Angular
+
+**Status:** Not started.
+
+**Objective:** Reimplement the existing React frontend using Angular to explore an alternative frontend architecture while preserving the existing application's functionality.
+
+### Branch Strategy
+
+- [ ] Create `feature/angular-frontend` from the existing `main` branch.
+- [ ] Preserve the existing React implementation on `main`.
+- [ ] Develop the Angular frontend independently.
+- [ ] Reuse the existing NestJS backend, PostgreSQL database, and Gemini API integration.
+- [ ] Incorporate relevant backend changes from `main` as needed.
+
+### Implementation Scope
+
+- [ ] Initialize an Angular application using TypeScript.
+- [ ] Reimplement existing React components as Angular components.
+- [ ] Migrate routing and navigation.
+- [ ] Reimplement state management using Angular signals and services.
+- [ ] Adapt frontend API clients to Angular's HTTP infrastructure.
+- [ ] Reimplement forms, validation, and user interactions.
+- [ ] Reuse existing CSS and styling where practical.
+- [ ] Port relevant frontend unit tests and add coverage for Angular-specific behavior.
+
+### Definition of Done
+
+- [ ] Angular production build succeeds.
+- [ ] Existing major frontend features have Angular equivalents.
+- [ ] Authentication and backend API integration work correctly.
+- [ ] Event discovery and Gemini-powered natural-language search work.
+- [ ] Calendar, date, and time filters behave consistently with React.
+- [ ] Booking creation, confirmation, cancellation, and history work correctly.
+- [ ] Frontend unit tests pass.
+- [ ] Regression testing confirms functional parity with the React implementation.
+- [ ] Verify that both frontend implementations can independently run against the same backend.
+
+### Scope Constraints
+
+- Do not rewrite the NestJS backend.
+- Do not duplicate or independently modify backend business logic.
+- Preserve existing database schemas and API contracts.
+- Keep the React implementation intact.
+- Adapt browser-based E2E tests if they depend on React-specific UI behavior; backend-only tests should remain unchanged.
+
 ## 4. AI Search Security Improvements
 
 Origin: Prompt-injection testing by a friend.
@@ -114,7 +174,8 @@ Do not remove Prisma as part of reliability work without first checking for hidd
 
 Status: No additional approved tasks currently recorded.
 
-Only add concrete, justified cleanup tasks here. Avoid using this section as an open-ended invitation to refactor working code.
+Only add concrete, justified cleanup tasks here.
+Avoid using this section as an open-ended invitation to refactor working code.
 
 ## 6. Future Ideas
 
