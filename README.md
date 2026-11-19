@@ -1,4 +1,4 @@
-# Event-Driven Booking System
+# Concurrency-Safe Event Booking System
 
 [![Coverage Reports](https://github.com/dannychen27/Event-Driven-Booking-System/actions/workflows/coverage-pages.yml/badge.svg)](https://github.com/dannychen27/Event-Driven-Booking-System/actions/workflows/coverage-pages.yml)
 [![Coverage updated](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.generatedAtDisplay&label=Coverage%20updated%20%28Toronto%20time%29&style=flat&cacheSeconds=300&v=2)](https://dannychen27.github.io/Event-Driven-Booking-System/)
@@ -24,7 +24,14 @@
 [![Frontend Lines](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdannychen27.github.io%2FEvent-Driven-Booking-System%2Fcoverage-info.json&query=%24.frontendLines&label=Frontend%20Lines&suffix=%25&style=flat&cacheSeconds=300)](https://dannychen27.github.io/Event-Driven-Booking-System/frontend/)
 
 
+## Project Links
 
+- **[Live Demo](#live-demo)** — Try the deployed application.
+- **[Screenshots](#screenshots)** — View the application's interface.
+- **[Architecture](#architecture)** — Explore the system design and engineering decisions.
+- **[Local Setup](#quick-start)** — Run the application locally.
+- **[API Documentation](#api-endpoints)** — Explore the REST API.
+- **[Test Coverage](#code-coverage)** — View automated test coverage reports.
 
 ## Overview
 
@@ -35,126 +42,56 @@ and transaction safety to frontend/backend integration and automated testing.
 This project was inspired by an admin system I debugged during my
 summer 2022 full-stack development internship at Sky View Suites.
 
-### Current Features
+## Live Demo
+
+**Status:** Deployment in progress.
+
+The publicly accessible demo will be available here once deployment is complete.
+
+**Application:** Coming soon
+
+## Screenshots
+
+Screenshots of the application's interface will be added here.
+
+## Demo Instructions
+
+The public demo provides access to a preconfigured instance of the booking application.
+
+### Demo Account
+
+- **Email:** Coming soon
+- **Password:** Coming soon
+
+### Available Workflows
+
 - Browse events and venues.
-- Book events and view booking history.
-- Cancel bookings with booking-ownership checks.
-- Enforce booking constraints, including duplicate-booking prevention, schedule-conflict checks, and event-capacity limits.
-- Protect against concurrent overbooking using database transactions and row-level locking.
-- Automatically expire stale booking holds through scheduled background cleanup.
-- Search events using natural-language queries powered by Gemini.
+- Check event availability.
+- Create and manage booking holds.
+- Confirm or cancel bookings.
+- Search for events using natural language.
 
-The current implementation uses a layered application architecture.
-Future phases may introduce Kafka-based event processing, notification and
-C++ analytics consumers, Docker, and Kubernetes to evolve the system toward
-a distributed architecture.
+### Demo Environment
 
-## Technology Stack
+- Frontend: Coming soon
+- Backend API: Coming soon
+- Database: PostgreSQL
 
-### Current
+## Features
 
-| Layer | Technologies |
-| --- | --- |
-| Frontend | React, TypeScript, Vite |
-| Backend | NestJS, TypeScript |
-| Database | PostgreSQL |
-| Database Tooling | Prisma, node-postgres |
-| Testing | Vitest, Jest, Supertest, Testing Library |
-
-
-### Planned
-
-| Layer | Technologies |
-| --- | --- |
-| Frontend (alternative) | Angular, TypeScript |
-| Event streaming | Apache Kafka |
-| Systems language | C++ |
-| Containerization | Docker |
-| Orchestration | Kubernetes |
-
-
-## Quick Start
-
-### Prerequisites
-
-Before running the project, I require the following software:
-- **Node.js 20.19.0 or later**: required by Prisma 7 and Vite 8.
-- **npm**: used to install dependencies and run the project scripts.
-- **PostgreSQL**: used as the application's relational database.
-- **Git**: used to clone the repository and manage the project source code.
-
-I recommend using an active LTS version of Node.js, such as Node.js 22.x.
-Prisma currently recommends Node.js 22.x for Prisma 7.
-
-### 1. Install dependencies
-
-Start from a fresh `git checkout`:
-```bash
-git clone <repository-url>
-cd <project-directory>
-```
-
-From the project root, install frontend and backend dependencies:
-
-```bash
-npm install
-npm install --prefix "4. backend"
-npm install --prefix "3. frontend"
-```
-
-After installation, configure the environment variables and
-database before running the application.
-
-### 2. Configure the environment variables
-
-Copy the example environment file:
-```bash
-cp .env.example .env
-```
-
-Update `.env` with your local PostgreSQL connection settings.
-Set `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD`
-as appropriate for your setup.
-
-To use AI-powered natural-language search, configure `GEMINI_API_KEY`.
-
-
-Then update `.env` with the PostgreSQL credentials for your local database:
-```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=booking_system
-DB_USER=<your-postgresql-username>
-DB_PASSWORD=<your-postgresql-password>
-```
-
-The environment variables control the following database connection settings:
-| Variable | Description | Default |
-| --- | --- | --- |
-| `DB_HOST` | PostgreSQL server host | `localhost` |
-| `DB_PORT` | PostgreSQL server port | `5432` |
-| `DB_NAME` | Application database name | `booking_system` |
-| `DB_USER` | PostgreSQL username | — |
-| `DB_PASSWORD` | PostgreSQL password | — |
-
-### 3. Initialize the database
-
-Ensure PostgreSQL is running, then follow the [Database Setup](#database-setup) instructions below.
-
-For a quick local setup, the `setup.sh` script recreates `booking_system` and loads the schema, indexes, and seed data.
-**It deletes existing data in that database**, so use it only when you intend to reset it.
-
-### 4. Start the application
-
-I run the frontend and backend separately during development.
-
-In one terminal, start the backend:
-
-```bash
-npm run start:dev --prefix "4. backend"
-```
-
-In another terminal, start the frontend:
+- [x] **Event and venue browsing**: browse available events and their associated venues.
+- [x] **Event availability**: view the remaining capacity for an event.
+- [x] **Natural-language event search**: search for events using natural-language queries, with supported filters for keywords and date ranges; requires a configured `GEMINI_API_KEY`.
+- [x] **Booking management**: create and cancel event bookings.
+- [x] **Booking history**: view a user's previous and current bookings.
+- [x] **Booking validation**: prevent duplicate bookings, schedule conflicts, and bookings that exceed event capacity.
+- [x] **Booking hold expiration**: automatically expire stale booking holds through scheduled cleanup.
+- [x] **Client-side form validation**: validate booking input before submitting requests.
+- [ ] **Responsive user interface**: support common desktop and mobile layouts.
+- [x] **REST API integration**: connect the frontend to the backend through REST endpoints.
+- [x] **Booking ownership validation**: check that a booking belongs to the specified user before allowing cancellation.
+- [x] **Transactional booking protection**: use database transactions and row-level locking to protect against double-booking.
+- [x] **Automated testing**: test the frontend, backend, integration workflows, and end-to-end application flows.
 
 ```bash
 npm run dev --prefix "3. frontend"
