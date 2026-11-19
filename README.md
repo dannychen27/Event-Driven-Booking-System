@@ -585,68 +585,6 @@ List the tables in the database with:
 
 After initialization, configure the database connection variables in `.env` so the backend can connect to PostgreSQL.
 
-
-## Testing
-
-The project includes four categories of automated tests:
-- **Backend tests**: Unit and API tests for backend services and endpoints
-- **Frontend tests**: Component and page tests using Vitest
-- **Integration tests**: Backend integration tests using a test PostgreSQL database
-- **End-to-end tests**: Tests of complete application workflows using a test PostgreSQL database
-
-### Run All Tests
-
-Run the complete test suite from the project root:
-
-```bash
-npm test
-```
-
-### Run Specific Test Suites
-
-| Test suite | Command |
-| --- | --- |
-| Backend | `npm run test:backend` |
-| Frontend | `npm run test:frontend` |
-| Integration | `npm run test:integration` |
-| End-to-end | `npm run test:e2e` |
-
-The integration and end-to-end test commands automatically recreate the
-`booking_system_test` database, load the schema, and seed test data before
-running their respective test suites.
-
-Ensure PostgreSQL is running and accessible with the required connection
-settings before running these commands.
-
-
-## Code Coverage
-
-Generate backend and frontend coverage reports from the project root.
-
-```
-npm run coverage
-```
-
-This runs the backend Jest coverage suite followed by the frontend
-Vitest coverage suite.
-
-GitHub Actions publishes detailed HTML coverage reports and
-uploads coverage reports as downloadable workflow artifacts.
-
-View the latest published coverage reports:
-- [Backend coverage report](https://dannychen27.github.io/Event-Driven-Booking-System/backend/)
-- [Frontend coverage report](https://dannychen27.github.io/Event-Driven-Booking-System/frontend/)
-- [Coverage workflow runs and artifacts](https://github.com/dannychen27/Event-Driven-Booking-System/actions/workflows/coverage-pages.yml)
-
-Backend coverage is measured using Jest,
-while frontend coverage uses Vitest with the V8 coverage provider.
-Aggregate figures include test-support files and other files included by each coverage configuration.
-
-Coverage is reported by Jest for the backend and Vitest with the V8 coverage
-provider for the frontend. Aggregate figures include test-support files and
-other files included by each coverage configuration.
-
-
 ## Linting
 
 I use ESLint to check the frontend and backend code.
@@ -732,6 +670,19 @@ The `5. shared` directory contains TypeScript code shared between the
 frontend and backend. It currently provides common time-of-day definitions
 and utilities to keep time-filtering behavior consistent across both applications.
 
+## Known Limitations
+
+- **Live Gemini integration is not yet verified end to end.** During development, requests returned `503 UNAVAILABLE` from the provider. Successful live operation remains unverified.
+- **Authentication is not implemented.** The booking service checks that the supplied user ID owns a booking before cancellation, but requests do not establish that the caller is actually that user.
+- **Kafka-based event processing is planned for Phase 2.**
+- **The current deployment workflow is intended for local development.**
+
+### Dependency Audit
+
+- The backend dependency audit reports **20 vulnerabilities: 3 high and 17 moderate**.
+- The production-only backend audit reports **3 high-severity vulnerabilities**, involving `body-parser` and `multer`.
+- The remaining findings primarily affect development tooling, including Jest, NestJS CLI, and TypeScript ESLint dependencies.
+- Some vulnerabilities have non-breaking fixes available through `npm audit fix`. Resolving all findings may require breaking dependency upgrades, so remediation requires compatibility testing.
 
 ## Project Roadmap
 
@@ -815,7 +766,7 @@ Notifications   C++ Analytics
    Consumer        Consumer
 ```
 
-### Planned Work
+#### Planned Work
 
 - [ ] Publish `booking.created` events
 - [ ] Publish `booking.cancelled` events
@@ -850,7 +801,7 @@ Notifications   C++ Analytics
         └──────── Booking Service┘
 ```
 
-### Planned Work
+#### Planned Work
 
 - [ ] Add responsive user interface
 - [ ] Add Docker Compose
@@ -866,22 +817,3 @@ Notifications   C++ Analytics
 
 I intend to stop once these phases are complete rather than continuously
 adding infrastructure and services beyond the project's core goals.
-
-
-## Known Limitations
-
-- Live Gemini integration is not yet verified end to end.
-During development, requests returned 503 UNAVAILABLE from the provider.
-Successful live operation remains unverified.
-
-### Development Dependency Audit
-
-- `npm audit --prefix "4. backend" --omit=dev` reports zero vulnerabilities in production dependencies.
-- The full backend dependency audit reports 20 moderate findings associated with a known `sprintf-js` vulnerability in the Jest testing and coverage dependency chain.
-- The remaining findings are in development dependencies. The suggested automatic remediation involves a potentially breaking `ts-jest` downgrade, so it has not been applied.
-- Backend and frontend tests, end-to-end tests, integration tests, linting, and production builds pass with the current dependency versions.
-
-- Authentication is not implemented.
-The booking service checks that the supplied user ID owns a booking before cancellation, but requests do not establish that the caller is actually that user.
-- Kafka-based event processing is planned for Phase 2.
-- The current deployment workflow is intended for local development.
