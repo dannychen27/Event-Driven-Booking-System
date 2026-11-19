@@ -93,39 +93,33 @@ The public demo provides access to a preconfigured instance of the booking appli
 - [x] **Transactional booking protection**: use database transactions and row-level locking to protect against double-booking.
 - [x] **Automated testing**: test the frontend, backend, integration workflows, and end-to-end application flows.
 
-```bash
-npm run dev --prefix "3. frontend"
-```
+## Engineering Highlights
 
-Open the frontend URL printed by Vite in your terminal (typically `http://localhost:5173`).
-The backend runs on `http://localhost:3000` by default.
+### Concurrency-Safe Booking
 
+- Use PostgreSQL transactions and row-level locking to protect event capacity.
+- Serialize conflicting booking operations to prevent concurrent overbooking.
 
-## Features
+### Idempotency
 
-- [x] **Event and venue browsing**: browse available events and their associated venues
-- [x] **Event availability**: view the remaining capacity for an event
-- [x] **Natural-language event search**: search for events using natural-language queries, with supported filters for keywords and date ranges; requires a configured `GEMINI_API_KEY`.
-- [x] **Booking management**: create and cancel event bookings
-- [x] **Booking history**: view a user's previous and current bookings
-- [x] **Booking validation**: prevent duplicate bookings, schedule conflicts, and bookings that exceed event capacity
-- [x] **Booking hold expiration**: automatically expire stale booking holds through scheduled cleanup.
+- Support idempotency keys for booking creation and hold confirmation.
+- Replay stored responses for repeated requests with matching payloads.
+- Reject reuse of an idempotency key with a different request payload.
 
-- [x] **Client-side form validation**: validate booking input before submitting requests
-- [ ] **Responsive user interface**: support common desktop and mobile layouts
+### Booking Lifecycle
 
-- [x] **REST API integration**: connect the frontend to the backend through REST endpoints
+- Implement temporary booking holds with a 10-minute expiration period.
+- Automatically expire stale holds through scheduled batch cleanup.
+- Use `FOR UPDATE SKIP LOCKED` to coordinate background cleanup.
 
-- [x] **Booking ownership validation**: check that a booking belongs to the specified user before allowing cancellation
-- [x] **Transactional booking protection**: use database transactions and row-level locking to protect against double-booking
+### Observability
 
-- [x] **Automated testing**: test the frontend, backend, integration workflows, and end-to-end application flows
+- Use structured logging and request correlation to improve backend diagnostics.
 
-**AI integration note:** Natural-language search uses Gemini to interpret queries and rank candidate events.
-It requires a valid `GEMINI_API_KEY` and depends on the availability of the external Gemini service.
-Live integration has not yet been reliably verified end to end; AI search may return `503 Service Unavailable`
-when the service is unavailable.
+### AI-Powered Search
 
+- Interpret natural-language event queries using Gemini.
+- Convert user intent into structured search constraints and clarification requests.
 
 ## Architecture
 
@@ -148,9 +142,9 @@ It also communicates with the backend through REST API requests.
 
 The NestJS backend is organized into feature-based modules:
 
-- **Events**: Event retrieval, availability, and natural-language search
-- **Venues**: Venue retrieval
-- **Bookings**: Booking creation, cancellation, and booking history
+- **Events**: Event retrieval, availability, and natural-language search.
+- **Venues**: Venue retrieval.
+- **Bookings**: Booking creation, cancellation, and booking history.
 - **Database**: PostgreSQL database connection and access
 
 The backend exposes the REST API, validates requests, applies business rules,
