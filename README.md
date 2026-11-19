@@ -278,59 +278,27 @@ without requiring the booking service to call each consumer service directly.
 This would make it easier to add downstream functionality while keeping the
 core booking workflow less tightly coupled.
 
+## Technology Stack
 
-## Project Structure
+### Current
 
-```text
-Event-Driven Booking System/
-├── 0. documentation/               # Architecture and technology documentation
-├── 0. tests/
-│   ├── backend/                    # Backend unit and API tests
-│   ├── frontend/                   # Frontend component and page tests
-│   ├── integration/                # Backend integration tests
-│   ├── end-to-end/                 # End-to-end application tests
-│   ├── mocks/                      # Shared test mocks
-│   └── utils/                      # Shared test utilities
-├── 1. api endpoints/               # API specifications and design documentation
-├── 2. data model/                  # Database schema, setup, seeds, and design
-├── 3. frontend/
-│   └── src/
-│       ├── api/                    # Backend API clients
-│       ├── components/             # Reusable React components
-│       ├── pages/                  # Application pages
-│       ├── styles/                 # Component and page styling
-│       ├── types/                  # TypeScript domain types
-│       └── utils/                  # Shared frontend utilities
-├── 4. backend/
-│   └── src/
-│       ├── bookings/               # Booking module and business logic
-│       ├── database/               # PostgreSQL database connection
-│       ├── events/                 # Event module and business logic
-│       └── venues/                 # Venue module and business logic
-├── for the resume/                 # Resume-related project materials
-├── instructions/                   # Project instructions
-├── prisma/                         # Prisma-related project files
-├── scheduling/                     # Scheduling-related project materials
-├── scripts/                        # Verification and development scripts
-│   └── verify-logs.sh              # Validates test, lint, build, and coverage logs
-├── test-logs/                      # Test and verification logs
-├── .env.example                    # Example environment configuration
-├── package.json                    # Root project scripts and dependencies
-├── package-lock.json               # Root npm dependency lockfile
-├── prisma.config.ts                # Prisma configuration
-├── skills-lock.json                # Skills dependency lockfile
-├── tsconfig.json                   # Root TypeScript configuration
-├── tsconfig.test.json              # TypeScript configuration for tests
-└── README.md                       # Project documentation
-```
+| Layer | Technologies |
+| --- | --- |
+| Frontend | React, TypeScript, Vite |
+| Backend | NestJS, TypeScript |
+| Database | PostgreSQL |
+| Database Tooling | Prisma, node-postgres |
+| Testing | Vitest, Jest, Supertest, Testing Library |
 
-I organize the project into separate **frontend**, **backend**, and **test** layers.
+### Planned
 
-I built the frontend with React and TypeScript, while the backend uses NestJS and PostgreSQL.
-
-I organize automated tests by scope, including unit, integration, and end-to-end tests.
-
-I keep additional development documentation in the numbered documentation directories, covering API design, data modeling, architecture, technology choices, and project planning.
+| Layer | Technologies |
+| --- | --- |
+| Frontend (alternative) | Angular, TypeScript |
+| Event streaming | Apache Kafka |
+| Systems language | C++ |
+| Containerization | Docker |
+| Orchestration | Kubernetes |
 
 ## API Endpoints
 
@@ -390,6 +358,157 @@ The endpoint returns a `400 Bad Request` if:
 | `DELETE` | `/booking-holds/:id` | Cancel an active booking hold |
 | `DELETE` | `/bookings/:id` | Cancel a booking |
 
+## Testing
+
+The project includes four categories of automated tests:
+
+- **Backend tests**: Unit and API tests for backend services and endpoints.
+- **Frontend tests**: Component and page tests using Vitest.
+- **Integration tests**: Backend integration tests using a test PostgreSQL database.
+- **End-to-end tests**: Tests of complete application workflows using a test PostgreSQL database.
+
+### Run All Tests
+
+Run the complete test suite from the project root:
+
+```bash
+npm test
+```
+
+### Run Specific Test Suites
+
+| Test suite | Command |
+| --- | --- |
+| Backend | `npm run test:backend` |
+| Frontend | `npm run test:frontend` |
+| Integration | `npm run test:integration` |
+| End-to-end | `npm run test:e2e` |
+
+The integration and end-to-end test commands automatically recreate the
+`booking_system_test` database, load the schema, and seed test data before
+running their respective test suites.
+
+Ensure PostgreSQL is running and accessible with the required connection
+settings before running these commands.
+
+## Code Coverage
+
+Generate backend and frontend coverage reports from the project root.
+
+```bash
+npm run coverage
+```
+
+This runs the backend Jest coverage suite followed by the frontend
+Vitest coverage suite.
+
+GitHub Actions publishes detailed HTML coverage reports and
+uploads coverage reports as downloadable workflow artifacts.
+
+View the latest published coverage reports:
+
+- [Backend coverage report](https://dannychen27.github.io/Event-Driven-Booking-System/backend/)
+- [Frontend coverage report](https://dannychen27.github.io/Event-Driven-Booking-System/frontend/)
+- [Coverage workflow runs and artifacts](https://github.com/dannychen27/Event-Driven-Booking-System/actions/workflows/coverage-pages.yml)
+
+Backend coverage is measured using Jest,
+while frontend coverage uses Vitest with the V8 coverage provider.
+Aggregate figures include test-support files and other files included by each coverage configuration.
+
+## Quick Start
+
+### Prerequisites
+
+Before running the project, the following software is required:
+
+- **Node.js 20.19.0 or later**: required by Prisma 7 and Vite 8.
+- **npm**: used to install dependencies and run the project scripts.
+- **PostgreSQL**: used as the application's relational database.
+- **Git**: used to clone the repository and manage the project source code.
+
+I recommend using an active LTS version of Node.js, such as Node.js 22.x.
+Prisma currently recommends Node.js 22.x for Prisma 7.
+
+### 1. Install Dependencies
+
+Start from a fresh `git checkout`:
+
+```bash
+git clone <repository-url>
+cd <project-directory>
+```
+
+From the project root, install frontend and backend dependencies:
+
+```bash
+npm install
+npm install --prefix "4. backend"
+npm install --prefix "3. frontend"
+```
+
+After installation, configure the environment variables and
+database before running the application.
+
+### 2. Configure the Environment Variables
+
+Copy the example environment file:
+
+```bash
+cp .env.example .env
+```
+
+Update `.env` with your local PostgreSQL connection settings.
+Set `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD`
+as appropriate for your setup.
+
+To use AI-powered natural-language search, configure `GEMINI_API_KEY`.
+
+Then update `.env` with the PostgreSQL credentials for your local database:
+
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=booking_system
+DB_USER=<your-postgresql-username>
+DB_PASSWORD=<your-postgresql-password>
+```
+
+The environment variables control the following database connection settings:
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `DB_HOST` | PostgreSQL server host | `localhost` |
+| `DB_PORT` | PostgreSQL server port | `5432` |
+| `DB_NAME` | Application database name | `booking_system` |
+| `DB_USER` | PostgreSQL username | — |
+| `DB_PASSWORD` | PostgreSQL password | — |
+
+### 3. Initialize the Database
+
+Ensure PostgreSQL is running, then follow the [Database Setup](#database-setup) instructions below.
+
+For a quick local setup, the `setup.sh` script recreates `booking_system` and loads the schema, indexes, and seed data.
+
+**It deletes existing data in that database**, so use it only when you intend to reset it.
+
+### 4. Start the Application
+
+I run the frontend and backend separately during development.
+
+In one terminal, start the backend:
+
+```bash
+npm run start:dev --prefix "4. backend"
+```
+
+In another terminal, start the frontend:
+
+```bash
+npm run dev --prefix "3. frontend"
+```
+
+Open the frontend URL printed by Vite in your terminal (typically `http://localhost:5173`).
+The backend runs on `http://localhost:3000` by default.
 
 ## Database Setup
 
@@ -415,11 +534,13 @@ Use it only when you intend to reset that database.
 ### Option 2: Manually through `psql`
 
 Run the following commands from the project root to switch to the database directory before starting `psql`:
+
 ```bash
 cd "2. data model"
 ```
 
 Start PostgreSQL:
+
 ```bash
 psql
 ```
@@ -427,6 +548,7 @@ psql
 Create the application database and connect to it.
 If `booking_system` already exists, skip the `CREATE DATABASE` command and
 connect to the existing database instead:
+
 ```sql
 CREATE DATABASE booking_system;
 \c booking_system
@@ -437,6 +559,7 @@ If `booking_system` already contains data, use a separate test database rather
 than rerunning the setup scripts against it.
 
 Load the schema, indexes, seed data, and constraint tests:
+
 ```text
 \i setup.sql
 ```
@@ -455,6 +578,7 @@ psql booking_system
 ### Viewing Tables
 
 List the tables in the database with:
+
 ```text
 \dt
 ```
@@ -555,6 +679,58 @@ npm run build
 | --- | --- |
 | Backend | `npm run build:backend` |
 | Frontend | `npm run build:frontend` |
+
+## Project Structure
+
+```text
+Event-Driven Booking System/
+├── 0. documentation/               # Architecture and technology documentation
+├── 0. tests/
+│   ├── backend/                    # Backend unit and API tests
+│   ├── frontend/                   # Frontend component and page tests
+│   ├── integration/                # Backend integration tests
+│   ├── end-to-end/                 # End-to-end application tests
+│   ├── mocks/                      # Shared test mocks
+│   └── utils/                      # Shared test utilities
+├── 1. api endpoints/               # API specifications and design documentation
+├── 2. data model/                  # Database schema, setup, seeds, and design
+├── 3. frontend/
+│   └── src/
+│       ├── api/                    # Backend API clients
+│       ├── components/             # Reusable React components
+│       ├── pages/                  # Application pages
+│       ├── styles/                 # Component and page styling
+│       ├── types/                  # TypeScript domain types
+│       └── utils/                  # Shared frontend utilities
+├── 4. backend/
+│   └── src/
+│       ├── bookings/               # Booking module and business logic
+│       ├── database/               # PostgreSQL database connection
+│       ├── events/                 # Event module and business logic
+│       └── venues/                 # Venue module and business logic
+├── 5. shared/
+│   └── src/
+│       └── time-of-day.ts          # Shared time-of-day types, intervals, and utilities
+├── for the resume/                 # Resume-related project materials
+├── instructions/                   # Project instructions
+├── prisma/                         # Prisma-related project files
+├── scheduling/                     # Scheduling-related project materials
+├── scripts/                        # Verification and development scripts
+│   └── verify-logs.sh              # Validates test, lint, build, and coverage logs
+├── test-logs/                      # Test and verification logs
+├── .env.example                    # Example environment configuration
+├── package.json                    # Root project scripts and dependencies
+├── package-lock.json               # Root npm dependency lockfile
+├── prisma.config.ts                # Prisma configuration
+├── skills-lock.json                # Skills dependency lockfile
+├── tsconfig.json                   # Root TypeScript configuration
+├── tsconfig.test.json              # TypeScript configuration for tests
+└── README.md                       # Project documentation
+```
+
+The `5. shared` directory contains TypeScript code shared between the
+frontend and backend. It currently provides common time-of-day definitions
+and utilities to keep time-filtering behavior consistent across both applications.
 
 
 ## Project Roadmap
