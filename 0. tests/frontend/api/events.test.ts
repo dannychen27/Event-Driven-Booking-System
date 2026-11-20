@@ -49,6 +49,36 @@ describe("searchEvents", () => {
         );
     });
 
+    it("serializes date and time filters as a query parameter", async () => {
+        const fetchMock = mockFetchResponse([]);
+
+        const filters = {
+            date: {
+                state: "selected" as const,
+                value: {
+                    startDate: "2026-11-10",
+                    endDate: "2026-11-10",
+                },
+            },
+            time: {
+                state: "selected" as const,
+                value: {
+                    timeOfDay: ["MORNING"],
+                },
+            },
+        };
+
+        await searchEvents("Meet", filters);
+
+        expect(fetchMock).toHaveBeenCalledTimes(1);
+
+        const [requestUrl] = fetchMock.mock.calls[0] as [string];
+        const params = new URL(requestUrl).searchParams;
+
+        expect(params.get("keyword")).toBe("Meet");
+        expect(JSON.parse(params.get("filters") ?? "null")).toEqual(filters);
+    });
+
     it("returns events from a successful response", async () => {
         const events = [minimalTeaMeetupEventFixture];
         mockFetchResponse(events);

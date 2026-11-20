@@ -23,6 +23,7 @@ import {
 import { getEvents } from "../api/events";
 import EventSearchForm from "../components/forms/EventSearchForm.tsx";
 import AiSearchForm from "../components/forms/AiSearchForm";
+import CalendarSearchControls from "../components/forms/CalendarSearchControls.tsx";
 import SearchFilterClarification from "../components/forms/SearchFilterClarification.tsx";
 import {
     displayAllEvents,
@@ -124,6 +125,8 @@ export default function EventsPage() {
                 onSearch={(event) =>
                     handleSearch(event, {
                         query: keyword,
+                        dateSelection,
+                        timeSelection,
                         searchRequestId,
                         setEvents,
                         setSearching,
@@ -150,20 +153,8 @@ export default function EventsPage() {
             <AiSearchForm
                 prompt={naturalLanguageQuery}
                 searching={searching}
-                dateSelection={dateSelection}
-                timeSelection={timeSelection}
                 onQueryChange={(value) => {
                     setNaturalLanguageQuery(value);
-                    setSearchError("");
-                    clearClarification();
-                }}
-                onDateSelectionChange={(selection) => {
-                    setDateSelection(selection);
-                    setSearchError("");
-                    clearClarification();
-                }}
-                onTimeSelectionChange={(selection) => {
-                    setTimeSelection(selection);
                     setSearchError("");
                     clearClarification();
                 }}
@@ -194,6 +185,22 @@ export default function EventsPage() {
                         setTimeSelection,
                     }).then(clearClarification)
                 }
+            />
+
+            <CalendarSearchControls
+                dateSelection={dateSelection}
+                timeSelection={timeSelection}
+                disabled={searching}
+                onDateSelectionChange={(selection) => {
+                    setDateSelection(selection);
+                    setSearchError("");
+                    clearClarification();
+                }}
+                onTimeSelectionChange={(selection) => {
+                    setTimeSelection(selection);
+                    setSearchError("");
+                    clearClarification();
+                }}
                 onApplyFilters={() =>
                     void handleApplyCalendarFilters({
                         query: naturalLanguageQuery,

@@ -64,6 +64,81 @@ describe("NaturalLanguageSearchService", () => {
         jest.useRealTimers();
     });
 
+    describe("searchWithKeyword", () => {
+        it("applies selected date and time filters without invoking Gemini", async () => {
+            const result = await service.searchWithKeyword({
+                query: " coffee ",
+                filters: {
+                    date: {
+                        state: "selected",
+                        value: {
+                            startDate: "2026-11-10",
+                            endDate: "2026-11-12",
+                        },
+                    },
+                    time: {
+                        state: "selected",
+                        value: {
+                            timeOfDay: ["MORNING"],
+                        },
+                    },
+                },
+            });
+
+            expect(eventsService.searchEvents).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    keyword: "coffee",
+                    startAfter: "2026-11-10T05:00:00.000Z",
+                    startBefore: "2026-11-13T05:00:00.000Z",
+                    timeIntervals: expect.any(Array),
+                }),
+            );
+
+            expect(
+                eventsService.searchEvents.mock.calls[0][0].timeIntervals,
+            ).not.toHaveLength(0);
+
+            expect(eventsService.searchEventCandidates).not.toHaveBeenCalled();
+            expect(interpreter.interpret).not.toHaveBeenCalled();
+            expect(ranker.rank).not.toHaveBeenCalled();
+
+            expect(result).toEqual([]);
+        });
+
+        it("performs keyword search without calendar filters", async () => {
+            eventsService.searchEvents.mockResolvedValueOnce(
+                NATURAL_LANGUAGE_SEARCH_CANDIDATES_FIXTURE,
+            );
+
+            const result = await service.searchWithKeyword({
+                query: "coffee",
+            });
+
+            expect(eventsService.searchEvents).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    keyword: "coffee",
+                }),
+            );
+
+            expect(eventsService.searchEventCandidates).not.toHaveBeenCalled();
+            expect(interpreter.interpret).not.toHaveBeenCalled();
+            expect(ranker.rank).not.toHaveBeenCalled();
+
+            expect(result).toEqual(NATURAL_LANGUAGE_SEARCH_CANDIDATES_FIXTURE);
+        });
+
+        it("rejects invalid keyword requests without querying events", async () => {
+            await expect(
+                service.searchWithKeyword({
+                    query: " ",
+                }),
+            ).rejects.toThrow();
+
+            expect(eventsService.searchEvents).not.toHaveBeenCalled();
+            expect(interpreter.interpret).not.toHaveBeenCalled();
+        });
+    });
+
     it('retrieves date-filtered candidates and returns them in semantic ranking order', async () => {
         const query = 'Find something relaxing outdoors this weekend';
         const result = await service.searchNaturalLanguage({ query });

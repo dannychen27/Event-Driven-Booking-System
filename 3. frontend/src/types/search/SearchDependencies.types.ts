@@ -10,6 +10,8 @@ import type {
 export interface SearchHandlerDependencies {
     query: string;
     searchRequestId: { current: number };
+    dateSelection?: ExplicitSelection<CalendarDateRange>;
+    timeSelection?: ExplicitSelection<CalendarTimeSelection>;
     setEvents: (events: Event[]) => void;
     setSearching: (searching: boolean) => void;
     setSearchError: (error: string) => void;
@@ -18,8 +20,6 @@ export interface SearchHandlerDependencies {
 
 export interface NaturalLanguageSearchHandlerDependencies
     extends SearchHandlerDependencies {
-    dateSelection?: ExplicitSelection<CalendarDateRange>;
-    timeSelection?: ExplicitSelection<CalendarTimeSelection>;
     setClarificationConflicts: (
         conflicts: SearchFilterConflict[] | null,
     ) => void;

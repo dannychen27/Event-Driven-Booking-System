@@ -1,5 +1,6 @@
 import type { Event } from "../types/events/Event.ts";
 import type {
+    NaturalLanguageSearchFilters,
     NaturalLanguageSearchRequest,
     NaturalLanguageSearchResponse,
 } from "../types/search/NaturalLanguageSearch.types.ts";
@@ -16,8 +17,13 @@ export async function getEvents(): Promise<Event[]> {
 
 export async function searchEvents(
     keyword: string,
+    filters?: NaturalLanguageSearchFilters,
 ): Promise<Event[]> {
     const params = new URLSearchParams({ keyword });
+
+    if (filters) {
+        params.set("filters", JSON.stringify(filters));
+    }
 
     return apiRequest<Event[]>(
         `${API_BASE_URL}/events/search?${params.toString()}`,

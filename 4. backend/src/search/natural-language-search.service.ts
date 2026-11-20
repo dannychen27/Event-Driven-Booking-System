@@ -150,4 +150,22 @@ export class NaturalLanguageSearchService {
       throw error;
     }
   }
+
+  async searchWithKeyword(input: unknown) {
+    const request = validateNaturalLanguageSearchRequest(input);
+
+    const dateResult = reconcileDateFilter({
+      selection: request.filters?.date,
+    });
+
+    const timeResult = reconcileTimeFilter({
+      selection: request.filters?.time,
+    });
+
+    return this.eventsService.searchEvents({
+      keyword: request.query,
+      ...dateResult.filters,
+      timeIntervals: timeResult.intervals,
+    });
+  }
 }

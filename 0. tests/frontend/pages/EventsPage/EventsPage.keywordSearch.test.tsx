@@ -2,7 +2,11 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import EventsPage from "../../../../3. frontend/src/pages/EventsPage";
-import { getEvents, searchEvents } from "../../../../3. frontend/src/api/events";
+import {
+    getEvents,
+    searchEvents,
+    searchEventsNaturalLanguage
+} from "../../../../3. frontend/src/api/events";
 import type { Event } from "../../../../3. frontend/src/types/events/Event";
 import {
     coffeeMeetupAtMossParkFixture,
@@ -71,7 +75,40 @@ describe("Keyword search", () => {
         expect(
             await screen.findByText("Mock Event Card: Meet and Greet")
         ).toBeInTheDocument();
-        expect(searchEvents).toHaveBeenCalledWith("Meet");
+        expect(searchEvents).toHaveBeenCalledWith("Meet", undefined);
+    });
+
+    it("searches using the keyword and selected calendar filters without invoking AI", async () => {
+        vi.mocked(searchEvents).mockResolvedValue([ meetAndGreetSearchResultFixture ]);
+
+        await renderEventsPageWithNoInitialEvents();
+
+        fireEvent.change(screen.getByLabelText("Search events"), { target: { value: "Meet" } });
+        fireEvent.change(screen.getByLabelText("From"), { target: { value: "2026-11-10" } });
+
+        fireEvent.click(screen.getByRole("button", { name: "Morning (8 AM–12 PM)" } ));
+
+        fireEvent.click(screen.getByRole("button", { name: "Search" } ));
+
+        expect(await screen.findByText("Mock Event Card: Meet and Greet")).toBeInTheDocument();
+
+        expect(searchEvents).toHaveBeenCalledWith("Meet", {
+            date: {
+                state: "selected",
+                value: {
+                    startDate: "2026-11-10",
+                    endDate: "2026-11-10",
+                },
+            },
+            time: {
+                state: "selected",
+                value: {
+                    timeOfDay: ["MORNING"],
+                },
+            },
+        });
+
+        expect(searchEventsNaturalLanguage).not.toHaveBeenCalled();
     });
 
     it("shows a message when search returns no matching events", async () => {

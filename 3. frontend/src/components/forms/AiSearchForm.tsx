@@ -4,7 +4,6 @@ import type { AiSearchFormProps } from "../../types/search/AiSearchForm.types.ts
 import { SEARCH_EXAMPLES } from "../../constants/search/aiSearch.ts";
 import AiSearchExamples from "./AiSearchExamples.tsx";
 import SearchControls from "./SearchControls.tsx";
-import CalendarSearchControls from "./CalendarSearchControls.tsx";
 
 export default function AiSearchForm({
     prompt,
@@ -12,16 +11,7 @@ export default function AiSearchForm({
     onQueryChange,
     onSearch,
     onClearQuery,
-    dateSelection,
-    timeSelection,
-    onDateSelectionChange,
-    onTimeSelectionChange,
-    onApplyFilters,
 }: AiSearchFormProps) {
-    const showCalendarControls =
-        onDateSelectionChange !== undefined &&
-        onTimeSelectionChange !== undefined;
-
     return (
         <form
             className="search-form ai-search-form"
@@ -51,17 +41,6 @@ export default function AiSearchForm({
                 onClearQuery={onClearQuery}
                 clearButtonClassName="ai-search-clear"
             />
-
-            {showCalendarControls && (
-                <CalendarSearchControls
-                    dateSelection={dateSelection}
-                    timeSelection={timeSelection}
-                    disabled={searching}
-                    onDateSelectionChange={onDateSelectionChange}
-                    onTimeSelectionChange={onTimeSelectionChange}
-                    onApplyFilters={onApplyFilters}
-                />
-            )}
         </form>
     );
 }

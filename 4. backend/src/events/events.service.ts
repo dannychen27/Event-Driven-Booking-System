@@ -77,6 +77,7 @@ export class EventsService {
     includeFutureEvents?: boolean;
     timeOfDay?: TimeOfDay[];
     timeRange?: TimeRange;
+    timeIntervals?: TimeInterval[];
   }) {
     const conditions: string[] = [];
     const params: unknown[] = [];
@@ -93,7 +94,9 @@ export class EventsService {
       startBefore: filters.startBefore,
       includePastEvents: filters.includePastEvents,
       includeFutureEvents: filters.includeFutureEvents,
-      timeIntervals: buildTimeOfDayIntervals(filters.timeOfDay),
+      timeIntervals: filters.timeIntervals !== undefined
+          ? filters.timeIntervals
+          : buildTimeOfDayIntervals(filters.timeOfDay),
       timeRange: filters.timeRange,
       initialParamCount: params.length,
     });

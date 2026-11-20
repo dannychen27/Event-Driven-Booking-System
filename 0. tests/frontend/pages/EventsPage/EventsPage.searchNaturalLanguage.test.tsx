@@ -56,7 +56,9 @@ describe("Natural-language search", () => {
     });
 
     it("shows the loading state while natural-language search is pending", async () => {
-        let resolveSearch!: (response: NaturalLanguageSearchResponse) => void;
+        let resolveSearch!: (
+            response: NaturalLanguageSearchResponse,
+        ) => void;
 
         vi.mocked(searchEventsNaturalLanguage).mockReturnValue(
             new Promise<NaturalLanguageSearchResponse>((resolve) => {
@@ -71,7 +73,6 @@ describe("Natural-language search", () => {
         });
         fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
 
-        // Both search buttons show "Searching..." and are disabled.
         const searchingButtons = screen.getAllByRole("button", {
             name: "Searching...",
         });
@@ -82,7 +83,6 @@ describe("Natural-language search", () => {
         });
         expect(searchEventsNaturalLanguage).toHaveBeenCalledTimes(1);
 
-        // Simulate another click on the disabled AI search button.
         fireEvent.click(searchingButtons[1]);
         expect(searchEventsNaturalLanguage).toHaveBeenCalledTimes(1);
 
@@ -321,36 +321,6 @@ describe("Natural-language search", () => {
         });
     });
 
-    it("supports a calendar-only search without a natural-language query", async () => {
-        vi.mocked(searchEventsNaturalLanguage).mockResolvedValue(
-            successfulResponse([]),
-        );
-
-        await renderEventsPageWithNoInitialEvents();
-
-        fireEvent.change(screen.getByLabelText("From"), {
-            target: { value: "2026-11-10" },
-        });
-
-        fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
-
-        expect(
-            await screen.findByText("No matching events found."),
-        ).toBeInTheDocument();
-
-        expect(searchEventsNaturalLanguage).toHaveBeenCalledWith({
-            filters: {
-                date: {
-                    state: "selected",
-                    value: {
-                        startDate: "2026-11-10",
-                        endDate: "2026-11-10",
-                    },
-                },
-            },
-        });
-    });
-
     it("sends an explicitly cleared date filter when the query is retained", async () => {
         vi.mocked(searchEventsNaturalLanguage).mockResolvedValue(
             successfulResponse([]),
@@ -367,7 +337,6 @@ describe("Natural-language search", () => {
         });
 
         fireEvent.click(screen.getByRole("button", { name: "Clear date" }));
-
         fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
 
         expect(

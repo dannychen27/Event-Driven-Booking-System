@@ -13,14 +13,33 @@ import type {
     SearchHandlerDependencies,
 } from "../../types/search/SearchDependencies.types.ts";
 import type {
+    NaturalLanguageSearchFilters,
     NaturalLanguageSearchRequest,
     SearchFilterConflict,
 } from "../../types/search/NaturalLanguageSearch.types.ts";
 
+function buildCalendarSearchFilters(
+    dependencies: SearchHandlerDependencies,
+): NaturalLanguageSearchFilters | undefined {
+    const filters = {
+        ...(dependencies.dateSelection
+            ? { date: dependencies.dateSelection }
+            : {}),
+        ...(dependencies.timeSelection
+            ? { time: dependencies.timeSelection }
+            : {}),
+    };
+
+    return Object.keys(filters).length > 0 ? filters : undefined;
+}
+
 async function executeSearch(
     event: FormEvent<HTMLFormElement>,
     dependencies: SearchHandlerDependencies,
-    search: (query: string) => Promise<Event[]>,
+    search: (
+        query: string,
+        filters?: NaturalLanguageSearchFilters,
+    ) => Promise<Event[]>,
     emptyQueryMessage: string,
     failureMessage: string,
 ) {
@@ -40,7 +59,10 @@ async function executeSearch(
     dependencies.setIsSearchActive(true);
 
     try {
-        const results = await search(query);
+        const results = await search(
+            query,
+            buildCalendarSearchFilters(dependencies),
+        );
 
         if (requestId !== dependencies.searchRequestId.current) return;
 
