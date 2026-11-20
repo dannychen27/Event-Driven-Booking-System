@@ -19,4 +19,5 @@ export interface AiSearchFormProps {
     onTimeSelectionChange?: (
         selection: ExplicitSelection<CalendarTimeSelection> | undefined,
     ) => void;
+    onApplyFilters: () => void;
 }

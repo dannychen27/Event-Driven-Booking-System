@@ -396,3 +396,34 @@
         margin-left: 0.25rem;
     }
 }
+
+.calendar-search-actions {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.calendar-search-apply {
+    min-height: 42px;
+    padding: 0.6rem 1.1rem;
+    border: 1px solid #166534;
+    border-radius: 6px;
+    background: #15803d;
+    color: #fff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.calendar-search-apply:hover:not(:disabled) {
+    background: #166534;
+}
+
+.calendar-search-apply:focus-visible {
+    outline: 2px solid #22c55e;
+    outline-offset: 3px;
+}
+
+.calendar-search-apply:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}

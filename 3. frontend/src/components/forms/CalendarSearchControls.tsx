@@ -21,6 +21,7 @@ interface CalendarSearchControlsProps {
     onTimeSelectionChange: (
         selection: ExplicitSelection<CalendarTimeSelection> | undefined,
     ) => void;
+    onApplyFilters: () => void;
 }
 
 
@@ -306,6 +307,7 @@ export default function CalendarSearchControls({
    disabled,
    onDateSelectionChange,
    onTimeSelectionChange,
+   onApplyFilters,
 }: CalendarSearchControlsProps) {
     const [timeFormat, setTimeFormat] = useState<TimeFormat>("12h");
 
@@ -573,6 +575,17 @@ export default function CalendarSearchControls({
                         }
                     />
                 </div>
+            </div>
+
+            <div className="calendar-search-actions">
+                <button
+                    type="button"
+                    className="calendar-search-apply"
+                    disabled={disabled || (!hasDateFilter && !hasTimeFilter)}
+                    onClick={onApplyFilters}
+                >
+                    Apply filters
+                </button>
             </div>
         </section>
     );

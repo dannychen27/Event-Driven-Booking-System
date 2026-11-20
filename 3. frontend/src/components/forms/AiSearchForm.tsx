@@ -16,6 +16,7 @@ export default function AiSearchForm({
     timeSelection,
     onDateSelectionChange,
     onTimeSelectionChange,
+    onApplyFilters,
 }: AiSearchFormProps) {
     const showCalendarControls =
         onDateSelectionChange !== undefined &&
@@ -58,6 +59,7 @@ export default function AiSearchForm({
                     disabled={searching}
                     onDateSelectionChange={onDateSelectionChange}
                     onTimeSelectionChange={onTimeSelectionChange}
+                    onApplyFilters={onApplyFilters}
                 />
             )}
         </form>

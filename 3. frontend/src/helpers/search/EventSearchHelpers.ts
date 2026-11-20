@@ -154,6 +154,39 @@ export async function handleNaturalLanguageSearch(
     await executeNaturalLanguageSearch(dependencies);
 }
 
+export async function handleApplyCalendarFilters(
+    dependencies: NaturalLanguageSearchHandlerDependencies,
+) {
+    const hasSelectedDate =
+        dependencies.dateSelection?.state === "selected" &&
+        Boolean(
+            dependencies.dateSelection.value.startDate ||
+            dependencies.dateSelection.value.endDate,
+        );
+
+    const hasSelectedTime =
+        dependencies.timeSelection?.state === "selected" &&
+        Boolean(
+            dependencies.timeSelection.value.timeOfDay?.length ||
+            dependencies.timeSelection.value.timeRange?.startTime ||
+            dependencies.timeSelection.value.timeRange?.endTime,
+        );
+
+    if (!hasSelectedDate && !hasSelectedTime) {
+        dependencies.setSearchError("Select at least one date or time filter.");
+        return;
+    }
+
+    dependencies.setClarificationConflicts(null);
+
+    // Deliberately suppress any AI prompt currently in the text box.
+    // This guarantees that applying filters never invokes Gemini.
+    await executeNaturalLanguageSearch({
+        ...dependencies,
+        query: "",
+    });
+}
+
 export async function handleResolveNaturalLanguageSearch(
     dependencies: NaturalLanguageSearchResolutionDependencies,
 ) {

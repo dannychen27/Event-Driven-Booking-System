@@ -14,6 +14,7 @@ import "../styles/errors/status-message.css";
 import "../styles/errors/empty-state-message.css";
 import { getErrorMessage } from "../helpers/shared/Errors.ts";
 import {
+    handleApplyCalendarFilters,
     handleClearSearch,
     handleNaturalLanguageSearch,
     handleResolveNaturalLanguageSearch,
@@ -192,6 +193,19 @@ export default function EventsPage() {
                         setDateSelection,
                         setTimeSelection,
                     }).then(clearClarification)
+                }
+                onApplyFilters={() =>
+                    void handleApplyCalendarFilters({
+                        query: naturalLanguageQuery,
+                        dateSelection,
+                        timeSelection,
+                        searchRequestId,
+                        setEvents,
+                        setSearching,
+                        setSearchError,
+                        setIsSearchActive,
+                        setClarificationConflicts: updateClarificationConflicts,
+                    })
                 }
             />
 
