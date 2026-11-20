@@ -26,6 +26,24 @@ describe("GeminiSearchInterpreter errors", () => {
             .toThrow("Gemini returned invalid JSON");
     });
 
+    it('should reject Gemini output with reversed date boundaries', async () => {
+        const generateContent = jest.fn().mockResolvedValue({
+            text: JSON.stringify({
+                startAfter: '2027-01-01T00:00:00-05:00',
+                startBefore: '2026-12-01T00:00:00-05:00',
+            }),
+        });
+
+        const interpreter = new GeminiEventSearchInterpreter(
+            'test-api-key',
+            { models: { generateContent } } as never,
+        );
+
+        await expect(
+            interpreter.interpret('Find technology meetups in December'),
+        ).rejects.toThrow(/invalid search plan/i);
+    });
+
     it("should propagate Gemini API failures", async () => {
         const generateContent = jest.fn().mockRejectedValue(
             new Error("Gemini unavailable"),

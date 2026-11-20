@@ -1,10 +1,14 @@
-import { ServiceUnavailableException } from '@nestjs/common';
+import {
+    ServiceUnavailableException,
+    BadGatewayException,
+} from '@nestjs/common';
 
 import { NATURAL_LANGUAGE_SEARCH_CANDIDATES_FIXTURE } from "../fixtures/shared/sharedTestFixtures";
 import { EventsService } from '../../../4. backend/src/events/events.service';
 import { GeminiEventRanker } from '../../../4. backend/src/events/search/gemini-event-ranker';
 import { GeminiEventSearchInterpreter } from '../../../4. backend/src/events/search/gemini-event-search-interpreter';
 import { NaturalLanguageSearchService } from '../../../4. backend/src/search/natural-language-search.service';
+import { InvalidGeminiSearchPlanError } from "../../../4. backend/src/events/search/InvalidGeminiSearchPlanError";
 
 
 describe("NaturalLanguageSearchService", () => {
@@ -95,6 +99,21 @@ describe("NaturalLanguageSearchService", () => {
 
         await expect(service.searchNaturalLanguage({ query: 'Find coffee events' }))
             .rejects.toThrow(ServiceUnavailableException);
+
+        expect(eventsService.searchEventCandidates).not.toHaveBeenCalled();
+        expect(ranker.rank).not.toHaveBeenCalled();
+    });
+
+    it('maps invalid Gemini search plans to BadGatewayException', async () => {
+        interpreter.interpret.mockRejectedValueOnce(
+            new InvalidGeminiSearchPlanError('Gemini returned an invalid search plan'),
+        );
+
+        await expect(
+            service.searchNaturalLanguage({
+                query: 'Find technology meetups in December',
+            }),
+        ).rejects.toThrow(BadGatewayException);
 
         expect(eventsService.searchEventCandidates).not.toHaveBeenCalled();
         expect(ranker.rank).not.toHaveBeenCalled();

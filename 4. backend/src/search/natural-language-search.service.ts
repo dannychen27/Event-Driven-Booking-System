@@ -1,4 +1,8 @@
-import { Injectable, ServiceUnavailableException } from '@nestjs/common';
+import {
+  Injectable,
+  ServiceUnavailableException,
+  BadGatewayException
+} from '@nestjs/common';
 import { EventsService } from '../events/events.service';
 
 import { SearchFilters, NaturalLanguageSearchPlan } from '../types/search/natural-language-search.types';
@@ -14,6 +18,8 @@ import { reconcileTimeFilter } from './natural-language-search-time-reconciler';
 import { resolveRelativeDateRange } from './relative-date-range.resolver';
 import { GeminiEventSearchInterpreter } from '../events/search/gemini-event-search-interpreter';
 import { GeminiEventRanker } from '../events/search/gemini-event-ranker';
+import { InvalidGeminiSearchPlanError } from '../events/search/InvalidGeminiSearchPlanError';
+
 
 @Injectable()
 export class NaturalLanguageSearchService {
@@ -118,6 +124,12 @@ export class NaturalLanguageSearchService {
         appliedFilters,
       };
     } catch (error: unknown) {
+      if (error instanceof InvalidGeminiSearchPlanError) {
+        throw new BadGatewayException(
+            'I couldn’t interpret that search correctly. Please try rephrasing your request.',
+        );
+      }
+
       if (error instanceof Error && error.name === 'AbortError') {
         throw new ServiceUnavailableException(
           'AI search is temporarily unavailable. Please try again later.',

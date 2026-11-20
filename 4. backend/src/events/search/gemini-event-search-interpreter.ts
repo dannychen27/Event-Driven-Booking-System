@@ -63,6 +63,11 @@ export class GeminiEventSearchInterpreter {
         'Use NEXT_BUSINESS_DAY or PREVIOUS_BUSINESS_DAY for the next or previous business day.',
         'Use BUSINESS_DAYS_FROM_NOW or BUSINESS_DAYS_AGO for business-day offsets.',
         'For explicit absolute dates or date ranges, use startAfter and startBefore as ISO 8601 date strings.',
+        'For a request naming a month without specific days, interpret it as the entire calendar month.',
+        'Use the first day of that month as startAfter and the first day of the following month as startBefore (exclusive).',
+        'For example, with current date 2026-11-20, "in December" means startAfter: "2026-12-01T00:00:00-05:00" and startBefore: "2027-01-01T00:00:00-05:00".',
+        'Choose the next occurrence of a named month: use the current year if the month has not passed yet, otherwise use the following year.',
+        'Interpret month boundaries as midnight in the America/Toronto timezone, using the correct UTC offset for each boundary.',
         'Do not use relativeDate for explicit absolute dates.',
         'Interpret relative dates using the current date and timezone below.',
 
