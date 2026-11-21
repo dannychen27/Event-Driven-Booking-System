@@ -287,7 +287,7 @@ core booking workflow less tightly coupled.
 | Frontend | React, TypeScript, Vite |
 | Backend | NestJS, TypeScript |
 | Database | PostgreSQL |
-| Database Tooling | Prisma, node-postgres |
+| Database Tooling | node-postgres (`pg`), SQL |
 | Testing | Vitest, Jest, Supertest, Testing Library |
 
 ### Planned
@@ -421,13 +421,12 @@ Aggregate figures include test-support files and other files included by each co
 
 Before running the project, the following software is required:
 
-- **Node.js 20.19.0 or later**: required by Prisma 7 and Vite 8.
+- **Node.js 20.19.0 or later**: required by the frontend build tooling.
 - **npm**: used to install dependencies and run the project scripts.
 - **PostgreSQL**: used as the application's relational database.
 - **Git**: used to clone the repository and manage the project source code.
 
 I recommend using an active LTS version of Node.js, such as Node.js 22.x.
-Prisma currently recommends Node.js 22.x for Prisma 7.
 
 ### 1. Install Dependencies
 
@@ -651,7 +650,6 @@ Event-Driven Booking System/
 │       └── time-of-day.ts          # Shared time-of-day types, intervals, and utilities
 ├── for the resume/                 # Resume-related project materials
 ├── instructions/                   # Project instructions
-├── prisma/                         # Prisma-related project files
 ├── scheduling/                     # Scheduling-related project materials
 ├── scripts/                        # Verification and development scripts
 │   └── verify-logs.sh              # Validates test, lint, build, and coverage logs
@@ -659,7 +657,6 @@ Event-Driven Booking System/
 ├── .env.example                    # Example environment configuration
 ├── package.json                    # Root project scripts and dependencies
 ├── package-lock.json               # Root npm dependency lockfile
-├── prisma.config.ts                # Prisma configuration
 ├── skills-lock.json                # Skills dependency lockfile
 ├── tsconfig.json                   # Root TypeScript configuration
 ├── tsconfig.test.json              # TypeScript configuration for tests
@@ -679,10 +676,10 @@ and utilities to keep time-filtering behavior consistent across both application
 
 ### Dependency Audit
 
-- The backend dependency audit reports **20 vulnerabilities: 3 high and 17 moderate**.
-- The production-only backend audit reports **3 high-severity vulnerabilities**, involving `body-parser` and `multer`.
-- The remaining findings primarily affect development tooling, including Jest, NestJS CLI, and TypeScript ESLint dependencies.
-- Some vulnerabilities have non-breaking fixes available through `npm audit fix`. Resolving all findings may require breaking dependency upgrades, so remediation requires compatibility testing.
+- The root dependency tree reports **0 vulnerabilities**.
+- The frontend dependency audit reports **11 vulnerabilities: 9 moderate and 2 high**, all affecting development dependencies. Its production-only audit reports **0 vulnerabilities**.
+- The backend dependency audit reports **20 vulnerabilities: 17 moderate and 3 high**. The production-only audit reports **3 high-severity vulnerabilities**, involving `body-parser` and `multer`.
+- Some findings have non-breaking fixes available through `npm audit fix`. Resolving all findings may require breaking dependency upgrades, so remediation requires compatibility testing.
 
 ## Project Roadmap
 

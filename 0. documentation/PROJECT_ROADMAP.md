@@ -154,21 +154,20 @@ Security principle: Prompt instructions are not a security boundary. Backend val
 
 ## 5. Deferred Repository Cleanup
 
-### Prisma Scaffolding Audit
+### Prisma Scaffolding Cleanup
 
-Status: Deferred; not required for reliability.
+Status: Completed.
 
-Original finding:
-- No application code currently uses Prisma.
-- No Prisma migration files were identified.
-- Prisma appears to be unused scaffolding.
+Findings:
+- No application code or developer workflows depended on Prisma.
+- No Prisma migrations or generated client artifacts were present.
+- Database access is implemented using PostgreSQL `pg` and direct SQL.
 
-Possible future actions:
-- [ ] Inspect Prisma dependencies, configuration, generated files, and the `prisma/` directory.
-- [ ] Determine whether any scripts or developer workflows depend on Prisma.
-- [ ] Decide whether to remove unused scaffolding and dependencies.
-
-Do not remove Prisma as part of reliability work without first checking for hidden dependencies.
+Completed actions:
+- [x] Remove `prisma` and `@prisma/client` dependencies.
+- [x] Delete `prisma.config.ts` and the `prisma/` directory.
+- [x] Remove the obsolete local `DATABASE_URL` configuration.
+- [x] Remove Prisma references from the README project structure.
 
 ### General Repository Polish
 
@@ -204,12 +203,14 @@ Decision: No change required.
 - `.env` is ignored by Git.
 - Keep secrets out of source control and example configuration files.
 
-### Prisma
+### Database Access
 
-Decision: Deferred.
+Decision: Use PostgreSQL through `pg` and direct SQL.
 
-- Its apparent lack of use is not a reliability defect.
-- Removal is optional repository cleanup, not a Phase 5 requirement.
+- Database access is implemented using the `pg` connection pool and parameterized SQL queries.
+- Database transactions and row-level locking enforce booking consistency.
+- Prisma ORM is not used.
+- Avoid introducing an ORM without a concrete architectural need.
 
 ### Scope Management
 
