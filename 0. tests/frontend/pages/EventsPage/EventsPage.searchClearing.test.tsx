@@ -7,6 +7,7 @@ import {
     searchEvents,
     searchEventsNaturalLanguage
 } from "../../../../3. frontend/src/api/events";
+import { getBookingHistory } from "../../../../3. frontend/src/api/bookings";
 import type { Event } from "../../../../3. frontend/src/types/events/Event";
 import {
     initialEventFixture,
@@ -20,6 +21,10 @@ vi.mock("../../../../3. frontend/src/api/events", () => ({
     searchEventsNaturalLanguage: vi.fn(),
 }));
 
+vi.mock("../../../../3. frontend/src/api/bookings", () => ({
+    getBookingHistory: vi.fn(),
+}));
+
 vi.mock("../../../../3. frontend/src/components/cards/EventCard.tsx", () => ({
     default: ({ event }: { event: Event }) => (
         <div>Mock Event Card: {event.name}</div>
@@ -28,6 +33,7 @@ vi.mock("../../../../3. frontend/src/components/cards/EventCard.tsx", () => ({
 
 beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(getBookingHistory).mockResolvedValue([]);
 });
 
 describe("Clearing search", () => {

@@ -2,6 +2,7 @@ import { fireEvent, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { searchEventsNaturalLanguage } from "../../../../3. frontend/src/api/events";
+import { getBookingHistory } from "../../../../3. frontend/src/api/bookings";
 import type { Event } from "../../../../3. frontend/src/types/events/Event";
 import type { NaturalLanguageSearchResponse } from "../../../../3. frontend/src/types/search/NaturalLanguageSearch.types";
 import { naturalLanguageSearchResultFixture } from "../../fixtures/events/eventFixtures";
@@ -11,6 +12,10 @@ vi.mock("../../../../3. frontend/src/api/events", () => ({
     getEvents: vi.fn(),
     searchEvents: vi.fn(),
     searchEventsNaturalLanguage: vi.fn(),
+}));
+
+vi.mock("../../../../3. frontend/src/api/bookings", () => ({
+    getBookingHistory: vi.fn(),
 }));
 
 vi.mock("../../../../3. frontend/src/components/cards/EventCard.tsx", () => ({
@@ -29,6 +34,7 @@ const successfulResponse = (
 
 beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(getBookingHistory).mockResolvedValue([]);
 });
 
 describe("Natural-language search", () => {

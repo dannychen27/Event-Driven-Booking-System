@@ -1,4 +1,5 @@
 import type { Event } from "../../types/events/Event.ts";
+import type { BookingHistoryStatus } from "../../types/events/EventCard.types.ts";
 import EventCard from "../../components/cards/EventCard.tsx";
 
 export function displayNoEvents(isSearchActive: boolean) {
@@ -11,8 +12,19 @@ export function displayNoEvents(isSearchActive: boolean) {
     );
 }
 
-export function displayAllEvents(events: Event[]) {
+export function displayAllEvents(
+    events: Event[],
+    bookedEventIds: Set<number>,
+    bookingHistoryStatus: BookingHistoryStatus,
+    onBookingCreated: (eventId: number) => void,
+) {
     return events.map((event) => (
-        <EventCard key={event.id} event={event}/>
+        <EventCard
+            key={event.id}
+            event={event}
+            isBooked={bookedEventIds.has(event.id)}
+            bookingHistoryStatus={bookingHistoryStatus}
+            onBookingCreated={onBookingCreated}
+        />
     ));
 }

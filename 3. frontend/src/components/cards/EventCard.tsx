@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
-import type { EventCardProps } from "../../types/events/EventCard.types.ts";
-import { createBooking, getBookingHistory } from "../../api/bookings.ts";
+import { useState } from "react";
+import type {BookingHistoryStatus, EventCardProps} from "../../types/events/EventCard.types.ts";
+import type { EventBookingStatus } from "../../types/events/EventCard.types.ts";
+import { createBooking } from "../../api/bookings.ts";
 import "../../styles/shared/card.css";
 import "../../styles/events/event-card.css";
 import "../../styles/shared/card-buttons.css";
@@ -9,7 +10,6 @@ import "../../styles/errors/success-message.css";
 import "../../styles/errors/status-message.css";
 import { InfoLabel } from "../ui/labels/InfoLabel.tsx";
 import { DateLabel } from "../ui/labels/DateLabel.tsx";
-import type { EventBookingStatus } from "../../types/events/EventCard.types.ts";
 import { BOOKING_USER_ID } from "../../constants/bookings/booking.ts";
 import Button from "../ui/buttons/Button";
 import { EventImage } from "../ui/EventImage.tsx";
@@ -17,57 +17,42 @@ import { Modal } from "../modals/Modal.tsx";
 import BookingForm from "../forms/BookingForm.tsx";
 import { getErrorMessage } from "../../helpers/shared/Errors.ts";
 
+function getIsBooked(isBooked: boolean, bookingHistoryStatus: BookingHistoryStatus) {
+    return isBooked
+        ? "Already booked"
+        : bookingHistoryStatus === "loading"
+            ? "Checking booking status..."
+            : bookingHistoryStatus === "error"
+                ? "Booking status unavailable"
+                : "Create Booking";
+}
 
-export default function EventCard({ event }: EventCardProps) {
-    const [bookingStatus, setBookingStatus] = useState<EventBookingStatus>("idle");
+export default function EventCard({
+    event,
+    isBooked,
+    bookingHistoryStatus,
+    onBookingCreated,
+}: EventCardProps) {
+    const [bookingStatus, setBookingStatus] =
+        useState<EventBookingStatus>("idle");
     const [bookingMessage, setBookingMessage] = useState("");
     const [showBookingForm, setShowBookingForm] = useState(false);
-    const [alreadyBooked, setAlreadyBooked] = useState(false);
-    const [isCheckingBooking, setIsCheckingBooking] = useState(false);
 
-    // Prevent duplicate history requests before React updates the disabled state.
-    const bookingCheckInProgress = useRef(false);
+    // Hardcoded user for now. Replace when user accounts are implemented.
+    const user_id = BOOKING_USER_ID;
 
-    // hardcoded constants for now...
-    const user_id = BOOKING_USER_ID;  // hardcoded for now...
-    // TODO: when we create accounts, we can load that specific user's
-    // TODO: bookings (using their own user_id instead of a hardcoded one).
-
-    async function handleOpenBookingForm() {
+    function handleOpenBookingForm() {
         if (
-            bookingCheckInProgress.current ||
-            alreadyBooked ||
+            bookingHistoryStatus !== "ready" ||
+            isBooked ||
             bookingStatus === "creating"
         ) {
             return;
         }
 
-        bookingCheckInProgress.current = true;
-        setIsCheckingBooking(true);
         setBookingStatus("idle");
         setBookingMessage("");
-
-        try {
-            const bookings = await getBookingHistory(user_id);
-            const userHasBooking = bookings.some(
-                booking => booking.event_id === event.id
-            );
-
-            if (userHasBooking) {
-                setAlreadyBooked(true);
-                return;
-            } else {
-                setShowBookingForm(true);
-            }
-        } catch (error) {
-            setBookingMessage(
-                getErrorMessage(error, "Failed to fetch booking history.")
-            );
-            setBookingStatus("error");
-        } finally {
-            bookingCheckInProgress.current = false;
-            setIsCheckingBooking(false);
-        }
+        setShowBookingForm(true);
     }
 
     async function handleCreateBooking() {
@@ -76,17 +61,25 @@ export default function EventCard({ event }: EventCardProps) {
 
         try {
             await createBooking(user_id, event.id);
+
             setBookingStatus("success");
             setBookingMessage("Booking created successfully.");
+
+            onBookingCreated(event.id);
+            setShowBookingForm(false);
+
             return true;
         } catch (error) {
             setBookingMessage(
                 getErrorMessage(error, "Failed to create booking.")
             );
             setBookingStatus("error");
+
             return false;
         }
     }
+
+    const bookingButtonLabel = getIsBooked(isBooked, bookingHistoryStatus);
 
     return (
         <div className="card event-card">
@@ -108,22 +101,20 @@ export default function EventCard({ event }: EventCardProps) {
             />
 
             <InfoLabel label="Capacity" value={event.capacity} />
+
             <Button
                 variant="success"
                 onClick={handleOpenBookingForm}
                 disabled={
-                    isCheckingBooking ||
-                    bookingStatus === "creating" ||
-                    alreadyBooked
+                    bookingHistoryStatus !== "ready" ||
+                    isBooked ||
+                    bookingStatus === "creating"
                 }
             >
-                {alreadyBooked
-                    ? "Already booked"
-                    : isCheckingBooking
-                        ? "Checking booking..."
-                        : "Create Booking"}
+                {bookingButtonLabel}
             </Button>
-            {alreadyBooked && (
+
+            {isBooked && (
                 <p className="status-message" role="status">
                     You already booked this event.
                 </p>
@@ -135,21 +126,19 @@ export default function EventCard({ event }: EventCardProps) {
                         <BookingForm
                             onCancel={() => setShowBookingForm(false)}
                             onBookingCreated={async () => {
-                                const bookingSuccessful = await handleCreateBooking();
-                                if (bookingSuccessful) {
-                                    setAlreadyBooked(true);
-                                    setShowBookingForm(false);
-                                }
+                                await handleCreateBooking();
                             }}
                         />
                     }
                 />
             )}
+
             {bookingStatus === "creating" && (
                 <p className="status-message" role="status">
                     {bookingMessage}
                 </p>
             )}
+
             {bookingStatus === "success" && (
                 <p className="success-message" role="status">
                     {bookingMessage}

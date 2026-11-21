@@ -9,10 +9,16 @@ import type { Event } from "../../../../3. frontend/src/types/events/Event";
 import type { NaturalLanguageSearchResponse } from "../../../../3. frontend/src/types/search/NaturalLanguageSearch.types";
 import { renderEventsPageWithNoInitialEvents } from "../../helpers/EventsPageTestHelpers";
 
+import { getBookingHistory } from "../../../../3. frontend/src/api/bookings";
+
 vi.mock("../../../../3. frontend/src/api/events", () => ({
     getEvents: vi.fn(),
     searchEvents: vi.fn(),
     searchEventsNaturalLanguage: vi.fn(),
+}));
+
+vi.mock("../../../../3. frontend/src/api/bookings", () => ({
+    getBookingHistory: vi.fn(),
 }));
 
 vi.mock("../../../../3. frontend/src/components/cards/EventCard.tsx", () => ({
@@ -31,6 +37,7 @@ const successfulResponse = (
 
 beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(getBookingHistory).mockResolvedValue([]);
 });
 
 describe("Calendar filtering", () => {

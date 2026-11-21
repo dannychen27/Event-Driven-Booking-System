@@ -6,7 +6,22 @@
     "jsx": "react-jsx",
     "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "react": [
+        "../3. frontend/node_modules/react"
+      ],
+      "react/*": [
+        "../3. frontend/node_modules/react/*"
+      ],
+      "react-dom": [
+        "../3. frontend/node_modules/react-dom"
+      ],
+      "react-dom/*": [
+        "../3. frontend/node_modules/react-dom/*"
+      ]
+    }
   },
   "include": [
     "**/*.ts",
