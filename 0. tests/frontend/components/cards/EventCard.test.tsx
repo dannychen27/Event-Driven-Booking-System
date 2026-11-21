@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -261,6 +261,106 @@ describe("EventCard", () => {
                 name: "Mock Booking Form",
             }),
         ).not.toBeInTheDocument();
+    });
+
+    it("shows a disabled checking state while booking history loads", async () => {
+        let resolveHistory!: (bookings: never[]) => void;
+
+        const historyRequest = new Promise<never[]>((resolve) => {
+            resolveHistory = resolve;
+        });
+
+        vi.mocked(getBookingHistory).mockReturnValue(historyRequest);
+
+        const user = userEvent.setup();
+
+        render(<EventCard event={eventCardFixture} />);
+
+        const createButton = screen.getByRole("button", {
+            name: "Create Booking",
+        });
+
+        await user.click(createButton);
+
+        const checkingButton = screen.getByRole("button", {
+            name: "Checking booking...",
+        });
+
+        expect(checkingButton).toBeDisabled();
+
+        // A second click must not trigger another history request.
+        await user.click(checkingButton);
+
+        expect(getBookingHistory).toHaveBeenCalledOnce();
+
+        resolveHistory([]);
+
+        expect(
+            await screen.findByRole("button", {
+                name: "Mock Booking Form",
+            }),
+        ).toBeInTheDocument();
+
+        await waitFor(() => {
+            expect(getBookingHistory).toHaveBeenCalledOnce();
+        });
+    });
+
+    it("disables the booking button when the user has already booked the event", async () => {
+        vi.mocked(getBookingHistory).mockResolvedValue([
+            existingBookingFixture,
+        ]);
+
+        const user = userEvent.setup();
+
+        render(<EventCard event={eventCardFixture} />);
+
+        await user.click(
+            screen.getByRole("button", {
+                name: "Create Booking",
+            }),
+        );
+
+        expect(
+            await screen.findByRole("button", {
+                name: "Already booked",
+            }),
+        ).toBeDisabled();
+
+        expect(
+            screen.getByText("You already booked this event."),
+        ).toBeInTheDocument();
+    });
+
+    it("changes the booking button after successful booking creation", async () => {
+        vi.mocked(getBookingHistory).mockResolvedValue([]);
+        vi.mocked(createBooking).mockResolvedValue(undefined);
+
+        const user = userEvent.setup();
+
+        render(<EventCard event={eventCardFixture} />);
+
+        await user.click(
+            screen.getByRole("button", {
+                name: "Create Booking",
+            }),
+        );
+
+        await user.click(
+            await screen.findByRole("button", {
+                name: "Mock Booking Form",
+            }),
+        );
+
+        expect(
+            await screen.findByRole("button", {
+                name: "Already booked",
+            }),
+        ).toBeDisabled();
+
+        expect(
+            screen.getByText("Booking created successfully."),
+        ).toBeInTheDocument();
     });
 });
 
