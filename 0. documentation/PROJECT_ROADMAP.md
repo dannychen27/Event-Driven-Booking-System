@@ -17,6 +17,60 @@ Update it when significant work is completed, merged, approved, or deliberately 
 - [x] Whitespace validation passed.
 - [x] Documentation changes committed.
 
+### Immediate Booking Status on Event Cards
+
+#### Booking Status Behavior
+
+- [x] Fetch booking history once when loading the Events page.
+- [x] Maintain existing booking status across event cards without individual API requests.
+- [x] Immediately reflect successful bookings in the Events page.
+- [x] Disable booking when booking history cannot be reliably retrieved.
+- [x] Preserve backend duplicate-booking protection.
+- [x] Add frontend regression tests for immediate booking status.
+
+#### EventCard Presentation
+
+- [x] Replace the disabled "Already booked" button with a green booking-status badge.
+- [x] Display the confirmation message: "You've already booked this event."
+- [x] Improve the badge and confirmation styling in light mode.
+- [x] Add consistent green styling and contrast in dark mode.
+- [x] Add regression assertions for the booked-state presentation.
+- [x] Verify the appearance manually:
+    - [x] Light mode: badge and confirmation message are clearly visible.
+    - [x] Light mode: badge and event title do not overlap.
+    - [x] Dark mode: badge has a darker green background and readable text.
+    - [x] Dark mode: confirmation message and checkmark have sufficient contrast.
+    - [x] Both themes: normal booking state remains visually correct.
+    - [x] Verify loading and error booking states through existing automated tests.
+
+#### Network and API Verification
+
+- [x] Open Chrome DevTools Network tab and reload the Events page.
+- [x] Verify the events API request succeeds.
+- [x] Verify the booking-history API request succeeds.
+- [x] Inspect the events response and confirm Event ID 1 is present.
+- [x] Inspect the booking-history response and confirm Event ID 1 is recorded as booked.
+- [x] Confirm no other events are rendered in the Events page.
+- [x] Confirm booking history is fetched at the page level rather than once per event card (accounting for React Strict Mode in development).
+- [x] Confirm no unnecessary per-event booking-status requests are made.
+
+#### Optional Manual QA
+
+- [ ] Verify the loading state using network throttling.
+- [ ] Verify the booking-history error state and retry request.
+
+#### Follow-up: API-Unavailable State Verification
+
+- [ ] Simulate API unavailability (e.g., temporarily stop the backend).
+- [ ] Observe and verify the loading-to-error transition on the Events page.
+- [ ] Verify the booking-history failure message is displayed correctly.
+- [ ] Verify the retry behavior after the API becomes available again.
+- [ ] Confirm the Events page recovers successfully after restoring the backend.
+
+**Scope:** Handle this verification in a separate follow-up commit.
+Do not include API-unavailable testing or related changes in the
+booking-status visual-polish commit.
+
 ## Phase 5 — Reliability Audit
 
 - [x] Database safety and explicit database-name validation.
@@ -171,12 +225,43 @@ Completed actions:
 
 ### General Repository Polish
 
-Status: No additional approved tasks currently recorded.
+#### CSS Maintainability and Cascade Cleanup
+
+Status: Not started.
+
+- [ ] Audit existing CSS usage of `!important`.
+- [ ] Identify declarations that unnecessarily override the normal CSS cascade.
+- [ ] Replace unnecessary uses with appropriately scoped selectors, component styles, or theme-specific rules.
+- [ ] Retain `!important` only where there is a documented justification, such as overriding third-party styles.
+- [ ] Establish consistent conventions for CSS specificity and dark-mode overrides.
+- [ ] Verify that visual behavior remains unchanged after cleanup.
 
 Only add concrete, justified cleanup tasks here.
 Avoid using this section as an open-ended invitation to refactor working code.
 
 ## 6. Future Ideas
+
+### Sticky Navigation Bar
+
+Improve navigation accessibility while scrolling through longer pages.
+
+- [ ] Make the navbar stick to the top of the viewport when scrolling.
+- [ ] Ensure the navbar remains above page content without obscuring it.
+- [ ] Preserve the existing navbar appearance in light and dark modes.
+- [ ] Verify sticky behavior across desktop and mobile screen sizes.
+- [ ] Confirm the navbar does not interfere with page scrolling or responsive layouts.
+
+### Dedicated Loading Screen and Skeleton UI
+
+Status: Not started.
+
+- [ ] Design a dedicated loading experience for the Events page.
+- [ ] Replace the minimal initial "Loading events..." message with a more polished loading screen.
+- [ ] Consider skeleton event cards that resemble the final page layout.
+- [ ] Provide clear loading feedback while event data is being retrieved.
+- [ ] Ensure loading indicators are accessible and work in both light and dark modes.
+- [ ] Avoid unnecessary layout shifts when the actual event cards appear.
+- [ ] Verify loading, success, and error states through frontend tests.
 
 ### AI Search Analytics Dashboard
 
@@ -313,4 +398,4 @@ Tests inspected:
 
 ---
 
-Last updated: November 8, 2026
+Last updated: November 21, 2026

@@ -72,16 +72,13 @@ describe("EventCard", () => {
             />,
         );
 
-        expect(
-            screen.getByRole("button", { name: "Already booked" }),
-        ).toBeDisabled();
-
-        expect(
-            screen.getByText("You already booked this event."),
-        ).toBeInTheDocument();
+        expect(screen.getByText("Already booked")).toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: "Already booked" }) ).not.toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: "Create Booking" }) ).not.toBeInTheDocument();
+        expect(screen.getByText("You've already booked this event.")).toBeInTheDocument();
     });
 
-    it("disables booking while booking history is loading", () => {
+    it("shows a clock status message instead of a booking button while booking history is loading", () => {
         render(
             <EventCard
                 {...defaultProps}
@@ -89,11 +86,56 @@ describe("EventCard", () => {
             />,
         );
 
-        expect(
-            screen.getByRole("button", {
-                name: "Checking booking status...",
-            }),
-        ).toBeDisabled();
+        const loadingStatus = screen.getByRole("status");
+
+        expect(loadingStatus).toHaveTextContent(
+            "Checking booking status...",
+        );
+
+        // The clock icon should be present.
+        expect(loadingStatus.querySelector("svg")).not.toBeNull();
+
+        // No booking button should be displayed while loading.
+        expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    });
+
+    it("transitions from loading to ready when booking history finishes loading", async () => {
+        const user = userEvent.setup();
+        const { rerender } = render(
+            <EventCard
+                {...defaultProps}
+                bookingHistoryStatus="loading"
+            />,
+        );
+
+        // Initially, show the loading status.
+        const loadingStatus = screen.getByRole("status");
+
+        expect(loadingStatus).toHaveTextContent("Checking booking status...");
+        expect(loadingStatus.querySelector("svg")).not.toBeNull();
+
+        expect(screen.queryByRole("button", { name: "Create Booking" })).not.toBeInTheDocument();
+
+        // Simulate booking history finishing successfully.
+        rerender(
+            <EventCard
+                {...defaultProps}
+                bookingHistoryStatus="ready"
+            />,
+        );
+
+        // Loading indicator disappears.
+        expect(screen.queryByText("Checking booking status...")).not.toBeInTheDocument();
+
+        // Booking button becomes available.
+        const bookingButton = screen.getByRole("button", { name: "Create Booking"} );
+
+        expect(bookingButton).toBeEnabled();
+
+        // User can open the booking form.
+        await user.click(bookingButton);
+
+        expect(screen.getByRole("button", { name: "Mock Booking Form" }) ).toBeInTheDocument();
     });
 
     it("disables booking when booking history cannot be loaded", () => {

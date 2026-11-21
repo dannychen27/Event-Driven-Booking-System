@@ -66,10 +66,12 @@ describe("EventsPage immediate booking status", () => {
 
         // The real EventCard notifies EventsPage, which updates its Set
         // and passes the new booked state back to the card.
-        expect(await screen.findByRole("button", { name: "Already booked" }) ).toBeDisabled();
+        expect(await screen.findByText("Already booked")).toBeInTheDocument();
 
-        expect(screen.getByText("You already booked this event."),).toBeInTheDocument();
-        expect(screen.getByText("Booking created successfully."),).toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: "Already booked" })).not.toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: "Create Booking" })).not.toBeInTheDocument();
+        expect(screen.getByText("You've already booked this event.")).toBeInTheDocument();
+        expect(screen.getByText("Booking created successfully.")).toBeInTheDocument();
 
         // Verify the booking API was called and history was not refetched.
         expect(createBooking).toHaveBeenCalledOnce();

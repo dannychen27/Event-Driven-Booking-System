@@ -1,6 +1,8 @@
 import { useState } from "react";
-import type {BookingHistoryStatus, EventCardProps} from "../../types/events/EventCard.types.ts";
-import type { EventBookingStatus } from "../../types/events/EventCard.types.ts";
+import type {
+    EventCardProps,
+    EventBookingStatus,
+} from "../../types/events/EventCard.types.ts";
 import { createBooking } from "../../api/bookings.ts";
 import "../../styles/shared/card.css";
 import "../../styles/events/event-card.css";
@@ -17,28 +19,17 @@ import { Modal } from "../modals/Modal.tsx";
 import BookingForm from "../forms/BookingForm.tsx";
 import { getErrorMessage } from "../../helpers/shared/Errors.ts";
 
-function getIsBooked(isBooked: boolean, bookingHistoryStatus: BookingHistoryStatus) {
-    return isBooked
-        ? "Already booked"
-        : bookingHistoryStatus === "loading"
-            ? "Checking booking status..."
-            : bookingHistoryStatus === "error"
-                ? "Booking status unavailable"
-                : "Create Booking";
-}
-
 export default function EventCard({
     event,
     isBooked,
     bookingHistoryStatus,
     onBookingCreated,
 }: EventCardProps) {
-    const [bookingStatus, setBookingStatus] =
-        useState<EventBookingStatus>("idle");
+    const [bookingStatus, setBookingStatus] = useState<EventBookingStatus>("idle");
     const [bookingMessage, setBookingMessage] = useState("");
     const [showBookingForm, setShowBookingForm] = useState(false);
 
-    // Hardcoded user for now. Replace when user accounts are implemented.
+    // TODO: Hardcoded user for now. Replace when user accounts are implemented (authentication).
     const user_id = BOOKING_USER_ID;
 
     function handleOpenBookingForm() {
@@ -71,15 +62,13 @@ export default function EventCard({
             return true;
         } catch (error) {
             setBookingMessage(
-                getErrorMessage(error, "Failed to create booking.")
+                getErrorMessage(error, "Failed to create booking."),
             );
             setBookingStatus("error");
 
             return false;
         }
     }
-
-    const bookingButtonLabel = getIsBooked(isBooked, bookingHistoryStatus);
 
     return (
         <div className="card event-card">
@@ -88,7 +77,16 @@ export default function EventCard({
                 alt={event.name}
             />
 
-            <h2>{event.name}</h2>
+            <div className="event-card-header">
+                <h2>{event.name}</h2>
+
+                {isBooked && (
+                    <span className="event-booked-badge">
+                        <span aria-hidden="true">✓</span>
+                        Already booked
+                    </span>
+                )}
+            </div>
 
             <InfoLabel label="Event Id" value={event.id} />
             <InfoLabel label="Venue" value={event.venue_name} />
@@ -102,21 +100,46 @@ export default function EventCard({
 
             <InfoLabel label="Capacity" value={event.capacity} />
 
-            <Button
-                variant="success"
-                onClick={handleOpenBookingForm}
-                disabled={
-                    bookingHistoryStatus !== "ready" ||
-                    isBooked ||
-                    bookingStatus === "creating"
-                }
-            >
-                {bookingButtonLabel}
-            </Button>
+            {!isBooked && bookingHistoryStatus === "loading" && (
+                <p className="event-booking-status" role="status">
+                    <svg
+                        aria-hidden="true"
+                        viewBox="0 0 24 24"
+                        width="18"
+                        height="18"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M12 7v5l3 2" />
+                    </svg>
+                    Checking booking status...
+                </p>
+            )}
+
+            {!isBooked && bookingHistoryStatus === "error" && (
+                <Button variant="success" disabled>
+                    Booking status unavailable
+                </Button>
+            )}
+
+            {!isBooked && bookingHistoryStatus === "ready" && (
+                <Button
+                    variant="success"
+                    onClick={handleOpenBookingForm}
+                    disabled={bookingStatus === "creating"}
+                >
+                    Create Booking
+                </Button>
+            )}
 
             {isBooked && (
-                <p className="status-message" role="status">
-                    You already booked this event.
+                <p className="event-booked-message" role="status">
+                    <span aria-hidden="true">✓</span>
+                    You've already booked this event.
                 </p>
             )}
 

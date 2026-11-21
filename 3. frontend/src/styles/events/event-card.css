@@ -7,6 +7,84 @@
     margin: 0 0 0.5rem;
 }
 
+.event-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.event-card-header h2 {
+    min-width: 0;
+}
+
+.event-booked-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-shrink: 0;
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    background: #c8e6d0;
+    color: #176b32;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.event-booking-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.event-booking-status svg {
+    flex-shrink: 0;
+}
+
+.event-booked-message {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem !important;
+    color: #218838 !important;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.event-booked-message span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 50%;
+    background: #218838;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+[data-theme="dark"] .event-booked-badge {
+    background: #234b32;
+    color: #a5e6b5;
+}
+
+[data-theme="dark"] .event-booked-message {
+    color: #a5e6b5 !important;
+}
+
+[data-theme="dark"] .event-booked-message span {
+    background: #a5e6b5;
+    color: #183d27;
+}
+
 .event-datetime {
     margin: 1rem 0;
 }
