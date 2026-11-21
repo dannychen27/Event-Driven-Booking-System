@@ -16,14 +16,15 @@ VALUES
     (3, 'Bahen Center', '40 St George St');
 
 
-INSERT INTO events (id, name, description, venue_id, start_time, end_time, capacity)
+INSERT INTO events (id, name, description, venue_id, start_time, end_time, capacity, image_url)
 VALUES
     (1, 'Meet and Greet',
      'An informal social gathering where attendees can meet new people and make connections over coffee.',
      2,
      '2026-08-08 18:00:00-04:00',
      '2026-08-08 20:00:00-04:00',
-     1),
+     1,
+     'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80'),
 
     -- a. duplicate attributes should be OK.
     (2, 'Meet and Greet',
@@ -31,7 +32,8 @@ VALUES
      2,
     '2026-08-08 18:00:00-04:00',
     '2026-08-08 20:00:00-04:00',
-    1);
+    1,
+     'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80');
 
 
 -- BOOKINGS

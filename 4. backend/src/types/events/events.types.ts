@@ -17,6 +17,7 @@ export type EventWithVenue = {
   end_time: string | Date;
   capacity: number;
   description?: string | null;
+  image_url: string | null;
 };
 
 export type EventAvailability = {

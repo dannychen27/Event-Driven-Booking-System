@@ -29,6 +29,7 @@ CREATE TABLE events (
     start_time  TIMESTAMPTZ     NOT NULL,
     end_time    TIMESTAMPTZ     NOT NULL,
     capacity    INT             NOT NULL CHECK (capacity > 0),
+    image_url   TEXT,
     CHECK (start_time < end_time)
 );
 

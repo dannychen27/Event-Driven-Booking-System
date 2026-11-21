@@ -9,6 +9,7 @@ import "../../styles/bookings/booking-card.css";
 import "../../styles/shared/card-buttons.css";
 import "../../styles/errors/error-message.css";
 import { cancelBooking } from "../../api/bookings.ts";
+import { EventImage } from "../ui/EventImage.tsx";
 import { Modal } from "../modals/Modal.tsx";
 import Button from "../ui/buttons/Button";
 import { InfoLabel } from "../ui/labels/InfoLabel.tsx";
@@ -45,32 +46,45 @@ export default function BookingCard({
 
     return (
         <div className="card booking-card">
-            <h2>{booking.event_name ?? `Event ${booking.event_id}`}</h2>
+            <div className="booking-card__layout">
+                <div className="booking-card__content">
+                    <h2>{booking.event_name ?? `Event ${booking.event_id}`}</h2>
 
-            <InfoLabel label="Booking Id" value={booking.id} />
-            <InfoLabel label="Event Id" value={booking.event_id} />
-            <InfoLabel label="User Id" value={booking.user_id} />
-            <InfoLabel
-                label="Venue"
-                value={booking.venue_name ?? "Unavailable"}
-            />
-            <DateLabel label="Starts at" dateTime={booking.start_time} />
-            <DateLabel label="Ends at" dateTime={booking.end_time} />
-            {booking.venue_address && (
-                <InfoLabel label="Address" value={booking.venue_address} />
-            )}
-            <DateLabel label="Booked at" dateTime={booking.created_at} />
+                    <InfoLabel label="Booking Id" value={booking.id} />
+                    <InfoLabel label="Event Id" value={booking.event_id} />
+                    <InfoLabel label="User Id" value={booking.user_id} />
+                    <InfoLabel
+                        label="Venue"
+                        value={booking.venue_name ?? "Unavailable"}
+                    />
+                    <DateLabel label="Starts at" dateTime={booking.start_time} />
+                    <DateLabel label="Ends at" dateTime={booking.end_time} />
+                    {booking.venue_address && (
+                        <InfoLabel label="Address" value={booking.venue_address} />
+                    )}
+                    <DateLabel label="Booked at" dateTime={booking.created_at} />
+                </div>
 
-            <Button
-                variant="danger"
-                disabled={isCancelling}
-                onClick={() => {
-                    setCancellationError("");
-                    setShowCancelModal(true);
-                }}
-            >
-                Cancel Booking
-            </Button>
+                <div className="booking-card__image">
+                    <EventImage
+                        imageUrl={booking.image_url}
+                        alt={booking.event_name ?? `Event ${booking.event_id}`}
+                    />
+                </div>
+            </div>
+
+            <div className="booking-card__actions">
+                <Button
+                    variant="danger"
+                    disabled={isCancelling}
+                    onClick={() => {
+                        setCancellationError("");
+                        setShowCancelModal(true);
+                    }}
+                >
+                    Cancel Booking
+                </Button>
+            </div>
 
             {showCancelModal && (
                 <Modal

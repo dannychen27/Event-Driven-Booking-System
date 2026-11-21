@@ -19,6 +19,7 @@ export type BookingHistoryEntry = Booking & {
   end_time: string | Date | null;
   venue_name: string | null;
   venue_address: string | null;
+  image_url: string | null;
 };
 
 export type BookingHoldId = {

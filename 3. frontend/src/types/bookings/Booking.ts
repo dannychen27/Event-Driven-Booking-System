@@ -10,4 +10,5 @@ export interface Booking {
     end_time: string | null;
     venue_name: string | null;
     venue_address: string | null;
+    image_url: string | null;
 }

@@ -49,7 +49,8 @@ INSERT INTO events (
     venue_id,
     start_time,
     end_time,
-    capacity
+    capacity,
+    image_url
 )
 SELECT
     e.name,
@@ -57,7 +58,8 @@ SELECT
     v.id,
     e.start_time::timestamptz,
     e.end_time::timestamptz,
-    e.capacity
+    e.capacity,
+    e.image_url
 FROM (
     VALUES
         (
@@ -67,7 +69,8 @@ FROM (
             '40 St George St, Toronto, ON',
             '2026-12-03 18:30:00-05:00',
             '2026-12-03 20:30:00-05:00',
-            80
+            80,
+        'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80'
         ),
         (
             'Toronto AI Builders Meetup',
@@ -76,7 +79,8 @@ FROM (
             '40 St George St, Toronto, ON',
             '2026-12-10 18:00:00-05:00',
             '2026-12-10 20:00:00-05:00',
-            60
+            60,
+            'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1200&q=80'
         ),
         (
             'Coffee, Careers & Connections',
@@ -85,7 +89,8 @@ FROM (
             '1087 Queen St W, Toronto, ON',
             '2026-12-05 10:00:00-05:00',
             '2026-12-05 12:00:00-05:00',
-            35
+            35,
+            'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80'
         ),
         (
             'Independent Film Night: Short Stories',
@@ -94,7 +99,8 @@ FROM (
             '585 Dundas St E, Toronto, ON',
             '2026-12-12 19:00:00-05:00',
             '2026-12-12 21:30:00-05:00',
-            120
+            120,
+            'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80'
         ),
         (
             'Designing Better Digital Experiences',
@@ -103,7 +109,8 @@ FROM (
             '789 Yonge St, Toronto, ON',
             '2026-12-16 18:30:00-05:00',
             '2026-12-16 20:00:00-05:00',
-            45
+            45,
+            'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80'
         ),
         (
             'Board Game Social: New Friends Edition',
@@ -112,7 +119,8 @@ FROM (
             '1087 Queen St W, Toronto, ON',
             '2026-12-19 17:00:00-05:00',
             '2026-12-19 20:00:00-05:00',
-            28
+            28,
+            'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=1200&q=80'
         ),
         (
             'Creative Writing Workshop: Finding Your Voice',
@@ -121,7 +129,8 @@ FROM (
             '789 Yonge St, Toronto, ON',
             '2027-01-09 13:00:00-05:00',
             '2027-01-09 15:00:00-05:00',
-            24
+            24,
+            'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1200&q=80'
         ),
         (
             'Community Food & Culture Market',
@@ -130,7 +139,8 @@ FROM (
             '585 Dundas St E, Toronto, ON',
             '2027-01-16 11:00:00-05:00',
             '2027-01-16 16:00:00-05:00',
-            150
+            150,
+            'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80'
         )
 ) AS e(
     name,
@@ -139,7 +149,8 @@ FROM (
     venue_address,
     start_time,
     end_time,
-    capacity
+    capacity,
+    image_url
 )
 JOIN LATERAL (
     SELECT id
@@ -156,6 +167,75 @@ WHERE NOT EXISTS (
       AND existing.name = e.name
       AND existing.start_time = e.start_time::timestamptz
 );
+
+-- Update images for showcase events that already existed.
+UPDATE events existing
+SET image_url = showcase.image_url
+    FROM (
+    VALUES
+        (
+            'Practical TypeScript: From Types to Tooling',
+            'Bahen Center',
+            '40 St George St, Toronto, ON',
+            '2026-12-03 18:30:00-05:00',
+            'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80'
+        ),
+        (
+            'Toronto AI Builders Meetup',
+            'Bahen Center',
+            '40 St George St, Toronto, ON',
+            '2026-12-10 18:00:00-05:00',
+            'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1200&q=80'
+        ),
+        (
+            'Coffee, Careers & Connections',
+            'The Great Hall',
+            '1087 Queen St W, Toronto, ON',
+            '2026-12-05 10:00:00-05:00',
+            'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80'
+        ),
+        (
+            'Independent Film Night: Short Stories',
+            'Daniels Spectrum',
+            '585 Dundas St E, Toronto, ON',
+            '2026-12-12 19:00:00-05:00',
+            'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80'
+        ),
+        (
+            'Designing Better Digital Experiences',
+            'Toronto Reference Library',
+            '789 Yonge St, Toronto, ON',
+            '2026-12-16 18:30:00-05:00',
+            'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80'
+        ),
+        (
+            'Board Game Social: New Friends Edition',
+            'The Great Hall',
+            '1087 Queen St W, Toronto, ON',
+            '2026-12-19 17:00:00-05:00',
+            'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=1200&q=80'
+        ),
+        (
+            'Creative Writing Workshop: Finding Your Voice',
+            'Toronto Reference Library',
+            '789 Yonge St, Toronto, ON',
+            '2027-01-09 13:00:00-05:00',
+            'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1200&q=80'
+        ),
+        (
+            'Community Food & Culture Market',
+            'Daniels Spectrum',
+            '585 Dundas St E, Toronto, ON',
+            '2027-01-16 11:00:00-05:00',
+            'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80'
+        )
+) AS showcase(name, venue_name, venue_address, start_time, image_url)
+JOIN venues v
+ON v.name = showcase.venue_name
+    AND v.address = showcase.venue_address
+WHERE existing.venue_id = v.id
+  AND existing.name = showcase.name
+  AND existing.start_time = showcase.start_time::timestamptz;
 
 COMMIT;
 

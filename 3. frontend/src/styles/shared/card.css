@@ -6,3 +6,40 @@
     margin-bottom: 1rem;
     border-radius: 12px;
 }
+
+.event-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.event-image-fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    margin-bottom: 1rem;
+    border: 1px solid var(--secondary-text);
+    border-radius: 8px;
+    color: var(--secondary-text);
+    background: #e5e7eb;
+    font-size: 0.85rem;
+}
+
+.event-image-fallback svg {
+    width: 2rem;
+    height: 2rem;
+    opacity: 0.65;
+}
+
+#app.dark-mode .event-image-fallback {
+    background: #292d33;
+    color: #ccc;
+    border-color: #555;
+}

@@ -12,6 +12,7 @@ import { DateLabel } from "../ui/labels/DateLabel.tsx";
 import type { EventBookingStatus } from "../../types/events/EventCard.types.ts";
 import { BOOKING_USER_ID } from "../../constants/bookings/booking.ts";
 import Button from "../ui/buttons/Button";
+import { EventImage } from "../ui/EventImage.tsx";
 import { Modal } from "../modals/Modal.tsx";
 import BookingForm from "../forms/BookingForm.tsx";
 import { getErrorMessage } from "../../helpers/shared/Errors.ts";
@@ -69,6 +70,11 @@ export default function EventCard({ event }: EventCardProps) {
 
     return (
         <div className="card event-card">
+            <EventImage
+                imageUrl={event.image_url}
+                alt={event.name}
+            />
+
             <h2>{event.name}</h2>
 
             <InfoLabel label="Event Id" value={event.id} />

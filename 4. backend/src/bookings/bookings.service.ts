@@ -538,6 +538,7 @@ export class BookingsService {
             e.name AS event_name,
             e.start_time,
             e.end_time,
+            e.image_url,
             v.name AS venue_name,
             v.address AS venue_address
           FROM bookings b
