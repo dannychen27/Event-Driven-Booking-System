@@ -11,7 +11,7 @@ function App() {
   const [darkMode, setDarkMode] = useState(false);
 
   return (
-    <div id="app" className={darkMode ? "dark-mode" : ""}>
+    <div id="app" data-theme={darkMode ? "dark" : "light"}>
       <NavigationBar
         darkMode={darkMode}
         onToggleDarkMode={() => setDarkMode(!darkMode)}

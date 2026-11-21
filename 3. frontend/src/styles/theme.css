@@ -20,7 +20,7 @@ body {
     color: var(--text);
 }
 
-#app.dark-mode {
+#app[data-theme="dark"] {
     --background: #222;
     --surface: #333;
     --text: #fff;
@@ -34,11 +34,11 @@ h3 {
     color: var(--text);
 }
 
-.dark-mode .card {
+#app[data-theme="dark"] .card {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 
-.dark-mode .modal-content {
+#app[data-theme="dark"] .modal-content {
     border-color: transparent;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.55);
 }
