@@ -1,0 +1,132 @@
+.error-state {
+    --error-state-accent: #4776c7;
+    --error-state-background: #f4f7fc;
+    --error-state-border: #dce5f3;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+    padding: 2.5rem 1.5rem;
+    margin: 1.5rem auto;
+    border: 1px solid var(--error-state-border);
+    border-radius: 12px;
+    background: var(--error-state-background);
+    text-align: center;
+}
+
+.error-state--page {
+    flex: 1;
+    min-height: 0;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+}
+
+.error-state--playful {
+    --error-state-accent: #4776c7;
+    --error-state-background: #f4f7fc;
+    --error-state-border: #dce5f3;
+}
+
+.error-state--professional {
+    --error-state-accent: #64748b;
+    --error-state-background: var(--surface);
+    --error-state-border: var(--border);
+}
+
+.error-state__illustration {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 160px;
+    height: 120px;
+    color: var(--error-state-accent);
+}
+
+.error-state__svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.error-state__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 480px;
+}
+
+.error-state__title {
+    margin: 0;
+    color: var(--text);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.error-state__description {
+    white-space: pre-line;
+    margin: 0;
+    color: var(--secondary-text);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.error-state__actions {
+    margin-top: 0.75rem;
+}
+
+.error-state--compact {
+    gap: 0.5rem;
+    padding: 1rem;
+    margin: 0.75rem 0;
+}
+
+.error-state--compact .error-state__illustration {
+    width: 90px;
+    height: 68px;
+}
+
+.error-state--compact .error-state__title {
+    font-size: 1.05rem;
+}
+
+.error-state--compact .error-state__description {
+    font-size: 0.9rem;
+}
+
+.error-state--compact .error-state__actions {
+    margin-top: 0.25rem;
+}
+
+#app[data-theme="dark"] .error-state--playful {
+    --error-state-accent: #91b8f5;
+    --error-state-background: #2d3748;
+    --error-state-border: #46566f;
+}
+
+#app[data-theme="dark"] .error-state--professional {
+    --error-state-accent: #a6b5ca;
+}
+
+@media (max-width: 480px) {
+    .error-state {
+        padding: 2rem 1rem;
+    }
+
+    .error-state__illustration {
+        width: 130px;
+        height: 100px;
+    }
+
+    .error-state__title {
+        font-size: 1.1rem;
+    }
+
+    .error-state--compact {
+        padding: 1rem 0.75rem;
+    }
+}

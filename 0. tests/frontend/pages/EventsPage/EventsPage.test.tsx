@@ -115,19 +115,77 @@ describe("Initial loading and rendering", () => {
 
         expect(screen.queryByText("Loading events...")).not.toBeInTheDocument();
     });
+});
 
-    it("shows an error when fetching events fails", async () => {
+describe("Events API failure and recovery", () => {
+    it("shows a full-page error state when fetching events fails", async () => {
         vi.mocked(getEvents).mockRejectedValue(
-            new Error("Failed to load events"),
+            new Error("Internal network error"),
         );
 
         render(<EventsPage />);
 
         expect(
-            await screen.findByText("Failed to load events"),
+            await screen.findByRole("heading", {
+                name: "Couldn't load events",
+            }),
         ).toBeInTheDocument();
 
+        expect(
+            screen.getByText(
+                "We couldn't connect to the events service. Check your connection and try again.",
+            ),
+        ).toBeInTheDocument();
+
+        expect(
+            screen.getByRole("button", {
+                name: "Retry loading events",
+            }),
+        ).toBeInTheDocument();
+
+        expect(screen.queryByText("Internal network error")).not.toBeInTheDocument();
         expect(screen.queryByText("Loading events...")).not.toBeInTheDocument();
+    });
+
+    it("retries the events request and restores the events after success", async () => {
+        vi.mocked(getEvents)
+            .mockRejectedValueOnce(new Error("Network unavailable"))
+            .mockResolvedValueOnce(initialRenderEventFixture);
+
+        const user = userEvent.setup();
+
+        render(<EventsPage />);
+
+        expect(await screen.findByRole("heading", { name: "Couldn't load events" }) ).toBeInTheDocument();
+
+        await user.click(screen.getByRole("button", { name: "Retry loading events" }) );
+
+        expect(await screen.findByText("Mock Event Card: Test Event 1")).toBeInTheDocument();
+        expect(screen.getByText("Mock Event Card: Test Event 2")).toBeInTheDocument();
+
+        expect(screen.queryByRole("heading", { name: "Couldn't load events" }) ).not.toBeInTheDocument();
+
+        expect(getEvents).toHaveBeenCalledTimes(2);
+    });
+
+    it("keeps the error state visible when retrying the events request also fails", async () => {
+        vi.mocked(getEvents)
+            .mockRejectedValueOnce(new Error("First failure"))
+            .mockRejectedValueOnce(new Error("Second failure"));
+
+        const user = userEvent.setup();
+
+        render(<EventsPage />);
+
+        expect(await screen.findByRole("heading", { name: "Couldn't load events" })).toBeInTheDocument();
+
+        await user.click(screen.getByRole("button", { name: "Retry loading events" }) );
+
+        expect(await screen.findByRole("heading", { name: "Couldn't load events" }) ).toBeInTheDocument();
+
+        expect(screen.getByRole("button", { name: "Retry loading events" })).toBeInTheDocument();
+
+        expect(getEvents).toHaveBeenCalledTimes(2);
     });
 });
 
@@ -150,35 +208,50 @@ describe("Booking history loading and recovery", () => {
         );
     });
 
-    it("shows a retry option when booking history fails", async () => {
+    it("shows a compact error state without hiding successfully loaded events", async () => {
+        vi.mocked(getEvents).mockResolvedValue(initialRenderEventFixture);
+
+        vi.mocked(getBookingHistory).mockRejectedValue(new Error("Booking history unavailable"));
+
+        render(<EventsPage />);
+
+        expect(await screen.findByRole("heading", { name: "Couldn't check booking status" }))
+            .toBeInTheDocument();
+
+        expect(screen.getByText("Mock Event Card: Test Event 1")).toBeInTheDocument();
+        expect(screen.getByText("Mock Event Card: Test Event 2")).toBeInTheDocument();
+
+        expect(screen.getByRole("button", { name: "Retry booking status" }) ).toBeInTheDocument();
+
+        expect(document.querySelector(".error-state--compact")).toBeInTheDocument();
+
+        expect(screen.getByTestId("booking-state-1")).toHaveTextContent("not-booked:error");
+    });
+
+    it("retries booking history independently and restores booking status", async () => {
         vi.mocked(getEvents).mockResolvedValue(initialRenderEventFixture);
 
         vi.mocked(getBookingHistory)
             .mockRejectedValueOnce(new Error("Booking history unavailable"))
-            .mockResolvedValueOnce([]);
+            .mockResolvedValueOnce([{ event_id: 1 } as Booking]);
 
         const user = userEvent.setup();
 
         render(<EventsPage />);
 
-        expect(
-            await screen.findByText(
-                "Unable to determine your booking status: Booking history unavailable",
-            ),
-        ).toBeInTheDocument();
+        expect(await screen.findByRole("heading", { name: "Couldn't check booking status" }) )
+            .toBeInTheDocument();
 
-        expect(screen.getByTestId("booking-state-1")).toHaveTextContent(
-            "not-booked:error",
-        );
+        expect(screen.getByText("Mock Event Card: Test Event 1")).toBeInTheDocument();
 
-        await user.click(
-            screen.getByRole("button", { name: "Retry booking status" }),
-        );
+        await user.click(screen.getByRole("button", { name: "Retry booking status" }));
 
-        expect(
-            await screen.findByTestId("booking-state-1"),
-        ).toHaveTextContent("not-booked:ready");
+        expect(await screen.findByTestId("booking-state-1")).toHaveTextContent("booked:ready");
+
+        expect(screen.queryByRole("heading", { name: "Couldn't check booking status" }))
+            .not.toBeInTheDocument();
 
         expect(getBookingHistory).toHaveBeenCalledTimes(2);
+        expect(getEvents).toHaveBeenCalledOnce();
     });
 });

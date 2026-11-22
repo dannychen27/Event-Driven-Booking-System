@@ -13,7 +13,6 @@ import "../styles/pages/events-page.css";
 import "../styles/errors/error-message.css";
 import "../styles/errors/status-message.css";
 import "../styles/errors/empty-state-message.css";
-import { getErrorMessage } from "../helpers/shared/Errors.ts";
 import {
     handleApplyCalendarFilters,
     handleClearSearch,
@@ -24,7 +23,7 @@ import {
 import { getEvents } from "../api/events";
 import { getBookingHistory } from "../api/bookings.ts";
 import { BOOKING_USER_ID } from "../constants/bookings/booking.ts";
-import Button from "../components/ui/buttons/Button";
+import ErrorState from "../components/ui/ErrorState";
 import EventSearchForm from "../components/forms/EventSearchForm.tsx";
 import AiSearchForm from "../components/forms/AiSearchForm";
 import CalendarSearchControls from "../components/forms/CalendarSearchControls.tsx";
@@ -38,6 +37,7 @@ export default function EventsPage() {
     const [events, setEvents] = useState<Event[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [eventsRetry, setEventsRetry] = useState(0);
     const [keyword, setKeyword] = useState("");
     const [searching, setSearching] = useState(false);
     const [searchError, setSearchError] = useState("");
@@ -51,7 +51,6 @@ export default function EventsPage() {
     const [bookedEventIds, setBookedEventIds] = useState<Set<number>>(new Set());
     const [bookingHistoryStatus, setBookingHistoryStatus] =
         useState<BookingHistoryStatus>("loading");
-    const [bookingHistoryError, setBookingHistoryError] = useState("");
     const [bookingHistoryRetry, setBookingHistoryRetry] = useState(0);
 
     const [dateSelection, setDateSelection] = useState<
@@ -98,10 +97,13 @@ export default function EventsPage() {
 
                 if (isActive) {
                     setEvents(fetchedEvents);
+                    setError("");
                 }
-            } catch (error) {
+            } catch {
                 if (isActive) {
-                    setError(getErrorMessage(error, "Failed to load events"));
+                    setError(
+                    "We couldn't connect to the events service.\nCheck your connection and try again."
+                    );
                 }
             } finally {
                 if (isActive) {
@@ -115,14 +117,13 @@ export default function EventsPage() {
         return () => {
             isActive = false;
         };
-    }, []);
+    }, [eventsRetry]);
 
     useEffect(() => {
         let isActive = true;
 
         async function fetchBookingHistory() {
             setBookingHistoryStatus("loading");
-            setBookingHistoryError("");
 
             try {
                 const bookings = await getBookingHistory(BOOKING_USER_ID);
@@ -133,14 +134,8 @@ export default function EventsPage() {
                     );
                     setBookingHistoryStatus("ready");
                 }
-            } catch (error) {
+            } catch {
                 if (isActive) {
-                    setBookingHistoryError(
-                        getErrorMessage(
-                            error,
-                            "Failed to load booking status.",
-                        ),
-                    );
                     setBookingHistoryStatus("error");
                 }
             }
@@ -161,9 +156,14 @@ export default function EventsPage() {
         });
     }
 
+    function retryEvents() {
+        setError("");
+        setLoading(true);
+        setEventsRetry((current) => current + 1);
+    }
+
     function retryBookingHistory() {
         setBookingHistoryStatus("loading");
-        setBookingHistoryError("");
         setBookingHistoryRetry((current) => current + 1);
     }
 
@@ -177,9 +177,13 @@ export default function EventsPage() {
 
     if (error) {
         return (
-            <p className="error-message" role="alert">
-                {error}
-            </p>
+            <ErrorState
+                title="Couldn't load events"
+                description={error}
+                onRetry={retryEvents}
+                retryLabel="Retry loading events"
+                className="error-state--page"
+            />
         );
     }
 
@@ -320,18 +324,14 @@ export default function EventsPage() {
             )}
 
             {bookingHistoryStatus === "error" && (
-                <div>
-                    <p className="error-message" role="alert">
-                        Unable to determine your booking status:{" "}
-                        {bookingHistoryError}
-                    </p>
-                    <Button
-                        variant="primary"
-                        onClick={retryBookingHistory}
-                    >
-                        Retry booking status
-                    </Button>
-                </div>
+                <ErrorState
+                    title="Couldn't check booking status"
+                    description="Your events are still available, but we couldn't check which ones you've booked.\nYou can retry this separately."
+                    onRetry={retryBookingHistory}
+                    retryLabel="Retry booking status"
+                    variant="professional"
+                    className="error-state--compact"
+                />
             )}
 
             {searching && (

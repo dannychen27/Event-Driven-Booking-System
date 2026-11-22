@@ -263,6 +263,45 @@ Status: Not started.
 - [ ] Avoid unnecessary layout shifts when the actual event cards appear.
 - [ ] Verify loading, success, and error states through frontend tests.
 
+### Reusable Error States and Offline Experience
+
+Status: Planned.
+
+- [ ] Build a reusable `ErrorState` component.
+- [ ] Support configurable headings, descriptions, illustrations, and retry actions.
+- [ ] Use playful presentation as the default visual mode.
+- [ ] Support an optional professional presentation mode.
+- [ ] Add consistent light and dark theme styling.
+- [ ] Integrate the component into Events, Venues, and My Bookings.
+- [ ] Remove technical implementation details from user-facing errors.
+- [ ] Verify retry behavior and recovery after API connectivity is restored.
+- [ ] Add frontend regression tests for loading, error, and recovery states.
+
+### Four Seasons Theme 🌸☀️🍂❄️
+
+Status: Planned.
+
+- [ ] Introduce four seasonal visual themes: Spring, Summer, Autumn, and Winter.
+- [ ] Give each season its own coordinated colour palette and visual accents.
+- [ ] Ensure all four themes support light and dark modes.
+- [ ] Preserve readability, accessibility, and sufficient colour contrast.
+- [ ] Apply seasonal styling consistently across navigation, pages, cards, and shared components.
+- [ ] Explore subtle seasonal illustrations and decorative details.
+- [ ] Verify responsive layouts across desktop and mobile.
+
+### Accessibility Improvements
+
+Status: Planned.
+
+- [ ] Audit the application for accessibility issues across all pages and shared components.
+- [ ] Ensure interactive elements are keyboard accessible and have clear focus indicators.
+- [ ] Provide appropriate accessible names, labels, and roles for controls and status messages.
+- [ ] Verify sufficient colour contrast in both light and dark themes.
+- [ ] Support screen readers with meaningful headings, landmarks, and announcements.
+- [ ] Review forms, validation messages, loading states, and error states for accessibility.
+- [ ] Test responsive layouts and usability at different zoom levels.
+- [ ] Add accessibility checks to the frontend testing workflow where practical.
+
 ### AI Search Analytics Dashboard
 
 Status: Optional future idea; not committed work.
