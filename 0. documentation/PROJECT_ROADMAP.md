@@ -251,17 +251,19 @@ Improve navigation accessibility while scrolling through longer pages.
 - [ ] Verify sticky behavior across desktop and mobile screen sizes.
 - [ ] Confirm the navbar does not interfere with page scrolling or responsive layouts.
 
-### Dedicated Loading Screen and Skeleton UI
+### Reusable Loading States and Skeleton UI
 
 Status: Not started.
 
-- [ ] Design a dedicated loading experience for the Events page.
-- [ ] Replace the minimal initial "Loading events..." message with a more polished loading screen.
-- [ ] Consider skeleton event cards that resemble the final page layout.
-- [ ] Provide clear loading feedback while event data is being retrieved.
-- [ ] Ensure loading indicators are accessible and work in both light and dark modes.
-- [ ] Avoid unnecessary layout shifts when the actual event cards appear.
+- [ ] Design a reusable LoadingState component for consistent loading feedback.
+- [ ] Replace minimal text-only loading messages on Events, Venues, and My Bookings.
+- [ ] Include an animated loading indicator, heading, and supporting message.
+- [ ] Support full-page and compact loading variants where appropriate.
+- [ ] Consider skeleton layouts for event cards, venue cards, and booking cards.
+- [ ] Ensure loading indicators are accessible and support light and dark modes.
+- [ ] Avoid unnecessary layout shifts when actual content appears.
 - [ ] Verify loading, success, and error states through frontend tests.
+- [ ] Verify loading experiences at desktop and mobile widths.
 
 ### Reusable Error States and Offline Experience
 
