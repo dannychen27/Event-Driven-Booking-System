@@ -265,45 +265,45 @@ Status: Completed.
 - [x] Preserve the independent booking-history loading indicator on `EventsPage`.
 - [x] Add component and page regression tests.
 - [x] Verify spinner animation manually in light and dark modes.
-- [x] Pass the full frontend test suite (194/194 tests).
+- [x] Pass the full frontend test suite (206/206 tests across 32 files).
 - [x] Pass the frontend production build.
 - [x] Re-run the three page regression suites after removing temporary loading-preview overrides (24/24 tests).
 - [x] Pass `git diff --check`.
 
 ### Skeleton Loading UI
 
-Status: Planned.
+Status: Completed.
 
 **Goal:** Replace generic full-page loading indicators with content-shaped placeholders that preview the actual page layouts.
 
 #### Reusable Skeleton Components
 
-- [ ] Inspect the existing event, venue, and booking card components.
-- [ ] Create a reusable `Skeleton` primitive.
-- [ ] Support configurable dimensions and shapes.
-- [ ] Add a subtle loading animation.
-- [ ] Support light and dark themes.
-- [ ] Respect reduced-motion preferences.
+- [x] Inspect the existing event, venue, and booking card components.
+- [x] Create a reusable `Skeleton` primitive.
+- [x] Support configurable dimensions and shapes.
+- [x] Add a subtle loading animation.
+- [x] Support light and dark themes.
+- [x] Respect reduced-motion preferences.
 
 #### Page-Specific Skeleton Layouts
 
-- [ ] Create an `EventCardSkeleton` matching the actual event-card layout.
-- [ ] Create a `VenueCardSkeleton` matching the actual venue-card layout.
-- [ ] Create a `BookingCardSkeleton` matching the actual booking-card layout.
-- [ ] Integrate event skeletons into `EventsPage`.
-- [ ] Integrate venue skeletons into `VenuesPage`.
-- [ ] Integrate booking skeletons into `BookingsPage`.
-- [ ] Keep skeleton dimensions consistent with loaded content to minimize layout shifts.
-- [ ] Verify responsive layouts at narrow mobile widths.
+- [x] Create an `EventCardSkeleton` matching the actual event-card layout.
+- [x] Create a `VenueCardSkeleton` matching the actual venue-card layout.
+- [x] Create a `BookingCardSkeleton` matching the actual booking-card layout.
+- [x] Integrate event skeletons into `EventsPage`.
+- [x] Integrate venue skeletons into `VenuesPage`.
+- [x] Integrate booking skeletons into `BookingsPage`.
+- [x] Keep skeleton dimensions consistent with loaded content to minimize layout shifts.
+- [x] Verify responsive layouts at narrow mobile widths.
 
 #### Regression Testing
 
-- [ ] Add component tests for the reusable `Skeleton` primitive.
-- [ ] Add tests for each page-specific skeleton component.
-- [ ] Verify each page renders its skeleton while data is loading.
-- [ ] Verify actual content replaces skeletons after successful retrieval.
-- [ ] Verify existing error and empty states remain unaffected.
-- [ ] Run the full frontend test suite and production build.
+- [x] Add component tests for the reusable `Skeleton` primitive.
+- [x] Add tests for each page-specific skeleton component.
+- [x] Verify each page renders its skeleton while data is loading.
+- [x] Verify actual content replaces skeletons after successful retrieval.
+- [x] Verify existing error and empty states remain unaffected.
+- [x] Run the full frontend test suite and production build.
 
 ### Reusable Error States and Offline Experience
 
@@ -489,4 +489,4 @@ Tests inspected:
 
 ---
 
-Last updated: November 21, 2026
+Last updated: November 22, 2026
