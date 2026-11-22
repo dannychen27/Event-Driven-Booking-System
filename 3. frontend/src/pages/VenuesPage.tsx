@@ -4,8 +4,10 @@ import type { Venue } from "../types/venues/Venue.ts";
 import "../styles/pages/venues-page.css";
 import "../styles/errors/error-message.css";
 import "../styles/errors/empty-state-message.css";
-import LoadingState from "../components/ui/LoadingState";
 import ErrorState from "../components/ui/ErrorState";
+import LoadingState from "../components/ui/LoadingState";
+import Skeleton from "../components/ui/Skeleton";
+import VenueCardSkeleton from "../components/ui/skeletons/VenueCardSkeleton";
 import {
     displayAllVenues,
     displayNoVenues,
@@ -21,6 +23,7 @@ export default function VenuesPage() {
         let isActive = true;
 
         async function fetchVenues() {
+
             try {
                 const fetchedVenues = await getVenues();
 
@@ -34,7 +37,9 @@ export default function VenuesPage() {
                 }
             } finally {
                 if (isActive) {
-                    setLoading(false);
+                    if (isActive) {
+                        setLoading(false);
+                    }
                 }
             }
         }
@@ -54,11 +59,22 @@ export default function VenuesPage() {
 
     if (loading) {
         return (
-            <LoadingState
-                message="Loading venues..."
-                description="Please wait while we retrieve the latest venues."
-                className="loading-state--page"
-            />
+            <section
+                className="venues-page skeleton-loading"
+                aria-busy="true"
+            >
+                <LoadingState message="Loading venues..." />
+
+                <h1>
+                    <Skeleton width="9rem" height="2rem" variant="text" />
+                </h1>
+
+                <div className="skeleton-loading__cards" aria-hidden="true">
+                    <VenueCardSkeleton />
+                    <VenueCardSkeleton />
+                    <VenueCardSkeleton />
+                </div>
+            </section>
         );
     }
 

@@ -1,0 +1,42 @@
+.skeleton {
+    display: block;
+    flex-shrink: 0;
+    background: linear-gradient(
+        90deg,
+        var(--skeleton-base, #e5eaf1) 25%,
+        var(--skeleton-highlight, #f3f5f8) 50%,
+        var(--skeleton-base, #e5eaf1) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+.skeleton--text {
+    height: 0.9rem;
+    border-radius: 4px;
+}
+
+.skeleton--rectangular {
+    border-radius: 8px;
+}
+
+.skeleton--circular {
+    border-radius: 50%;
+}
+
+#app[data-theme="dark"] {
+    --skeleton-base: #354255;
+    --skeleton-highlight: #46566d;
+}
+
+@keyframes skeleton-shimmer {
+    to {
+        background-position: -200% 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skeleton {
+        animation: none;
+    }
+}

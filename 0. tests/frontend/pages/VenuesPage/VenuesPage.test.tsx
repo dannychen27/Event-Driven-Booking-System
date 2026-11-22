@@ -32,9 +32,11 @@ describe("VenuesPage", () => {
         it("shows the loading state while venues are being fetched", () => {
             vi.mocked(getVenues).mockReturnValue(new Promise(() => {}));
 
-            render(<VenuesPage />);
+            const { container } = render(<VenuesPage />);
 
+            expect(screen.getByRole("status")).toHaveAttribute("aria-busy", "true");
             expect(screen.getByText("Loading venues...")).toBeInTheDocument();
+            expect(container.querySelectorAll(".venue-card-skeleton")).toHaveLength(3);
         });
 
         it("renders venues after they are successfully fetched", async () => {

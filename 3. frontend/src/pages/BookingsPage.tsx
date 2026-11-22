@@ -4,8 +4,10 @@ import { getBookingHistory } from "../api/bookings.ts";
 import { BOOKING_USER_ID } from "../constants/bookings/booking.ts";
 import "../styles/pages/booking-page.css";
 import "../styles/errors/empty-state-message.css";
-import LoadingState from "../components/ui/LoadingState";
 import ErrorState from "../components/ui/ErrorState";
+import LoadingState from "../components/ui/LoadingState";
+import Skeleton from "../components/ui/Skeleton";
+import BookingCardSkeleton from "../components/ui/skeletons/BookingCardSkeleton";
 import {
     displayAllBookings,
     displayNoBookings,
@@ -58,11 +60,22 @@ export default function BookingsPage() {
 
     if (loading) {
         return (
-            <LoadingState
-                message="Loading your bookings..."
-                description="Please wait while we retrieve your booking history."
-                className="loading-state--page"
-            />
+            <section
+                className="bookings-page skeleton-loading"
+                aria-busy="true"
+            >
+                <LoadingState message="Loading your bookings..." />
+
+                <h1>
+                    <Skeleton width="13rem" height="2rem" variant="text" />
+                </h1>
+
+                <div className="skeleton-loading__cards" aria-hidden="true">
+                    <BookingCardSkeleton />
+                    <BookingCardSkeleton />
+                    <BookingCardSkeleton />
+                </div>
+            </section>
         );
     }
 

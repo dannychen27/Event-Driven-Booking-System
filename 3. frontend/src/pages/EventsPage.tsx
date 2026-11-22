@@ -23,8 +23,10 @@ import {
 import { getEvents } from "../api/events";
 import { getBookingHistory } from "../api/bookings.ts";
 import { BOOKING_USER_ID } from "../constants/bookings/booking.ts";
-import LoadingState from "../components/ui/LoadingState";
 import ErrorState from "../components/ui/ErrorState";
+import LoadingState from "../components/ui/LoadingState";
+import Skeleton from "../components/ui/Skeleton";
+import EventCardSkeleton from "../components/ui/skeletons/EventCardSkeleton";
 import EventSearchForm from "../components/forms/EventSearchForm.tsx";
 import AiSearchForm from "../components/forms/AiSearchForm";
 import CalendarSearchControls from "../components/forms/CalendarSearchControls.tsx";
@@ -93,6 +95,7 @@ export default function EventsPage() {
         let isActive = true;
 
         async function fetchEvents() {
+
             try {
                 const fetchedEvents = await getEvents();
 
@@ -106,7 +109,9 @@ export default function EventsPage() {
                 }
             } finally {
                 if (isActive) {
-                    setLoading(false);
+                    if (isActive) {
+                        setLoading(false);
+                    }
                 }
             }
         }
@@ -168,11 +173,161 @@ export default function EventsPage() {
 
     if (loading) {
         return (
-            <LoadingState
-                message="Loading events..."
-                description="Please wait while we retrieve the latest events."
-                className="loading-state--page"
-            />
+            <section
+                className="events-page skeleton-loading"
+                aria-busy="true"
+            >
+                <LoadingState message="Loading events..." />
+
+                <h1>
+                    <Skeleton width="10rem" height="2rem" variant="text" />
+                </h1>
+
+                <div aria-hidden="true">
+                    <div className="event-search-skeleton">
+                        <Skeleton width="8rem" height="1rem" variant="text" />
+                        <div className="event-search-skeleton__controls">
+                            <Skeleton
+                                height="2.75rem"
+                                className="event-search-skeleton__input"
+                            />
+                            <Skeleton
+                                height="2.75rem"
+                                className="event-search-skeleton__button"
+                            />
+                            <Skeleton
+                                height="2.75rem"
+                                className="event-search-skeleton__clear"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="event-ai-search-skeleton">
+                        <Skeleton width="8rem" height="1.1rem" variant="text" />
+                        <Skeleton width="85%" height="0.9rem" variant="text" />
+
+                        <div className="event-ai-search-skeleton__examples">
+                            <Skeleton
+                                width="7rem"
+                                height="0.9rem"
+                                variant="text"
+                                className="event-ai-search-skeleton__examples-label"
+                            />
+                            <Skeleton
+                                width="8rem"
+                                height="2rem"
+                                className="event-ai-search-skeleton__example"
+                            />
+                            <Skeleton
+                                width="10rem"
+                                height="2rem"
+                                className="event-ai-search-skeleton__example"
+                            />
+                            <Skeleton
+                                width="9rem"
+                                height="2rem"
+                                className="event-ai-search-skeleton__example"
+                            />
+                        </div>
+
+                        <div className="event-ai-search-skeleton__controls">
+                            <Skeleton
+                                height="2.75rem"
+                                className="event-ai-search-skeleton__input"
+                            />
+                            <Skeleton
+                                height="2.75rem"
+                                className="event-ai-search-skeleton__button"
+                            />
+                            <Skeleton
+                                height="2.75rem"
+                                className="event-ai-search-skeleton__clear"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="event-calendar-skeleton">
+                      <div className="event-calendar-skeleton__section">
+                          <div className="event-calendar-skeleton__section-heading">
+                              <Skeleton width="3rem" variant="text" />
+                              <Skeleton width="5rem" height="1.8rem" />
+                          </div>
+
+                          <div className="event-calendar-skeleton__fields">
+                              <div className="event-calendar-skeleton__field">
+                                  <Skeleton width="2.5rem" variant="text" />
+                                  <Skeleton />
+                              </div>
+                              <div className="event-calendar-skeleton__field">
+                                  <Skeleton width="2rem" variant="text" />
+                                  <Skeleton />
+                              </div>
+                          </div>
+                      </div>
+
+                      <div className="event-calendar-skeleton__section">
+                          <div className="event-calendar-skeleton__section-heading">
+                              <Skeleton width="3rem" variant="text" />
+
+                              <div className="event-calendar-skeleton__heading-actions">
+                                  <div className="event-calendar-skeleton__toggle">
+                                      <Skeleton />
+                                      <Skeleton />
+                                  </div>
+                                  <Skeleton width="5rem" height="1.8rem" />
+                              </div>
+                          </div>
+
+                          <div className="event-calendar-skeleton__section">
+                              <Skeleton width="6rem" variant="text" />
+                              <div className="event-calendar-skeleton__options">
+                                  <Skeleton className="event-calendar-skeleton__option" />
+                                  <Skeleton className="event-calendar-skeleton__option" />
+                                  <Skeleton className="event-calendar-skeleton__option" />
+                                  <Skeleton className="event-calendar-skeleton__option" />
+                                  <Skeleton className="event-calendar-skeleton__option" />
+                              </div>
+                          </div>
+
+                          <div className="event-calendar-skeleton__time-range">
+                              {Array.from({ length: 2 }, (_, index) => (
+                                  <div
+                                      className="event-calendar-skeleton__time-picker"
+                                      key={index}
+                                  >
+                                      <Skeleton width="3rem" variant="text" />
+                                      <div className="event-calendar-skeleton__time-fields">
+                                          <div className="event-calendar-skeleton__time-segment">
+                                              <Skeleton width="2rem" variant="text" />
+                                              <Skeleton />
+                                          </div>
+                                          <Skeleton width="0.5rem" height="1rem" />
+                                          <div className="event-calendar-skeleton__time-segment">
+                                              <Skeleton width="2.5rem" variant="text" />
+                                              <Skeleton />
+                                          </div>
+                                          <div className="event-calendar-skeleton__period">
+                                              <Skeleton />
+                                              <Skeleton />
+                                          </div>
+                                      </div>
+                                  </div>
+                              ))}
+                          </div>
+                      </div>
+
+                      <div className="event-calendar-skeleton__actions">
+                          <Skeleton className="event-calendar-skeleton__apply" />
+                      </div>
+                  </div>
+
+                  <div className="skeleton-loading__cards">
+                        <EventCardSkeleton />
+                        <EventCardSkeleton />
+                        <EventCardSkeleton />
+                    </div>
+                </div>
+            </section>
         );
     }
 

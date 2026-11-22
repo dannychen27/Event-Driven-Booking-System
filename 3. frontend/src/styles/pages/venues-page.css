@@ -1,7 +1,8 @@
 .venues-page {
-    max-width: 900px;
+    width: 80%;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 3%;
+    box-sizing: border-box;
 }
 
 .venues-page h1 {

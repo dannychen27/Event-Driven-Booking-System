@@ -47,10 +47,13 @@ describe("BookingsPage", () => {
         it("shows the loading state while bookings are being fetched", () => {
             vi.mocked(getBookingHistory).mockReturnValue(new Promise(() => {}));
 
-            render(<BookingsPage />);
+            const { container } = render(<BookingsPage />);
 
+            expect(screen.getByRole("status")).toHaveAttribute("aria-busy", "true");
             expect(screen.getByText("Loading your bookings..."))
                 .toBeInTheDocument();
+            expect(container.querySelectorAll(".booking-card-skeleton"))
+                .toHaveLength(3);
         });
     });
 
