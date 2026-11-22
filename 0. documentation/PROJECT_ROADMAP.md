@@ -304,6 +304,14 @@ rather than developer-oriented data displays.
 - [ ] Make available booking actions and their states clear to users.
 - [ ] Handle missing or unavailable event and venue information gracefully.
 
+#### Venue-to-Events Navigation
+
+- [ ] Link each venue card to the events hosted at that venue.
+- [ ] Support filtering the Events page by the selected venue.
+- [ ] Show the selected venue context and provide a way to return to all events.
+- [ ] Handle venues with no matching upcoming events gracefully.
+- [ ] Add regression tests for venue-to-events navigation and filtering.
+
 #### Consistency and Regression Verification
 
 - [ ] Standardize date, time, status, and metadata presentation across all three card types.

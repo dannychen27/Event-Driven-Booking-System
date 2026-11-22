@@ -15,9 +15,15 @@ CREATE TABLE users (
 
 
 CREATE TABLE venues (
-    id          SERIAL          PRIMARY KEY,
-    name        VARCHAR(255)    NOT NULL,
-    address     VARCHAR(255)    NOT NULL
+    id                      SERIAL          PRIMARY KEY,
+    name                    VARCHAR(255)    NOT NULL,
+    address                 VARCHAR(255)    NOT NULL,
+    description             TEXT,
+    venue_type              VARCHAR(100),
+    image_url               TEXT,
+    amenities               TEXT[]          NOT NULL DEFAULT '{}',
+    accessibility_features  TEXT[]          NOT NULL DEFAULT '{}',
+    transit_info            TEXT
 );
 
 

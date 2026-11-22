@@ -42,6 +42,72 @@ WHERE NOT EXISTS (
       AND existing.address = v.address
 );
 
+-- These descriptions and images are illustrative showcase content.
+-- They do not imply affiliation with, or verified facilities at, these venues.
+UPDATE venues AS existing
+SET
+    description = showcase.description,
+    venue_type = showcase.venue_type,
+    image_url = showcase.image_url,
+    amenities = showcase.amenities,
+    accessibility_features = showcase.accessibility_features,
+    transit_info = showcase.transit_info
+FROM (
+    VALUES
+        (
+            'Toronto Reference Library',
+            '789 Yonge St, Toronto, ON',
+            'A welcoming public-library setting for talks, learning sessions, and community gatherings.',
+            'Public library',
+            'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1200&q=80',
+            ARRAY[]::TEXT[],
+            ARRAY[]::TEXT[],
+            NULL::TEXT
+        ),
+        (
+            'Daniels Spectrum',
+            '585 Dundas St E, Toronto, ON',
+            'A creative community setting suited to arts, culture, and collaborative events.',
+            'Arts and culture centre',
+            'https://images.unsplash.com/photo-1518998053901-5348d3961a04?auto=format&fit=crop&w=1200&q=80',
+            ARRAY[]::TEXT[],
+            ARRAY[]::TEXT[],
+            NULL::TEXT
+        ),
+        (
+            'The Great Hall',
+            '1087 Queen St W, Toronto, ON',
+            'An event-oriented setting for performances, celebrations, and community gatherings.',
+            'Event venue',
+            'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=80',
+            ARRAY[]::TEXT[],
+            ARRAY[]::TEXT[],
+            NULL::TEXT
+        ),
+        (
+            'Bahen Center',
+            '40 St George St, Toronto, ON',
+            'A university building in the heart of the St. George campus, used here as an illustrative event location.',
+            'University building',
+            'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1200&q=80',
+            ARRAY[]::TEXT[],
+            ARRAY[]::TEXT[],
+            NULL::TEXT
+        )
+) AS showcase(
+    name,
+    address,
+    description,
+    venue_type,
+    image_url,
+    amenities,
+    accessibility_features,
+    transit_info
+)
+WHERE existing.name = showcase.name
+  AND existing.address = showcase.address;
+
+
 -- Add events. Dates are in Toronto local time (EST, UTC-05:00).
 INSERT INTO events (
     name,
@@ -236,6 +302,71 @@ ON v.name = showcase.venue_name
 WHERE existing.venue_id = v.id
   AND existing.name = showcase.name
   AND existing.start_time = showcase.start_time::timestamptz;
+
+
+-- Assign representative photography and descriptive content to showcase venues.
+-- Images are illustrative and do not claim to depict the named venues,
+-- except for the Toronto Reference Library photograph.
+
+WITH showcase_venue_data (
+    name,
+    address,
+    image_url,
+    venue_type,
+    description
+) AS (
+    VALUES
+        (
+            'Bahen Center',
+            '40 St George St',
+            'https://images.unsplash.com/photo-1769284008279-46e4c97959db?auto=format&fit=crop&w=1400&q=80',
+            'University building',
+            'A university building in the heart of the St. George campus, used here as an illustrative event location.'
+        ),
+        (
+            'Bahen Center',
+            '40 St George St, Toronto, ON',
+            'https://images.unsplash.com/photo-1769284008279-46e4c97959db?auto=format&fit=crop&w=1400&q=80',
+            'University building',
+            'A university building in the heart of the St. George campus, used here as an illustrative event location.'
+        ),
+        (
+            'Toronto Reference Library',
+            '789 Yonge St, Toronto, ON',
+            'https://images.unsplash.com/photo-1760662173303-97363db3c875?auto=format&fit=crop&w=1400&q=80',
+            NULL::VARCHAR(100),
+            NULL::TEXT
+        ),
+        (
+            'Daniels Spectrum',
+            '585 Dundas St E, Toronto, ON',
+            'https://images.unsplash.com/photo-1768366778536-f4e32064cc2c?auto=format&fit=crop&w=1400&q=80',
+            NULL::VARCHAR(100),
+            NULL::TEXT
+        ),
+        (
+            'The Great Hall',
+            '1087 Queen St W, Toronto, ON',
+            'https://images.unsplash.com/photo-1780384024889-ad01f3bba07c?auto=format&fit=crop&w=1400&q=80',
+            NULL::VARCHAR(100),
+            NULL::TEXT
+        ),
+        (
+            'Moss Park Espresso',
+            '185 Queen St E',
+            'https://images.unsplash.com/photo-1759282336232-140500b6a877?auto=format&fit=crop&w=1400&q=80',
+            'Café',
+            'A neighbourhood café in downtown Toronto, used here as an illustrative event location.'
+        )
+)
+UPDATE venues AS venue
+SET
+    image_url = showcase.image_url,
+    venue_type = COALESCE(showcase.venue_type, venue.venue_type),
+    description = COALESCE(showcase.description, venue.description)
+    FROM showcase_venue_data AS showcase
+WHERE venue.name = showcase.name
+  AND venue.address = showcase.address;
 
 COMMIT;
 

@@ -5,16 +5,30 @@ import VenueCardSkeleton from "../../../../3. frontend/src/components/ui/skeleto
 
 describe("VenueCardSkeleton", () => {
     describe("Rendering", () => {
-        it("renders the compact venue card placeholder layout", () => {
+        it("renders placeholders matching the primary venue card layout", () => {
             const { container } = render(<VenueCardSkeleton />);
 
-            expect(container.querySelector(".venue-card-skeleton"))
-                .toBeInTheDocument();
+            expect(
+                container.querySelector(".venue-card-skeleton"),
+            ).toBeInTheDocument();
+
+            expect(
+                container.querySelector(".venue-card__image"),
+            ).toBeInTheDocument();
+
+            expect(
+                container.querySelector(".venue-card-skeleton__content"),
+            ).toBeInTheDocument();
+
             expect(
                 container.querySelector(".venue-card-skeleton__address"),
             ).toBeInTheDocument();
-            expect(container.querySelectorAll(".skeleton"))
-                .toHaveLength(3);
+
+            expect(
+                container.querySelector(".venue-card-skeleton__amenities"),
+            ).not.toBeInTheDocument();
+
+            expect(container.querySelectorAll(".skeleton")).toHaveLength(7);
         });
     });
 

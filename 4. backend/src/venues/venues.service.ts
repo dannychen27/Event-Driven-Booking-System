@@ -8,8 +8,17 @@ export class VenuesService {
 
   async getAllVenues() {
     const venueResult = await this.db.query<Venue>(`
-            SELECT *
-            FROM venues
+      SELECT
+        id,
+        name,
+        address,
+        description,
+        venue_type,
+        image_url,
+        amenities,
+        accessibility_features,
+        transit_info
+      FROM venues;
         `);
     return venueResult.rows;
   }
@@ -17,7 +26,16 @@ export class VenuesService {
   async getVenue(venue_id: number) {
     const venueResult = await this.db.query<Venue>(
       `
-            SELECT id, name, address
+          SELECT
+            id,
+            name,
+            address,
+            description,
+            venue_type,
+            image_url,
+            amenities,
+            accessibility_features,
+            transit_info
             FROM venues
             WHERE id = $1
         `,
