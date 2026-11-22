@@ -48,9 +48,11 @@ describe("Initial loading and rendering", () => {
     it("shows the loading state while events are being fetched", () => {
         vi.mocked(getEvents).mockReturnValue(new Promise(() => {}));
 
-        render(<EventsPage />);
+        const { container } = render(<EventsPage />);
 
+        expect(screen.getByRole("status")).toHaveAttribute("aria-busy", "true");
         expect(screen.getByText("Loading events...")).toBeInTheDocument();
+        expect(container.querySelectorAll(".event-card-skeleton")).toHaveLength(3);
     });
 
     it("renders events after they are successfully fetched", async () => {

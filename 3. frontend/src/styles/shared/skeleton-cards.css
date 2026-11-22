@@ -1,0 +1,334 @@
+/* Event card skeleton */
+
+.event-card-skeleton__image {
+    aspect-ratio: 16 / 9;
+    margin-bottom: 1rem;
+}
+
+.event-card-skeleton .event-card-header {
+    align-items: center;
+}
+
+.event-card-skeleton .event-card-header > .skeleton:first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.event-card-skeleton .event-card-header > .skeleton:last-child {
+    flex: 0 0 6rem;
+}
+
+.event-card-skeleton__metadata {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 0;
+}
+
+.event-card-skeleton__row {
+    display: grid;
+    grid-template-columns: minmax(0, 5rem) minmax(0, 1fr);
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    margin: 0.25rem 0;
+}
+
+.event-card-skeleton__row .skeleton {
+    max-width: 100%;
+}
+
+.event-card-skeleton__date {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: 1rem 0;
+}
+
+.event-card-skeleton__action {
+    margin-top: 1rem;
+}
+
+/* Venue card skeleton: mirrors the heading and address paragraph */
+
+.venue-card-skeleton {
+    display: block;
+}
+
+.venue-card-skeleton > .skeleton:first-child {
+    margin-bottom: 0.5rem;
+}
+
+.venue-card-skeleton__address {
+    display: block;
+}
+
+.venue-card-skeleton__address .skeleton {
+    margin: 0.25rem 0;
+}
+
+/* Booking card skeleton */
+
+.booking-card-skeleton__metadata {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 0;
+    margin-top: 1rem;
+}
+
+.booking-card-skeleton__row {
+    display: grid;
+    grid-template-columns: minmax(0, 5rem) minmax(0, 1fr);
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    margin: 0.25rem 0;
+}
+
+.booking-card-skeleton__row .skeleton {
+    max-width: 100%;
+}
+
+.booking-card-skeleton__image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+}
+
+@media (max-width: 600px) {
+    .booking-card-skeleton__image {
+        aspect-ratio: 16 / 9;
+    }
+}
+
+/* Event search form skeletons */
+
+.event-search-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+    margin-bottom: 1.5rem;
+}
+
+.event-search-skeleton__controls {
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.event-search-skeleton__input {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.event-search-skeleton__button {
+    flex: 0 0 5rem;
+}
+
+.event-search-skeleton__clear {
+    flex: 0 0 7rem;
+}
+
+.event-ai-search-skeleton {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-width: 0;
+    margin-bottom: 1.5rem;
+    padding: 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+}
+
+.event-ai-search-skeleton__examples {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.event-ai-search-skeleton__examples-label {
+    flex-basis: 100%;
+}
+
+.event-ai-search-skeleton__example {
+    flex: 0 0 auto;
+}
+
+.event-ai-search-skeleton__controls {
+    display: flex;
+    gap: 0.65rem;
+    min-width: 0;
+}
+
+.event-ai-search-skeleton__input {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.event-ai-search-skeleton__button {
+    flex: 0 0 5rem;
+}
+
+.event-ai-search-skeleton__clear {
+    flex: 0 0 7rem;
+}
+
+/* Calendar filter skeleton */
+
+.event-calendar-skeleton {
+    display: grid;
+    gap: 1rem;
+    min-width: 0;
+    margin: 1.25rem 0;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.event-calendar-skeleton__section {
+    display: grid;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.event-calendar-skeleton__section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.event-calendar-skeleton__fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.event-calendar-skeleton__field {
+    display: grid;
+    flex: 1 1 150px;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.event-calendar-skeleton__field > .skeleton:last-child {
+    height: 42px;
+    border-radius: 6px;
+}
+
+.event-calendar-skeleton__heading-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.event-calendar-skeleton__toggle {
+    display: flex;
+    gap: 2px;
+}
+
+.event-calendar-skeleton__toggle .skeleton {
+    width: 2.5rem;
+    height: 2rem;
+    border-radius: 5px;
+}
+
+.event-calendar-skeleton__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+}
+
+.event-calendar-skeleton__option {
+    flex: 0 0 5rem;
+    height: 40px;
+    border-radius: 999px;
+}
+
+.event-calendar-skeleton__time-range {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.event-calendar-skeleton__time-picker {
+    display: grid;
+    gap: 0.4rem;
+    min-width: 0;
+}
+
+.event-calendar-skeleton__time-fields {
+    display: flex;
+    align-items: end;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.event-calendar-skeleton__time-segment {
+    display: grid;
+    gap: 0.25rem;
+}
+
+.event-calendar-skeleton__time-segment .skeleton:last-child {
+    width: 54px;
+    height: 40px;
+}
+
+.event-calendar-skeleton__period {
+    display: flex;
+    align-self: end;
+    gap: 2px;
+}
+
+.event-calendar-skeleton__period .skeleton {
+    width: 2.5rem;
+    height: 40px;
+    border-radius: 5px;
+}
+
+.event-calendar-skeleton__actions {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.event-calendar-skeleton__apply {
+    width: 8rem;
+    height: 42px;
+}
+
+@media (max-width: 520px) {
+    .event-ai-search-skeleton {
+        padding: 0.75rem;
+    }
+
+    .event-ai-search-skeleton__controls {
+        flex-direction: column;
+    }
+
+    .event-ai-search-skeleton__button,
+    .event-ai-search-skeleton__clear {
+        flex-basis: 2.75rem;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .event-calendar-skeleton__time-range {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 360px) {
+    .event-calendar-skeleton__time-fields {
+        flex-wrap: wrap;
+    }
+}
