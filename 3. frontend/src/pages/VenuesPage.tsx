@@ -30,9 +30,7 @@ export default function VenuesPage() {
                 }
             } catch {
                 if (isActive) {
-                    setError(
-                        "We couldn't connect to the venues service.\nCheck your connection and try again.",
-                    );
+                    setError("failed");
                 }
             } finally {
                 if (isActive) {
@@ -65,10 +63,20 @@ export default function VenuesPage() {
     if (error) {
         return (
             <ErrorState
-                title="Couldn't load venues"
-                description={error}
+                title="We couldn't load the venues."
+                description={
+                    <>
+                        <p>We couldn't retrieve the venues.</p>
+                        <p>You can try the following:</p>
+                        <ul>
+                            <li>Check your internet connection and try again.</li>
+                            <li>Refresh the page.</li>
+                            <li>Wait a moment and try again.</li>
+                        </ul>
+                    </>
+                }
                 onRetry={retryVenues}
-                retryLabel="Retry loading venues"
+                retryLabel="Try again"
                 className="error-state--page"
             />
         );

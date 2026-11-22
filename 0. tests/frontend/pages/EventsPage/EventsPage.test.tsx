@@ -127,20 +127,32 @@ describe("Events API failure and recovery", () => {
 
         expect(
             await screen.findByRole("heading", {
-                name: "Couldn't load events",
+                name: "We couldn't load the events.",
             }),
         ).toBeInTheDocument();
 
         expect(
-            screen.getByText(
-                "We couldn't connect to the events service. Check your connection and try again.",
-            ),
+            screen.getByText("We couldn't retrieve the events."),
         ).toBeInTheDocument();
 
         expect(
-            screen.getByRole("button", {
-                name: "Retry loading events",
-            }),
+            screen.getByText("You can try the following:"),
+        ).toBeInTheDocument();
+
+        expect(screen.getAllByRole("listitem")).toHaveLength(3);
+
+        expect(
+            screen.getByText("Check your internet connection and try again."),
+        ).toBeInTheDocument();
+
+        expect(screen.getByText("Refresh the page.")).toBeInTheDocument();
+
+        expect(
+            screen.getByText("Wait a moment and try again."),
+        ).toBeInTheDocument();
+
+        expect(
+            screen.getByRole("button", { name: "Try again" }),
         ).toBeInTheDocument();
 
         expect(screen.queryByText("Internal network error")).not.toBeInTheDocument();
@@ -156,14 +168,14 @@ describe("Events API failure and recovery", () => {
 
         render(<EventsPage />);
 
-        expect(await screen.findByRole("heading", { name: "Couldn't load events" }) ).toBeInTheDocument();
+        expect(await screen.findByRole("heading", { name: "We couldn't load the events." }) ).toBeInTheDocument();
 
-        await user.click(screen.getByRole("button", { name: "Retry loading events" }) );
+        await user.click(screen.getByRole("button", { name: "Try again" }) );
 
         expect(await screen.findByText("Mock Event Card: Test Event 1")).toBeInTheDocument();
         expect(screen.getByText("Mock Event Card: Test Event 2")).toBeInTheDocument();
 
-        expect(screen.queryByRole("heading", { name: "Couldn't load events" }) ).not.toBeInTheDocument();
+        expect(screen.queryByRole("heading", { name: "We couldn't load the events." }) ).not.toBeInTheDocument();
 
         expect(getEvents).toHaveBeenCalledTimes(2);
     });
@@ -177,13 +189,13 @@ describe("Events API failure and recovery", () => {
 
         render(<EventsPage />);
 
-        expect(await screen.findByRole("heading", { name: "Couldn't load events" })).toBeInTheDocument();
+        expect(await screen.findByRole("heading", { name: "We couldn't load the events." })).toBeInTheDocument();
 
-        await user.click(screen.getByRole("button", { name: "Retry loading events" }) );
+        await user.click(screen.getByRole("button", { name: "Try again" }) );
 
-        expect(await screen.findByRole("heading", { name: "Couldn't load events" }) ).toBeInTheDocument();
+        expect(await screen.findByRole("heading", { name: "We couldn't load the events." }) ).toBeInTheDocument();
 
-        expect(screen.getByRole("button", { name: "Retry loading events" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Try again" })).toBeInTheDocument();
 
         expect(getEvents).toHaveBeenCalledTimes(2);
     });

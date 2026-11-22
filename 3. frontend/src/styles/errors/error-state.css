@@ -57,6 +57,7 @@
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
+    width: 100%;
     max-width: 480px;
 }
 
@@ -65,14 +66,33 @@
     color: var(--text);
     font-size: 1.25rem;
     font-weight: 600;
+    text-align: center;
 }
 
 .error-state__description {
-    white-space: pre-line;
+    width: 100%;
     margin: 0;
     color: var(--secondary-text);
     font-size: 0.95rem;
     line-height: 1.5;
+    text-align: left;
+}
+
+.error-state__description p {
+    margin: 0 0 0.75rem;
+}
+
+.error-state__description ul {
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+.error-state__description li {
+    margin-bottom: 0.5rem;
+}
+
+.error-state__description li:last-child {
+    margin-bottom: 0;
 }
 
 .error-state__actions {

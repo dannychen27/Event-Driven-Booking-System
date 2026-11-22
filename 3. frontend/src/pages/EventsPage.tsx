@@ -101,9 +101,7 @@ export default function EventsPage() {
                 }
             } catch {
                 if (isActive) {
-                    setError(
-                    "We couldn't connect to the events service.\nCheck your connection and try again."
-                    );
+                    setError("failed");
                 }
             } finally {
                 if (isActive) {
@@ -178,10 +176,20 @@ export default function EventsPage() {
     if (error) {
         return (
             <ErrorState
-                title="Couldn't load events"
-                description={error}
+                title="We couldn't load the events."
+                description={
+                    <>
+                        <p>We couldn't retrieve the events.</p>
+                        <p>You can try the following:</p>
+                        <ul>
+                            <li>Check your internet connection and try again.</li>
+                            <li>Refresh the page.</li>
+                            <li>Wait a moment and try again.</li>
+                        </ul>
+                    </>
+                }
                 onRetry={retryEvents}
-                retryLabel="Retry loading events"
+                retryLabel="Try again"
                 className="error-state--page"
             />
         );

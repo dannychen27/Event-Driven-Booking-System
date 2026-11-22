@@ -30,6 +30,33 @@ describe("ErrorState", () => {
             ).toBeInTheDocument();
         });
 
+        it("renders structured paragraphs and lists in its description", () => {
+            render(
+                <ErrorState
+                    title="Couldn't load venues"
+                    description={
+                        <>
+                            <p>We couldn't retrieve the venues.</p>
+                            <p>You can try the following:</p>
+                            <ul>
+                                <li>Check your internet connection.</li>
+                                <li>Refresh the page.</li>
+                            </ul>
+                        </>
+                    }
+                />
+            );
+
+            expect(screen.getByText("We couldn't retrieve the venues."))
+                .toBeInTheDocument();
+
+            expect(screen.getByText("You can try the following:"))
+                .toBeInTheDocument();
+
+            expect(screen.getByRole("list")).toBeInTheDocument();
+            expect(screen.getAllByRole("listitem")).toHaveLength(2);
+        });
+
         it("renders a supplied illustration instead of the default", () => {
             render(
                 <ErrorState

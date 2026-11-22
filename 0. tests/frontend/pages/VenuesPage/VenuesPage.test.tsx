@@ -71,19 +71,39 @@ describe("VenuesPage", () => {
             render(<VenuesPage />);
 
             expect(await screen.findByRole("alert")).toBeInTheDocument();
-            expect(screen.getByText("Couldn't load venues"))
-                .toBeInTheDocument();
-            expect(screen.getByText(
-                "We couldn't connect to the venues service. Check your connection and try again.",
-            )).toBeInTheDocument();
-            expect(screen.getByRole("button", {
-                name: "Retry loading venues",
-            })).toBeInTheDocument();
 
-            expect(screen.queryByText("Internal server error"))
-                .not.toBeInTheDocument();
-            expect(screen.queryByText("Loading venues..."))
-                .not.toBeInTheDocument();
+            expect(
+                screen.getByRole("heading", {
+                    name: "We couldn't load the venues.",
+                }),
+            ).toBeInTheDocument();
+
+            expect(
+                screen.getByText("We couldn't retrieve the venues."),
+            ).toBeInTheDocument();
+
+            expect(
+                screen.getByText("You can try the following:"),
+            ).toBeInTheDocument();
+
+            expect(screen.getAllByRole("listitem")).toHaveLength(3);
+
+            expect(
+                screen.getByText("Check your internet connection and try again."),
+            ).toBeInTheDocument();
+
+            expect(screen.getByText("Refresh the page.")).toBeInTheDocument();
+
+            expect(
+                screen.getByText("Wait a moment and try again."),
+            ).toBeInTheDocument();
+
+            expect(
+                screen.getByRole("button", { name: "Try again" }),
+            ).toBeInTheDocument();
+
+            expect(screen.queryByText("Internal server error")).not.toBeInTheDocument();
+            expect(screen.queryByText("Loading venues...")).not.toBeInTheDocument();
         });
 
         it("retries the venues request and restores venues after success", async () => {
@@ -93,11 +113,11 @@ describe("VenuesPage", () => {
 
             render(<VenuesPage />);
 
-            expect(await screen.findByText("Couldn't load venues"))
+            expect(await screen.findByText("We couldn't load the venues."))
                 .toBeInTheDocument();
 
             fireEvent.click(screen.getByRole("button", {
-                name: "Retry loading venues",
+                name: "Try again",
             }));
 
             expect(await screen.findByText("Mock Venue Card: Test Venue 1"))
@@ -115,17 +135,17 @@ describe("VenuesPage", () => {
 
             render(<VenuesPage />);
 
-            expect(await screen.findByText("Couldn't load venues"))
+            expect(await screen.findByText("We couldn't load the venues."))
                 .toBeInTheDocument();
 
             fireEvent.click(screen.getByRole("button", {
-                name: "Retry loading venues",
+                name: "Try again",
             }));
 
-            expect(await screen.findByText("Couldn't load venues"))
+            expect(await screen.findByText("We couldn't load the venues."))
                 .toBeInTheDocument();
             expect(screen.getByRole("button", {
-                name: "Retry loading venues",
+                name: "Try again",
             })).toBeInTheDocument();
             expect(getVenues).toHaveBeenCalledTimes(2);
         });
