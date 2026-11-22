@@ -19,6 +19,22 @@
     min-width: 0;
 }
 
+.event-card-description {
+    margin: 0.5rem 0 1rem !important;
+    color: var(--text) !important;
+    line-height: 1.6;
+}
+
+.event-card-details {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0.75rem 0;
+}
+
+.event-card-details p {
+    overflow-wrap: anywhere;
+}
+
 .event-booked-badge {
     display: inline-flex;
     align-items: center;

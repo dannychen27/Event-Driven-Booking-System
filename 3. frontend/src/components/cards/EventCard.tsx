@@ -88,9 +88,22 @@ export default function EventCard({
                 )}
             </div>
 
-            <InfoLabel label="Event Id" value={event.id} />
-            <InfoLabel label="Venue" value={event.venue_name} />
-            <InfoLabel label="Address" value={event.venue_address} />
+            {event.description?.trim() && (
+                <p className="event-card-description">
+                    {event.description}
+                </p>
+            )}
+
+            <div className="event-card-details">
+                <InfoLabel
+                    label="Venue"
+                    value={event.venue_name?.trim() || "Venue details unavailable"}
+                />
+                <InfoLabel
+                    label="Location"
+                    value={event.venue_address?.trim() || "Location to be announced"}
+                />
+            </div>
 
             <DateLabel
                 label="Date & Time"
@@ -98,7 +111,10 @@ export default function EventCard({
                 endDateTime={event.end_time}
             />
 
-            <InfoLabel label="Capacity" value={event.capacity} />
+            <InfoLabel
+                label="Capacity"
+                value={`${event.capacity} attendees`}
+            />
 
             {!isBooked && bookingHistoryStatus === "loading" && (
                 <p className="event-booking-status" role="status">

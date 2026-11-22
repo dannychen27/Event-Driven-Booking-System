@@ -109,7 +109,11 @@ export const reloadFailureInitialEventFixture = {
 export const eventCardFixture = {
     id: 1,
     name: "E2E Test Event",
+    description: "A practical event for testing the booking experience.",
     venue_id: 1,
+    venue_name: "E2E Test Venue",
+    venue_address: "123 Test Street",
+    image_url: null,
     start_time: "2026-09-10T10:00:00Z",
     end_time: "2026-09-10T11:00:00Z",
     capacity: 10,

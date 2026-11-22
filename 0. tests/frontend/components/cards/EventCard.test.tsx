@@ -43,11 +43,44 @@ describe("EventCard", () => {
             screen.getByRole("heading", { name: "E2E Test Event" }),
         ).toBeInTheDocument();
 
-        expect(screen.getByText("Capacity: 10")).toBeInTheDocument();
+        expect(
+            screen.getByText("A practical event for testing the booking experience."),
+        ).toBeInTheDocument();
+
+        expect(screen.getByText("Venue: E2E Test Venue")).toBeInTheDocument();
+        expect(screen.getByText("Location: 123 Test Street")).toBeInTheDocument();
+        expect(screen.getByText("Capacity: 10 attendees")).toBeInTheDocument();
+        expect(screen.queryByText(/Event Id:/)).not.toBeInTheDocument();
 
         expect(
             screen.getByRole("button", { name: "Create Booking" }),
         ).toBeEnabled();
+    });
+
+    it("omits an empty event description and uses fallbacks for missing venue details", () => {
+        render(
+            <EventCard
+                {...defaultProps}
+                event={{
+                    ...eventCardFixture,
+                    description: "   ",
+                    venue_name: "",
+                    venue_address: "",
+                }}
+            />,
+        );
+
+        expect(
+            screen.queryByText("A practical event for testing the booking experience."),
+        ).not.toBeInTheDocument();
+
+        expect(
+            screen.getByText("Venue: Venue details unavailable"),
+        ).toBeInTheDocument();
+
+        expect(
+            screen.getByText("Location: Location to be announced"),
+        ).toBeInTheDocument();
     });
 
     it("opens the booking form when booking status is ready and the event is unbooked", async () => {

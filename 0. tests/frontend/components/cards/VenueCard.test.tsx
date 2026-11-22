@@ -7,18 +7,38 @@ import { venueCardFixture } from "../../fixtures/venues/venueFixtures";
 
 
 describe("VenueCard", () => {
-    it("renders the venue information", () => {
-        render(<VenueCard venue={venueCardFixture} />);
+    describe("venue information", () => {
+        it("renders the venue name and address", () => {
+            render(<VenueCard venue={venueCardFixture} />);
 
-        expect(
-            screen.getByRole("heading", {
-                name: "E2E Test Venue",
-            }),
-        ).toBeInTheDocument();
+            expect(
+                screen.getByRole("heading", {
+                    name: "E2E Test Venue",
+                }),
+            ).toBeInTheDocument();
 
-        expect(
-            screen.getByText("Address: 123 Test Street"),
-        ).toBeInTheDocument();
+            expect(screen.getByText("Location")).toBeInTheDocument();
+            expect(screen.getByText("123 Test Street")).toBeInTheDocument();
+        });
+
+        it("shows readable fallbacks when venue details are blank", () => {
+            render(
+                <VenueCard
+                    venue={{
+                        ...venueCardFixture,
+                        name: "   ",
+                        address: "   ",
+                    }}
+                />,
+            );
+
+            expect(
+                screen.getByRole("heading", {
+                    name: "Venue details unavailable",
+                }),
+            ).toBeInTheDocument();
+
+            expect(screen.getByText("Address to be announced")).toBeInTheDocument();
+        });
     });
 });
-
