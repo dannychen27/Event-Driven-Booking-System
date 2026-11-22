@@ -3,8 +3,8 @@ import { getVenues } from "../api/venues.ts";
 import type { Venue } from "../types/venues/Venue.ts";
 import "../styles/pages/venues-page.css";
 import "../styles/errors/error-message.css";
-import "../styles/errors/status-message.css";
 import "../styles/errors/empty-state-message.css";
+import LoadingState from "../components/ui/LoadingState";
 import ErrorState from "../components/ui/ErrorState";
 import {
     displayAllVenues,
@@ -54,9 +54,11 @@ export default function VenuesPage() {
 
     if (loading) {
         return (
-            <p className="status-message" role="status">
-                Loading venues...
-            </p>
+            <LoadingState
+                message="Loading venues..."
+                description="Please wait while we retrieve the latest venues."
+                className="loading-state--page"
+            />
         );
     }
 

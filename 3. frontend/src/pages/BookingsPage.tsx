@@ -3,8 +3,8 @@ import type { Booking } from "../types/bookings/Booking.ts";
 import { getBookingHistory } from "../api/bookings.ts";
 import { BOOKING_USER_ID } from "../constants/bookings/booking.ts";
 import "../styles/pages/booking-page.css";
-import "../styles/errors/status-message.css";
 import "../styles/errors/empty-state-message.css";
+import LoadingState from "../components/ui/LoadingState";
 import ErrorState from "../components/ui/ErrorState";
 import {
     displayAllBookings,
@@ -58,9 +58,11 @@ export default function BookingsPage() {
 
     if (loading) {
         return (
-            <p className="status-message" role="status">
-                {`Loading bookings for user ${user_id}`}
-            </p>
+            <LoadingState
+                message="Loading your bookings..."
+                description="Please wait while we retrieve your booking history."
+                className="loading-state--page"
+            />
         );
     }
 

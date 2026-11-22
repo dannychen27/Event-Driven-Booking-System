@@ -251,19 +251,59 @@ Improve navigation accessibility while scrolling through longer pages.
 - [ ] Verify sticky behavior across desktop and mobile screen sizes.
 - [ ] Confirm the navbar does not interfere with page scrolling or responsive layouts.
 
-### Reusable Loading States and Skeleton UI
+### Reusable Loading States
 
-Status: Not started.
+Status: Completed.
 
-- [ ] Design a reusable LoadingState component for consistent loading feedback.
-- [ ] Replace minimal text-only loading messages on Events, Venues, and My Bookings.
-- [ ] Include an animated loading indicator, heading, and supporting message.
-- [ ] Support full-page and compact loading variants where appropriate.
-- [ ] Consider skeleton layouts for event cards, venue cards, and booking cards.
-- [ ] Ensure loading indicators are accessible and support light and dark modes.
-- [ ] Avoid unnecessary layout shifts when actual content appears.
-- [ ] Verify loading, success, and error states through frontend tests.
-- [ ] Verify loading experiences at desktop and mobile widths.
+- [x] Create a reusable `LoadingState` component.
+- [x] Add a centered animated spinner and optional supporting descriptions.
+- [x] Add accessible loading semantics (`role="status"`, `aria-live`, and `aria-busy`).
+- [x] Hide the decorative spinner from assistive technology.
+- [x] Support light and dark themes.
+- [x] Respect reduced-motion preferences.
+- [x] Integrate full-page loading states into `EventsPage`, `VenuesPage`, and `BookingsPage`.
+- [x] Preserve the independent booking-history loading indicator on `EventsPage`.
+- [x] Add component and page regression tests.
+- [x] Verify spinner animation manually in light and dark modes.
+- [x] Pass the full frontend test suite (194/194 tests).
+- [x] Pass the frontend production build.
+- [x] Re-run the three page regression suites after removing temporary loading-preview overrides (24/24 tests).
+- [x] Pass `git diff --check`.
+
+### Skeleton Loading UI
+
+Status: Planned.
+
+**Goal:** Replace generic full-page loading indicators with content-shaped placeholders that preview the actual page layouts.
+
+#### Reusable Skeleton Components
+
+- [ ] Inspect the existing event, venue, and booking card components.
+- [ ] Create a reusable `Skeleton` primitive.
+- [ ] Support configurable dimensions and shapes.
+- [ ] Add a subtle loading animation.
+- [ ] Support light and dark themes.
+- [ ] Respect reduced-motion preferences.
+
+#### Page-Specific Skeleton Layouts
+
+- [ ] Create an `EventCardSkeleton` matching the actual event-card layout.
+- [ ] Create a `VenueCardSkeleton` matching the actual venue-card layout.
+- [ ] Create a `BookingCardSkeleton` matching the actual booking-card layout.
+- [ ] Integrate event skeletons into `EventsPage`.
+- [ ] Integrate venue skeletons into `VenuesPage`.
+- [ ] Integrate booking skeletons into `BookingsPage`.
+- [ ] Keep skeleton dimensions consistent with loaded content to minimize layout shifts.
+- [ ] Verify responsive layouts at narrow mobile widths.
+
+#### Regression Testing
+
+- [ ] Add component tests for the reusable `Skeleton` primitive.
+- [ ] Add tests for each page-specific skeleton component.
+- [ ] Verify each page renders its skeleton while data is loading.
+- [ ] Verify actual content replaces skeletons after successful retrieval.
+- [ ] Verify existing error and empty states remain unaffected.
+- [ ] Run the full frontend test suite and production build.
 
 ### Reusable Error States and Offline Experience
 

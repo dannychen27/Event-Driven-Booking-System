@@ -23,6 +23,7 @@ import {
 import { getEvents } from "../api/events";
 import { getBookingHistory } from "../api/bookings.ts";
 import { BOOKING_USER_ID } from "../constants/bookings/booking.ts";
+import LoadingState from "../components/ui/LoadingState";
 import ErrorState from "../components/ui/ErrorState";
 import EventSearchForm from "../components/forms/EventSearchForm.tsx";
 import AiSearchForm from "../components/forms/AiSearchForm";
@@ -167,9 +168,11 @@ export default function EventsPage() {
 
     if (loading) {
         return (
-            <p className="status-message" role="status">
-                Loading events...
-            </p>
+            <LoadingState
+                message="Loading events..."
+                description="Please wait while we retrieve the latest events."
+                className="loading-state--page"
+            />
         );
     }
 

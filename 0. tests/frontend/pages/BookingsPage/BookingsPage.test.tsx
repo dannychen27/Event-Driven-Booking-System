@@ -49,7 +49,7 @@ describe("BookingsPage", () => {
 
             render(<BookingsPage />);
 
-            expect(screen.getByText("Loading bookings for user 1"))
+            expect(screen.getByText("Loading your bookings..."))
                 .toBeInTheDocument();
         });
     });
@@ -64,7 +64,7 @@ describe("BookingsPage", () => {
                 .toBeInTheDocument();
             expect(screen.getByText("Mock Booking Card: 2"))
                 .toBeInTheDocument();
-            expect(screen.queryByText("Loading bookings for user 1"))
+            expect(screen.queryByText("Loading your bookings..."))
                 .not.toBeInTheDocument();
 
             expect(getBookingHistory).toHaveBeenCalledWith(1);
@@ -77,7 +77,7 @@ describe("BookingsPage", () => {
 
             expect(await screen.findByText("No bookings right now."))
                 .toBeInTheDocument();
-            expect(screen.queryByText("Loading bookings for user 1"))
+            expect(screen.queryByText("Loading your bookings..."))
                 .not.toBeInTheDocument();
         });
     });
@@ -102,7 +102,7 @@ describe("BookingsPage", () => {
 
             expect(screen.queryByText("Failed to load bookings"))
                 .not.toBeInTheDocument();
-            expect(screen.queryByText("Loading bookings for user 1"))
+            expect(screen.queryByText("Loading your bookings..."))
                 .not.toBeInTheDocument();
         });
 
@@ -127,7 +127,7 @@ describe("BookingsPage", () => {
                 screen.getByRole("button", { name: "Try again" })
             );
 
-            expect(screen.getByText("Loading bookings for user 1"))
+            expect(screen.getByText("Loading your bookings..."))
                 .toBeInTheDocument();
 
             resolveRetry(bookingHistoryFixture);
