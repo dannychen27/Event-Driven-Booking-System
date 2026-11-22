@@ -5,35 +5,73 @@ import "../styles/pages/venues-page.css";
 import "../styles/errors/error-message.css";
 import "../styles/errors/status-message.css";
 import "../styles/errors/empty-state-message.css";
-import { displayAllVenues, displayNoVenues } from "../helpers/venues/VenuesPageHelpers.tsx";
-
+import ErrorState from "../components/ui/ErrorState";
+import {
+    displayAllVenues,
+    displayNoVenues,
+} from "../helpers/venues/VenuesPageHelpers.tsx";
 
 export default function VenuesPage() {
     const [venues, setVenues] = useState<Venue[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [venuesRetry, setVenuesRetry] = useState(0);
 
     useEffect(() => {
+        let isActive = true;
+
         async function fetchVenues() {
             try {
-                const venues = await getVenues();
-                setVenues(venues);
+                const fetchedVenues = await getVenues();
+
+                if (isActive) {
+                    setVenues(fetchedVenues);
+                    setError("");
+                }
             } catch {
-                setError("Failed to load venues");
+                if (isActive) {
+                    setError(
+                        "We couldn't connect to the venues service.\nCheck your connection and try again.",
+                    );
+                }
             } finally {
-                setLoading(false);
+                if (isActive) {
+                    setLoading(false);
+                }
             }
         }
 
-        void fetchVenues();  // intentionally not awaiting the promise.
-    }, []);
+        void fetchVenues();
+
+        return () => {
+            isActive = false;
+        };
+    }, [venuesRetry]);
+
+    function retryVenues() {
+        setError("");
+        setLoading(true);
+        setVenuesRetry((current) => current + 1);
+    }
 
     if (loading) {
-        return <p className="status-message" role="status">Loading venues...</p>;
+        return (
+            <p className="status-message" role="status">
+                Loading venues...
+            </p>
+        );
     }
 
     if (error) {
-        return <p className="error-message">{error}</p>;
+        return (
+            <ErrorState
+                title="Couldn't load venues"
+                description={error}
+                onRetry={retryVenues}
+                retryLabel="Retry loading venues"
+                className="error-state--page"
+            />
+        );
     }
 
     return (

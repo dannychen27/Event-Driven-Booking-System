@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 
@@ -28,49 +28,107 @@ describe("VenuesPage", () => {
         vi.clearAllMocks();
     });
 
-    it("shows the loading state while venues are being fetched", () => {
-        vi.mocked(getVenues).mockReturnValue(new Promise(() => {}));
+    describe("Initial loading and rendering", () => {
+        it("shows the loading state while venues are being fetched", () => {
+            vi.mocked(getVenues).mockReturnValue(new Promise(() => {}));
 
-        render(<VenuesPage />);
+            render(<VenuesPage />);
 
-        expect(screen.getByText("Loading venues...")).toBeInTheDocument();
+            expect(screen.getByText("Loading venues...")).toBeInTheDocument();
+        });
+
+        it("renders venues after they are successfully fetched", async () => {
+            vi.mocked(getVenues).mockResolvedValue(venueListFixture);
+
+            render(<VenuesPage />);
+
+            expect(await screen.findByText("Mock Venue Card: Test Venue 1"))
+                .toBeInTheDocument();
+            expect(screen.getByText("Mock Venue Card: Test Venue 2"))
+                .toBeInTheDocument();
+            expect(screen.queryByText("Loading venues..."))
+                .not.toBeInTheDocument();
+        });
+
+        it("shows the empty state when there are no venues", async () => {
+            vi.mocked(getVenues).mockResolvedValue([]);
+
+            render(<VenuesPage />);
+
+            expect(await screen.findByText("No available venues right now."))
+                .toBeInTheDocument();
+            expect(screen.queryByText("Loading venues..."))
+                .not.toBeInTheDocument();
+        });
     });
 
-    it("renders venues after they are successfully fetched", async () => {
-        vi.mocked(getVenues).mockResolvedValue(venueListFixture);
+    describe("Venues API failure and recovery", () => {
+        it("shows a full-page error state when fetching venues fails", async () => {
+            vi.mocked(getVenues).mockRejectedValue(
+                new Error("Internal server error"),
+            );
 
-        render(<VenuesPage />);
+            render(<VenuesPage />);
 
-        expect(await screen.findByText("Mock Venue Card: Test Venue 1"))
-            .toBeInTheDocument();
-        expect(screen.getByText("Mock Venue Card: Test Venue 2"))
-            .toBeInTheDocument();
-        expect(screen.queryByText("Loading venues..."))
-            .not.toBeInTheDocument();
-    });
+            expect(await screen.findByRole("alert")).toBeInTheDocument();
+            expect(screen.getByText("Couldn't load venues"))
+                .toBeInTheDocument();
+            expect(screen.getByText(
+                "We couldn't connect to the venues service. Check your connection and try again.",
+            )).toBeInTheDocument();
+            expect(screen.getByRole("button", {
+                name: "Retry loading venues",
+            })).toBeInTheDocument();
 
-    it("shows the empty state when there are no venues", async () => {
-        vi.mocked(getVenues).mockResolvedValue([]);
+            expect(screen.queryByText("Internal server error"))
+                .not.toBeInTheDocument();
+            expect(screen.queryByText("Loading venues..."))
+                .not.toBeInTheDocument();
+        });
 
-        render(<VenuesPage />);
+        it("retries the venues request and restores venues after success", async () => {
+            vi.mocked(getVenues)
+                .mockRejectedValueOnce(new Error("Network unavailable"))
+                .mockResolvedValueOnce(venueListFixture);
 
-        expect(await screen.findByText("No available venues right now."))
-            .toBeInTheDocument();
-        expect(screen.queryByText("Loading venues..."))
-            .not.toBeInTheDocument();
-    });
+            render(<VenuesPage />);
 
-    it("shows an error when fetching venues fails", async () => {
-        vi.mocked(getVenues).mockRejectedValue(
-            new Error("Failed to load venues")
-        );
+            expect(await screen.findByText("Couldn't load venues"))
+                .toBeInTheDocument();
 
-        render(<VenuesPage />);
+            fireEvent.click(screen.getByRole("button", {
+                name: "Retry loading venues",
+            }));
 
-        expect(await screen.findByText("Failed to load venues"))
-            .toBeInTheDocument();
-        expect(screen.queryByText("Loading venues..."))
-            .not.toBeInTheDocument();
+            expect(await screen.findByText("Mock Venue Card: Test Venue 1"))
+                .toBeInTheDocument();
+            expect(screen.getByText("Mock Venue Card: Test Venue 2"))
+                .toBeInTheDocument();
+            expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+            expect(getVenues).toHaveBeenCalledTimes(2);
+        });
+
+        it("keeps the error state visible when retrying also fails", async () => {
+            vi.mocked(getVenues)
+                .mockRejectedValueOnce(new Error("First failure"))
+                .mockRejectedValueOnce(new Error("Second failure"));
+
+            render(<VenuesPage />);
+
+            expect(await screen.findByText("Couldn't load venues"))
+                .toBeInTheDocument();
+
+            fireEvent.click(screen.getByRole("button", {
+                name: "Retry loading venues",
+            }));
+
+            expect(await screen.findByText("Couldn't load venues"))
+                .toBeInTheDocument();
+            expect(screen.getByRole("button", {
+                name: "Retry loading venues",
+            })).toBeInTheDocument();
+            expect(getVenues).toHaveBeenCalledTimes(2);
+        });
     });
 });
 
