@@ -106,3 +106,33 @@
     font-size: 0.85rem;
     overflow-wrap: anywhere;
 }
+
+.venue-card__events-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    align-self: flex-start;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    padding: 0.65rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--background);
+    color: var(--text);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.venue-card__events-link:hover {
+    background: var(--background);
+    border-color: var(--secondary-text);
+}
+
+.venue-card__events-link:focus-visible {
+    outline: 2px solid var(--text);
+    outline-offset: 3px;
+}

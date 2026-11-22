@@ -39,6 +39,14 @@ export default function VenueCard({ venue }: VenueCardProps) {
                     </span>
                     <span>{venueAddress}</span>
                 </address>
+
+                <a
+                    className="venue-card__events-link"
+                    href={`/events?venueId=${venue.id}`}
+                >
+                    <span>View events at this venue</span>
+                    <span aria-hidden="true">→</span>
+                </a>
             </div>
         </div>
     );

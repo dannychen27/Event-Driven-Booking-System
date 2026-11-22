@@ -45,6 +45,7 @@ describe("VenueCard", () => {
                 "venue-card__type",
                 "venue-card__description",
                 "venue-card__address",
+                "venue-card__events-link",
             ]);
         });
 
@@ -136,6 +137,28 @@ describe("VenueCard", () => {
             ).toBeInTheDocument();
 
             expect(screen.getByText("Address to be announced")).toBeInTheDocument();
+        });
+    });
+
+    describe("venue navigation", () => {
+        it("renders an accessible link to view events at the venue", () => {
+            render(<VenueCard venue={venueCardFixture} />);
+
+            expect(
+                screen.getByRole("link", {
+                    name: "View events at this venue",
+                }),
+            ).toBeInTheDocument();
+        });
+
+        it("links to the Events page with the venue ID in the query string", () => {
+            render(<VenueCard venue={venueCardFixture} />);
+
+            expect(
+                screen.getByRole("link", {
+                    name: "View events at this venue",
+                }),
+            ).toHaveAttribute("href", `/events?venueId=${venueCardFixture.id}`);
         });
     });
 });

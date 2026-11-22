@@ -21,6 +21,7 @@ import {
     handleSearch,
 } from "../helpers/search/EventSearchHelpers.ts";
 import { getEvents } from "../api/events";
+import { getVenues } from "../api/venues.ts";
 import { getBookingHistory } from "../api/bookings.ts";
 import { BOOKING_USER_ID } from "../constants/bookings/booking.ts";
 import ErrorState from "../components/ui/ErrorState";
@@ -35,6 +36,20 @@ import {
     displayAllEvents,
     displayNoEvents,
 } from "../helpers/events/EventsPageHelpers.tsx";
+
+function readSelectedVenueId(): number | null {
+    const rawVenueId = new URLSearchParams(window.location.search).get(
+        "venueId",
+    );
+
+    if (!rawVenueId) return null;
+
+    const venueId = Number(rawVenueId);
+
+    return Number.isSafeInteger(venueId) && venueId > 0
+        ? venueId
+        : null;
+}
 
 export default function EventsPage() {
     const [events, setEvents] = useState<Event[]>([]);
@@ -55,6 +70,11 @@ export default function EventsPage() {
     const [bookingHistoryStatus, setBookingHistoryStatus] =
         useState<BookingHistoryStatus>("loading");
     const [bookingHistoryRetry, setBookingHistoryRetry] = useState(0);
+
+    const [selectedVenueId, setSelectedVenueId] =
+        useState<number | null>(readSelectedVenueId);
+    const [selectedVenueName, setSelectedVenueName] =
+        useState<string | null>(null);
 
     const [dateSelection, setDateSelection] = useState<
         ExplicitSelection<CalendarDateRange> | undefined
@@ -152,6 +172,56 @@ export default function EventsPage() {
         };
     }, [bookingHistoryRetry]);
 
+    useEffect(() => {
+        function handleLocationChange() {
+            setSelectedVenueId(readSelectedVenueId());
+        }
+
+        window.addEventListener("popstate", handleLocationChange);
+
+        return () => {
+            window.removeEventListener("popstate", handleLocationChange);
+        };
+    }, []);
+
+    // Resolve the venue name for the selected venue context.
+    useEffect(() => {
+        if (selectedVenueId === null) {
+            setSelectedVenueName(null);
+            return;
+        }
+
+        let isActive = true;
+
+        setSelectedVenueName(null);
+
+        async function fetchSelectedVenue() {
+            try {
+                const venues = await getVenues();
+
+                if (!isActive) return;
+
+                const selectedVenue = venues.find(
+                    (venue) => venue.id === selectedVenueId,
+                );
+
+                setSelectedVenueName(
+                    selectedVenue?.name.trim() || null,
+                );
+            } catch {
+                if (isActive) {
+                    setSelectedVenueName(null);
+                }
+            }
+        }
+
+        void fetchSelectedVenue();
+
+        return () => {
+            isActive = false;
+        };
+    }, [selectedVenueId]);
+
     function handleBookingCreated(eventId: number) {
         setBookedEventIds((current) => {
             const updated = new Set(current);
@@ -170,6 +240,32 @@ export default function EventsPage() {
         setBookingHistoryStatus("loading");
         setBookingHistoryRetry((current) => current + 1);
     }
+
+    function clearVenueFilter() {
+        const searchParams = new URLSearchParams(window.location.search);
+
+        searchParams.delete("venueId");
+
+        const remainingQuery = searchParams.toString();
+        const nextUrl = [
+            window.location.pathname,
+            remainingQuery ? `?${remainingQuery}` : "",
+            window.location.hash,
+        ].join("");
+
+        window.history.replaceState({}, "", nextUrl);
+
+        setSelectedVenueId(null);
+        setSelectedVenueName(null);
+    }
+
+    const displayedEvents =
+        selectedVenueId === null
+            ? events
+            : events.filter((event) => event.venue_id === selectedVenueId);
+
+    const displayedVenueName =
+        selectedVenueName || `Venue #${selectedVenueId}`;
 
     if (loading) {
         return (
@@ -357,6 +453,24 @@ export default function EventsPage() {
         <div className="events-page">
             <h1>Events</h1>
 
+            {selectedVenueId !== null && (
+                <section
+                    className="events-page__venue-filter"
+                    aria-label="Selected venue filter"
+                >
+                    <p>
+                        {`Showing events at ${displayedVenueName}`}
+                    </p>
+
+                    <button
+                        type="button"
+                        onClick={clearVenueFilter}
+                    >
+                        Clear venue filter
+                    </button>
+                </section>
+            )}
+
             <EventSearchForm
                 keyword={keyword}
                 searching={searching}
@@ -506,10 +620,18 @@ export default function EventsPage() {
                 </p>
             )}
 
-            {!searching && events.length === 0
-                ? displayNoEvents(isSearchActive)
+            {!searching && displayedEvents.length === 0
+                ? selectedVenueId !== null
+                    ? (
+                        <p className="empty-state-message">
+                            {isSearchActive
+                                ? `No matching events found at ${displayedVenueName}.`
+                                : `No upcoming events are currently listed for ${displayedVenueName}.`}
+                        </p>
+                    )
+                    : displayNoEvents(isSearchActive)
                 : displayAllEvents(
-                    events,
+                    displayedEvents,
                     bookedEventIds,
                     bookingHistoryStatus,
                     handleBookingCreated,

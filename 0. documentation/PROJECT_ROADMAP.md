@@ -306,11 +306,11 @@ rather than developer-oriented data displays.
 
 #### Venue-to-Events Navigation
 
-- [ ] Link each venue card to the events hosted at that venue.
-- [ ] Support filtering the Events page by the selected venue.
-- [ ] Show the selected venue context and provide a way to return to all events.
-- [ ] Handle venues with no matching upcoming events gracefully.
-- [ ] Add regression tests for venue-to-events navigation and filtering.
+- [x] Link each venue card to the events hosted at that venue.
+- [x] Support filtering the Events page by the selected venue.
+- [x] Show the selected venue context and provide a way to return to all events.
+- [x] Handle venues with no matching upcoming events gracefully.
+- [x] Add regression tests for venue-to-events navigation and filtering.
 
 #### Consistency and Regression Verification
 
@@ -587,3 +587,53 @@ Use these representative viewport widths for card and page-level QA:
 - [ ] Capture final desktop screenshots of Events, Venues, and Booking History.
 - [ ] Capture representative mobile screenshots.
 - [ ] Address any visual issues discovered during the deferred QA pass.
+---
+
+## Interaction and UI Polish
+
+**Status:** Planned — venue-to-events navigation is implemented; remaining polish and data-management tasks are listed below.
+
+### Next Commit: Booking Button Styling
+
+- [ ] Improve the visual styling of the green Create Booking button.
+- [ ] Improve the visual styling of the red Cancel Booking button.
+- [ ] Standardize button dimensions, typography, border radius, hover states, and focus states.
+- [ ] Preserve the semantic distinction between primary booking and destructive cancellation actions.
+- [ ] Preserve existing booking and cancellation behavior and regression coverage.
+
+### Development and Showcase Venue Data Separation
+
+**Status:** Planned — separate data-management task.
+
+**Goal:** Keep development edge-case venues available for testing while presenting a clean, intentional set of canonical venues in the portfolio showcase data.
+
+- [ ] Inspect the duplicate Bahen venue records and identify their associated events and bookings.
+- [ ] Identify one canonical Bahen venue record for the showcase dataset.
+- [ ] Move the additional Bahen test/edge-case venue records into development seed scripts.
+- [ ] Preserve duplicate-name and venue-filtering edge cases in development data.
+- [ ] Keep showcase seed data focused on realistic, intentional venues.
+- [ ] Review foreign-key relationships and seed execution order before changing venue records.
+- [ ] Verify fresh database setup and existing database migration/update behavior.
+- [ ] Confirm the Events and Venues pages display the intended showcase data.
+- [ ] Verify that development seed scripts still provide the intended edge-case coverage.
+
+**Scope constraints:**
+- Do not delete useful development records merely to remove duplicate-looking showcase entries.
+- Do not change venue IDs or relationships without checking dependent events and bookings.
+- Keep development fixtures and portfolio showcase data clearly separated.
+
+### Search and Filter Usability
+
+- [ ] Explore a collapsible search bar on the Events page.
+- [ ] Add collapsible date and time filter controls.
+- [ ] Preserve active search queries and filter selections when controls are collapsed or expanded.
+- [ ] Ensure collapsed controls remain accessible and communicate their expanded/collapsed state.
+
+### Collapsible Card Evaluation
+
+- [ ] Evaluate whether EventCards benefit from collapsible descriptions or secondary details.
+- [ ] Evaluate whether VenueCards benefit from collapsible descriptions or secondary details.
+- [ ] Evaluate whether BookingCards benefit from collapsible content.
+- [ ] Implement collapsible card content only where it meaningfully improves usability.
+- [ ] Keep important information and primary actions accessible.
+- [ ] Add regression tests for any implemented collapse/expand interactions.
