@@ -3,35 +3,58 @@ import type { Booking } from "../types/bookings/Booking.ts";
 import { getBookingHistory } from "../api/bookings.ts";
 import { BOOKING_USER_ID } from "../constants/bookings/booking.ts";
 import "../styles/pages/booking-page.css";
-import "../styles/errors/error-message.css";
 import "../styles/errors/status-message.css";
 import "../styles/errors/empty-state-message.css";
-import { displayAllBookings, displayNoBookings } from "../helpers/bookings/BookingsPageHelpers.tsx";
-
+import ErrorState from "../components/ui/ErrorState";
+import {
+    displayAllBookings,
+    displayNoBookings,
+} from "../helpers/bookings/BookingsPageHelpers.tsx";
 
 export default function BookingsPage() {
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [bookingsRetry, setBookingsRetry] = useState(0);
 
     const user_id = BOOKING_USER_ID;  // hardcoded for now...
     // TODO: when we create accounts, we can load that specific user's
     // TODO: bookings (using their own user_id instead of a hardcoded one).
 
     useEffect(() => {
+        let isActive = true;
+
         async function fetchBookings() {
             try {
-                const bookings = await getBookingHistory(user_id);
-                setBookings(bookings);
+                const fetchedBookings = await getBookingHistory(user_id);
+
+                if (isActive) {
+                    setBookings(fetchedBookings);
+                    setError("");
+                }
             } catch {
-                setError(`Failed to load bookings for user ${user_id}`);
+                if (isActive) {
+                    setError("failed");
+                }
             } finally {
-                setLoading(false);
+                if (isActive) {
+                    setLoading(false);
+                }
             }
         }
 
-        void fetchBookings();  // intentionally not awaiting the promise.
-    }, []);
+        void fetchBookings();
+
+        return () => {
+            isActive = false;
+        };
+    }, [bookingsRetry]);
+
+    function retryBookings() {
+        setError("");
+        setLoading(true);
+        setBookingsRetry((current) => current + 1);
+    }
 
     if (loading) {
         return (
@@ -42,7 +65,25 @@ export default function BookingsPage() {
     }
 
     if (error) {
-        return <p className="error-message">{error}</p>;
+        return (
+            <ErrorState
+                title="We couldn't load your bookings."
+                description={
+                    <>
+                        <p>We couldn't retrieve your booking history.</p>
+                        <p>You can try the following:</p>
+                        <ul>
+                            <li>Check your internet connection and try again.</li>
+                            <li>Refresh the page.</li>
+                            <li>Wait a moment and try again.</li>
+                        </ul>
+                    </>
+                }
+                onRetry={retryBookings}
+                retryLabel="Try again"
+                className="error-state--page"
+            />
+        );
     }
 
     return (

@@ -267,17 +267,27 @@ Status: Not started.
 
 ### Reusable Error States and Offline Experience
 
-Status: Planned.
+**Status: In Progress**
 
-- [ ] Build a reusable `ErrorState` component.
-- [ ] Support configurable headings, descriptions, illustrations, and retry actions.
-- [ ] Use playful presentation as the default visual mode.
-- [ ] Support an optional professional presentation mode.
-- [ ] Add consistent light and dark theme styling.
-- [ ] Integrate the component into Events, Venues, and My Bookings.
-- [ ] Remove technical implementation details from user-facing errors.
-- [ ] Verify retry behavior and recovery after API connectivity is restored.
-- [ ] Add frontend regression tests for loading, error, and recovery states.
+**Objective:** Provide consistent, user-friendly error states across the frontend, with actionable recovery options when API requests fail or connectivity is interrupted.
+
+**Completed**
+- [x] Build a reusable `ErrorState` component.
+- [x] Support configurable headings, descriptions, illustrations, and retry actions.
+- [x] Support a playful default variant and an optional professional variant.
+- [x] Add light- and dark-theme styling.
+- [x] Integrate reusable full-page error states into `EventsPage`.
+- [x] Integrate reusable full-page error states into `VenuesPage`.
+- [x] Integrate the reusable error state into `BookingsPage` (`My Bookings`).
+- [x] Support structured troubleshooting guidance using paragraphs and bullet lists.
+- [x] Add frontend regression tests for `ErrorState`, `EventsPage`, and `VenuesPage`.
+- [x] Add regression tests for retry success, retry failure, and recovery behaviour.
+- [x] Preserve independent compact error handling for booking-history status on `EventsPage`.
+
+**Remaining**
+- [ ] Replace remaining technical or implementation-specific error messages with user-friendly guidance where appropriate.
+- [ ] Verify retry and recovery after API connectivity is restored.
+- [ ] Verify loading-to-error transitions and successful recovery across all relevant pages.
 
 ### Four Seasons Theme 🌸☀️🍂❄️
 
