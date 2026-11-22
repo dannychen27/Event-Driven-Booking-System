@@ -12,7 +12,7 @@ import { cancelBooking } from "../../api/bookings.ts";
 import { EventImage } from "../ui/EventImage.tsx";
 import { Modal } from "../modals/Modal.tsx";
 import Button from "../ui/buttons/Button";
-import { InfoLabel } from "../ui/labels/InfoLabel.tsx";
+import { formatBookingDate } from "../../helpers/shared/DatesHelpers.ts";
 
 
 export default function BookingCard({
@@ -44,31 +44,58 @@ export default function BookingCard({
         }
     }
 
+    const eventName = booking.event_name?.trim() || "Event details unavailable";
+    const venueName = booking.venue_name?.trim() || "Venue details unavailable";
+    const venueAddress = booking.venue_address?.trim() || "Location to be announced";
+
     return (
         <div className="card booking-card">
             <div className="booking-card__layout">
                 <div className="booking-card__content">
-                    <h2>{booking.event_name ?? `Event ${booking.event_id}`}</h2>
+                    <h2>{eventName}</h2>
 
-                    <InfoLabel label="Booking Id" value={booking.id} />
-                    <InfoLabel label="Event Id" value={booking.event_id} />
-                    <InfoLabel label="User Id" value={booking.user_id} />
-                    <InfoLabel
-                        label="Venue"
-                        value={booking.venue_name ?? "Unavailable"}
+                    <div className="booking-card__details">
+                        <div className="booking-card__detail">
+                            <span className="booking-card__detail-label">
+                                Venue:
+                            </span>
+                            <span className="booking-card__detail-value">
+                                {venueName}
+                            </span>
+                        </div>
+
+                        <div className="booking-card__detail">
+                            <span className="booking-card__detail-label">
+                                Location:
+                            </span>
+                            <span className="booking-card__detail-value">
+                                {venueAddress}
+                            </span>
+                        </div>
+                    </div>
+
+                    <DateLabel
+                        label="Date & Time"
+                        startDateTime={booking.start_time}
+                        endDateTime={booking.end_time}
                     />
-                    <DateLabel label="Starts at" dateTime={booking.start_time} />
-                    <DateLabel label="Ends at" dateTime={booking.end_time} />
-                    {booking.venue_address && (
-                        <InfoLabel label="Address" value={booking.venue_address} />
-                    )}
-                    <DateLabel label="Booked at" dateTime={booking.created_at} />
+
+                    <div className="booking-card__booking-meta">
+                        <span className="booking-card__detail-label">
+                            Booked at:
+                        </span>
+                        <span className="booking-card__detail-value">
+                            {booking.created_at
+                                ? formatBookingDate(booking.created_at)
+                                : "Not set"}
+                        </span>
+                    </div>
                 </div>
 
                 <div className="booking-card__image">
                     <EventImage
                         imageUrl={booking.image_url}
-                        alt={booking.event_name ?? `Event ${booking.event_id}`}
+                        alt={eventName}
                     />
                 </div>
             </div>

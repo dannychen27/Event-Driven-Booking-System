@@ -16,7 +16,7 @@ export default function BookingCardSkeleton() {
                     />
 
                     <div className="booking-card-skeleton__metadata">
-                        {Array.from({ length: 7 }, (_, index) => (
+                        {Array.from({ length: 4 }, (_, index) => (
                             <div
                                 className="booking-card-skeleton__row"
                                 key={index}

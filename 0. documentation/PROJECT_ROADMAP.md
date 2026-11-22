@@ -265,14 +265,14 @@ Status: Completed.
 - [x] Preserve the independent booking-history loading indicator on `EventsPage`.
 - [x] Add component and page regression tests.
 - [x] Verify spinner animation manually in light and dark modes.
-- [x] Pass the full frontend test suite (206/206 tests across 32 files).
+- [x] Pass the full frontend test suite (214/214 tests across 32 files).
 - [x] Pass the frontend production build.
 - [x] Re-run the three page regression suites after removing temporary loading-preview overrides (24/24 tests).
 - [x] Pass `git diff --check`.
 
 ### Portfolio-Ready Card Content and Presentation
 
-Status: Planned.
+Status: In Progress.
 
 **Goal:** Make the EventCard, VenueCard, and booking history cards
 feel like components of a polished, user-facing event-booking product,
@@ -280,29 +280,29 @@ rather than developer-oriented data displays.
 
 #### EventCard
 
-- [ ] Replace raw event identifiers and developer-oriented labels with meaningful event information.
-- [ ] Present event names, venue names, dates, times, and locations clearly.
+- [x] Replace raw event identifiers and developer-oriented labels with meaningful event information.
+- [x] Present event names, venue names, dates, times, and locations clearly.
 - [ ] Display relevant pricing, capacity, and availability information where appropriate.
-- [ ] Ensure optional or missing event information has sensible user-facing fallbacks.
+- [x] Ensure optional or missing event information has sensible user-facing fallbacks.
 
 #### VenueCard
 
-- [ ] Replace raw venue identifiers and technical labels with meaningful venue information.
-- [ ] Present venue names, readable addresses, and useful descriptions.
+- [x] Replace raw venue identifiers and technical labels with meaningful venue information.
+- [x] Present venue names, readable addresses, and useful descriptions.
 - [ ] Display relevant capacity and venue details where available.
-- [ ] Add optional venue image URLs to the database schema, backend response, and frontend Venue type.
-- [ ] Populate realistic venue images in the showcase seed data.
-- [ ] Display venue images consistently with EventCard's image presentation.
-- [ ] Provide an accessible fallback for missing or broken venue images.
-- [ ] Add regression tests for venue image rendering and fallback behavior.
-- [ ] Ensure missing optional information does not produce awkward or empty labels.
+- [x] Add optional venue image URLs to the database schema, backend response, and frontend Venue type.
+- [x] Populate realistic venue images in the showcase seed data.
+- [x] Display venue images consistently with EventCard's image presentation.
+- [x] Provide an accessible fallback for missing or broken venue images.
+- [x] Add regression tests for venue image rendering and fallback behavior.
+- [x] Ensure missing optional information does not produce awkward or empty labels.
 
 #### Booking History Cards
 
-- [ ] Show the booked event name and associated venue instead of relying on event identifiers.
-- [ ] Present booking dates and statuses using readable, consistent formatting.
-- [ ] Make available booking actions and their states clear to users.
-- [ ] Handle missing or unavailable event and venue information gracefully.
+- [x] Show the booked event name and associated venue instead of relying on event identifiers.
+- [x] Present event dates and booking timestamps using readable, consistent formatting.
+- [x] Make available booking actions and their states clear to users.
+- [x] Handle missing or unavailable event and venue information gracefully.
 
 #### Venue-to-Events Navigation
 
@@ -315,11 +315,11 @@ rather than developer-oriented data displays.
 #### Consistency and Regression Verification
 
 - [ ] Standardize date, time, status, and metadata presentation across all three card types.
-- [ ] Remove unexplained internal identifiers, raw enum values, and implementation-specific labels from user-facing displays.
-- [ ] Preserve existing booking, cancellation, and navigation behavior.
+- [x] Remove unexplained internal identifiers, raw enum values, and implementation-specific labels from user-facing displays.
+- [x] Preserve existing booking, cancellation, and navigation behavior.
 - [ ] Verify desktop and mobile layouts.
 - [ ] Verify light and dark themes.
-- [ ] Add or update regression tests for the revised card content.
+- [x] Add or update regression tests for the revised card content.
 - [ ] Verify that realistic demo data supports portfolio screenshots of the Venues and Booking History pages.
 
 #### Portfolio Screenshot Readiness
@@ -548,3 +548,42 @@ Tests inspected:
 ---
 
 Last updated: November 22, 2026
+
+## Deferred: Full Visual QA and Portfolio Polish
+
+**Status:** Deferred — current card presentation is acceptable. Revisit this work when time is available, before capturing final portfolio screenshots.
+
+### Card Visual QA
+
+- [ ] EventCard: verify responsive layout across desktop, laptop, tablet, and mobile viewports.
+- [ ] VenueCard: verify responsive layout across desktop, laptop, tablet, and mobile viewports.
+- [ ] BookingCard: verify responsive layout across desktop, laptop, tablet, and mobile viewports.
+- [ ] Verify all three card types in light and dark themes.
+- [ ] Verify image fallbacks and loading skeletons in both themes.
+- [ ] Check long text, spacing, alignment, and horizontal overflow.
+
+### Page-Level Visual QA
+
+- [ ] Review Events page loading, empty, error, and populated states.
+- [ ] Review Venues page loading, empty, error, and populated states.
+- [ ] Review Booking History page loading, empty, error, and populated states.
+- [ ] Check page layouts across desktop, laptop, tablet, and mobile viewports.
+- [ ] Check navigation and interactions across the three pages.
+
+### Responsive Viewport Coverage
+
+Use these representative viewport widths for card and page-level QA:
+
+- [ ] Desktop: 1920px and 1440px.
+- [ ] Laptop: 1366px and 1280px.
+- [ ] Tablet landscape: 1024px.
+- [ ] Tablet portrait: 768px.
+- [ ] Mobile: 430px, 390px, 375px, and 320px.
+- [ ] Check intermediate widths around CSS breakpoints and layout transitions.
+- [ ] Verify no horizontal overflow, clipped content, or awkward text wrapping.
+
+### Portfolio Screenshot Readiness
+
+- [ ] Capture final desktop screenshots of Events, Venues, and Booking History.
+- [ ] Capture representative mobile screenshots.
+- [ ] Address any visual issues discovered during the deferred QA pass.

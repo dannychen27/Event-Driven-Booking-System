@@ -18,7 +18,7 @@ describe("BookingCardSkeleton", () => {
             ).toBeInTheDocument();
             expect(
                 container.querySelectorAll(".booking-card-skeleton__row"),
-            ).toHaveLength(7);
+            ).toHaveLength(4);
             expect(
                 container.querySelector(".booking-card__actions .skeleton"),
             ).toBeInTheDocument();
