@@ -727,13 +727,13 @@ see [PROJECT_ROADMAP.md](0.%20documentation/PROJECT_ROADMAP.md).
 
 ### Phase 1 Follow-up — AI-Powered Natural-Language Event Search
 
-The core search feature is implemented, but improvements to date interpretation,
-provider error handling, and rate limiting remain.
+The core search feature and relative-date interpretation are implemented.
+Provider error handling and rate limiting remain.
 
-- [ ] **Improve relative-date interpretation**
+- [x] **Improve relative-date interpretation**
   - [x] Provide the current date and an explicit timezone to the AI interpreter.
-  - [ ] Ensure queries such as "this weekend" produce appropriate `startAfter` and `startBefore` filters.
-  - [ ] Add tests for relative-date interpretation and timezone boundaries.
+  - [x] Ensure queries such as "this weekend" produce appropriate `startAfter` and `startBefore` filters.
+  - [x] Add tests for relative-date interpretation and timezone boundaries.
   - [x] Test date-filter validation, including invalid dates and reversed date ranges.
 
 - [ ] **Harden AI provider error handling**
