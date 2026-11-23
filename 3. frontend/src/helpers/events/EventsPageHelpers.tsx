@@ -18,13 +18,17 @@ export function displayAllEvents(
     bookingHistoryStatus: BookingHistoryStatus,
     onBookingCreated: (eventId: number) => void,
 ) {
-    return events.map((event) => (
-        <EventCard
-            key={event.id}
-            event={event}
-            isBooked={bookedEventIds.has(event.id)}
-            bookingHistoryStatus={bookingHistoryStatus}
-            onBookingCreated={onBookingCreated}
-        />
-    ));
+    return (
+        <div className="events-page__grid">
+            {events.map((event) => (
+                <EventCard
+                    key={event.id}
+                    event={event}
+                    isBooked={bookedEventIds.has(event.id)}
+                    bookingHistoryStatus={bookingHistoryStatus}
+                    onBookingCreated={onBookingCreated}
+                />
+            ))}
+        </div>
+    );
 }

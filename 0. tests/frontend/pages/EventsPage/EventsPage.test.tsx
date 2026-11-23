@@ -52,13 +52,18 @@ describe("Initial loading and rendering", () => {
 
         expect(screen.getByRole("status")).toHaveAttribute("aria-busy", "true");
         expect(screen.getByText("Loading events...")).toBeInTheDocument();
-        expect(container.querySelectorAll(".event-card-skeleton")).toHaveLength(3);
+        const skeletonGrid = container.querySelector(
+            ".events-page__grid.skeleton-loading__cards",
+        );
+
+        expect(skeletonGrid).not.toBeNull();
+        expect(skeletonGrid?.querySelectorAll(".event-card-skeleton")).toHaveLength(3);
     });
 
     it("renders events after they are successfully fetched", async () => {
         vi.mocked(getEvents).mockResolvedValue(initialRenderEventFixture);
 
-        render(<EventsPage />);
+        const { container } = render(<EventsPage />);
 
         expect(
             await screen.findByText("Mock Event Card: Test Event 1"),
@@ -67,6 +72,11 @@ describe("Initial loading and rendering", () => {
         expect(
             screen.getByText("Mock Event Card: Test Event 2"),
         ).toBeInTheDocument();
+
+        const eventGrid = container.querySelector(".events-page__grid");
+
+        expect(eventGrid).not.toBeNull();
+        expect(eventGrid?.children).toHaveLength(2);
 
         expect(screen.queryByText("Loading events...")).not.toBeInTheDocument();
     });

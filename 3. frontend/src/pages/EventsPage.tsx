@@ -418,7 +418,7 @@ export default function EventsPage() {
                       </div>
                   </div>
 
-                  <div className="skeleton-loading__cards">
+                  <div className="events-page__grid skeleton-loading__cards">
                         <EventCardSkeleton />
                         <EventCardSkeleton />
                         <EventCardSkeleton />

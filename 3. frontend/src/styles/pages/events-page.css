@@ -1,7 +1,8 @@
 .events-page {
-    width: 80%;
+    width: 100%;
+    max-width: 1900px;
     margin: 0 auto;
-    padding: 3%;
+    padding: clamp(1rem, 2.5vw, 2.5rem);
     box-sizing: border-box;
 }
 
@@ -59,4 +60,23 @@
     .events-page__venue-filter button {
         align-self: flex-start;
     }
+}
+
+
+/* Responsive event-card layout */
+.events-page__grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(min(100%, 340px), 1fr)
+    );
+    gap: 1.25rem;
+    align-items: stretch;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.events-page__grid > .event-card {
+    min-width: 0;
+    margin-bottom: 0;
 }

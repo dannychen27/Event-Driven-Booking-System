@@ -102,12 +102,13 @@ Improve the Events and Venues page layouts so users can browse more content effi
 
 ##### Events and Venues Page Layout
 
-- [ ] Replace the existing single-column card layout with a responsive multi-column CSS grid.
+- [x] Implement a responsive multi-column CSS grid for the Events page.
+- [ ] Redesign the Venues page card layout; it currently retains its single-column layout.
 - [ ] Display filters in a dedicated left sidebar on wider screens.
 - [ ] Keep search and sorting controls above the results.
 - [ ] Make the filter sidebar and search/filter toolbar sticky where appropriate.
-- [ ] Adjust the number of cards per row based on available width and card readability.
-- [ ] Preserve a usable single-column layout on narrow mobile screens.
+- [x] Adjust the number of Events cards per row based on available width and card readability, with a maximum of five columns.
+- [x] Preserve a usable single-column Events layout on narrow mobile screens.
 - [ ] Maintain consistent presentation across light and dark themes.
 - [ ] Prevent the Events search placeholder from clipping at 320px.
 - [ ] Improve the horizontal distribution and compactness of Events filters on desktop.
@@ -458,10 +459,16 @@ Evaluate improvements to the navigation bar's visual presentation and layout.
 
 ### 4.6 Search and Filter Usability
 
-- [ ] Evaluate collapsible search and filter sections.
-- [ ] Consider grouping date and time filters into a more compact interface.
-- [ ] Preserve filter state when sections are collapsed or expanded.
-- [ ] Verify keyboard and screen-reader accessibility.
+- [ ] Reduce the vertical space occupied by the regular keyword search bar.
+- [ ] Make the AI-powered natural-language search bar more compact.
+- [ ] Evaluate collapsible sections for the regular search, AI search, and date/time filters.
+- [ ] Keep frequently used search controls readily accessible while reducing the page's initial vertical footprint.
+- [ ] Group date and time filters into a more compact, collapsible interface.
+- [ ] Preserve search queries and filter selections when sections are collapsed or expanded.
+- [ ] Provide clear expand/collapse labels and accessible expanded-state semantics.
+- [ ] Verify keyboard navigation, screen-reader accessibility, and visible focus states.
+- [ ] Preserve existing keyword search, AI search, calendar, and filtering behavior.
+- [ ] Add regression tests for collapse/expand interactions and state preservation.
 
 ### 4.7 Accessibility Improvements
 
@@ -818,6 +825,21 @@ This section records completed work for historical reference. New work should be
 - [x] Verify theme compatibility.
 
 ---
+
+### 5.14 Responsive Events Page Grid
+
+**Status:** Implemented and tested; pending commit.
+
+- [x] Replace the single-column Events page event-card layout with a responsive CSS grid.
+- [x] Automatically fit columns based on available container width.
+- [x] Maintain a 340px minimum card width and 1.25rem grid gap.
+- [x] Expand the Events page container to support up to five columns on wide screens.
+- [x] Align event loading skeletons with the responsive grid.
+- [x] Add regression tests for the populated Events grid and loading skeleton structure.
+- [x] Pass the EventsPage regression suite (11/11 tests).
+- [x] Pass `git diff --check`.
+- [x] Manually verify natural text wrapping, no clipped content, and no unintended horizontal overflow at tested viewport widths.
+- [ ] Visually verify the four- and five-column layouts at wider desktop viewports.
 
 ## 6. Technical Decisions and Constraints
 
