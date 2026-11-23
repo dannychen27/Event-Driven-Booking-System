@@ -57,19 +57,19 @@ Update it when significant work is completed, merged, approved, or deliberately 
 #### Optional Manual QA
 
 - [ ] Verify the loading state using network throttling.
-- [ ] Verify the booking-history error state and retry request.
+- [x] Verify the booking-history error state and retry request.
 
 #### Follow-up: API-Unavailable State Verification
 
-- [ ] Simulate API unavailability (e.g., temporarily stop the backend).
-- [ ] Observe and verify the loading-to-error transition on the Events page.
-- [ ] Verify the booking-history failure message is displayed correctly.
-- [ ] Verify the retry behavior after the API becomes available again.
-- [ ] Confirm the Events page recovers successfully after restoring the backend.
+**Status:** Partially completed — booking-history endpoint failure and recovery verified.
 
-**Scope:** Handle this verification in a separate follow-up commit.
-Do not include API-unavailable testing or related changes in the
-booking-status visual-polish commit.
+- [x] Simulate booking-history API unavailability using Chrome DevTools Network Request Blocking.
+- [ ] Observe and verify the loading-to-error transition on the Events page.
+- [x] Verify the booking-history failure message is displayed correctly.
+- [x] Verify the retry behavior after booking-history API access is restored.
+- [x] Confirm the Events page recovers successfully after restoring booking-history API access.
+
+**Scope:** The manual verification above covers booking-history endpoint failure and recovery. A broader backend-outage and loading-transition test remains outstanding.
 
 ## Phase 5 — Reliability Audit
 
@@ -591,7 +591,7 @@ Use these representative viewport widths for card and page-level QA:
 
 ## Interaction and UI Polish
 
-**Status:** Planned — venue-to-events navigation is implemented; remaining polish and data-management tasks are listed below.
+**Status:** In Progress — venue-to-events navigation, booking button styling, and booking-history error-state polish are implemented; remaining data-management and usability tasks are listed below.
 
 ### Booking Button Styling
 
@@ -601,17 +601,41 @@ Use these representative viewport widths for card and page-level QA:
 - [x] Preserve the semantic distinction between primary booking and destructive cancellation actions.
 - [x] Preserve existing booking and cancellation behavior and regression coverage.
 
-### Manual QA: Booking-History Failure Fallback
+### Booking-History Failure Handling and Error-State Polish
 
-**Goal:** Verify that EventCard safely handles a failed booking-history request and that the normal booking state recovers afterward.
+**Status:** Completed.
 
-- [ ] Inspect the booking-history API request and EventCard error-state handling.
-- [ ] Prepare an exact Chrome DevTools Console snippet to simulate a failed booking-history API response.
-- [ ] Reload the Events page and verify that an unbooked event displays the disabled "Booking status unavailable" button.
-- [ ] Verify that the fallback does not allow a booking while booking status is unknown.
-- [ ] Restore normal API behaviour and reload the page.
-- [ ] Verify that the regular booking button or already-booked state returns as appropriate.
-- [ ] Record the reproduction and recovery steps for future manual regression testing.
+**Goal:** Ensure EventCard safely handles unavailable booking-history data, communicates the problem clearly, and allows users to recover without disrupting event discovery.
+
+#### Manual QA: Failure and Recovery
+
+- [x] Inspect the booking-history API request and EventCard error-state handling.
+- [x] Use Chrome DevTools Network Request Blocking to simulate a failed booking-history API response.
+- [x] Reload the Events page and verify that unbooked events display the disabled "Booking status unavailable" button.
+- [x] Verify that the fallback does not allow a booking while booking status is unknown.
+- [x] Restore normal API behaviour and retry booking history.
+- [x] Verify that the regular booking button or already-booked state returns as appropriate.
+- [x] Record the reproduction and recovery steps for future manual regression testing.
+
+**Reproduction and recovery procedure:**
+
+1. Open Chrome DevTools and navigate to Network Request Blocking.
+2. Block `http://localhost:3000/users/1/bookings`.
+3. Reload the Events page.
+4. Verify the booking-history error state and disabled booking buttons.
+5. Attempt to interact with a disabled booking button and confirm no booking can be initiated.
+6. Remove the blocking rule and retry booking status.
+7. Verify normal booking states return.
+
+#### Error-State Presentation and Regression Testing
+
+- [x] Display the booking-history error explanation and retry instruction as separate paragraphs.
+- [x] Replace the generic error illustration with a contextual CalendarX icon.
+- [x] Verify the updated error presentation in the browser.
+- [x] Preserve independent booking-history retry behaviour.
+- [x] Pass the EventsPage regression tests (11/11).
+- [x] Pass the frontend production build.
+- [x] Pass `git diff --check`.
 
 ### Development and Showcase Venue Data Separation
 
@@ -649,3 +673,63 @@ Use these representative viewport widths for card and page-level QA:
 - [ ] Implement collapsible card content only where it meaningfully improves usability.
 - [ ] Keep important information and primary actions accessible.
 - [ ] Add regression tests for any implemented collapse/expand interactions.
+
+---
+
+## Future Enhancements
+
+### 1. Compact Loading Indicators
+
+**Goal:** Reduce the vertical space occupied by loading messages so users can see more of the skeleton-card animations.
+
+- [ ] Replace large loading messages with a compact horizontal loading indicator.
+- [ ] Add a small animated spinner beside the message.
+- [ ] Use consistent loading messages: "Loading events...", "Loading venues...", and "Loading bookings...".
+- [ ] Keep existing skeleton-card animations visible underneath the indicator.
+- [ ] Standardize indicator alignment, spacing, and typography across all three pages.
+- [ ] Provide accessible loading announcements for screen readers.
+- [ ] Preserve existing loading, error, and empty-state behaviour.
+- [ ] Add or update regression tests for loading indicators and skeleton visibility.
+
+
+### 2. Custom Timezone Selector
+
+**Goal:** Let users view event and booking times in their preferred timezone, independently of the event's original timezone.
+
+- [ ] Detect the user's browser timezone as the initial default.
+- [ ] Add a manually configurable timezone selector using IANA timezone identifiers.
+- [ ] Display event start and end times in the selected timezone.
+- [ ] Apply the selected timezone consistently across Events, Venues, Booking History, and booking confirmation interfaces.
+- [ ] Handle daylight-saving transitions correctly.
+- [ ] Persist the user's timezone preference across sessions.
+- [ ] Clearly identify the timezone used when displaying event times.
+- [ ] Preserve timezone-independent event timestamps and existing booking semantics.
+- [ ] Add regression tests for timezone conversion, daylight-saving transitions, and preference persistence.
+
+### 3. AI-Assisted Localization
+
+**Goal:** Let users choose an application language and access translated interface and event content.
+
+#### Application Internationalization
+
+- [ ] Introduce an internationalization framework for static UI strings.
+- [ ] Add a language selector.
+- [ ] Translate navigation, buttons, labels, forms, and status messages.
+- [ ] Translate error messages, empty states, and loading-state text.
+- [ ] Persist the user's language preference across sessions.
+- [ ] Provide a sensible fallback when a translation is unavailable.
+
+#### AI-Assisted Dynamic Content Translation
+
+- [ ] Evaluate Gemini API integration for translating dynamic event and venue descriptions.
+- [ ] Support translation of AI-generated event-search results and clarification messages.
+- [ ] Preserve the original content and allow users to switch back to it.
+- [ ] Handle translation failures and API timeouts without breaking normal application functionality.
+- [ ] Avoid translating fixed UI strings dynamically through AI.
+- [ ] Add regression tests for translation success, failure, and fallback behaviour.
+
+#### Quality and Accessibility
+
+- [ ] Verify translated text does not cause layout overflow or clipping.
+- [ ] Review date, time, number, and locale-specific formatting.
+- [ ] Validate translation consistency and terminology across the application.

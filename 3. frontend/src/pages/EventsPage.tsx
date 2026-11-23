@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { CalendarX } from "lucide-react";
 import type { Event } from "../types/events/Event.ts";
 import type {
     CalendarDateRange,
@@ -606,7 +607,15 @@ export default function EventsPage() {
             {bookingHistoryStatus === "error" && (
                 <ErrorState
                     title="Couldn't check booking status"
-                    description="Your events are still available, but we couldn't check which ones you've booked.\nYou can retry this separately."
+                    description={
+                        <>
+                            <p>
+                                Your events are still available, but we couldn't check which ones you've booked.
+                            </p>
+                            <p>You can retry this separately.</p>
+                        </>
+                    }
+                    illustration={<CalendarX size={40} strokeWidth={1.8} />}
                     onRetry={retryBookingHistory}
                     retryLabel="Retry booking status"
                     variant="professional"
