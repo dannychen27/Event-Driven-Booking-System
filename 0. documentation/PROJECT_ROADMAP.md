@@ -15,14 +15,14 @@ Focus on completing the user-facing experience and preparing a convincing, relia
 1. [ ] Complete meaningful EventCard, VenueCard, and BookingCard content and presentation.
 2. [ ] Verify showcase data and demonstrate the end-to-end booking workflow.
 3. [ ] Deploy the application and verify production readiness.
-4. [ ] Complete post-deployment responsive, theme, and page-state QA.
+4. [ ] Complete application-wide visual and functional QA across supported devices, themes, and page states.
 5. [ ] Finalize portfolio screenshots and README presentation.
 
 ---
 
 ## 2. Active Milestones
 
-### 2.1 Portfolio-Ready Card Content and Presentation
+### 2.1 Portfolio-Ready UI and Presentation
 
 **Status:** In Progress
 
@@ -63,7 +63,30 @@ Complete the information and presentation of event, venue, and booking cards so 
 - [x] Handle venues without associated events.
 - [x] Verify navigation behavior.
 
+#### Implementation Order
+
+Complete the remaining card-level responsive improvements before redesigning the page layouts. This establishes a reliable card foundation before changing the available space and number of cards per row.
+
+1. Complete Responsive Card Design.
+2. Implement the Events and Venues page layout redesign.
+3. Add EventCard and VenueCard image lightboxes.
+4. Evaluate and improve the Booking History layout.
+5. Investigate pagination for Events and Venues.
+6. Complete the remaining Content Consistency review.
+7. Complete responsive and functional regression testing.
+
+Regression testing should also be performed incrementally after individual implementation batches where appropriate.
+
 #### Responsive Card Design
+
+##### Outstanding Viewport-Specific Improvements
+
+- [ ] EventCard: Improve metadata spacing and stack labels and values vertically on narrow mobile screens.
+- [ ] VenueCard: Keep the events-navigation link and arrow together at narrow widths.
+- [ ] VenueCard: Improve category-label visibility in dark mode.
+- [ ] BookingCard: Investigate whether the horizontal divider provides useful separation at 320px.
+- [ ] BookingCard: Improve spacing between venue and location information on narrow screens.
+- [ ] BookingCard: Keep the "Booked at" label together at tablet widths and improve metadata indentation.
 
 - [ ] Ensure EventCard, VenueCard, and BookingCard adapt to different screen sizes.
 - [ ] Adjust card layouts, spacing, and content hierarchy for smaller viewports.
@@ -86,6 +109,8 @@ Improve the Events and Venues page layouts so users can browse more content effi
 - [ ] Adjust the number of cards per row based on available width and card readability.
 - [ ] Preserve a usable single-column layout on narrow mobile screens.
 - [ ] Maintain consistent presentation across light and dark themes.
+- [ ] Prevent the Events search placeholder from clipping at 320px.
+- [ ] Improve the horizontal distribution and compactness of Events filters on desktop.
 
 ##### Interactive Card Images
 
@@ -117,6 +142,7 @@ Improve the Events and Venues page layouts so users can browse more content effi
 
 #### Content Consistency
 
+- [ ] Investigate the capitalization of the Venue page's LOCATION label.
 - [ ] Review date, time, status, and metadata consistency across all card types.
 - [x] Remove unnecessary technical labels from user-facing content.
 - [x] Add regression coverage for card content and presentation.
@@ -151,7 +177,7 @@ Prepare a clean, representative dataset for the portfolio demonstration while pr
 
 - [ ] Verify migration and update behavior against the showcase database.
 - [ ] Verify the Venues page displays the intended showcase data.
-- [ ] Verify the Booking History page displays the intended demo bookings.
+- [x] Verify the Booking History page displays the intended demo bookings.
 - [ ] Confirm development seed fixtures still cover useful edge cases.
 - [ ] Review data consistency across Events, Venues, and Booking History.
 - [ ] Ensure the dataset supports a realistic end-to-end booking demonstration.
@@ -337,7 +363,7 @@ These ideas are generally deferred until the core application and portfolio demo
 
 **Status:** In Progress
 
-Complete a final visual and functional review of the deployed application across supported devices, themes, and application states.
+Complete a final visual and functional review of the application across supported devices, themes, and application states.
 
 Verify that the application's existing responsive layouts behave correctly across supported screen sizes. This is application-wide validation, separate from the responsive card implementation tracked in Section 2.1.
 
