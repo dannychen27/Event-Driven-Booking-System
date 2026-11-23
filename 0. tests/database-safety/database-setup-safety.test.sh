@@ -33,7 +33,11 @@ done
 
 printf '\n' >> "$COMMAND_LOG"
 
-if [[ "${MOCK_FAIL_COMMAND:-}" == "$(basename "$0")" ]]; then
+command_call="$(grep -c "^$(basename "$0") " "$COMMAND_LOG")"
+
+if [[ "${MOCK_FAIL_COMMAND:-}" == "$(basename "$0")" ]] &&
+   { [[ -z "${MOCK_FAIL_COMMAND_ON_CALL:-}" ]] ||
+     [[ "$command_call" -eq "$MOCK_FAIL_COMMAND_ON_CALL" ]]; }; then
   echo "Simulated $(basename "$0") failure" >&2
   exit 1
 fi
@@ -363,6 +367,89 @@ assert_command_failure_stops_setup \
   dropdb \
   "dropdb <--if-exists> <booking_system>" \
   env DB_NAME=booking_system bash "$DEV_SCRIPT"
+
+
+# ============================================================
+# SHOWCASE DATABASE SAFETY TESTS
+# ============================================================
+
+echo
+echo "===== SHOWCASE DATABASE SAFETY ====="
+
+SHOWCASE_SCRIPT="$PROJECT_ROOT/2. data model/setup-showcase.sh"
+
+# TEST CASE: Showcase setup rejects missing DB_NAME
+assert_rejected \
+  "Showcase setup rejects missing DB_NAME" \
+  "Set DB_NAME=booking_system_showcase explicitly" \
+  env -u DB_NAME bash "$SHOWCASE_SCRIPT"
+
+# TEST CASE: Showcase setup rejects development database
+assert_rejected \
+  "Showcase setup rejects development database" \
+  "Refusing to create unexpected database" \
+  env DB_NAME=booking_system bash "$SHOWCASE_SCRIPT"
+
+# TEST CASE: Showcase setup rejects test database
+assert_rejected \
+  "Showcase setup rejects test database" \
+  "Refusing to create unexpected database" \
+  env DB_NAME=booking_system_test bash "$SHOWCASE_SCRIPT"
+
+SHOWCASE_EXPECTED="$(printf '%s\n' \
+  "createdb <booking_system_showcase>" \
+  "psql <-X> <-v> <ON_ERROR_STOP=1> <booking_system_showcase> <-f> <schema.sql>" \
+  "psql <-X> <-v> <ON_ERROR_STOP=1> <booking_system_showcase> <-f> <indices/indices.sql>" \
+  "psql <-X> <-v> <ON_ERROR_STOP=1> <booking_system_showcase> <-f> <seed data/showcase.sql>" \
+  "psql <-X> <-v> <ON_ERROR_STOP=1> <booking_system_showcase> <-f> <seed data/showcase-bookings.sql>")"
+
+# TEST CASE: Showcase setup accepts only the designated showcase database
+assert_allowed \
+  "Showcase setup accepts designated showcase database" \
+  "$SHOWCASE_EXPECTED" \
+  env DB_NAME=booking_system_showcase bash "$SHOWCASE_SCRIPT"
+
+assert_log_line_count \
+  "Showcase setup invokes exactly five database commands" \
+  5
+
+assert_log_command_order \
+  "Showcase setup loads schema, indexes, events, then showcase bookings" \
+  createdb psql psql psql psql
+
+# TEST CASE: Showcase setup never invokes dropdb
+assert_output_not_contains \
+  "Showcase setup does not invoke destructive dropdb" \
+  "$COMMAND_LOG" \
+  "dropdb"
+
+# TEST CASE: Showcase setup stops when createdb fails
+assert_command_failure_stops_setup \
+  "Showcase setup stops when createdb fails" \
+  createdb \
+  "createdb <booking_system_showcase>" \
+  env DB_NAME=booking_system_showcase bash "$SHOWCASE_SCRIPT"
+
+# TEST CASE: Showcase setup stops when schema loading fails
+assert_command_failure_stops_setup \
+  "Showcase setup stops when schema loading fails" \
+  psql \
+  "$(printf '%s\n' \
+    "createdb <booking_system_showcase>" \
+    "psql <-X> <-v> <ON_ERROR_STOP=1> <booking_system_showcase> <-f> <schema.sql>")" \
+  env DB_NAME=booking_system_showcase bash "$SHOWCASE_SCRIPT"
+
+# TEST CASE: Showcase setup stops when showcase booking seed loading fails
+MOCK_FAIL_COMMAND_ON_CALL=4 assert_command_failure_stops_setup \
+  "Showcase setup stops when showcase booking seed loading fails" \
+  psql \
+  "$(printf '%s\n' \
+    "createdb <booking_system_showcase>" \
+    "psql <-X> <-v> <ON_ERROR_STOP=1> <booking_system_showcase> <-f> <schema.sql>" \
+    "psql <-X> <-v> <ON_ERROR_STOP=1> <booking_system_showcase> <-f> <indices/indices.sql>" \
+    "psql <-X> <-v> <ON_ERROR_STOP=1> <booking_system_showcase> <-f> <seed data/showcase.sql>" \
+    "psql <-X> <-v> <ON_ERROR_STOP=1> <booking_system_showcase> <-f> <seed data/showcase-bookings.sql>")" \
+  env DB_NAME=booking_system_showcase bash "$SHOWCASE_SCRIPT"
 
 # ============================================================
 # FINAL SUMMARY

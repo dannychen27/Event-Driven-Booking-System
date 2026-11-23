@@ -639,17 +639,23 @@ Use these representative viewport widths for card and page-level QA:
 
 ### Development and Showcase Venue Data Separation
 
-**Status:** Planned — separate data-management task.
+**Status:** In Progress — isolated showcase database creation, booking seed, idempotency, and development-data preservation verified; UI checks remain.
 
 **Goal:** Keep development edge-case venues available for testing while presenting a clean, intentional set of canonical venues in the portfolio showcase data.
 
-- [ ] Inspect the duplicate Bahen venue records and identify their associated events and bookings.
-- [ ] Identify one canonical Bahen venue record for the showcase dataset.
-- [ ] Move the additional Bahen test/edge-case venue records into development seed scripts.
-- [ ] Preserve duplicate-name and venue-filtering edge cases in development data.
-- [ ] Keep showcase seed data focused on realistic, intentional venues.
-- [ ] Review foreign-key relationships and seed execution order before changing venue records.
-- [ ] Verify fresh database setup and existing database migration/update behavior.
+- [x] Inspect the duplicate Bahen venue records and identify their associated events and bookings.
+- [x] Identify one canonical Bahen venue record for the showcase dataset (ID 6).
+- [x] Confirm the additional Bahen development fixtures (IDs 1 and 3) are already preserved in `seed data/seed.sql`.
+- [x] Preserve duplicate-name development fixtures in development seed data (IDs 1 and 3).
+- [x] Keep showcase seed data focused on realistic, intentional venues.
+- [x] Review foreign-key relationships and seed execution order before changing venue records.
+- [x] Create the isolated showcase database using the create-only setup script.
+- [x] Verify the showcase database contains four venues, eight events, one demo user, and four confirmed bookings, with zero booking holds.
+- [x] Verify no development-only Moss Park Espresso venue or Meet and Greet event appears in the showcase database.
+- [x] Verify the showcase booking seed can be rerun without creating duplicate bookings.
+- [x] Confirm the original Alice and Bob development bookings remain intact in `booking_system`.
+- [x] Pass the database setup safety suite (49 tests).
+- [ ] Verify existing database migration/update behavior.
 - [ ] Confirm the Events and Venues pages display the intended showcase data.
 - [ ] Verify that development seed scripts still provide the intended edge-case coverage.
 

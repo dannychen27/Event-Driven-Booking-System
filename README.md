@@ -486,9 +486,9 @@ The environment variables control the following database connection settings:
 
 Ensure PostgreSQL is running, then follow the [Database Setup](#database-setup) instructions below.
 
-For a quick local setup, the `setup.sh` script recreates `booking_system` and loads the schema, indexes, and seed data.
+For a quick local development setup, the `setup.sh` script recreates `booking_system` and loads the schema, indexes, and development seed data. For a clean portfolio dataset, use `setup-showcase.sh` to create a separate `booking_system_showcase` database.
 
-**It deletes existing data in that database**, so use it only when you intend to reset it.
+**Warning:** The development `setup.sh` script deletes existing data in `booking_system`. Use it only when you intend to reset that database.
 
 ### 4. Start the Application
 
@@ -511,10 +511,13 @@ The backend runs on `http://localhost:3000` by default.
 
 ## Database Setup
 
-- `setup.sh` — drops and recreates `booking_system`, then loads the schema, indexes, and seed data. It does not run constraint tests.
+- `setup.sh` — drops and recreates `booking_system`, then loads the schema, indexes, and development seed data. It does not run constraint tests.
+- `setup-showcase.sh` — creates `booking_system_showcase` without dropping or overwriting an existing database, then loads the schema, indexes, showcase venues and events, the demo user, and four confirmed bookings.
 - `setup.sql` — loads the schema, indexes, seed data, and constraint tests into an existing database.
 - `schema.sql` — defines the database schema.
 - `seed data/seed.sql` — provides seed data for development and testing.
+- `seed data/showcase.sql` — loads the portfolio showcase venues and events into an initialized database. It is run automatically by `setup-showcase.sh`, but not by the development setup or reset scripts.
+- `seed data/showcase-bookings.sql` — creates the showcase demo user and four confirmed bookings. It is loaded only by `setup-showcase.sh`.
 - `reset.sql` — drops the application tables, then reruns `setup.sql` to restore the schema, indexes, seed data, and constraint tests. It does not drop or recreate the database itself.
 
 ### Option 1: Using `setup.sh`
@@ -529,8 +532,30 @@ cd "2. data model"
 **Warning:** This script drops and recreates `booking_system`, deleting its existing data.
 Use it only when you intend to reset that database.
 
+### Option 2: Create the Portfolio Showcase Database
 
-### Option 2: Manually through `psql`
+From the project root, run:
+
+```bash
+DB_NAME=booking_system_showcase "2. data model/setup-showcase.sh"
+```
+
+This creates a new `booking_system_showcase` database and loads the schema, indexes, eight illustrative showcase events, one demo user, and four confirmed bookings. It does not load development fixtures or booking holds. The script is create-only: it refuses any database name other than `booking_system_showcase` and does not drop or overwrite an existing database.
+
+To run the application against this database, set `DB_NAME=booking_system_showcase` in your root `.env` file and restart the backend. Keep `DB_USER`, `DB_PASSWORD`, `DB_HOST`, and `DB_PORT` configured for your PostgreSQL instance.
+
+### Loading the Showcase Dataset into an Existing Database
+
+If you intentionally want to add or update the showcase venues and events in an already initialized database, run this from the project root:
+
+```bash
+psql -X -v ON_ERROR_STOP=1 -d booking_system -f "2. data model/seed data/showcase.sql"
+```
+
+`showcase.sql` is safe to rerun. It does not create users, bookings, or booking holds. This option layers showcase data onto the selected database; use the separate showcase database above when you want the portfolio dataset isolated from development fixtures.
+
+
+### Option 3: Manually through `psql`
 
 Run the following commands from the project root to switch to the database directory before starting `psql`:
 

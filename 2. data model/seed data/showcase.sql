@@ -318,13 +318,6 @@ WITH showcase_venue_data (
     VALUES
         (
             'Bahen Center',
-            '40 St George St',
-            'https://images.unsplash.com/photo-1769284008279-46e4c97959db?auto=format&fit=crop&w=1400&q=80',
-            'University building',
-            'A university building in the heart of the St. George campus, used here as an illustrative event location.'
-        ),
-        (
-            'Bahen Center',
             '40 St George St, Toronto, ON',
             'https://images.unsplash.com/photo-1769284008279-46e4c97959db?auto=format&fit=crop&w=1400&q=80',
             'University building',
