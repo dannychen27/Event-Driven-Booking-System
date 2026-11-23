@@ -5,328 +5,35 @@ deferred work, and important technical decisions.
 
 Update it when significant work is completed, merged, approved, or deliberately deferred.
 
-## 2. Completed Milestones
+## 1. Roadmap Overview
 
-## Documentation Commit
+### Current Milestone: Portfolio Showcase Readiness
 
-- [x] Phase 5 reliability and structured logging status recorded.
-- [x] AI search implementation audit recorded.
-- [x] Remaining AI search work categorized.
-- [x] README links to the project roadmap.
-- [x] README completion checkboxes updated.
-- [x] Whitespace validation passed.
-- [x] Documentation changes committed.
+Focus on completing the user-facing experience and preparing a convincing,
+reliable demonstration of the booking system.
 
-### Showcase and Development Database Separation
+### Next Milestones
 
-**Status:** Completed — committed and pushed in `5d34a7b`.
+1. [ ] Complete remaining card-content and presentation work.
+2. [ ] Finish showcase-data verification and remaining booking workflow checks.
+3. [ ] Complete responsive, theme, and page-state visual QA.
+4. [ ] Verify the end-to-end booking demonstration.
+5. [ ] Capture final portfolio screenshots.
+6. [x] Update project documentation and roadmap.
 
-- [x] Separate the development database from the portfolio showcase database.
-- [x] Add a dedicated showcase setup script that creates and seeds the showcase database without dropping an existing database.
-- [x] Preserve development fixtures while providing intentional showcase data.
-- [x] Add representative confirmed demo bookings.
-- [x] Verify setup idempotency and showcase database contents.
-- [x] Verify the Events page displays the intended showcase events and booking states.
-- [x] Verify the Booking History page displays the seeded demo bookings.
+### Priority Labels
 
-### Confirmed Attendee Counts on Event Cards
+The original roadmap did not define explicit priority labels.
+This reorganization does not assign new priority categories or infer
+priorities for completed work.
 
-**Status:** Implemented, tested, committed, and pushed.
+When priorities are introduced, retain their exact original labels
+when moving tasks into Completed Milestones.
 
-- [x] Derive attendee counts from confirmed booking records in the `bookings` table.
-- [x] Exclude temporary booking holds from attendee counts.
-- [x] Preserve events with zero bookings using an aggregate `LEFT JOIN` and `COALESCE`.
-- [x] Return attendee counts from the event listing, keyword search, and AI candidate-search queries.
-- [x] Add `attendee_count` to the backend and frontend event types.
-- [x] Display confirmed attendees alongside event capacity on EventCards.
-- [x] Handle singular and plural attendee wording.
-- [x] Rename the EventCard information label from Capacity to Attendance.
-- [x] Display Unknown when attendee count or capacity is missing or invalid.
-- [x] Add frontend regression tests for each missing-value combination.
-- [x] Verify the both-missing fallback in Chrome using a temporary Local Override.
-- [x] Add backend query regression tests and frontend tests for zero counts and singular wording.
-- [x] Pass backend and frontend production builds.
-- [x] Pass the full backend test suite (463 tests) and frontend test suite (226 tests).
-- [x] Pass `git diff --check`.
-- [x] Verify attendee counts against the live showcase database in the browser.
-- [x] Verify attendee counts remain visible in keyword and AI search results in the browser.
+## 2. Active Milestones
 
-### Immediate Booking Status on Event Cards
-
-#### Booking Status Behavior
-
-- [x] Fetch booking history once when loading the Events page.
-- [x] Maintain existing booking status across event cards without individual API requests.
-- [x] Immediately reflect successful bookings in the Events page.
-- [x] Disable booking when booking history cannot be reliably retrieved.
-- [x] Preserve backend duplicate-booking protection.
-- [x] Add frontend regression tests for immediate booking status.
-
-#### EventCard Presentation
-
-- [x] Replace the disabled "Already booked" button with a green booking-status badge.
-- [x] Display the confirmation message: "You've already booked this event."
-- [x] Improve the badge and confirmation styling in light mode.
-- [x] Add consistent green styling and contrast in dark mode.
-- [x] Add regression assertions for the booked-state presentation.
-- [x] Verify the appearance manually:
-    - [x] Light mode: badge and confirmation message are clearly visible.
-    - [x] Light mode: badge and event title do not overlap.
-    - [x] Dark mode: badge has a darker green background and readable text.
-    - [x] Dark mode: confirmation message and checkmark have sufficient contrast.
-    - [x] Both themes: normal booking state remains visually correct.
-    - [x] Verify loading and error booking states through existing automated tests.
-
-#### Network and API Verification
-
-- [x] Open Chrome DevTools Network tab and reload the Events page.
-- [x] Verify the events API request succeeds.
-- [x] Verify the booking-history API request succeeds.
-- [x] Inspect the events response and confirm Event ID 1 is present.
-- [x] Inspect the booking-history response and confirm Event ID 1 is recorded as booked.
-- [x] Confirm no other events are rendered in the Events page.
-- [x] Confirm booking history is fetched at the page level rather than once per event card (accounting for React Strict Mode in development).
-- [x] Confirm no unnecessary per-event booking-status requests are made.
-
-#### Optional Manual QA
-
-- [ ] Verify the loading state using network throttling.
-- [x] Verify the booking-history error state and retry request.
-
-#### Follow-up: API-Unavailable State Verification
-
-**Status:** Partially completed — booking-history endpoint failure and recovery verified.
-
-- [x] Simulate booking-history API unavailability using Chrome DevTools Network Request Blocking.
-- [ ] Observe and verify the loading-to-error transition on the Events page.
-- [x] Verify the booking-history failure message is displayed correctly.
-- [x] Verify the retry behavior after booking-history API access is restored.
-- [x] Confirm the Events page recovers successfully after restoring booking-history API access.
-
-**Scope:** The manual verification above covers booking-history endpoint failure and recovery. A broader backend-outage and loading-transition test remains outstanding.
-
-## Phase 5 — Reliability Audit
-
-- [x] Database safety and explicit database-name validation.
-- [x] Protected test-database reset.
-- [x] Unit, frontend, E2E, integration, and database-safety test coverage in CI.
-- [x] Explicit backend and frontend production-build verification in CI.
-- [x] Graceful NestJS application shutdown using `app.enableShutdownHooks()`.
-- [x] PostgreSQL connection-pool cleanup through `DatabaseService.onModuleDestroy()`.
-- [x] README setup instructions corrected to describe database creation, schema loading, index creation, and seed data loading.
-- [x] Environment configuration reviewed and accepted.
-
-### Structured Backend Logging and Observability
-
-Merged in PR #19.
-
-- [x] Structured JSON backend logger.
-- [x] Safe serialization, including circular-reference and BigInt handling.
-- [x] Request-scoped context using `AsyncLocalStorage`.
-- [x] Request ID middleware, including validation and generation of request IDs.
-- [x] Request correlation and completion logging.
-- [x] Global exception filter for unexpected server errors.
-- [x] Runtime verification and automated unit/E2E tests.
-
-### Calendar and AI Search Integration
-
-Merged in PR #21.
-
-- [x] Integrate calendar controls with natural-language event search.
-- [x] Implement relative-date resolution and validation.
-- [x] Reconcile explicit calendar filters with AI-inferred filters.
-- [x] Require clarification when calendar and AI filters conflict.
-- [x] Support Sunday-through-Saturday interpretation of "next week".
-- [x] Add multi-select time-of-day filters.
-- [x] Implement a bounded custom time picker.
-- [x] Support toggleable 12-hour and 24-hour display formats.
-- [x] Extract shared frontend/backend time-of-day definitions and intervals.
-- [x] Polish calendar and search controls, including dark-mode visibility.
-
-## 3. Planned Bonus Work
-
-### README CI Badges
-
-Status: Not started.
-
-Add badges for:
-
-- [ ] Database safety tests.
-- [ ] PostgreSQL integration tests.
-- [ ] End-to-end tests.
-
-Requirements:
-- Only add badges once the corresponding GitHub Actions workflows expose reliable status checks.
-- Ensure badge links point to the correct workflows.
-- Keep the README badges synchronized with actual CI configuration.
-
-### AI Search Observability
-
-Origin: Feedback from a friend during adversarial testing of the Gemini-powered event search feature.
-
-Status: Not started / implementation requires inspection.
-
-- [ ] Log incoming AI search requests.
-- [ ] Capture Gemini's raw response.
-- [ ] Log parsed and validated search filters.
-- [ ] Record validation outcomes and parsing failures.
-- [ ] Log Gemini API errors and relevant failure details.
-- [ ] Record model latency and overall AI-search request duration.
-- [ ] Correlate AI-search logs with the existing request ID.
-- [ ] Ensure logs do not expose credentials, secrets, or unnecessary personal information.
-
-Distinguish between:
-- Successful model responses containing unusable or invalid output.
-- Gemini API failures or timeouts.
-- Successful validation followed by zero matching events.
-
-Use the existing structured logging infrastructure rather than introducing a separate logging system.
-
-## Planned Frontend Framework Migration — Angular
-
-**Status:** Not started.
-
-**Objective:** Reimplement the existing React frontend using Angular to explore an alternative frontend architecture while preserving the existing application's functionality.
-
-### Branch Strategy
-
-- [ ] Create `feature/angular-frontend` from the existing `main` branch.
-- [ ] Preserve the existing React implementation on `main`.
-- [ ] Develop the Angular frontend independently.
-- [ ] Reuse the existing NestJS backend, PostgreSQL database, and Gemini API integration.
-- [ ] Incorporate relevant backend changes from `main` as needed.
-
-### Implementation Scope
-
-- [ ] Initialize an Angular application using TypeScript.
-- [ ] Reimplement existing React components as Angular components.
-- [ ] Migrate routing and navigation.
-- [ ] Reimplement state management using Angular signals and services.
-- [ ] Adapt frontend API clients to Angular's HTTP infrastructure.
-- [ ] Reimplement forms, validation, and user interactions.
-- [ ] Reuse existing CSS and styling where practical.
-- [ ] Port relevant frontend unit tests and add coverage for Angular-specific behavior.
-
-### Definition of Done
-
-- [ ] Angular production build succeeds.
-- [ ] Existing major frontend features have Angular equivalents.
-- [ ] Authentication and backend API integration work correctly.
-- [ ] Event discovery and Gemini-powered natural-language search work.
-- [ ] Calendar, date, and time filters behave consistently with React.
-- [ ] Booking creation, confirmation, cancellation, and history work correctly.
-- [ ] Frontend unit tests pass.
-- [ ] Regression testing confirms functional parity with the React implementation.
-- [ ] Verify that both frontend implementations can independently run against the same backend.
-
-### Scope Constraints
-
-- Do not rewrite the NestJS backend.
-- Do not duplicate or independently modify backend business logic.
-- Preserve existing database schemas and API contracts.
-- Keep the React implementation intact.
-- Adapt browser-based E2E tests if they depend on React-specific UI behavior; backend-only tests should remain unchanged.
-
-## 4. AI Search Security Improvements
-
-Origin: Prompt-injection testing by a friend.
-
-- [ ] Add prompt-injection regression tests, including XML-formatted instructions and attempts to override the model's intended role.
-- [ ] Review system instructions and clearly define the model's event-search responsibility.
-- [ ] Review structured-output validation and reject unexpected properties, invalid types, and malformed filters.
-- [ ] Verify that model output cannot trigger arbitrary SQL execution.
-- [ ] Verify that Gemini has no unnecessary access to database credentials, schema information, or privileged database operations.
-- [ ] Confirm that database authorization and parameterized queries remain enforced independently of model output.
-
-Security principle: Prompt instructions are not a security boundary. Backend validation and database authorization must prevent unauthorized operations even when the model produces malicious or unexpected output.
-
-## 5. Deferred Repository Cleanup
-
-### Prisma Scaffolding Cleanup
-
-Status: Completed.
-
-Findings:
-- No application code or developer workflows depended on Prisma.
-- No Prisma migrations or generated client artifacts were present.
-- Database access is implemented using PostgreSQL `pg` and direct SQL.
-
-Completed actions:
-- [x] Remove `prisma` and `@prisma/client` dependencies.
-- [x] Delete `prisma.config.ts` and the `prisma/` directory.
-- [x] Remove the obsolete local `DATABASE_URL` configuration.
-- [x] Remove Prisma references from the README project structure.
-
-### General Repository Polish
-
-#### CSS Maintainability and Cascade Cleanup
-
-Status: Not started.
-
-- [ ] Audit existing CSS usage of `!important`.
-- [ ] Identify declarations that unnecessarily override the normal CSS cascade.
-- [ ] Replace unnecessary uses with appropriately scoped selectors, component styles, or theme-specific rules.
-- [ ] Retain `!important` only where there is a documented justification, such as overriding third-party styles.
-- [ ] Establish consistent conventions for CSS specificity and dark-mode overrides.
-- [ ] Verify that visual behavior remains unchanged after cleanup.
-
-Only add concrete, justified cleanup tasks here.
-Avoid using this section as an open-ended invitation to refactor working code.
-
-## 6. Future Ideas
-
-### Pricing and Ratings
-
-**Status:** Deferred — exploratory product enhancements; not required for portfolio showcase readiness.
-
-#### Event Pricing
-
-- [ ] Evaluate whether events should support free and paid admission.
-- [ ] Define event pricing fields, including amount and currency.
-- [ ] Determine how unspecified pricing should be represented.
-- [ ] Evaluate whether bookings should retain a snapshot of the price at booking time.
-- [ ] Assess required database migrations, backend validation, and API changes.
-- [ ] Consider payment processing only if paid bookings become an explicit project objective.
-- [ ] Display pricing on EventCards once the underlying data model is established.
-
-#### Venue and Event Ratings
-
-- [ ] Determine whether ratings should apply to venues, events, or both.
-- [ ] Define who is eligible to submit ratings.
-- [ ] Evaluate a review and rating data model.
-- [ ] Define rating aggregation and duplicate-submission rules.
-- [ ] Consider review editing, deletion, and moderation.
-- [ ] Assess required database migrations, backend endpoints, and frontend components.
-- [ ] Display aggregate ratings once a reliable rating system exists.
-
-### Sticky Navigation Bar
-
-Improve navigation accessibility while scrolling through longer pages.
-
-- [ ] Make the navbar stick to the top of the viewport when scrolling.
-- [ ] Ensure the navbar remains above page content without obscuring it.
-- [ ] Preserve the existing navbar appearance in light and dark modes.
-- [ ] Verify sticky behavior across desktop and mobile screen sizes.
-- [ ] Confirm the navbar does not interfere with page scrolling or responsive layouts.
-
-### Reusable Loading States
-
-Status: Completed.
-
-- [x] Create a reusable `LoadingState` component.
-- [x] Add a centered animated spinner and optional supporting descriptions.
-- [x] Add accessible loading semantics (`role="status"`, `aria-live`, and `aria-busy`).
-- [x] Hide the decorative spinner from assistive technology.
-- [x] Support light and dark themes.
-- [x] Respect reduced-motion preferences.
-- [x] Integrate full-page loading states into `EventsPage`, `VenuesPage`, and `BookingsPage`.
-- [x] Preserve the independent booking-history loading indicator on `EventsPage`.
-- [x] Add component and page regression tests.
-- [x] Verify spinner animation manually in light and dark modes.
-- [x] Pass the full frontend test suite (214/214 tests across 32 files).
-- [x] Pass the frontend production build.
-- [x] Re-run the three page regression suites after removing temporary loading-preview overrides (24/24 tests).
-- [x] Pass `git diff --check`.
+Work currently worth spending time on. Keep partially completed
+milestones here until their remaining work is finished.
 
 ### Portfolio-Ready Card Content and Presentation
 
@@ -387,40 +94,64 @@ rather than developer-oriented data displays.
 - [ ] Confirm the Venues and Booking History pages have representative data and polished empty/loading/error states.
 - [ ] Capture final portfolio screenshots of the Venues and Booking History pages.
 
-### Skeleton Loading UI
+### Immediate Booking Status on Event Cards — Remaining Verification
 
-Status: Completed.
+#### Optional Manual QA
 
-**Goal:** Replace generic full-page loading indicators with content-shaped placeholders that preview the actual page layouts.
+- [ ] Verify the loading state using network throttling.
+- [x] Verify the booking-history error state and retry request.
 
-#### Reusable Skeleton Components
+#### Follow-up: API-Unavailable State Verification
 
-- [x] Inspect the existing event, venue, and booking card components.
-- [x] Create a reusable `Skeleton` primitive.
-- [x] Support configurable dimensions and shapes.
-- [x] Add a subtle loading animation.
-- [x] Support light and dark themes.
-- [x] Respect reduced-motion preferences.
+**Status:** Partially completed — booking-history endpoint failure and recovery verified.
 
-#### Page-Specific Skeleton Layouts
+- [x] Simulate booking-history API unavailability using Chrome DevTools Network Request Blocking.
+- [ ] Observe and verify the loading-to-error transition on the Events page.
+- [x] Verify the booking-history failure message is displayed correctly.
+- [x] Verify the retry behavior after booking-history API access is restored.
+- [x] Confirm the Events page recovers successfully after restoring booking-history API access.
 
-- [x] Create an `EventCardSkeleton` matching the actual event-card layout.
-- [x] Create a `VenueCardSkeleton` matching the actual venue-card layout.
-- [x] Create a `BookingCardSkeleton` matching the actual booking-card layout.
-- [x] Integrate event skeletons into `EventsPage`.
-- [x] Integrate venue skeletons into `VenuesPage`.
-- [x] Integrate booking skeletons into `BookingsPage`.
-- [x] Keep skeleton dimensions consistent with loaded content to minimize layout shifts.
-- [x] Verify responsive layouts at narrow mobile widths.
+**Scope:** The manual verification above covers booking-history endpoint failure and recovery. A broader backend-outage and loading-transition test remains outstanding.
 
-#### Regression Testing
+### Full Visual QA and Portfolio Polish
 
-- [x] Add component tests for the reusable `Skeleton` primitive.
-- [x] Add tests for each page-specific skeleton component.
-- [x] Verify each page renders its skeleton while data is loading.
-- [x] Verify actual content replaces skeletons after successful retrieval.
-- [x] Verify existing error and empty states remain unaffected.
-- [x] Run the full frontend test suite and production build.
+**Status:** In Progress — scheduled as the third next milestone, before the end-to-end demonstration and final portfolio screenshots.
+
+#### Card Visual QA
+
+- [ ] EventCard: verify responsive layout across desktop, laptop, tablet, and mobile viewports.
+- [ ] VenueCard: verify responsive layout across desktop, laptop, tablet, and mobile viewports.
+- [ ] BookingCard: verify responsive layout across desktop, laptop, tablet, and mobile viewports.
+- [ ] Verify all three card types in light and dark themes.
+- [ ] Verify image fallbacks and loading skeletons in both themes.
+- [ ] Check long text, spacing, alignment, and horizontal overflow.
+
+#### Page-Level Visual QA
+
+- [ ] Review Events page loading, empty, error, and populated states.
+- [ ] Review Venues page loading, empty, error, and populated states.
+- [ ] Review Booking History page loading, empty, error, and populated states.
+- [ ] Check page layouts across desktop, laptop, tablet, and mobile viewports.
+- [ ] Check navigation and interactions across the three pages.
+
+#### Responsive Viewport Coverage
+
+Use these representative viewport widths for card and page-level QA:
+
+- [ ] Desktop: 1920px and 1440px.
+- [ ] Laptop: 1366px and 1280px.
+- [ ] Tablet landscape: 1024px.
+- [ ] Tablet portrait: 768px.
+- [ ] Mobile: 430px, 390px, 375px, and 320px.
+- [ ] Check intermediate widths around CSS breakpoints and layout transitions.
+- [ ] Verify no horizontal overflow, clipped content, or awkward text wrapping.
+
+#### Portfolio Screenshot Readiness
+
+- [ ] Capture final desktop screenshots of Events, Venues, and Booking History.
+- [ ] Capture representative mobile screenshots.
+- [ ] Address any visual issues discovered during the deferred QA pass.
+---
 
 ### Reusable Error States and Offline Experience
 
@@ -445,6 +176,227 @@ Status: Completed.
 - [ ] Replace remaining technical or implementation-specific error messages with user-friendly guidance where appropriate.
 - [ ] Verify retry and recovery after API connectivity is restored.
 - [ ] Verify loading-to-error transitions and successful recovery across all relevant pages.
+
+### Development and Showcase Venue Data Separation
+
+**Status:** In Progress — isolated showcase database creation, booking seed, idempotency, and development-data preservation verified; UI checks remain.
+
+**Goal:** Keep development edge-case venues available for testing while presenting a clean, intentional set of canonical venues in the portfolio showcase data.
+
+- [x] Inspect the duplicate Bahen venue records and identify their associated events and bookings.
+- [x] Identify one canonical Bahen venue record for the showcase dataset (ID 6).
+- [x] Confirm the additional Bahen development fixtures (IDs 1 and 3) are already preserved in `seed data/seed.sql`.
+- [x] Preserve duplicate-name development fixtures in development seed data (IDs 1 and 3).
+- [x] Keep showcase seed data focused on realistic, intentional venues.
+- [x] Review foreign-key relationships and seed execution order before changing venue records.
+- [x] Create the isolated showcase database using the create-only setup script.
+- [x] Verify the showcase database contains four venues, eight events, one demo user, and four confirmed bookings, with zero booking holds.
+- [x] Verify no development-only Moss Park Espresso venue or Meet and Greet event appears in the showcase database.
+- [x] Verify the showcase booking seed can be rerun without creating duplicate bookings.
+- [x] Confirm the original Alice and Bob development bookings remain intact in `booking_system`.
+- [x] Pass the database setup safety suite (49 tests).
+- [ ] Verify existing database migration/update behavior.
+- [ ] Confirm the Venues page displays the intended showcase data.
+- [ ] Verify that development seed scripts still provide the intended edge-case coverage.
+
+**Scope constraints:**
+- Do not delete useful development records merely to remove duplicate-looking showcase entries.
+- Do not change venue IDs or relationships without checking dependent events and bookings.
+- Keep development fixtures and portfolio showcase data clearly separated.
+
+### Search and Filter Usability
+
+- [ ] Explore a collapsible search bar on the Events page.
+- [ ] Add collapsible date and time filter controls.
+- [ ] Preserve active search queries and filter selections when controls are collapsed or expanded.
+- [ ] Ensure collapsed controls remain accessible and communicate their expanded/collapsed state.
+
+## 3. Planned Improvements
+
+Approved or useful improvements that do not need to interrupt
+the current portfolio-readiness milestone.
+
+### README CI Badges
+
+Status: Not started.
+
+Add badges for:
+
+- [ ] Database safety tests.
+- [ ] PostgreSQL integration tests.
+- [ ] End-to-end tests.
+
+Requirements:
+- Only add badges once the corresponding GitHub Actions workflows expose reliable status checks.
+- Ensure badge links point to the correct workflows.
+- Keep the README badges synchronized with actual CI configuration.
+
+### AI Search Observability
+
+Origin: Feedback from a friend during adversarial testing of the Gemini-powered event search feature.
+
+Status: Not started / implementation requires inspection.
+
+- [ ] Log incoming AI search requests.
+- [ ] Capture Gemini's raw response.
+- [ ] Log parsed and validated search filters.
+- [ ] Record validation outcomes and parsing failures.
+- [ ] Log Gemini API errors and relevant failure details.
+- [ ] Record model latency and overall AI-search request duration.
+- [ ] Correlate AI-search logs with the existing request ID.
+- [ ] Ensure logs do not expose credentials, secrets, or unnecessary personal information.
+
+Distinguish between:
+- Successful model responses containing unusable or invalid output.
+- Gemini API failures or timeouts.
+- Successful validation followed by zero matching events.
+
+Use the existing structured logging infrastructure rather than introducing a separate logging system.
+
+### AI Search Security Improvements
+
+Origin: Prompt-injection testing by a friend.
+
+- [ ] Add prompt-injection regression tests, including XML-formatted instructions and attempts to override the model's intended role.
+- [ ] Review system instructions and clearly define the model's event-search responsibility.
+- [ ] Review structured-output validation and reject unexpected properties, invalid types, and malformed filters.
+- [ ] Verify that model output cannot trigger arbitrary SQL execution.
+- [ ] Verify that Gemini has no unnecessary access to database credentials, schema information, or privileged database operations.
+- [ ] Confirm that database authorization and parameterized queries remain enforced independently of model output.
+
+Security principle: Prompt instructions are not a security boundary. Backend validation and database authorization must prevent unauthorized operations even when the model produces malicious or unexpected output.
+
+## 4. Deferred and Optional Ideas
+
+Exploratory features, optional enhancements, and lower-priority
+polish. These items are not prerequisites for the current
+portfolio showcase milestone.
+
+### Planned Frontend Framework Migration — Angular
+
+**Status:** Not started.
+
+**Objective:** Reimplement the existing React frontend using Angular to explore an alternative frontend architecture while preserving the existing application's functionality.
+
+#### Branch Strategy
+
+- [ ] Create `feature/angular-frontend` from the existing `main` branch.
+- [ ] Preserve the existing React implementation on `main`.
+- [ ] Develop the Angular frontend independently.
+- [ ] Reuse the existing NestJS backend, PostgreSQL database, and Gemini API integration.
+- [ ] Incorporate relevant backend changes from `main` as needed.
+
+#### Implementation Scope
+
+- [ ] Initialize an Angular application using TypeScript.
+- [ ] Reimplement existing React components as Angular components.
+- [ ] Migrate routing and navigation.
+- [ ] Reimplement state management using Angular signals and services.
+- [ ] Adapt frontend API clients to Angular's HTTP infrastructure.
+- [ ] Reimplement forms, validation, and user interactions.
+- [ ] Reuse existing CSS and styling where practical.
+- [ ] Port relevant frontend unit tests and add coverage for Angular-specific behavior.
+
+#### Definition of Done
+
+- [ ] Angular production build succeeds.
+- [ ] Existing major frontend features have Angular equivalents.
+- [ ] Authentication and backend API integration work correctly.
+- [ ] Event discovery and Gemini-powered natural-language search work.
+- [ ] Calendar, date, and time filters behave consistently with React.
+- [ ] Booking creation, confirmation, cancellation, and history work correctly.
+- [ ] Frontend unit tests pass.
+- [ ] Regression testing confirms functional parity with the React implementation.
+- [ ] Verify that both frontend implementations can independently run against the same backend.
+
+#### Scope Constraints
+
+- Do not rewrite the NestJS backend.
+- Do not duplicate or independently modify backend business logic.
+- Preserve existing database schemas and API contracts.
+- Keep the React implementation intact.
+- Adapt browser-based E2E tests if they depend on React-specific UI behavior; backend-only tests should remain unchanged.
+
+### Pricing and Ratings
+
+**Status:** Deferred — exploratory product enhancements; not required for portfolio showcase readiness.
+
+#### Event Pricing
+
+- [ ] Evaluate whether events should support free and paid admission.
+- [ ] Define event pricing fields, including amount and currency.
+- [ ] Determine how unspecified pricing should be represented.
+- [ ] Evaluate whether bookings should retain a snapshot of the price at booking time.
+- [ ] Assess required database migrations, backend validation, and API changes.
+- [ ] Consider payment processing only if paid bookings become an explicit project objective.
+- [ ] Display pricing on EventCards once the underlying data model is established.
+
+#### Venue and Event Ratings
+
+- [ ] Determine whether ratings should apply to venues, events, or both.
+- [ ] Define who is eligible to submit ratings.
+- [ ] Evaluate a review and rating data model.
+- [ ] Define rating aggregation and duplicate-submission rules.
+- [ ] Consider review editing, deletion, and moderation.
+- [ ] Assess required database migrations, backend endpoints, and frontend components.
+- [ ] Display aggregate ratings once a reliable rating system exists.
+
+### Sticky Navigation Bar
+
+Improve navigation accessibility while scrolling through longer pages.
+
+- [ ] Make the navbar stick to the top of the viewport when scrolling.
+- [ ] Ensure the navbar remains above page content without obscuring it.
+- [ ] Preserve the existing navbar appearance in light and dark modes.
+- [ ] Verify sticky behavior across desktop and mobile screen sizes.
+- [ ] Confirm the navbar does not interfere with page scrolling or responsive layouts.
+
+### General Repository Polish
+
+#### CSS Maintainability and Cascade Cleanup
+
+Status: Not started.
+
+- [ ] Audit existing CSS usage of `!important`.
+- [ ] Identify declarations that unnecessarily override the normal CSS cascade.
+- [ ] Replace unnecessary uses with appropriately scoped selectors, component styles, or theme-specific rules.
+- [ ] Retain `!important` only where there is a documented justification, such as overriding third-party styles.
+- [ ] Establish consistent conventions for CSS specificity and dark-mode overrides.
+- [ ] Verify that visual behavior remains unchanged after cleanup.
+
+Only add concrete, justified cleanup tasks here.
+Avoid using this section as an open-ended invitation to refactor working code.
+
+### Capacity and Attendance Filters
+
+- [ ] Add optional minimum and maximum event-capacity filters.
+- [ ] Add optional minimum and maximum confirmed-attendance filters.
+- [ ] Allow zero as a valid attendance threshold; treat empty fields as unrestricted.
+- [ ] Exclude temporary booking holds from confirmed-attendance counts.
+- [ ] Support numeric filters alongside keyword and AI-powered searches.
+- [ ] Allow numeric-only searches without invoking Gemini.
+- [ ] Reject negative numbers, non-integer values, and minimum values greater than maximum values.
+- [ ] Add frontend and backend validation with regression tests.
+
+### Statistical Event Discovery and Analytics
+
+- [ ] Calculate mean, median, and mode of event attendance.
+- [ ] Support percentile-based attendance comparisons.
+- [ ] Calculate attendance-to-capacity ratios.
+- [ ] Identify unusually popular and under-attended events.
+- [ ] Support statistical queries through natural-language search.
+- [ ] Clarify the population and statistical measure when a request is ambiguous.
+
+### Collapsible Card Evaluation
+
+- [ ] Evaluate whether EventCards benefit from collapsible descriptions or secondary details.
+- [ ] Evaluate whether VenueCards benefit from collapsible descriptions or secondary details.
+- [ ] Evaluate whether BookingCards benefit from collapsible content.
+- [ ] Implement collapsible card content only where it meaningfully improves usability.
+- [ ] Keep important information and primary actions accessible.
+- [ ] Add regression tests for any implemented collapse/expand interactions.
+
+---
 
 ### Four Seasons Theme 🌸☀️🍂❄️
 
@@ -485,172 +437,245 @@ Potential metrics:
 
 Consider only after the underlying logging and data-retention requirements are established.
 
+### Custom Timezone Selector
 
-## 7. Technical Decisions and Constraints
+**Goal:** Let users view event and booking times in their preferred timezone, independently of the event's original timezone.
 
-### Environment Configuration
+- [ ] Detect the user's browser timezone as the initial default.
+- [ ] Add a manually configurable timezone selector using IANA timezone identifiers.
+- [ ] Display event start and end times in the selected timezone.
+- [ ] Apply the selected timezone consistently across Events, Venues, Booking History, and booking confirmation interfaces.
+- [ ] Handle daylight-saving transitions correctly.
+- [ ] Persist the user's timezone preference across sessions.
+- [ ] Clearly identify the timezone used when displaying event times.
+- [ ] Preserve timezone-independent event timestamps and existing booking semantics.
+- [ ] Add regression tests for timezone conversion, daylight-saving transitions, and preference persistence.
 
-Decision: No change required.
+### AI-Assisted Localization
 
-- NestJS `ConfigModule.forRoot()` loads the root `.env` using the documented backend startup command.
-- `.env` is ignored by Git.
-- Keep secrets out of source control and example configuration files.
+**Goal:** Let users choose an application language and access translated interface and event content.
 
-### Database Access
+#### Application Internationalization
 
-Decision: Use PostgreSQL through `pg` and direct SQL.
+- [ ] Introduce an internationalization framework for static UI strings.
+- [ ] Add a language selector.
+- [ ] Translate navigation, buttons, labels, forms, and status messages.
+- [ ] Translate error messages, empty states, and loading-state text.
+- [ ] Persist the user's language preference across sessions.
+- [ ] Provide a sensible fallback when a translation is unavailable.
 
-- Database access is implemented using the `pg` connection pool and parameterized SQL queries.
-- Database transactions and row-level locking enforce booking consistency.
-- Prisma ORM is not used.
-- Avoid introducing an ORM without a concrete architectural need.
+#### AI-Assisted Dynamic Content Translation
 
-### Scope Management
+- [ ] Evaluate Gemini API integration for translating dynamic event and venue descriptions.
+- [ ] Support translation of AI-generated event-search results and clarification messages.
+- [ ] Preserve the original content and allow users to switch back to it.
+- [ ] Handle translation failures and API timeouts without breaking normal application functionality.
+- [ ] Avoid translating fixed UI strings dynamically through AI.
+- [ ] Add regression tests for translation success, failure, and fallback behaviour.
 
-- Keep reliability-critical work separate from optional enhancements.
-- Prefer small, independently reviewable pull requests.
-- Avoid broad refactors without a concrete benefit.
-- Update this roadmap when a planned item is implemented or a decision changes.
+#### Quality and Accessibility
 
-## AI Search Implementation Audit — November 8, 2026
+- [ ] Verify translated text does not cause layout overflow or clipping.
+- [ ] Review date, time, number, and locale-specific formatting.
+- [ ] Validate translation consistency and terminology across the application.
 
-This audit records the existing implementation and remaining work for
-natural-language event search. It is based on inspection of the backend
-implementation and related tests.
+## 5. Completed Milestones
 
-### Existing Implementation
+Finished work and its original implementation notes, regression
+coverage, manual verification, and other completion evidence.
 
-- [x] Supply the current Toronto date to the Gemini interpreter.
-- [x] Include the explicit `America/Toronto` timezone in the interpreter prompt.
-- [x] Request structured JSON output using Gemini response schemas.
-- [x] Parse Gemini JSON responses and validate the resulting search plan.
-- [x] Reject unsupported search-plan fields.
-- [x] Validate optional intent length and date ranges.
-- [x] Configure Gemini requests with a 20-second timeout.
-- [x] Configure Gemini requests with two retry attempts.
-- [x] Normalize Gemini abort, HTTP 503, and HTTP 504 failures into a controlled service-unavailable response.
-- [x] Treat candidate event data as untrusted data in the ranking prompt.
+Completed work is grouped using its original milestone/task names.
+No new priority labels are assigned.
 
-### Remaining Work
+### Documentation Commit
 
-#### Relative-Date Interpretation
+- [x] Phase 5 reliability and structured logging status recorded.
+- [x] AI search implementation audit recorded.
+- [x] Remaining AI search work categorized.
+- [x] README links to the project roadmap.
+- [x] README completion checkboxes updated.
+- [x] Whitespace validation passed.
+- [x] Documentation changes committed.
 
-- [ ] Verify that Gemini correctly interprets representative relative-date queries, including "this weekend".
-- [ ] Test date boundaries independently of mocked Gemini responses.
-- [ ] Add timezone-boundary and daylight-saving-time regression tests.
-- [ ] Verify that interpreted date filters are correct when passed into event candidate searches.
+### Showcase and Development Database Separation
 
-Existing tests verify that the current date and timezone appear in the prompt, and that mocked date filters are parsed and returned. They do not establish the accuracy of Gemini's actual date interpretation.
+**Status:** Completed — committed and pushed in `5d34a7b`.
 
-#### Provider Error Handling
+- [x] Separate the development database from the portfolio showcase database.
+- [x] Add a dedicated showcase setup script that creates and seeds the showcase database without dropping an existing database.
+- [x] Preserve development fixtures while providing intentional showcase data.
+- [x] Add representative confirmed demo bookings.
+- [x] Verify setup idempotency and showcase database contents.
+- [x] Verify the Events page displays the intended showcase events and booking states.
+- [x] Verify the Booking History page displays the seeded demo bookings.
 
-- [ ] Map missing API-key configuration to an appropriate, actionable client-facing HTTP response.
-- [ ] Normalize other upstream Gemini failures into appropriate HTTP responses.
-- [ ] Preserve useful server-side diagnostics without exposing internal provider details to clients.
-- [ ] Add regression tests for additional provider failures and client-facing responses.
-- [ ] Distinguish invalid model output, provider failures, timeouts, and successful searches with no results.
+### Confirmed Attendee Counts on Event Cards
 
-Currently, abort errors and provider status codes 503 and 504 are handled. Other errors propagate unchanged. Missing API-key errors are currently thrown as generic errors by the interpreter and ranker.
+**Status:** Implemented, tested, committed, and pushed.
 
-#### Rate Limiting
+- [x] Derive attendee counts from confirmed booking records in the `bookings` table.
+- [x] Exclude temporary booking holds from attendee counts.
+- [x] Preserve events with zero bookings using an aggregate `LEFT JOIN` and `COALESCE`.
+- [x] Return attendee counts from the event listing, keyword search, and AI candidate-search queries.
+- [x] Add `attendee_count` to the backend and frontend event types.
+- [x] Display confirmed attendees alongside event capacity on EventCards.
+- [x] Handle singular and plural attendee wording.
+- [x] Rename the EventCard information label from Capacity to Attendance.
+- [x] Display Unknown when attendee count or capacity is missing or invalid.
+- [x] Add frontend regression tests for each missing-value combination.
+- [x] Verify the both-missing fallback in Chrome using a temporary Local Override.
+- [x] Add backend query regression tests and frontend tests for zero counts and singular wording.
+- [x] Pass backend and frontend production builds.
+- [x] Pass the full backend test suite (463 tests) and frontend test suite (226 tests).
+- [x] Pass `git diff --check`.
+- [x] Verify attendee counts against the live showcase database in the browser.
+- [x] Verify attendee counts remain visible in keyword and AI search results in the browser.
 
-- [ ] Add rate limiting to `POST /events/natural-language-search`.
-- [ ] Return an appropriate HTTP response when the limit is exceeded.
-- [ ] Add tests for rate-limit behavior.
+### Phase 5 — Reliability Audit
 
-No rate-limiting implementation was found in the inspected backend source or backend package manifest.
+- [x] Database safety and explicit database-name validation.
+- [x] Protected test-database reset.
+- [x] Unit, frontend, E2E, integration, and database-safety test coverage in CI.
+- [x] Explicit backend and frontend production-build verification in CI.
+- [x] Graceful NestJS application shutdown using `app.enableShutdownHooks()`.
+- [x] PostgreSQL connection-pool cleanup through `DatabaseService.onModuleDestroy()`.
+- [x] README setup instructions corrected to describe database creation, schema loading, index creation, and seed data loading.
+- [x] Environment configuration reviewed and accepted.
 
-#### AI Search Observability
+#### Structured Backend Logging and Observability
 
-- [ ] Log natural-language search requests with request correlation IDs.
-- [ ] Record Gemini interpreter and ranker failures.
-- [ ] Record parsed search plans and validation outcomes.
-- [ ] Capture useful provider diagnostics and request latency.
-- [ ] Distinguish invalid model output, provider failures, timeouts, and successful searches returning no results.
-- [ ] Establish appropriate privacy controls before logging raw user queries or Gemini responses.
+Merged in PR #19.
 
-Use the structured logging infrastructure introduced in PR #19. AI-specific logging is not established merely by the existence of the global logger and exception filter.
+- [x] Structured JSON backend logger.
+- [x] Safe serialization, including circular-reference and BigInt handling.
+- [x] Request-scoped context using `AsyncLocalStorage`.
+- [x] Request ID middleware, including validation and generation of request IDs.
+- [x] Request correlation and completion logging.
+- [x] Global exception filter for unexpected server errors.
+- [x] Runtime verification and automated unit/E2E tests.
 
-#### Prompt-Injection and Output-Security Testing
+#### Calendar and AI Search Integration
 
-- [ ] Add regression tests for prompt-injection attempts embedded in natural-language queries.
-- [ ] Test attempts to override system instructions or request database schema, credentials, or internal information.
-- [ ] Test malformed and unsupported Gemini responses.
-- [ ] Verify that structured output validation rejects unsupported fields and invalid date filters.
-- [ ] Verify that candidate event data cannot override ranking instructions.
-- [ ] Confirm that database access remains restricted to backend-controlled, validated queries.
+Merged in PR #21.
 
-The ranking prompt already describes candidate event data as untrusted input. However, no dedicated prompt-injection regression tests were found in the inspected AI and search test directories.
+- [x] Integrate calendar controls with natural-language event search.
+- [x] Implement relative-date resolution and validation.
+- [x] Reconcile explicit calendar filters with AI-inferred filters.
+- [x] Require clarification when calendar and AI filters conflict.
+- [x] Support Sunday-through-Saturday interpretation of "next week".
+- [x] Add multi-select time-of-day filters.
+- [x] Implement a bounded custom time picker.
+- [x] Support toggleable 12-hour and 24-hour display formats.
+- [x] Extract shared frontend/backend time-of-day definitions and intervals.
+- [x] Polish calendar and search controls, including dark-mode visibility.
 
-### Audit Scope and References
+### Immediate Booking Status on Event Cards
 
-Implementation inspected:
+**Status:** Core implementation and verification completed. Remaining edge-case QA is tracked under Active Milestones.
 
-- `4. backend/src/search/natural-language-search.service.ts`
-- `4. backend/src/events/search/gemini-event-search-interpreter.ts`
-- `4. backend/src/events/search/gemini-event-ranker.ts`
-- `4. backend/src/events/search/ParseNaturalLanguageSearchInterpreterHelpers.ts`
-- `4. backend/src/search/natural-language-search.ts`
-- `4. backend/src/ai/gemini/gemini-client-config.ts`
-- `4. backend/src/events/events.controller.ts`
-- `4. backend/src/events/events.module.ts`
+#### Booking Status Behavior
 
-Tests inspected:
+- [x] Fetch booking history once when loading the Events page.
+- [x] Maintain existing booking status across event cards without individual API requests.
+- [x] Immediately reflect successful bookings in the Events page.
+- [x] Disable booking when booking history cannot be reliably retrieved.
+- [x] Preserve backend duplicate-booking protection.
+- [x] Add frontend regression tests for immediate booking status.
 
-- `0. tests/backend/ai/geminiSearchInterpreter.test.ts`
-- `0. tests/backend/ai/geminiSearchInterpreterErrors.test.ts`
-- `0. tests/backend/ai/geminiEventRanker.test.ts`
-- `0. tests/backend/search/naturalLanguageSearchFailures.test.ts`
-- `0. tests/backend/search/validateNaturalLanguageSearchPlan.test.ts`
-- `0. tests/backend/events/search/searchEventsController.test.ts`
+#### EventCard Presentation
 
----
+- [x] Replace the disabled "Already booked" button with a green booking-status badge.
+- [x] Display the confirmation message: "You've already booked this event."
+- [x] Improve the badge and confirmation styling in light mode.
+- [x] Add consistent green styling and contrast in dark mode.
+- [x] Add regression assertions for the booked-state presentation.
+- [x] Verify the appearance manually:
+    - [x] Light mode: badge and confirmation message are clearly visible.
+    - [x] Light mode: badge and event title do not overlap.
+    - [x] Dark mode: badge has a darker green background and readable text.
+    - [x] Dark mode: confirmation message and checkmark have sufficient contrast.
+    - [x] Both themes: normal booking state remains visually correct.
+    - [x] Verify loading and error booking states through existing automated tests.
 
-Last updated: November 22, 2026
+#### Network and API Verification
 
-## Deferred: Full Visual QA and Portfolio Polish
+- [x] Open Chrome DevTools Network tab and reload the Events page.
+- [x] Verify the events API request succeeds.
+- [x] Verify the booking-history API request succeeds.
+- [x] Inspect the events response and confirm Event ID 1 is present.
+- [x] Inspect the booking-history response and confirm Event ID 1 is recorded as booked.
+- [x] Confirm no other events are rendered in the Events page.
+- [x] Confirm booking history is fetched at the page level rather than once per event card (accounting for React Strict Mode in development).
+- [x] Confirm no unnecessary per-event booking-status requests are made.
 
-**Status:** Deferred — current card presentation is acceptable. Revisit this work when time is available, before capturing final portfolio screenshots.
+### Prisma Scaffolding Cleanup
 
-### Card Visual QA
+Status: Completed.
 
-- [ ] EventCard: verify responsive layout across desktop, laptop, tablet, and mobile viewports.
-- [ ] VenueCard: verify responsive layout across desktop, laptop, tablet, and mobile viewports.
-- [ ] BookingCard: verify responsive layout across desktop, laptop, tablet, and mobile viewports.
-- [ ] Verify all three card types in light and dark themes.
-- [ ] Verify image fallbacks and loading skeletons in both themes.
-- [ ] Check long text, spacing, alignment, and horizontal overflow.
+Findings:
+- No application code or developer workflows depended on Prisma.
+- No Prisma migrations or generated client artifacts were present.
+- Database access is implemented using PostgreSQL `pg` and direct SQL.
 
-### Page-Level Visual QA
+Completed actions:
+- [x] Remove `prisma` and `@prisma/client` dependencies.
+- [x] Delete `prisma.config.ts` and the `prisma/` directory.
+- [x] Remove the obsolete local `DATABASE_URL` configuration.
+- [x] Remove Prisma references from the README project structure.
 
-- [ ] Review Events page loading, empty, error, and populated states.
-- [ ] Review Venues page loading, empty, error, and populated states.
-- [ ] Review Booking History page loading, empty, error, and populated states.
-- [ ] Check page layouts across desktop, laptop, tablet, and mobile viewports.
-- [ ] Check navigation and interactions across the three pages.
+### Reusable Loading States
 
-### Responsive Viewport Coverage
+Status: Completed.
 
-Use these representative viewport widths for card and page-level QA:
+- [x] Create a reusable `LoadingState` component.
+- [x] Add a centered animated spinner and optional supporting descriptions.
+- [x] Add accessible loading semantics (`role="status"`, `aria-live`, and `aria-busy`).
+- [x] Hide the decorative spinner from assistive technology.
+- [x] Support light and dark themes.
+- [x] Respect reduced-motion preferences.
+- [x] Integrate full-page loading states into `EventsPage`, `VenuesPage`, and `BookingsPage`.
+- [x] Preserve the independent booking-history loading indicator on `EventsPage`.
+- [x] Add component and page regression tests.
+- [x] Verify spinner animation manually in light and dark modes.
+- [x] Pass the full frontend test suite (214/214 tests across 32 files).
+- [x] Pass the frontend production build.
+- [x] Re-run the three page regression suites after removing temporary loading-preview overrides (24/24 tests).
+- [x] Pass `git diff --check`.
 
-- [ ] Desktop: 1920px and 1440px.
-- [ ] Laptop: 1366px and 1280px.
-- [ ] Tablet landscape: 1024px.
-- [ ] Tablet portrait: 768px.
-- [ ] Mobile: 430px, 390px, 375px, and 320px.
-- [ ] Check intermediate widths around CSS breakpoints and layout transitions.
-- [ ] Verify no horizontal overflow, clipped content, or awkward text wrapping.
+### Skeleton Loading UI
 
-### Portfolio Screenshot Readiness
+Status: Completed.
 
-- [ ] Capture final desktop screenshots of Events, Venues, and Booking History.
-- [ ] Capture representative mobile screenshots.
-- [ ] Address any visual issues discovered during the deferred QA pass.
----
+**Goal:** Replace generic full-page loading indicators with content-shaped placeholders that preview the actual page layouts.
 
-## Interaction and UI Polish
+#### Reusable Skeleton Components
 
-**Status:** In Progress — venue-to-events navigation, booking button styling, and booking-history error-state polish are implemented; remaining data-management and usability tasks are listed below.
+- [x] Inspect the existing event, venue, and booking card components.
+- [x] Create a reusable `Skeleton` primitive.
+- [x] Support configurable dimensions and shapes.
+- [x] Add a subtle loading animation.
+- [x] Support light and dark themes.
+- [x] Respect reduced-motion preferences.
+
+#### Page-Specific Skeleton Layouts
+
+- [x] Create an `EventCardSkeleton` matching the actual event-card layout.
+- [x] Create a `VenueCardSkeleton` matching the actual venue-card layout.
+- [x] Create a `BookingCardSkeleton` matching the actual booking-card layout.
+- [x] Integrate event skeletons into `EventsPage`.
+- [x] Integrate venue skeletons into `VenuesPage`.
+- [x] Integrate booking skeletons into `BookingsPage`.
+- [x] Keep skeleton dimensions consistent with loaded content to minimize layout shifts.
+- [x] Verify responsive layouts at narrow mobile widths.
+
+#### Regression Testing
+
+- [x] Add component tests for the reusable `Skeleton` primitive.
+- [x] Add tests for each page-specific skeleton component.
+- [x] Verify each page renders its skeleton while data is loading.
+- [x] Verify actual content replaces skeletons after successful retrieval.
+- [x] Verify existing error and empty states remain unaffected.
+- [x] Run the full frontend test suite and production build.
 
 ### Booking Button Styling
 
@@ -696,73 +721,6 @@ Use these representative viewport widths for card and page-level QA:
 - [x] Pass the frontend production build.
 - [x] Pass `git diff --check`.
 
-### Development and Showcase Venue Data Separation
-
-**Status:** In Progress — isolated showcase database creation, booking seed, idempotency, and development-data preservation verified; UI checks remain.
-
-**Goal:** Keep development edge-case venues available for testing while presenting a clean, intentional set of canonical venues in the portfolio showcase data.
-
-- [x] Inspect the duplicate Bahen venue records and identify their associated events and bookings.
-- [x] Identify one canonical Bahen venue record for the showcase dataset (ID 6).
-- [x] Confirm the additional Bahen development fixtures (IDs 1 and 3) are already preserved in `seed data/seed.sql`.
-- [x] Preserve duplicate-name development fixtures in development seed data (IDs 1 and 3).
-- [x] Keep showcase seed data focused on realistic, intentional venues.
-- [x] Review foreign-key relationships and seed execution order before changing venue records.
-- [x] Create the isolated showcase database using the create-only setup script.
-- [x] Verify the showcase database contains four venues, eight events, one demo user, and four confirmed bookings, with zero booking holds.
-- [x] Verify no development-only Moss Park Espresso venue or Meet and Greet event appears in the showcase database.
-- [x] Verify the showcase booking seed can be rerun without creating duplicate bookings.
-- [x] Confirm the original Alice and Bob development bookings remain intact in `booking_system`.
-- [x] Pass the database setup safety suite (49 tests).
-- [ ] Verify existing database migration/update behavior.
-- [ ] Confirm the Events and Venues pages display the intended showcase data.
-- [ ] Verify that development seed scripts still provide the intended edge-case coverage.
-
-**Scope constraints:**
-- Do not delete useful development records merely to remove duplicate-looking showcase entries.
-- Do not change venue IDs or relationships without checking dependent events and bookings.
-- Keep development fixtures and portfolio showcase data clearly separated.
-
-### Search and Filter Usability
-
-- [ ] Explore a collapsible search bar on the Events page.
-- [ ] Add collapsible date and time filter controls.
-- [ ] Preserve active search queries and filter selections when controls are collapsed or expanded.
-- [ ] Ensure collapsed controls remain accessible and communicate their expanded/collapsed state.
-
-### Capacity and Attendance Filters
-
-- [ ] Add optional minimum and maximum event-capacity filters.
-- [ ] Add optional minimum and maximum confirmed-attendance filters.
-- [ ] Allow zero as a valid attendance threshold; treat empty fields as unrestricted.
-- [ ] Exclude temporary booking holds from confirmed-attendance counts.
-- [ ] Support numeric filters alongside keyword and AI-powered searches.
-- [ ] Allow numeric-only searches without invoking Gemini.
-- [ ] Reject negative numbers, non-integer values, and minimum values greater than maximum values.
-- [ ] Add frontend and backend validation with regression tests.
-
-### Statistical Event Discovery and Analytics
-
-- [ ] Calculate mean, median, and mode of event attendance.
-- [ ] Support percentile-based attendance comparisons.
-- [ ] Calculate attendance-to-capacity ratios.
-- [ ] Identify unusually popular and under-attended events.
-- [ ] Support statistical queries through natural-language search.
-- [ ] Clarify the population and statistical measure when a request is ambiguous.
-
-### Collapsible Card Evaluation
-
-- [ ] Evaluate whether EventCards benefit from collapsible descriptions or secondary details.
-- [ ] Evaluate whether VenueCards benefit from collapsible descriptions or secondary details.
-- [ ] Evaluate whether BookingCards benefit from collapsible content.
-- [ ] Implement collapsible card content only where it meaningfully improves usability.
-- [ ] Keep important information and primary actions accessible.
-- [ ] Add regression tests for any implemented collapse/expand interactions.
-
----
-
-## Future Enhancements
-
 ### 1. Compact Loading Indicators
 
 **Status:** Completed.
@@ -785,45 +743,130 @@ Use these representative viewport widths for card and page-level QA:
 - [x] Pass the frontend production build.
 - [x] Pass `git diff --check`.
 
+## 6. Technical Decisions and Constraints
 
-### 2. Custom Timezone Selector
+### Environment Configuration
 
-**Goal:** Let users view event and booking times in their preferred timezone, independently of the event's original timezone.
+Decision: No change required.
 
-- [ ] Detect the user's browser timezone as the initial default.
-- [ ] Add a manually configurable timezone selector using IANA timezone identifiers.
-- [ ] Display event start and end times in the selected timezone.
-- [ ] Apply the selected timezone consistently across Events, Venues, Booking History, and booking confirmation interfaces.
-- [ ] Handle daylight-saving transitions correctly.
-- [ ] Persist the user's timezone preference across sessions.
-- [ ] Clearly identify the timezone used when displaying event times.
-- [ ] Preserve timezone-independent event timestamps and existing booking semantics.
-- [ ] Add regression tests for timezone conversion, daylight-saving transitions, and preference persistence.
+- NestJS `ConfigModule.forRoot()` loads the root `.env` using the documented backend startup command.
+- `.env` is ignored by Git.
+- Keep secrets out of source control and example configuration files.
 
-### 3. AI-Assisted Localization
+### Database Access
 
-**Goal:** Let users choose an application language and access translated interface and event content.
+Decision: Use PostgreSQL through `pg` and direct SQL.
 
-#### Application Internationalization
+- Database access is implemented using the `pg` connection pool and parameterized SQL queries.
+- Database transactions and row-level locking enforce booking consistency.
+- Prisma ORM is not used.
+- Avoid introducing an ORM without a concrete architectural need.
 
-- [ ] Introduce an internationalization framework for static UI strings.
-- [ ] Add a language selector.
-- [ ] Translate navigation, buttons, labels, forms, and status messages.
-- [ ] Translate error messages, empty states, and loading-state text.
-- [ ] Persist the user's language preference across sessions.
-- [ ] Provide a sensible fallback when a translation is unavailable.
+### Scope Management
 
-#### AI-Assisted Dynamic Content Translation
+- Keep reliability-critical work separate from optional enhancements.
+- Prefer small, independently reviewable pull requests.
+- Avoid broad refactors without a concrete benefit.
+- Update this roadmap when a planned item is implemented or a decision changes.
 
-- [ ] Evaluate Gemini API integration for translating dynamic event and venue descriptions.
-- [ ] Support translation of AI-generated event-search results and clarification messages.
-- [ ] Preserve the original content and allow users to switch back to it.
-- [ ] Handle translation failures and API timeouts without breaking normal application functionality.
-- [ ] Avoid translating fixed UI strings dynamically through AI.
-- [ ] Add regression tests for translation success, failure, and fallback behaviour.
+## 7. Historical Audits
 
-#### Quality and Accessibility
+Retained audit records, implementation findings, and historical
+references. These records document what was inspected and should
+not be confused with the active task backlog.
 
-- [ ] Verify translated text does not cause layout overflow or clipping.
-- [ ] Review date, time, number, and locale-specific formatting.
-- [ ] Validate translation consistency and terminology across the application.
+### AI Search Implementation Audit — November 8, 2026
+
+This audit records the existing implementation and remaining work for
+natural-language event search. It is based on inspection of the backend
+implementation and related tests.
+
+#### Existing Implementation
+
+- [x] Supply the current Toronto date to the Gemini interpreter.
+- [x] Include the explicit `America/Toronto` timezone in the interpreter prompt.
+- [x] Request structured JSON output using Gemini response schemas.
+- [x] Parse Gemini JSON responses and validate the resulting search plan.
+- [x] Reject unsupported search-plan fields.
+- [x] Validate optional intent length and date ranges.
+- [x] Configure Gemini requests with a 20-second timeout.
+- [x] Configure Gemini requests with two retry attempts.
+- [x] Normalize Gemini abort, HTTP 503, and HTTP 504 failures into a controlled service-unavailable response.
+- [x] Treat candidate event data as untrusted data in the ranking prompt.
+
+#### Remaining Work
+
+##### Relative-Date Interpretation
+
+- [ ] Verify that Gemini correctly interprets representative relative-date queries, including "this weekend".
+- [ ] Test date boundaries independently of mocked Gemini responses.
+- [ ] Add timezone-boundary and daylight-saving-time regression tests.
+- [ ] Verify that interpreted date filters are correct when passed into event candidate searches.
+
+Existing tests verify that the current date and timezone appear in the prompt, and that mocked date filters are parsed and returned. They do not establish the accuracy of Gemini's actual date interpretation.
+
+##### Provider Error Handling
+
+- [ ] Map missing API-key configuration to an appropriate, actionable client-facing HTTP response.
+- [ ] Normalize other upstream Gemini failures into appropriate HTTP responses.
+- [ ] Preserve useful server-side diagnostics without exposing internal provider details to clients.
+- [ ] Add regression tests for additional provider failures and client-facing responses.
+- [ ] Distinguish invalid model output, provider failures, timeouts, and successful searches with no results.
+
+Currently, abort errors and provider status codes 503 and 504 are handled. Other errors propagate unchanged. Missing API-key errors are currently thrown as generic errors by the interpreter and ranker.
+
+##### Rate Limiting
+
+- [ ] Add rate limiting to `POST /events/natural-language-search`.
+- [ ] Return an appropriate HTTP response when the limit is exceeded.
+- [ ] Add tests for rate-limit behavior.
+
+No rate-limiting implementation was found in the inspected backend source or backend package manifest.
+
+##### AI Search Observability
+
+- [ ] Log natural-language search requests with request correlation IDs.
+- [ ] Record Gemini interpreter and ranker failures.
+- [ ] Record parsed search plans and validation outcomes.
+- [ ] Capture useful provider diagnostics and request latency.
+- [ ] Distinguish invalid model output, provider failures, timeouts, and successful searches returning no results.
+- [ ] Establish appropriate privacy controls before logging raw user queries or Gemini responses.
+
+Use the structured logging infrastructure introduced in PR #19. AI-specific logging is not established merely by the existence of the global logger and exception filter.
+
+##### Prompt-Injection and Output-Security Testing
+
+- [ ] Add regression tests for prompt-injection attempts embedded in natural-language queries.
+- [ ] Test attempts to override system instructions or request database schema, credentials, or internal information.
+- [ ] Test malformed and unsupported Gemini responses.
+- [ ] Verify that structured output validation rejects unsupported fields and invalid date filters.
+- [ ] Verify that candidate event data cannot override ranking instructions.
+- [ ] Confirm that database access remains restricted to backend-controlled, validated queries.
+
+The ranking prompt already describes candidate event data as untrusted input. However, no dedicated prompt-injection regression tests were found in the inspected AI and search test directories.
+
+#### Audit Scope and References
+
+Implementation inspected:
+
+- `4. backend/src/search/natural-language-search.service.ts`
+- `4. backend/src/events/search/gemini-event-search-interpreter.ts`
+- `4. backend/src/events/search/gemini-event-ranker.ts`
+- `4. backend/src/events/search/ParseNaturalLanguageSearchInterpreterHelpers.ts`
+- `4. backend/src/search/natural-language-search.ts`
+- `4. backend/src/ai/gemini/gemini-client-config.ts`
+- `4. backend/src/events/events.controller.ts`
+- `4. backend/src/events/events.module.ts`
+
+Tests inspected:
+
+- `0. tests/backend/ai/geminiSearchInterpreter.test.ts`
+- `0. tests/backend/ai/geminiSearchInterpreterErrors.test.ts`
+- `0. tests/backend/ai/geminiEventRanker.test.ts`
+- `0. tests/backend/search/naturalLanguageSearchFailures.test.ts`
+- `0. tests/backend/search/validateNaturalLanguageSearchPlan.test.ts`
+- `0. tests/backend/events/search/searchEventsController.test.ts`
+
+---
+
+Last updated: November 22, 2026
