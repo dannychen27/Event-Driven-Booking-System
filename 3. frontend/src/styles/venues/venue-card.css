@@ -136,3 +136,13 @@
     outline: 2px solid var(--text);
     outline-offset: 3px;
 }
+
+/* Keep the venue navigation action within narrow cards */
+@media (max-width: 480px) {
+    .venue-card__events-link {
+        box-sizing: border-box;
+        max-width: 100%;
+        flex-wrap: wrap;
+        overflow-wrap: anywhere;
+    }
+}

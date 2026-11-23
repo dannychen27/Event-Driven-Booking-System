@@ -7,3 +7,15 @@
     font-size: 0.9rem;
     font-weight: 600;
 }
+
+/* Keep card actions usable without overflowing narrow cards */
+@media (max-width: 480px) {
+    .event-card > .button,
+    .booking-card__actions > .button {
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 16rem;
+        min-width: 0;
+        margin-right: 0;
+    }
+}

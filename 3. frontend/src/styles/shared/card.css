@@ -43,3 +43,10 @@
     color: #ccc;
     border-color: #555;
 }
+
+/* Narrow-screen card spacing */
+@media (max-width: 480px) {
+    .card {
+        padding: 1rem;
+    }
+}

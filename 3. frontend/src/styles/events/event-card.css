@@ -113,3 +113,15 @@
 .event-datetime p {
     margin: 0;
 }
+
+/* Allow the event title and booking badge to wrap on narrow cards */
+@media (max-width: 480px) {
+    .event-card-header {
+        flex-wrap: wrap;
+    }
+
+    .event-card-header h2 {
+        flex: 1 1 12rem;
+        overflow-wrap: anywhere;
+    }
+}
