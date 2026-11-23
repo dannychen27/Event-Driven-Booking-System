@@ -20,6 +20,10 @@ export type EventWithVenue = {
   image_url: string | null;
 };
 
+export type EventWithAttendeeCount = EventWithVenue & {
+  attendee_count: number;
+};
+
 export type EventAvailability = {
   capacity: number;
   booked: number;

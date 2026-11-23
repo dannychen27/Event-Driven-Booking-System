@@ -79,6 +79,10 @@ describe("EventsService.searchEvents", () => {
         expect(result).toEqual(NO_FILTER_EVENTS_FIXTURE);
         expectNthQuery(db, 1, "JOIN venues", []);
         expectNthQuery(db, 1, "ORDER BY e.start_time ASC", []);
+        expectNthQuery(db, 1, "COALESCE(booking_counts.attendee_count, 0)::int AS attendee_count", []);
+        expectNthQuery(db, 1, "FROM bookings", []);
+        expectNthQuery(db, 1, "GROUP BY event_id", []);
+        expect(db.query.mock.calls[0][0]).not.toContain("booking_holds");
         expect(db.query).toHaveBeenCalledTimes(1);
     });
 

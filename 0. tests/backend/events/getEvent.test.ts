@@ -25,7 +25,10 @@ describe("EventsService.getEvent", () => {
 
         const result = await service.getEvent(1);
 
-        expect(result).toEqual(MOSS_PARK_ESPRESSO_EVENT_FIXTURE);
+        const { attendee_count, ...expectedEvent } =
+            MOSS_PARK_ESPRESSO_EVENT_FIXTURE;
+
+        expect(result).toEqual(expectedEvent);
 
         expect(db.query).toHaveBeenCalledTimes(1);
         expectNthQuery(db, 1, "JOIN venues", [1]);

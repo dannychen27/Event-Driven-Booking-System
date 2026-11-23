@@ -49,12 +49,41 @@ describe("EventCard", () => {
 
         expect(screen.getByText("Venue: E2E Test Venue")).toBeInTheDocument();
         expect(screen.getByText("Location: 123 Test Street")).toBeInTheDocument();
-        expect(screen.getByText("Capacity: 10 attendees")).toBeInTheDocument();
+        expect(screen.getByText("Capacity: 1 / 10 attendees")).toBeInTheDocument();
         expect(screen.queryByText(/Event Id:/)).not.toBeInTheDocument();
 
         expect(
             screen.getByRole("button", { name: "Create Booking" }),
         ).toBeEnabled();
+    });
+
+    it("uses singular attendee wording when event capacity is one", () => {
+        render(
+            <EventCard
+                {...defaultProps}
+                event={{
+                    ...eventCardFixture,
+                    capacity: 1,
+                    attendee_count: 1,
+                }}
+            />,
+        );
+
+        expect(screen.getByText("Capacity: 1 / 1 attendee")).toBeInTheDocument();
+    });
+
+    it("displays zero confirmed attendees for an event with no bookings", () => {
+        render(
+            <EventCard
+                {...defaultProps}
+                event={{
+                    ...eventCardFixture,
+                    attendee_count: 0,
+                }}
+            />,
+        );
+
+        expect(screen.getByText("Capacity: 0 / 10 attendees")).toBeInTheDocument();
     });
 
     it("omits an empty event description and uses fallbacks for missing venue details", () => {

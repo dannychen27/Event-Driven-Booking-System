@@ -1,4 +1,4 @@
-import { EventWithVenue } from '../events/events.types';
+import { EventWithAttendeeCount } from '../events/events.types';
 import { SearchFilters } from './natural-language-search.types';
 import { TimeOfDay, TimeRange } from './time-range.types';
 
@@ -48,7 +48,7 @@ export type SearchFilterConflict = {
 export type NaturalLanguageSearchResponse =
     | {
     status: 'success';
-    events: EventWithVenue[];
+    events: EventWithAttendeeCount[];
     appliedFilters: SearchFilters;
 }
     | {

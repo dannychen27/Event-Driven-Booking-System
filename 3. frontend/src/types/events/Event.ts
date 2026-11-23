@@ -8,6 +8,7 @@ export interface Event {
     start_time: string;
     end_time: string;
     capacity: number;
+    attendee_count: number;
     image_url: string | null;
 }
 

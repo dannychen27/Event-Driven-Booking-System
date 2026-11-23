@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import {
   EventAvailability,
+  EventWithAttendeeCount,
   EventWithVenue,
 } from '../types/events/events.types';
 import { TimeInterval, TimeOfDay, TimeRange } from '../types/search/time-range.types';
@@ -18,9 +19,15 @@ export class EventsService {
       SELECT
         e.*,
         v.name AS venue_name,
-        v.address AS venue_address
+        v.address AS venue_address,
+        COALESCE(booking_counts.attendee_count, 0)::int AS attendee_count
       FROM events e
-      JOIN venues v ON e.venue_id = v.id;
+      JOIN venues v ON e.venue_id = v.id
+      LEFT JOIN (
+        SELECT event_id, COUNT(*)::int AS attendee_count
+        FROM bookings
+        GROUP BY event_id
+      ) booking_counts ON booking_counts.event_id = e.id;
     `);
     return result.rows;
   }
@@ -108,14 +115,20 @@ export class EventsService {
       ? `WHERE ${conditions.join(' AND ')}`
       : '';
 
-    const result = await this.db.query(
+    const result = await this.db.query<EventWithAttendeeCount>(
       `
             SELECT
                 e.*,
                 v.name AS venue_name,
-                v.address AS venue_address
+                v.address AS venue_address,
+                COALESCE(booking_counts.attendee_count, 0)::int AS attendee_count
             FROM events e
             JOIN venues v ON e.venue_id = v.id
+            LEFT JOIN (
+                SELECT event_id, COUNT(*)::int AS attendee_count
+                FROM bookings
+                GROUP BY event_id
+            ) booking_counts ON booking_counts.event_id = e.id
                 ${whereClause}
             ORDER BY e.start_time ASC;
         `,
@@ -151,14 +164,20 @@ export class EventsService {
       ? `WHERE ${conditions.join(' AND ')}`
       : '';
 
-    const result = await this.db.query<EventWithVenue>(
+    const result = await this.db.query<EventWithAttendeeCount>(
       `
         SELECT
           e.*,
           v.name AS venue_name,
-          v.address AS venue_address
+          v.address AS venue_address,
+          COALESCE(booking_counts.attendee_count, 0)::int AS attendee_count
         FROM events e
         JOIN venues v ON e.venue_id = v.id
+        LEFT JOIN (
+          SELECT event_id, COUNT(*)::int AS attendee_count
+          FROM bookings
+          GROUP BY event_id
+        ) booking_counts ON booking_counts.event_id = e.id
         ${whereClause}
         ORDER BY e.start_time ASC;
       `,

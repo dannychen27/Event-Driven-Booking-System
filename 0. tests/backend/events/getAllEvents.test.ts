@@ -29,6 +29,10 @@ describe("EventsService.getAllEvents", () => {
         expectNthQuery(db, 1, "JOIN venues");
         expectNthQuery(db, 1, "v.name AS venue_name");
         expectNthQuery(db, 1, "v.address AS venue_address");
+        expectNthQuery(db, 1, "COALESCE(booking_counts.attendee_count, 0)::int AS attendee_count");
+        expectNthQuery(db, 1, "FROM bookings");
+        expectNthQuery(db, 1, "GROUP BY event_id");
+        expect(db.query.mock.calls[0][0]).not.toContain("booking_holds");
     });
 
     it("returns an empty array when there are no events", async () => {

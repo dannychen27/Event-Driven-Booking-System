@@ -117,4 +117,5 @@ export const eventCardFixture = {
     start_time: "2026-09-10T10:00:00Z",
     end_time: "2026-09-10T11:00:00Z",
     capacity: 10,
+    attendee_count: 1,
 };

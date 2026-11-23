@@ -113,7 +113,7 @@ export default function EventCard({
 
             <InfoLabel
                 label="Capacity"
-                value={`${event.capacity} attendees`}
+                value={`${event.attendee_count} / ${event.capacity} ${event.capacity === 1 ? "attendee" : "attendees"}`}
             />
 
             {!isBooked && bookingHistoryStatus === "loading" && (
