@@ -71,6 +71,50 @@ Complete the information and presentation of event, venue, and booking cards so 
 - [ ] Ensure card images and actions scale appropriately across viewport sizes.
 - [ ] Maintain consistent presentation across light and dark themes.
 
+#### Responsive Page Layout and Results Discovery
+
+**Status:** Planned
+
+Improve the Events and Venues page layouts so users can browse more content efficiently while preserving existing functionality.
+
+##### Events and Venues Page Layout
+
+- [ ] Replace the existing single-column card layout with a responsive multi-column CSS grid.
+- [ ] Display filters in a dedicated left sidebar on wider screens.
+- [ ] Keep search and sorting controls above the results.
+- [ ] Make the filter sidebar and search/filter toolbar sticky where appropriate.
+- [ ] Adjust the number of cards per row based on available width and card readability.
+- [ ] Preserve a usable single-column layout on narrow mobile screens.
+- [ ] Maintain consistent presentation across light and dark themes.
+
+##### Interactive Card Images
+
+- [ ] Allow users to click EventCard images to view a larger version.
+- [ ] Allow users to click VenueCard images to view a larger version.
+- [ ] Display enlarged images in an overlay/lightbox.
+- [ ] Support closing the image viewer using a close button, Escape, or clicking outside the image.
+- [ ] Preserve image aspect ratios and avoid unnecessary cropping.
+- [ ] Ensure the image viewer works on mobile, tablet, and desktop.
+- [ ] Provide accessible keyboard interaction and meaningful image descriptions.
+
+##### Booking History Layout
+
+- [ ] Evaluate a responsive multi-column Booking History card layout.
+- [ ] Preserve readability of booking metadata and available actions.
+
+##### Results Navigation
+
+- [ ] Evaluate pagination for Events and Venues.
+- [ ] Inspect existing API response behavior before deciding between client-side and server-side pagination.
+- [ ] Preserve existing search, filtering, sorting, calendar, and AI-search functionality.
+
+##### Regression Testing
+
+- [ ] Verify responsive layouts across representative phone, tablet, laptop, and desktop widths.
+- [ ] Verify sticky controls do not obscure page content.
+- [ ] Verify image viewer interactions, including keyboard and mobile behavior.
+- [ ] Verify existing search, filtering, sorting, and booking workflows remain functional.
+
 #### Content Consistency
 
 - [ ] Review date, time, status, and metadata consistency across all card types.
@@ -297,21 +341,21 @@ Complete a final visual and functional review of the deployed application across
 
 Verify that the application's existing responsive layouts behave correctly across supported screen sizes. This is application-wide validation, separate from the responsive card implementation tracked in Section 2.1.
 
-- [ ] Verify Events, Venues, and Booking History layouts on mobile, tablet, laptop, and desktop.
+- [x] Verify Events, Venues, and Booking History layouts on mobile, tablet, laptop, and desktop.
 - [ ] Check navigation, filters, forms, cards, and interactive controls at smaller widths.
-- [ ] Check text wrapping, spacing, alignment, and horizontal overflow.
+- [x] Check text wrapping, spacing, alignment, and horizontal overflow.
 - [ ] Confirm touch targets and interactions remain usable on mobile.
-- [ ] Verify responsive layouts in light and dark themes.
+- [x] Verify responsive layouts in light and dark themes.
 - [ ] Confirm card images, loading skeletons, and actions display correctly across viewport sizes.
 
 #### Page-Level QA
 
-- [ ] Review Events, Venues, and Booking History in populated states.
+- [x] Review Events, Venues, and Booking History in populated states.
 - [ ] Review loading states.
 - [ ] Review empty states.
 - [ ] Review error states and recovery behavior.
 - [ ] Verify navigation and interactions remain consistent.
-- [ ] Verify page layouts across supported viewport sizes.
+- [x] Verify page layouts across supported viewport sizes.
 
 #### Responsive Viewports
 
@@ -319,9 +363,9 @@ Use the following viewport sizes for manual browser testing:
 
 | Device category | Viewport widths |
 |---|---|
-| Mobile | 320px, 375px, 430px |
+| Mobile | 320px, 375px, 390px, 480px |
 | Tablet | 768px, 1024px |
-| Desktop | 1440px |
+| Desktop | 1366px, 1920px |
 
 Test additional intermediate widths only when a breakpoint or layout issue warrants it.
 
