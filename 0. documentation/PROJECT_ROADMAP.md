@@ -362,26 +362,38 @@ The booking-history endpoint's specific failure and recovery behavior has alread
 - [ ] Keep cleanup scoped to areas with clear maintainability or presentation benefits.
 - [ ] Avoid broad refactoring unrelated to current project goals.
 
-### 4.3 Sticky Navigation
+### 4.3 Navigation Bar Styling
+
+**Status:** Optional
+
+Evaluate improvements to the navigation bar's visual presentation and layout.
+
+- [ ] Review navigation alignment and spacing.
+- [ ] Evaluate centering navigation links within the available layout.
+- [ ] Improve visual hierarchy between branding, navigation links, and account actions.
+- [ ] Ensure the navigation remains balanced across desktop and mobile.
+- [ ] Preserve existing navigation behavior and responsive layouts.
+
+### 4.4 Sticky Navigation
 
 - [ ] Evaluate whether a sticky navigation bar improves usability.
 - [ ] Verify it does not consume excessive space on mobile.
 - [ ] Check scrolling and anchor-navigation behavior.
 
-### 4.4 Collapsible Card Evaluation
+### 4.5 Collapsible Card Evaluation
 
 - [ ] Evaluate whether long card content should be collapsible.
 - [ ] Preserve access to important information without unnecessary interaction.
 - [ ] Verify behavior on mobile and desktop.
 
-### 4.5 Search and Filter Usability
+### 4.6 Search and Filter Usability
 
 - [ ] Evaluate collapsible search and filter sections.
 - [ ] Consider grouping date and time filters into a more compact interface.
 - [ ] Preserve filter state when sections are collapsed or expanded.
 - [ ] Verify keyboard and screen-reader accessibility.
 
-### 4.6 Accessibility Improvements
+### 4.7 Accessibility Improvements
 
 - [ ] Review keyboard navigation across the application.
 - [ ] Review accessible labels and descriptions.
@@ -389,7 +401,7 @@ The booking-history endpoint's specific failure and recovery behavior has alread
 - [ ] Review color contrast in light and dark themes.
 - [ ] Verify screen-reader behavior for interactive controls and status messages.
 
-### 4.7 Pricing and Ratings
+### 4.8 Pricing and Ratings
 
 **Status:** Deferred
 
@@ -400,7 +412,7 @@ Potential future venue and event enhancements:
 - [ ] Determine whether these features provide meaningful value to the booking workflow.
 - [ ] Avoid displaying placeholder or misleading ratings and prices.
 
-### 4.8 Four Seasons Theme
+### 4.9 Four Seasons Theme
 
 **Status:** Optional
 
@@ -415,28 +427,48 @@ Explore seasonal visual themes:
 - [ ] Ensure themes preserve readability and accessibility.
 - [ ] Keep the existing light/dark theme behavior intact.
 
-### 4.9 Capacity and Attendance Filters
+### 4.10 Capacity and Attendance Filters
 
 - [ ] Explore filtering events by remaining capacity.
 - [ ] Consider filtering by confirmed attendee count.
 - [ ] Ensure capacity calculations exclude active holds where appropriate.
 - [ ] Verify filtering remains consistent with booking constraints.
 
-### 4.10 Custom Timezone Selector
+### 4.11 User Settings Page
 
-- [ ] Evaluate allowing users to select a preferred timezone.
-- [ ] Preserve `America/Toronto` as the current default.
-- [ ] Ensure date and time filtering remains consistent across timezones.
-- [ ] Test daylight-saving transitions and timezone boundaries.
+**Status:** Deferred
 
-### 4.11 Statistical Event Discovery and Analytics
+Explore a centralized settings page for user-configurable application preferences.
+
+Potential settings:
+
+- Language preference.
+- Preferred timezone.
+- Date and time display preferences.
+- Theme preference (light/dark).
+- Other relevant display and accessibility preferences.
+
+- [ ] Evaluate which preferences provide meaningful user value.
+- [ ] Design a centralized settings interface.
+- [ ] Implement language selection and localization support.
+- [ ] Implement a configurable timezone preference.
+- [ ] Allow users to manage display preferences.
+- [ ] Persist preferences appropriately.
+- [ ] Ensure settings are consistently applied across the application.
+
+**Constraints:**
+- Avoid adding settings that do not meaningfully improve the user experience.
+- Keep application defaults sensible.
+- Avoid introducing unnecessary backend complexity for preferences that can be stored locally.
+
+### 4.12 Statistical Event Discovery and Analytics
 
 - [ ] Explore useful aggregate statistics for events and bookings.
 - [ ] Evaluate trends in attendance and booking activity.
 - [ ] Consider whether analytics improve event discovery or administrative workflows.
 - [ ] Avoid introducing analytics without a clear user-facing purpose.
 
-### 4.12 AI Search Analytics Dashboard
+### 4.13 AI Search Analytics Dashboard
 
 **Status:** Optional
 
@@ -456,14 +488,14 @@ Potential metrics:
 - [ ] Evaluate whether a dashboard is justified by actual usage.
 - [ ] Avoid collecting unnecessary user query data.
 
-### 4.13 AI-Assisted Localization
+### 4.14 AI-Assisted Localization
 
 - [ ] Evaluate support for additional application languages.
 - [ ] Separate user-facing strings from application logic.
 - [ ] Review translated dates, times, and status labels.
 - [ ] Ensure AI-generated translations are validated before display.
 
-### 4.14 Angular Frontend Migration
+### 4.15 Angular Frontend Migration
 
 **Status:** Deferred
 
