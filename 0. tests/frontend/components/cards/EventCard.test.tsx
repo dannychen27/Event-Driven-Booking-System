@@ -49,7 +49,7 @@ describe("EventCard", () => {
 
         expect(screen.getByText("Venue: E2E Test Venue")).toBeInTheDocument();
         expect(screen.getByText("Location: 123 Test Street")).toBeInTheDocument();
-        expect(screen.getByText("Capacity: 1 / 10 attendees")).toBeInTheDocument();
+        expect(screen.getByText("Attendance: 1 / 10 attendees")).toBeInTheDocument();
         expect(screen.queryByText(/Event Id:/)).not.toBeInTheDocument();
 
         expect(
@@ -69,7 +69,7 @@ describe("EventCard", () => {
             />,
         );
 
-        expect(screen.getByText("Capacity: 1 / 1 attendee")).toBeInTheDocument();
+        expect(screen.getByText("Attendance: 1 / 1 attendee")).toBeInTheDocument();
     });
 
     it("displays zero confirmed attendees for an event with no bookings", () => {
@@ -83,7 +83,52 @@ describe("EventCard", () => {
             />,
         );
 
-        expect(screen.getByText("Capacity: 0 / 10 attendees")).toBeInTheDocument();
+        expect(screen.getByText("Attendance: 0 / 10 attendees")).toBeInTheDocument();
+    });
+
+    describe("attendance fallback values", () => {
+        it("shows Unknown when attendee count is missing", () => {
+            render(
+                <EventCard
+                    {...defaultProps}
+                    event={{
+                        ...eventCardFixture,
+                        attendee_count: undefined as unknown as number,
+                    }}
+                />,
+            );
+
+            expect(screen.getByText("Attendance: Unknown / 10 attendees")).toBeInTheDocument();
+        });
+
+        it("shows Unknown when event capacity is missing", () => {
+            render(
+                <EventCard
+                    {...defaultProps}
+                    event={{
+                        ...eventCardFixture,
+                        capacity: undefined as unknown as number,
+                    }}
+                />,
+            );
+
+            expect(screen.getByText("Attendance: 1 / Unknown attendees")).toBeInTheDocument();
+        });
+
+        it("shows Unknown when both attendance values are missing", () => {
+            render(
+                <EventCard
+                    {...defaultProps}
+                    event={{
+                        ...eventCardFixture,
+                        attendee_count: undefined as unknown as number,
+                        capacity: undefined as unknown as number,
+                    }}
+                />,
+            );
+
+            expect(screen.getByText("Attendance: Unknown / Unknown attendees")).toBeInTheDocument();
+        });
     });
 
     it("omits an empty event description and uses fallbacks for missing venue details", () => {

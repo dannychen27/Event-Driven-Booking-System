@@ -18,3 +18,6 @@ coverage/
 # Generated verification logs
 test-logs/*
 !test-logs/.gitkeep
+
+# Local Chrome DevTools response overrides
+/0. documentation/test-fixtures/content overrides/

@@ -17,6 +17,40 @@ Update it when significant work is completed, merged, approved, or deliberately 
 - [x] Whitespace validation passed.
 - [x] Documentation changes committed.
 
+### Showcase and Development Database Separation
+
+**Status:** Completed — committed and pushed in `5d34a7b`.
+
+- [x] Separate the development database from the portfolio showcase database.
+- [x] Add a dedicated showcase setup script that creates and seeds the showcase database without dropping an existing database.
+- [x] Preserve development fixtures while providing intentional showcase data.
+- [x] Add representative confirmed demo bookings.
+- [x] Verify setup idempotency and showcase database contents.
+- [x] Verify the Events page displays the intended showcase events and booking states.
+- [x] Verify the Booking History page displays the seeded demo bookings.
+
+### Confirmed Attendee Counts on Event Cards
+
+**Status:** Implemented, tested, committed, and pushed.
+
+- [x] Derive attendee counts from confirmed booking records in the `bookings` table.
+- [x] Exclude temporary booking holds from attendee counts.
+- [x] Preserve events with zero bookings using an aggregate `LEFT JOIN` and `COALESCE`.
+- [x] Return attendee counts from the event listing, keyword search, and AI candidate-search queries.
+- [x] Add `attendee_count` to the backend and frontend event types.
+- [x] Display confirmed attendees alongside event capacity on EventCards.
+- [x] Handle singular and plural attendee wording.
+- [x] Rename the EventCard information label from Capacity to Attendance.
+- [x] Display Unknown when attendee count or capacity is missing or invalid.
+- [x] Add frontend regression tests for each missing-value combination.
+- [x] Verify the both-missing fallback in Chrome using a temporary Local Override.
+- [x] Add backend query regression tests and frontend tests for zero counts and singular wording.
+- [x] Pass backend and frontend production builds.
+- [x] Pass the full backend test suite (463 tests) and frontend test suite (226 tests).
+- [x] Pass `git diff --check`.
+- [x] Verify attendee counts against the live showcase database in the browser.
+- [x] Verify attendee counts remain visible in keyword and AI search results in the browser.
+
 ### Immediate Booking Status on Event Cards
 
 #### Booking Status Behavior
@@ -241,6 +275,30 @@ Avoid using this section as an open-ended invitation to refactor working code.
 
 ## 6. Future Ideas
 
+### Pricing and Ratings
+
+**Status:** Deferred — exploratory product enhancements; not required for portfolio showcase readiness.
+
+#### Event Pricing
+
+- [ ] Evaluate whether events should support free and paid admission.
+- [ ] Define event pricing fields, including amount and currency.
+- [ ] Determine how unspecified pricing should be represented.
+- [ ] Evaluate whether bookings should retain a snapshot of the price at booking time.
+- [ ] Assess required database migrations, backend validation, and API changes.
+- [ ] Consider payment processing only if paid bookings become an explicit project objective.
+- [ ] Display pricing on EventCards once the underlying data model is established.
+
+#### Venue and Event Ratings
+
+- [ ] Determine whether ratings should apply to venues, events, or both.
+- [ ] Define who is eligible to submit ratings.
+- [ ] Evaluate a review and rating data model.
+- [ ] Define rating aggregation and duplicate-submission rules.
+- [ ] Consider review editing, deletion, and moderation.
+- [ ] Assess required database migrations, backend endpoints, and frontend components.
+- [ ] Display aggregate ratings once a reliable rating system exists.
+
 ### Sticky Navigation Bar
 
 Improve navigation accessibility while scrolling through longer pages.
@@ -282,7 +340,8 @@ rather than developer-oriented data displays.
 
 - [x] Replace raw event identifiers and developer-oriented labels with meaningful event information.
 - [x] Present event names, venue names, dates, times, and locations clearly.
-- [ ] Display relevant pricing, capacity, and availability information where appropriate.
+- [x] Display confirmed attendee counts alongside event capacity.
+- [ ] Display relevant pricing information where appropriate.
 - [x] Ensure optional or missing event information has sensible user-facing fallbacks.
 
 #### VenueCard
@@ -670,6 +729,26 @@ Use these representative viewport widths for card and page-level QA:
 - [ ] Add collapsible date and time filter controls.
 - [ ] Preserve active search queries and filter selections when controls are collapsed or expanded.
 - [ ] Ensure collapsed controls remain accessible and communicate their expanded/collapsed state.
+
+### Capacity and Attendance Filters
+
+- [ ] Add optional minimum and maximum event-capacity filters.
+- [ ] Add optional minimum and maximum confirmed-attendance filters.
+- [ ] Allow zero as a valid attendance threshold; treat empty fields as unrestricted.
+- [ ] Exclude temporary booking holds from confirmed-attendance counts.
+- [ ] Support numeric filters alongside keyword and AI-powered searches.
+- [ ] Allow numeric-only searches without invoking Gemini.
+- [ ] Reject negative numbers, non-integer values, and minimum values greater than maximum values.
+- [ ] Add frontend and backend validation with regression tests.
+
+### Statistical Event Discovery and Analytics
+
+- [ ] Calculate mean, median, and mode of event attendance.
+- [ ] Support percentile-based attendance comparisons.
+- [ ] Calculate attendance-to-capacity ratios.
+- [ ] Identify unusually popular and under-attended events.
+- [ ] Support statistical queries through natural-language search.
+- [ ] Clarify the population and statistical measure when a request is ambiguous.
 
 ### Collapsible Card Evaluation
 

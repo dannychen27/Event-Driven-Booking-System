@@ -32,6 +32,18 @@ export default function EventCard({
     // TODO: Hardcoded user for now. Replace when user accounts are implemented (authentication).
     const user_id = BOOKING_USER_ID;
 
+    const attendeeCount =
+        typeof event.attendee_count === "number" &&
+        Number.isFinite(event.attendee_count)
+            ? event.attendee_count
+            : null;
+
+    const capacity =
+        typeof event.capacity === "number" &&
+        Number.isFinite(event.capacity)
+            ? event.capacity
+            : null;
+
     function handleOpenBookingForm() {
         if (
             bookingHistoryStatus !== "ready" ||
@@ -112,8 +124,8 @@ export default function EventCard({
             />
 
             <InfoLabel
-                label="Capacity"
-                value={`${event.attendee_count} / ${event.capacity} ${event.capacity === 1 ? "attendee" : "attendees"}`}
+                label="Attendance"
+                value={`${attendeeCount ?? "Unknown"} / ${capacity ?? "Unknown"} ${capacity === 1 ? "attendee" : "attendees"}`}
             />
 
             {!isBooked && bookingHistoryStatus === "loading" && (
