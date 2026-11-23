@@ -680,16 +680,25 @@ Use these representative viewport widths for card and page-level QA:
 
 ### 1. Compact Loading Indicators
 
+**Status:** Completed.
+
 **Goal:** Reduce the vertical space occupied by loading messages so users can see more of the skeleton-card animations.
 
-- [ ] Replace large loading messages with a compact horizontal loading indicator.
-- [ ] Add a small animated spinner beside the message.
-- [ ] Use consistent loading messages: "Loading events...", "Loading venues...", and "Loading bookings...".
-- [ ] Keep existing skeleton-card animations visible underneath the indicator.
-- [ ] Standardize indicator alignment, spacing, and typography across all three pages.
-- [ ] Provide accessible loading announcements for screen readers.
-- [ ] Preserve existing loading, error, and empty-state behaviour.
-- [ ] Add or update regression tests for loading indicators and skeleton visibility.
+- [x] Replace large loading messages with a compact horizontal loading indicator.
+- [x] Add a small animated spinner beside the message.
+- [x] Use consistent loading messages: "Loading events...", "Loading venues...", and "Loading bookings...".
+- [x] Keep existing skeleton-card animations visible underneath the indicator.
+- [x] Standardize indicator alignment, spacing, and typography across all three pages.
+- [x] Provide accessible loading announcements for screen readers.
+- [x] Preserve existing loading, error, and empty-state behaviour.
+- [x] Add or update regression tests for loading indicators and skeleton visibility.
+
+#### Verification
+
+- [x] Verify the loading indicator visually on desktop and mobile, including a 320px viewport.
+- [x] Pass the full frontend test suite (33 test files, 221 tests).
+- [x] Pass the frontend production build.
+- [x] Pass `git diff --check`.
 
 
 ### 2. Custom Timezone Selector

@@ -50,7 +50,7 @@ describe("BookingsPage", () => {
             const { container } = render(<BookingsPage />);
 
             expect(screen.getByRole("status")).toHaveAttribute("aria-busy", "true");
-            expect(screen.getByText("Loading your bookings..."))
+            expect(screen.getByText("Loading bookings..."))
                 .toBeInTheDocument();
             expect(container.querySelectorAll(".booking-card-skeleton"))
                 .toHaveLength(3);
@@ -67,7 +67,7 @@ describe("BookingsPage", () => {
                 .toBeInTheDocument();
             expect(screen.getByText("Mock Booking Card: 2"))
                 .toBeInTheDocument();
-            expect(screen.queryByText("Loading your bookings..."))
+            expect(screen.queryByText("Loading bookings..."))
                 .not.toBeInTheDocument();
 
             expect(getBookingHistory).toHaveBeenCalledWith(1);
@@ -80,7 +80,7 @@ describe("BookingsPage", () => {
 
             expect(await screen.findByText("No bookings right now."))
                 .toBeInTheDocument();
-            expect(screen.queryByText("Loading your bookings..."))
+            expect(screen.queryByText("Loading bookings..."))
                 .not.toBeInTheDocument();
         });
     });
@@ -105,7 +105,7 @@ describe("BookingsPage", () => {
 
             expect(screen.queryByText("Failed to load bookings"))
                 .not.toBeInTheDocument();
-            expect(screen.queryByText("Loading your bookings..."))
+            expect(screen.queryByText("Loading bookings..."))
                 .not.toBeInTheDocument();
         });
 
@@ -130,7 +130,7 @@ describe("BookingsPage", () => {
                 screen.getByRole("button", { name: "Try again" })
             );
 
-            expect(screen.getByText("Loading your bookings..."))
+            expect(screen.getByText("Loading bookings..."))
                 .toBeInTheDocument();
 
             resolveRetry(bookingHistoryFixture);

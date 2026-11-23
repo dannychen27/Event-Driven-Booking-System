@@ -64,7 +64,7 @@ export default function BookingsPage() {
                 className="bookings-page skeleton-loading"
                 aria-busy="true"
             >
-                <LoadingState message="Loading your bookings..." />
+                <LoadingState message="Loading bookings..." />
 
                 <h1>
                     <Skeleton width="13rem" height="2rem" variant="text" />
