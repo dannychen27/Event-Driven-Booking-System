@@ -593,13 +593,25 @@ Use these representative viewport widths for card and page-level QA:
 
 **Status:** Planned — venue-to-events navigation is implemented; remaining polish and data-management tasks are listed below.
 
-### Next Commit: Booking Button Styling
+### Booking Button Styling
 
-- [ ] Improve the visual styling of the green Create Booking button.
-- [ ] Improve the visual styling of the red Cancel Booking button.
-- [ ] Standardize button dimensions, typography, border radius, hover states, and focus states.
-- [ ] Preserve the semantic distinction between primary booking and destructive cancellation actions.
-- [ ] Preserve existing booking and cancellation behavior and regression coverage.
+- [x] Improve the visual styling of the green Create Booking button.
+- [x] Improve the visual styling of the red Cancel Booking button.
+- [x] Standardize button dimensions, typography, border radius, hover states, and focus states.
+- [x] Preserve the semantic distinction between primary booking and destructive cancellation actions.
+- [x] Preserve existing booking and cancellation behavior and regression coverage.
+
+### Manual QA: Booking-History Failure Fallback
+
+**Goal:** Verify that EventCard safely handles a failed booking-history request and that the normal booking state recovers afterward.
+
+- [ ] Inspect the booking-history API request and EventCard error-state handling.
+- [ ] Prepare an exact Chrome DevTools Console snippet to simulate a failed booking-history API response.
+- [ ] Reload the Events page and verify that an unbooked event displays the disabled "Booking status unavailable" button.
+- [ ] Verify that the fallback does not allow a booking while booking status is unknown.
+- [ ] Restore normal API behaviour and reload the page.
+- [ ] Verify that the regular booking button or already-booked state returns as appropriate.
+- [ ] Record the reproduction and recovery steps for future manual regression testing.
 
 ### Development and Showcase Venue Data Separation
 

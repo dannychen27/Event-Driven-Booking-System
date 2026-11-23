@@ -1,6 +1,9 @@
 .event-card > .button,
-.booking-card > .button {
+.booking-card__actions > .button {
+    min-width: 10rem;
+    min-height: 44px;
     margin-top: 1rem;
     margin-right: 0.5rem;
     font-size: 0.9rem;
+    font-weight: 600;
 }
