@@ -14,13 +14,20 @@ vi.mock("../../../../3. frontend/src/api/bookings", () => ({
 
 vi.mock("../../../../3. frontend/src/components/forms/BookingForm.tsx", () => ({
     default: ({
+        onCancel,
         onBookingCreated,
     }: {
+        onCancel: () => void;
         onBookingCreated: () => void;
     }) => (
-        <Button onClick={onBookingCreated}>
-            Mock Booking Form
-        </Button>
+        <>
+            <Button onClick={onCancel}>
+                Cancel
+            </Button>
+            <Button onClick={onBookingCreated}>
+                Mock Booking Form
+            </Button>
+        </>
     ),
 }));
 
@@ -127,6 +134,21 @@ describe("EventCard", () => {
             expectEventMetadata("Attendance", "1 / Unknown attendees");
         });
 
+        it("shows Unknown when attendance values are not finite numbers", () => {
+            render(
+                <EventCard
+                    {...defaultProps}
+                    event={{
+                        ...eventCardFixture,
+                        attendee_count: Number.NaN,
+                        capacity: Number.POSITIVE_INFINITY,
+                    }}
+                />,
+            );
+
+            expectEventMetadata("Attendance", "Unknown / Unknown attendees");
+        });
+
         it("shows Unknown when both attendance values are missing", () => {
             render(
                 <EventCard
@@ -165,6 +187,22 @@ describe("EventCard", () => {
         expectEventMetadata("Location", "Location to be announced");
     });
 
+    it("uses venue fallbacks when venue details contain only whitespace", () => {
+        render(
+            <EventCard
+                {...defaultProps}
+                event={{
+                    ...eventCardFixture,
+                    venue_name: "   ",
+                    venue_address: "  \t  ",
+                }}
+            />,
+        );
+
+        expectEventMetadata("Venue", "Venue details unavailable");
+        expectEventMetadata("Location", "Location to be announced");
+    });
+
     it("opens the booking form when booking status is ready and the event is unbooked", async () => {
         const user = userEvent.setup();
 
@@ -177,6 +215,30 @@ describe("EventCard", () => {
         expect(
             screen.getByRole("button", { name: "Mock Booking Form" }),
         ).toBeInTheDocument();
+    });
+
+    it("closes the booking form when cancelled without creating a booking", async () => {
+        const user = userEvent.setup();
+
+        render(<EventCard {...defaultProps} />);
+
+        await user.click(
+            screen.getByRole("button", { name: "Create Booking" }),
+        );
+
+        expect(
+            screen.getByRole("button", { name: "Mock Booking Form" }),
+        ).toBeInTheDocument();
+
+        await user.click(
+            screen.getByRole("button", { name: "Cancel" }),
+        );
+
+        expect(
+            screen.queryByRole("button", { name: "Mock Booking Form" }),
+        ).not.toBeInTheDocument();
+
+        expect(createBooking).not.toHaveBeenCalled();
     });
 
     it("immediately displays the booked state when the event is already booked", () => {
