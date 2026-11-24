@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import VenueCard from "../../../../3. frontend/src/components/cards/VenueCard";
 import { venueCardFixture } from "../../fixtures/venues/venueFixtures";
+import { getVenueTypeColorClass } from "../../../../3. frontend/src/helpers/venues/venueTypeColor";
 
 
 describe("VenueCard", () => {
@@ -38,7 +39,10 @@ describe("VenueCard", () => {
 
             expect(
                 Array.from(content!.children).map(
-                    (element) => element.className || element.tagName.toLowerCase(),
+                    (element) =>
+                        element.classList.contains("venue-card__type")
+                            ? "venue-card__type"
+                            : element.className || element.tagName.toLowerCase(),
                 ),
             ).toEqual([
                 "h2",
@@ -60,7 +64,11 @@ describe("VenueCard", () => {
                 />,
             );
 
-            expect(screen.getByText("Community space")).toBeInTheDocument();
+            const categoryLabel = screen.getByText("Community space");
+            expect(categoryLabel).toBeInTheDocument();
+            expect(categoryLabel).toHaveClass(
+                getVenueTypeColorClass("Community space"),
+            );
             expect(screen.getByText("A welcoming venue.")).toBeInTheDocument();
         });
 

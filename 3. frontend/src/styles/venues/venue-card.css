@@ -67,10 +67,101 @@
     margin: 0;
     padding: 0.25rem 0.65rem;
     border-radius: 999px;
-    background: var(--surface-secondary, var(--secondary-background));
-    color: var(--secondary-text);
+    background: #e2e8f0;
+    color: #1e293b;
     font-size: 0.8rem;
     font-weight: 600;
+}
+
+/* Stable category colours: each palette has light- and dark-theme variants. */
+.venue-card__type--default {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+.venue-card__type--palette-0 {
+    background: #dbeafe;
+    color: #1e3a8a;
+}
+
+.venue-card__type--palette-1 {
+    background: #ede9fe;
+    color: #4c1d95;
+}
+
+.venue-card__type--palette-2 {
+    background: #ccfbf1;
+    color: #115e59;
+}
+
+.venue-card__type--palette-3 {
+    background: #fef3c7;
+    color: #78350f;
+}
+
+.venue-card__type--palette-4 {
+    background: #ffe4e6;
+    color: #9f1239;
+}
+
+.venue-card__type--palette-5 {
+    background: #ecfccb;
+    color: #365314;
+}
+
+.venue-card__type--palette-6 {
+    background: #e0f2fe;
+    color: #075985;
+}
+
+.venue-card__type--palette-7 {
+    background: #ffedd5;
+    color: #9a3412;
+}
+
+#app[data-theme="dark"] .venue-card__type--default {
+    background: #334155;
+    color: #e2e8f0;
+}
+
+#app[data-theme="dark"] .venue-card__type--palette-0 {
+    background: #1e3a5f;
+    color: #dbeafe;
+}
+
+#app[data-theme="dark"] .venue-card__type--palette-1 {
+    background: #4c1d6f;
+    color: #ede9fe;
+}
+
+#app[data-theme="dark"] .venue-card__type--palette-2 {
+    background: #134e4a;
+    color: #ccfbf1;
+}
+
+#app[data-theme="dark"] .venue-card__type--palette-3 {
+    background: #713f12;
+    color: #fef3c7;
+}
+
+#app[data-theme="dark"] .venue-card__type--palette-4 {
+    background: #881337;
+    color: #ffe4e6;
+}
+
+#app[data-theme="dark"] .venue-card__type--palette-5 {
+    background: #365314;
+    color: #ecfccb;
+}
+
+#app[data-theme="dark"] .venue-card__type--palette-6 {
+    background: #0c4a6e;
+    color: #e0f2fe;
+}
+
+#app[data-theme="dark"] .venue-card__type--palette-7 {
+    background: #7c2d12;
+    color: #ffedd5;
 }
 
 .venue-card__description,
@@ -106,7 +197,7 @@
 
 .venue-card__details li {
     padding: 0.3rem 0.65rem;
-    border: 1px solid var(--border-color, var(--secondary-text));
+    border: 1px solid var(--border);
     border-radius: 999px;
     font-size: 0.85rem;
     overflow-wrap: anywhere;

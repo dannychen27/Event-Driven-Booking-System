@@ -89,7 +89,7 @@ Regression testing should also be performed incrementally after individual imple
 
 - [x] EventCard: Improve metadata spacing and stack labels and values vertically on narrow mobile screens.
 - [x] VenueCard: Keep the events-navigation link and arrow together at narrow widths.
-- [ ] VenueCard: Improve category-label visibility in dark mode.
+- [x] VenueCard: Improve category-label visibility in dark mode.
 - [ ] BookingCard: Investigate whether the horizontal divider provides useful separation at 320px.
 - [ ] BookingCard: Improve spacing between venue and location information on narrow screens.
 - [ ] BookingCard: Keep the "Booked at" label together at tablet widths and improve metadata indentation.

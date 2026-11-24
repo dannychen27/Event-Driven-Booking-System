@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { VenueCardProps } from "../../types/venues/VenueCard.types.ts";
+import { getVenueTypeColorClass } from "../../helpers/venues/venueTypeColor.ts";
 import { EventImage } from "../ui/EventImage.tsx";
 import { ImageLightbox } from "../ui/ImageLightbox.tsx";
 import "../../styles/shared/card.css";
@@ -34,7 +35,7 @@ export default function VenueCard({ venue }: VenueCardProps) {
                 <h2>{venueName}</h2>
 
                 {venueType && (
-                    <p className="venue-card__type">
+                    <p className={`venue-card__type ${getVenueTypeColorClass(venueType)}`}>
                         {venueType}
                     </p>
                 )}
