@@ -4,9 +4,14 @@ import { ImageOff } from "lucide-react";
 interface EventImageProps {
     imageUrl: string | null;
     alt: string;
+    onImageClick?: () => void;
 }
 
-export function EventImage({ imageUrl, alt }: EventImageProps) {
+export function EventImage({
+    imageUrl,
+    alt,
+    onImageClick,
+}: EventImageProps) {
     const [imageFailed, setImageFailed] = useState(false);
 
     if (!imageUrl || imageFailed) {
@@ -22,7 +27,7 @@ export function EventImage({ imageUrl, alt }: EventImageProps) {
         );
     }
 
-    return (
+    const image = (
         <img
             className="event-image"
             src={imageUrl}
@@ -31,5 +36,20 @@ export function EventImage({ imageUrl, alt }: EventImageProps) {
             decoding="async"
             onError={() => setImageFailed(true)}
         />
+    );
+
+    if (!onImageClick) {
+        return image;
+    }
+
+    return (
+        <button
+            className="event-image-trigger"
+            type="button"
+            aria-label={`Enlarge ${alt} image`}
+            onClick={onImageClick}
+        >
+            {image}
+        </button>
     );
 }

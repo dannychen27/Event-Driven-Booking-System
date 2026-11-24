@@ -1,9 +1,13 @@
+import { useState } from "react";
 import type { VenueCardProps } from "../../types/venues/VenueCard.types.ts";
 import { EventImage } from "../ui/EventImage.tsx";
+import { ImageLightbox } from "../ui/ImageLightbox.tsx";
 import "../../styles/shared/card.css";
 import "../../styles/venues/venue-card.css";
 
 export default function VenueCard({ venue }: VenueCardProps) {
+    const [showImageLightbox, setShowImageLightbox] = useState(false);
+
     const venueName = venue.name.trim() || "Venue details unavailable";
     const venueAddress = venue.address.trim() || "Address to be announced";
     const venueType = venue.venue_type?.trim();
@@ -15,8 +19,16 @@ export default function VenueCard({ venue }: VenueCardProps) {
                 <EventImage
                     imageUrl={venue.image_url ?? null}
                     alt={venueName}
+                    onImageClick={() => setShowImageLightbox(true)}
                 />
             </div>
+
+            <ImageLightbox
+                imageUrl={venue.image_url ?? null}
+                alt={venueName}
+                isOpen={showImageLightbox}
+                onClose={() => setShowImageLightbox(false)}
+            />
 
             <div className="venue-card__content">
                 <h2>{venueName}</h2>

@@ -69,7 +69,7 @@ Complete the remaining card-level responsive improvements before redesigning the
 
 1. [ ] Complete Responsive Card Design.
 2. [x] Implement the Events page layout redesign.
-3. [ ] Add EventCard and VenueCard image lightboxes.
+3. [x] Add EventCard and VenueCard image lightboxes.
 4. [ ] Evaluate and improve the Booking History layout.
 5. [ ] Investigate pagination for Events and Venues.
 6. [ ] Complete the remaining Content Consistency review.
@@ -122,13 +122,13 @@ Improve the Events and Venues page layouts so users can browse more content effi
 
 ##### Interactive Card Images
 
-- [ ] Allow users to click EventCard images to view a larger version.
-- [ ] Allow users to click VenueCard images to view a larger version.
-- [ ] Display enlarged images in an overlay/lightbox.
-- [ ] Support closing the image viewer using a close button, Escape, or clicking outside the image.
-- [ ] Preserve image aspect ratios and avoid unnecessary cropping.
-- [ ] Ensure the image viewer works on mobile, tablet, and desktop.
-- [ ] Provide accessible keyboard interaction and meaningful image descriptions.
+- [x] Allow users to click EventCard images to view a larger version.
+- [x] Allow users to click VenueCard images to view a larger version.
+- [x] Display enlarged images in an overlay/lightbox.
+- [x] Support closing the image viewer using a close button, Escape, or clicking outside the image.
+- [x] Preserve image aspect ratios and avoid unnecessary cropping.
+- [x] Ensure the image viewer works on mobile, tablet, and desktop.
+- [x] Provide accessible keyboard interaction and meaningful image descriptions.
 
 ##### Booking History Layout
 
@@ -145,7 +145,7 @@ Improve the Events and Venues page layouts so users can browse more content effi
 
 - [ ] Verify responsive layouts across representative phone, tablet, laptop, and desktop widths.
 - [ ] Verify sticky controls do not obscure page content.
-- [ ] Verify image viewer interactions, including keyboard and mobile behavior.
+- [x] Verify image viewer interactions, including keyboard and mobile behavior.
 - [ ] Verify existing search, filtering, sorting, and booking workflows remain functional.
 
 #### Content Consistency
@@ -1000,6 +1000,34 @@ The calendar status correction remains outstanding until the duplicate condition
 - [x] `git diff --check` passed.
 
 **Scope:** Events page search disclosure presentation, responsive styling, and focused frontend regression tests. No changes to search semantics, calendar filtering logic, backend APIs, database schema, or booking lifecycle.
+
+### 5.18 Interactive Card Image Lightboxes
+
+**Status:** Implemented and manually verified; ready to commit.
+
+#### Implementation
+- [x] Add a reusable image lightbox component using the native HTML dialog element.
+- [x] Make available EventCard images clickable and keyboard-accessible.
+- [x] Make available VenueCard images clickable and keyboard-accessible.
+- [x] Display enlarged images in a modal overlay.
+- [x] Support closing through the close button, Escape, and backdrop clicks.
+- [x] Preserve image aspect ratios with responsive viewport constraints.
+- [x] Provide meaningful image descriptions and accessible control labels.
+- [x] Keep missing or failed card images as non-interactive fallbacks.
+- [x] Add visible keyboard focus styling to image triggers and the close button.
+
+#### Validation
+- [x] New lightbox regression tests passed (6/6).
+- [x] EventCard regression tests passed (14/14).
+- [x] VenueCard regression tests passed (8/8).
+- [x] Full frontend test suite passed (257/257 across 35 files).
+- [x] Frontend TypeScript and production build passed.
+- [x] Manually verify EventCard and VenueCard lightboxes at 375px and 1280px.
+- [x] Verify close button, Escape, backdrop dismissal, and visible keyboard focus.
+- [x] Complete all 9 focused manual visual QA checks.
+- [x] `git diff --check` passed.
+
+**Scope:** Reusable frontend image lightbox, EventCard and VenueCard image interactions, responsive styling, accessibility, and focused regression tests. No changes to backend APIs, database schema, search behavior, or booking lifecycle.
 
 ## 6. Technical Decisions and Constraints
 

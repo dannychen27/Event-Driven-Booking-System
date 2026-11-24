@@ -1,0 +1,77 @@
+/* Native dialog provides modal focus handling and Escape behavior. */
+.image-lightbox {
+    position: fixed;
+    box-sizing: border-box;
+    width: min(96vw, 1200px);
+    max-width: none;
+    max-height: 90dvh;
+    margin: auto;
+    padding: 3.5rem 1rem 1rem;
+    overflow: visible;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: #fff;
+}
+
+.image-lightbox::backdrop {
+    background: rgba(0, 0, 0, 0.88);
+}
+
+.image-lightbox__image {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: calc(90dvh - 5rem);
+    margin: 0 auto;
+    border-radius: 8px;
+    object-fit: contain;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.image-lightbox__close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.65);
+    color: #fff;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.image-lightbox__close:hover {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+.image-lightbox__close:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 3px;
+}
+
+@media (max-width: 520px) {
+    .image-lightbox {
+        width: 100vw;
+        max-height: 94dvh;
+        padding: 3.25rem 0.5rem 0.5rem;
+        border-radius: 0;
+    }
+
+    .image-lightbox__image {
+        max-height: calc(94dvh - 4rem);
+    }
+
+    .image-lightbox__close {
+        top: 0.25rem;
+        right: 0.5rem;
+    }
+}

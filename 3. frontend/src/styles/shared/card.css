@@ -50,3 +50,25 @@
         padding: 1rem;
     }
 }
+
+/* Accessible image button used by EventCard and VenueCard lightboxes */
+.event-image-trigger {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    cursor: zoom-in;
+    text-align: inherit;
+}
+
+.event-image-trigger .event-image {
+    margin-bottom: 0;
+}
+
+.event-image-trigger:focus-visible {
+    outline: 3px solid var(--text);
+    outline-offset: -3px;
+}

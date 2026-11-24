@@ -15,6 +15,7 @@ import { DateLabel } from "../ui/labels/DateLabel.tsx";
 import { BOOKING_USER_ID } from "../../constants/bookings/booking.ts";
 import Button from "../ui/buttons/Button";
 import { EventImage } from "../ui/EventImage.tsx";
+import { ImageLightbox } from "../ui/ImageLightbox.tsx";
 import { Modal } from "../modals/Modal.tsx";
 import BookingForm from "../forms/BookingForm.tsx";
 import { getErrorMessage } from "../../helpers/shared/Errors.ts";
@@ -28,6 +29,7 @@ export default function EventCard({
     const [bookingStatus, setBookingStatus] = useState<EventBookingStatus>("idle");
     const [bookingMessage, setBookingMessage] = useState("");
     const [showBookingForm, setShowBookingForm] = useState(false);
+    const [showImageLightbox, setShowImageLightbox] = useState(false);
 
     // TODO: Hardcoded user for now. Replace when user accounts are implemented (authentication).
     const user_id = BOOKING_USER_ID;
@@ -88,6 +90,7 @@ export default function EventCard({
                 <EventImage
                     imageUrl={event.image_url}
                     alt={event.name}
+                    onImageClick={() => setShowImageLightbox(true)}
                 />
 
                 {isBooked && (
@@ -97,6 +100,13 @@ export default function EventCard({
                     </span>
                 )}
             </div>
+
+            <ImageLightbox
+                imageUrl={event.image_url}
+                alt={event.name}
+                isOpen={showImageLightbox}
+                onClose={() => setShowImageLightbox(false)}
+            />
 
             <div className="event-card-header">
                 <h2>{event.name}</h2>
