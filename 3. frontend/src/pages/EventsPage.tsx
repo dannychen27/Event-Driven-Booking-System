@@ -387,37 +387,35 @@ export default function EventsPage() {
                           </div>
 
                           <div className="event-calendar-skeleton__time-range">
-                              {Array.from({ length: 2 }, (_, index) => (
-                                  <div
-                                      className="event-calendar-skeleton__time-picker"
-                                      key={index}
-                                  >
-                                      <Skeleton width="3rem" variant="text" />
-                                      <div className="event-calendar-skeleton__time-fields">
-                                          <div className="event-calendar-skeleton__time-segment">
-                                              <Skeleton width="2rem" variant="text" />
-                                              <Skeleton />
-                                          </div>
-                                          <Skeleton width="0.5rem" height="1rem" />
-                                          <div className="event-calendar-skeleton__time-segment">
-                                              <Skeleton width="2.5rem" variant="text" />
-                                              <Skeleton />
-                                          </div>
-                                          <div className="event-calendar-skeleton__period">
-                                              <Skeleton />
-                                              <Skeleton />
-                                          </div>
-                                      </div>
-                                  </div>
-                              ))}
-                          </div>
-                      </div>
-
-                      <div className="event-calendar-skeleton__actions">
+    {(["After", "Before"] as const).map((label) => (
+        <div
+            className="event-calendar-skeleton__time-picker"
+            key={label}
+        >
+            <div className="event-calendar-skeleton__time-heading">
+                <Skeleton width="3rem" variant="text" />
+                <div className="event-calendar-skeleton__time-clear">
+                    <Skeleton />
+                </div>
+            </div>
+            <div className="event-calendar-skeleton__time-fields">
+                <div className="event-calendar-skeleton__time-input"><Skeleton /></div>
+                <span className="event-calendar-skeleton__time-separator"><Skeleton /></span>
+                <div className="event-calendar-skeleton__time-input"><Skeleton /></div>
+                <div className="event-calendar-skeleton__period">
+                    <Skeleton />
+                    <Skeleton />
+                </div>
+            </div>
+        </div>
+    ))}
+</div>
+<div className="event-calendar-skeleton__actions">
                           <Skeleton className="event-calendar-skeleton__apply" />
                       </div>
                   </div>
 
+                    </div>
                   <div className="events-page__grid skeleton-loading__cards">
                         <EventCardSkeleton />
                         <EventCardSkeleton />

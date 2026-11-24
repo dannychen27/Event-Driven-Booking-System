@@ -264,33 +264,105 @@
     min-width: 0;
 }
 
+.event-calendar-skeleton__time-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.event-calendar-skeleton__time-clear {
+    flex: 0 0 3.5rem;
+    height: 1.5rem;
+    border-radius: 4px;
+}
+
 .event-calendar-skeleton__time-fields {
     display: flex;
-    align-items: end;
-    gap: 0.5rem;
+    align-items: center;
+    gap: 0.35rem;
     min-width: 0;
 }
 
-.event-calendar-skeleton__time-segment {
-    display: grid;
-    gap: 0.25rem;
+.event-calendar-skeleton__time-input {
+    flex: 0 0 44px;
+    width: 44px;
+    height: 38px;
+    border-radius: 6px;
 }
 
-.event-calendar-skeleton__time-segment .skeleton:last-child {
-    width: 54px;
-    height: 40px;
+.event-calendar-skeleton__time-input .skeleton {
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+}
+
+.event-calendar-skeleton__time-clear .skeleton {
+    width: 100%;
+    height: 100%;
+}
+
+.event-calendar-skeleton__time-separator {
+    flex: 0 0 auto;
+    width: 0.35rem;
+    height: 1rem;
 }
 
 .event-calendar-skeleton__period {
     display: flex;
-    align-self: end;
+    flex: 0 0 58px;
+    align-self: center;
+    width: 58px;
+    min-width: 58px;
     gap: 2px;
 }
 
 .event-calendar-skeleton__period .skeleton {
-    width: 2.5rem;
-    height: 40px;
+    flex: 1 1 0;
+    min-width: 0;
+    height: 38px;
     border-radius: 5px;
+}
+
+/* Match the compact picker's narrower side-by-side layout. */
+@media (min-width: 385px) and (max-width: 480px) {
+    .event-calendar-skeleton__time-range {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.65rem;
+    }
+
+    .event-calendar-skeleton__time-fields {
+        gap: 0.2rem;
+    }
+
+    .event-calendar-skeleton__time-input {
+        flex-basis: 38px;
+        width: 38px;
+        height: 36px;
+    }
+
+    .event-calendar-skeleton__period {
+        flex-basis: 52px;
+        width: 52px;
+        min-width: 52px;
+    }
+
+    .event-calendar-skeleton__period .skeleton {
+        height: 36px;
+    }
+}
+
+/* Stack the time bounds on the narrowest phones. */
+@media (max-width: 384px) {
+    .event-calendar-skeleton__time-range {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 360px) {
+    .event-calendar-skeleton__time-fields {
+        flex-wrap: wrap;
+    }
 }
 
 .event-calendar-skeleton__actions {

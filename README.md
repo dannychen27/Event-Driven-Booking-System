@@ -87,7 +87,7 @@ The public demo provides access to a preconfigured instance of the booking appli
 - [x] **Booking validation**: prevent duplicate bookings, schedule conflicts, and bookings that exceed event capacity.
 - [x] **Booking hold expiration**: automatically expire stale booking holds through scheduled cleanup.
 - [x] **Client-side form validation**: validate booking input before submitting requests.
-- [ ] **Responsive user interface**: support common desktop and mobile layouts.
+- [x] **Responsive user interface**: adapt search forms, calendar filters, and page layouts to common desktop and mobile widths.
 - [x] **REST API integration**: connect the frontend to the backend through REST endpoints.
 - [x] **Booking ownership validation**: check that a booking belongs to the specified user before allowing cancellation.
 - [x] **Transactional booking protection**: use database transactions and row-level locking to protect against double-booking.
@@ -825,7 +825,7 @@ Notifications   C++ Analytics
 
 #### Planned Work
 
-- [ ] Add responsive user interface
+- [x] Add responsive user interface
 - [ ] Add Docker Compose
 - [ ] Add Kubernetes manifests
 - [ ] Add health checks

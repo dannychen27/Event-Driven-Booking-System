@@ -383,6 +383,7 @@ Verify that the application's existing responsive layouts behave correctly acros
 - [ ] Review error states and recovery behavior.
 - [ ] Verify navigation and interactions remain consistent.
 - [x] Verify page layouts across supported viewport sizes.
+- [x] Verify responsive search forms and calendar filters across tested viewport widths.
 
 #### Responsive Viewports
 
@@ -433,6 +434,25 @@ The booking-history endpoint's specific failure and recovery behavior has alread
 - [ ] Keep cleanup scoped to areas with clear maintainability or presentation benefits.
 - [ ] Avoid broad refactoring unrelated to current project goals.
 
+#### Responsive Layout Architecture
+
+**Status:** In Progress
+
+- [ ] Reduce coupling between individual filter components and their parent flexbox/grid layouts.
+- [x] Generalize responsive media queries around available space and broad layout transitions rather than component-specific viewport exceptions.
+- [x] Review intrinsic sizing, minimum widths, wrapping, and overflow behaviour across the Date/Time filter.
+- [x] Remove redundant or conflicting responsive declarations where appropriate.
+- [x] Verify that responsive changes preserve existing functionality, accessibility, and visual behaviour across viewport sizes.
+
+#### CSS Source-Order Reorganization
+
+**Status:** Planned
+
+- [ ] Reorganize CSS rules chronologically according to their appearance in their respective source files.
+- [ ] Preserve selector specificity, cascade behaviour, media-query behaviour, and existing styling.
+- [ ] Keep this reorganization separate from responsive layout changes.
+- [ ] Run production builds and relevant frontend tests after reorganization.
+
 ### 4.3 Navigation Bar Styling
 
 **Status:** Optional
@@ -463,12 +483,13 @@ Evaluate improvements to the navigation bar's visual presentation and layout.
 - [ ] Make the AI-powered natural-language search bar more compact.
 - [ ] Evaluate collapsible sections for the regular search, AI search, and date/time filters.
 - [ ] Keep frequently used search controls readily accessible while reducing the page's initial vertical footprint.
-- [ ] Group date and time filters into a more compact, collapsible interface.
-- [ ] Preserve search queries and filter selections when sections are collapsed or expanded.
+- [x] Group date and time filters into a more compact, collapsible interface.
+- [ ] Preserve search queries when search sections are collapsed or expanded.
+- [x] Preserve selected calendar filter values and the time-display preference when the date/time section is collapsed or expanded.
 - [ ] Provide clear expand/collapse labels and accessible expanded-state semantics.
 - [ ] Verify keyboard navigation, screen-reader accessibility, and visible focus states.
 - [ ] Preserve existing keyword search, AI search, calendar, and filtering behavior.
-- [ ] Add regression tests for collapse/expand interactions and state preservation.
+- [x] Add regression tests for collapse/expand interactions and state preservation.
 
 ### 4.7 Accessibility Improvements
 
@@ -619,6 +640,36 @@ Explore an Angular frontend as a separate implementation while preserving the ex
 - Preserve existing database schema and API contracts unless a concrete requirement justifies a change.
 - Keep the React implementation available and functional.
 - Do not rewrite backend-only tests merely to accommodate a frontend migration.
+
+---
+
+### 4.16 Code Coverage Improvements
+
+**Status:** Planned
+
+Improve automated test coverage across all four test categories. Track each category independently.
+
+#### Frontend Coverage
+
+- [ ] Review frontend coverage reports and identify meaningful gaps.
+- [ ] Add tests for uncovered components, UI states, error handling, and edge cases.
+
+#### Backend Coverage
+
+- [ ] Review backend coverage reports and identify meaningful gaps.
+- [ ] Add tests for uncovered services, validation paths, error handling, and business logic.
+
+#### Integration Test Coverage
+
+- [ ] Review integration test coverage and identify insufficiently tested interactions between backend services and PostgreSQL.
+- [ ] Add integration tests for important database operations, transactions, constraints, and failure scenarios.
+
+#### End-to-End Test Coverage
+
+- [ ] Review E2E coverage and identify important user workflows that lack regression tests.
+- [ ] Add E2E tests for uncovered application workflows and critical failure scenarios.
+
+Prioritize meaningful behavioural coverage rather than pursuing an arbitrary percentage target. Keep the four test categories independently tracked and report their coverage separately.
 
 ---
 
@@ -828,7 +879,7 @@ This section records completed work for historical reference. New work should be
 
 ### 5.14 Responsive Events Page Grid
 
-**Status:** Implemented and tested; pending commit.
+**Status:** Implemented and tested; remaining wide-desktop visual verification outstanding.
 
 - [x] Replace the single-column Events page event-card layout with a responsive CSS grid.
 - [x] Automatically fit columns based on available container width.
@@ -840,6 +891,38 @@ This section records completed work for historical reference. New work should be
 - [x] Pass `git diff --check`.
 - [x] Manually verify natural text wrapping, no clipped content, and no unintended horizontal overflow at tested viewport widths.
 - [ ] Visually verify the four- and five-column layouts at wider desktop viewports.
+
+### 5.15 Responsive Search, Calendar Controls, and Layout Improvements
+
+**Status:** Implemented, tested, and ready to commit.
+
+- [x] Consolidate shared responsive sizing and layout rules for regular and AI search forms.
+- [x] Remove duplicated and conflicting responsive declarations while retaining AI-specific styling and behaviour.
+- [x] Align the calendar disclosure, inner panel, and divider across viewport sizes.
+- [x] Improve responsive Date/Time filter layout and allow time-of-day pills to wrap naturally.
+- [x] Keep date and time Clear controls anchored to their respective section headings.
+- [x] Add a collapsible date/time filter section.
+- [x] Preserve selected calendar filters and the time-display preference when the filter section is collapsed and reopened.
+- [x] Extract calendar rendering and month-navigation helpers into `DateCalendar`.
+- [x] Extract the active time-entry implementation into `CompactTimePicker`.
+- [x] Support 12-hour and 24-hour time display while preserving canonical `HH:mm` values.
+- [x] Retain the original `TimePicker` implementation separately for legacy reference.
+- [x] Add focused `CompactTimePicker` tests and expand calendar integration coverage.
+- [x] Update the Events page calendar loading skeleton to match the active compact time-picker layout.
+- [x] Add regression coverage for the calendar loading skeleton structure.
+- [x] Update README and roadmap documentation to reflect completed responsive UI work.
+
+**Validation:**
+
+- [x] Backend unit tests: 463/463 passed.
+- [x] Frontend tests: 249/249 passed.
+- [x] End-to-end tests: 17/17 passed.
+- [x] Integration tests: 62/62 passed.
+- [x] Database-safety tests: 49/49 passed.
+- [x] Backend and frontend production builds passed.
+- [x] `git diff --check` passed.
+
+**Scope:** Frontend presentation, responsive CSS, calendar controls, component organization, loading skeletons, tests, and documentation. No backend API, database schema, search semantics, or booking lifecycle changes.
 
 ## 6. Technical Decisions and Constraints
 
@@ -872,7 +955,34 @@ This section records project-wide implementation decisions that should guide fut
 - Keep documentation aligned with the actual codebase.
 - Move work between roadmap sections when its status changes rather than duplicating the same task in multiple sections.
 
+### 6.4 Calendar Controls, Compact Time Picker, and Legacy Implementation
+
+- `DateCalendar` is extracted into `3. frontend/src/components/forms/DateCalendar.tsx`, separating calendar rendering and month-navigation helpers from the parent filter component.
+- `CalendarSearchControls` retains ownership of calendar selection state, date-range coordination, and the 12-hour / 24-hour display preference.
+- `CompactTimePicker` is the active time-picker component used by `CalendarSearchControls`; the parent passes the display preference to both active picker instances.
+- Time values remain stored in canonical `HH:mm` format regardless of the selected display format.
+- The active picker converts between 12-hour display values (hour plus AM/PM) and 24-hour values without changing the underlying selected time.
+- Focused `CompactTimePicker` tests cover display formats, input boundaries, AM/PM conversion, clearing, disabled controls, and prop updates.
+- `CalendarSearchControls` integration tests verify that switching display formats preserves selected values without emitting filter changes.
+- `EventsPage` loading-state tests verify that the calendar skeleton contains the expected compact time-picker structure.
+- The original `TimePicker` implementation is retained under `3. frontend/src/components/unused/TimePicker.tsx` for legacy reference only.
+- The legacy implementation is not imported or rendered by the application. Do not use it for new features or routine changes.
+- The legacy notes file (`TimePicker.legacy-notes.md`) documents illustrative historical behaviours; these are not recovered original tests or active regression coverage. Active functionality and regression coverage belong to `CompactTimePicker`.
+- Keep future calendar and time-picker changes focused on the active components unless there is a deliberate decision to revisit or remove the legacy implementation.
+
 ---
+
+### 6.5 Responsive Search and Calendar Layout
+
+- Keep shared responsive sizing and layout behaviour for the regular and AI search forms in `3. frontend/src/styles/shared/search-bar-shared.css`.
+- Keep AI-specific presentation and behaviour in the AI search stylesheets rather than duplicating shared layout rules.
+- Keep the calendar disclosure and its inner panel aligned to the same available width.
+- Prefer intrinsic sizing and natural flex wrapping for time-of-day controls over fixed, viewport-specific column counts.
+- Keep Date/Time filter Clear controls associated with their respective section headings.
+- Preserve selected filter values and the 12-hour / 24-hour display preference when the filter section is collapsed and reopened.
+- Keep calendar selection state and date-range coordination in `CalendarSearchControls`; use `DateCalendar` for calendar rendering and `CompactTimePicker` for time entry.
+- Preserve canonical `HH:mm` values independently of the selected display format.
+- When changing responsive styles, preserve existing search, calendar, accessibility, and filtering behaviour and add focused regression coverage.
 
 ## 7. Historical Audits
 

@@ -1,6 +1,9 @@
 /* Shared form styling */
 .search-form {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
+    width: 100%;
+    max-width: 1000px;
+    box-sizing: border-box;
 }
 
 .search-form label {
@@ -11,19 +14,39 @@
 }
 
 /* Shared controls layout */
-.search-controls {
+.search-form .search-controls {
     display: flex;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
     align-items: stretch;
     gap: 0.5rem;
 }
 
 .search-controls input {
-    flex: 1;
+    box-sizing: border-box;
+    flex: 1 1 auto;
     min-width: 0;
-    padding: 0.7rem 0.8rem;
+    min-height: 40px;
+    padding: 0.55rem 0.7rem;
     border: 1px solid var(--border);
     border-radius: 6px;
     background: var(--surface);
     color: var(--text);
     font: inherit;
+}
+
+/* Shared responsive layout for regular and AI search forms */
+@media (max-width: 520px) {
+    .search-form .search-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-form .search-controls input,
+    .search-form .search-controls button {
+        box-sizing: border-box;
+        width: 100%;
+        min-width: 0;
+    }
 }

@@ -58,6 +58,32 @@ describe("Initial loading and rendering", () => {
 
         expect(skeletonGrid).not.toBeNull();
         expect(skeletonGrid?.querySelectorAll(".event-card-skeleton")).toHaveLength(3);
+
+        const calendarSkeleton = container.querySelector(
+            ".event-calendar-skeleton",
+        );
+
+        expect(calendarSkeleton).not.toBeNull();
+        expect(
+            calendarSkeleton?.querySelectorAll(
+                ".event-calendar-skeleton__time-picker",
+            ),
+        ).toHaveLength(2);
+        expect(
+            calendarSkeleton?.querySelectorAll(
+                ".event-calendar-skeleton__time-heading",
+            ),
+        ).toHaveLength(2);
+        expect(
+            calendarSkeleton?.querySelectorAll(
+                ".event-calendar-skeleton__time-input",
+            ),
+        ).toHaveLength(4);
+        expect(
+            calendarSkeleton?.querySelectorAll(
+                ".event-calendar-skeleton__time-separator",
+            ),
+        ).toHaveLength(2);
     });
 
     it("renders events after they are successfully fetched", async () => {

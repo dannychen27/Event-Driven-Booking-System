@@ -2,15 +2,21 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+    gap: 0.4rem;
+    margin-bottom: 0.65rem;
 }
 
 .ai-search-examples-label {
     flex-basis: 100%;
     color: var(--text);
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 600;
+}
+
+.ai-search-examples .ai-search-example {
+    min-height: 32px;
+    padding: 0.3rem 0.65rem;
+    font-size: 0.8rem;
 }
 
 @media (max-width: 520px) {

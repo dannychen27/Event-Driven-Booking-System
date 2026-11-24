@@ -10,6 +10,7 @@ import type {
 describe("CalendarSearchControls", () => {
     const onDateSelectionChange = vi.fn();
     const onTimeSelectionChange = vi.fn();
+    const onApplyFilters = vi.fn();
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -19,20 +20,29 @@ describe("CalendarSearchControls", () => {
         dateSelection,
         timeSelection,
         disabled = false,
+        open = true,
     }: {
         dateSelection?: ExplicitSelection<CalendarDateRange>;
         timeSelection?: ExplicitSelection<CalendarTimeSelection>;
         disabled?: boolean;
+        open?: boolean;
     } = {}) {
-        return render(
+        const result = render(
             <CalendarSearchControls
                 dateSelection={dateSelection}
                 timeSelection={timeSelection}
                 disabled={disabled}
                 onDateSelectionChange={onDateSelectionChange}
                 onTimeSelectionChange={onTimeSelectionChange}
+                onApplyFilters={onApplyFilters}
             />,
         );
+
+        if (open) {
+            fireEvent.click(screen.getByText("Date & time filters"));
+        }
+
+        return result;
     }
 
     function getPeriodButton(
@@ -45,6 +55,64 @@ describe("CalendarSearchControls", () => {
             }),
         ).getByRole("button", { name: period });
     }
+
+    it("starts with date and time filters collapsed and allows them to expand", () => {
+        renderControls({ open: false });
+
+        const summary = screen.getByText("Date & time filters");
+        const disclosure = summary.closest("details");
+
+        expect(disclosure).not.toHaveAttribute("open");
+        expect(screen.getByLabelText("After hour")).toBeInTheDocument();
+
+        fireEvent.click(summary);
+
+        expect(disclosure).toHaveAttribute("open");
+        expect(screen.getByLabelText("After hour")).toBeInTheDocument();
+    });
+
+    it("preserves the time format preference when filters are collapsed and reopened", () => {
+        renderControls();
+
+        const summary = screen.getByText("Date & time filters");
+        const disclosure = summary.closest("details");
+
+        fireEvent.click(screen.getByRole("button", { name: "24h" }));
+        expect(screen.getByRole("button", { name: "24h" }))
+            .toHaveAttribute("aria-pressed", "true");
+
+        fireEvent.click(summary);
+        expect(disclosure).not.toHaveAttribute("open");
+
+        fireEvent.click(summary);
+        expect(disclosure).toHaveAttribute("open");
+
+        expect(screen.getByRole("button", { name: "24h" }))
+            .toHaveAttribute("aria-pressed", "true");
+        expect(screen.getByLabelText("After hour")).toHaveValue("00");
+    });
+
+    it("preserves selected time-of-day filters when collapsed and reopened", () => {
+        renderControls({
+            timeSelection: {
+                state: "selected",
+                value: {
+                    timeOfDay: ["MORNING"],
+                },
+            },
+        });
+
+        const summary = screen.getByText("Date & time filters");
+
+        fireEvent.click(summary);
+        fireEvent.click(summary);
+
+        expect(
+            screen.getByRole("button", {
+                name: "Morning (8 AM–12 PM)",
+            }),
+        ).toHaveAttribute("aria-pressed", "true");
+    });
 
     it("renders all five time-of-day choices as pill buttons", () => {
         renderControls();
@@ -274,66 +342,60 @@ describe("CalendarSearchControls", () => {
         );
     });
 
-    it("does not increment the hour beyond 12", () => {
-        renderControls({
-            timeSelection: {
-                state: "selected",
-                value: {
-                    timeRange: { startTime: "12:00" },
-                },
-            },
+    it("clamps an entered 12-hour value to the upper hour boundary", () => {
+        renderControls();
+
+        const hour = screen.getByLabelText("After hour");
+        fireEvent.change(hour, { target: { value: "13" } });
+        fireEvent.blur(hour);
+
+        expect(hour).toHaveValue("12");
+        expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
+            state: "selected",
+            value: { timeRange: { startTime: "00:00" } },
         });
-
-        expect(
-            screen.getByRole("button", { name: "Increase After hour" }),
-        ).toBeDisabled();
-
-        expect(screen.getByLabelText("After hour")).toHaveValue("12");
     });
 
-    it("does not decrement the hour below 1", () => {
-        renderControls({
-            timeSelection: {
-                state: "selected",
-                value: {
-                    timeRange: { startTime: "01:00" },
-                },
-            },
-        });
+    it("clamps an entered 12-hour value to the lower hour boundary", () => {
+        renderControls();
 
-        expect(
-            screen.getByRole("button", { name: "Decrease After hour" }),
-        ).toBeDisabled();
+        const hour = screen.getByLabelText("After hour");
+        fireEvent.change(hour, { target: { value: "0" } });
+        fireEvent.blur(hour);
+
+        expect(hour).toHaveValue("01");
+        expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
+            state: "selected",
+            value: { timeRange: { startTime: "01:00" } },
+        });
     });
 
-    it("does not increment minutes beyond 59", () => {
-        renderControls({
-            timeSelection: {
-                state: "selected",
-                value: {
-                    timeRange: { startTime: "18:59" },
-                },
-            },
-        });
+    it("clamps an entered minute value to the upper boundary", () => {
+        renderControls();
 
-        expect(
-            screen.getByRole("button", { name: "Increase After minute" }),
-        ).toBeDisabled();
+        const minute = screen.getByLabelText("After minute");
+        fireEvent.change(minute, { target: { value: "99" } });
+        fireEvent.blur(minute);
+
+        expect(minute).toHaveValue("59");
+        expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
+            state: "selected",
+            value: { timeRange: { startTime: "00:59" } },
+        });
     });
 
-    it("does not decrement minutes below 00", () => {
-        renderControls({
-            timeSelection: {
-                state: "selected",
-                value: {
-                    timeRange: { startTime: "18:00" },
-                },
-            },
-        });
+    it("clamps an empty minute input to the lower boundary", () => {
+        renderControls();
 
-        expect(
-            screen.getByRole("button", { name: "Decrease After minute" }),
-        ).toBeDisabled();
+        const minute = screen.getByLabelText("After minute");
+        fireEvent.change(minute, { target: { value: "" } });
+        fireEvent.blur(minute);
+
+        expect(minute).toHaveValue("00");
+        expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
+            state: "selected",
+            value: { timeRange: { startTime: "00:00" } },
+        });
     });
 
     it("converts midnight to 00:00", () => {
@@ -465,6 +527,86 @@ describe("CalendarSearchControls", () => {
         expect(
             screen.getByRole("button", { name: "Clear time" }),
         ).toBeDisabled();
+    });
+
+    it("renders both desktop date calendars and retains the native date inputs", () => {
+        renderControls();
+
+        expect(
+            screen.getByRole("group", { name: "After date calendar" }),
+        ).toBeInTheDocument();
+
+        expect(
+            screen.getByRole("group", { name: "Before date calendar" }),
+        ).toBeInTheDocument();
+
+        expect(screen.getByLabelText("From")).toHaveAttribute("type", "date");
+        expect(screen.getByLabelText("To")).toHaveAttribute("type", "date");
+    });
+
+    it("updates the existing date range when a date is selected in the After calendar", () => {
+        renderControls();
+
+        const dateButton = screen.getAllByRole("button", {
+            name: /^Select After date /,
+        }).find((button) => !button.hasAttribute("disabled"));
+
+        expect(dateButton).toBeDefined();
+
+        fireEvent.click(dateButton!);
+
+        const lastCall = onDateSelectionChange.mock.calls.at(-1)?.[0];
+
+        expect(lastCall).toEqual({
+            state: "selected",
+            value: {
+                startDate: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
+                endDate: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
+            },
+        });
+
+        expect(lastCall.value.startDate).toBe(lastCall.value.endDate);
+    });
+
+    it("prevents selecting a Before date earlier than the selected After date", () => {
+        renderControls({
+            dateSelection: {
+                state: "selected",
+                value: {
+                    startDate: "2026-11-10",
+                    endDate: "2026-11-12",
+                },
+            },
+        });
+
+        expect(
+            screen.getByRole("button", {
+                name: "Select Before date November 9, 2026",
+            }),
+        ).toBeDisabled();
+
+        expect(
+            screen.getByRole("button", {
+                name: "Select Before date November 10, 2026",
+            }),
+        ).toBeEnabled();
+    });
+
+    it("allows navigating the After calendar between months", () => {
+        renderControls();
+
+        const monthHeading = screen.getByRole("heading", {
+            name: "After calendar month",
+        });
+        const initialMonth = monthHeading.textContent;
+
+        fireEvent.click(
+            screen.getByRole("button", {
+                name: "Next month for After date",
+            }),
+        );
+
+        expect(monthHeading.textContent).not.toBe(initialMonth);
     });
 
     it("disables Clear date when no date filter is active", () => {
@@ -746,7 +888,7 @@ describe("CalendarSearchControls", () => {
         });
     });
 
-    it("allows midnight and prevents hours outside 00–23 in 24-hour mode", () => {
+    it("allows midnight and clamps entered hours to 00–23 in 24-hour mode", () => {
         renderControls({
             timeSelection: {
                 state: "selected",
@@ -760,21 +902,18 @@ describe("CalendarSearchControls", () => {
 
         fireEvent.click(screen.getByRole("button", { name: "24h" }));
 
-        expect(screen.getByLabelText("After hour")).toHaveValue("00");
+        const hour = screen.getByLabelText("After hour");
+        expect(hour).toHaveValue("00");
 
-        expect(
-            screen.getByRole("button", { name: "Decrease After hour" }),
-        ).toBeDisabled();
+        fireEvent.change(hour, { target: { value: "24" } });
+        fireEvent.blur(hour);
 
-        fireEvent.click(
-            screen.getByRole("button", { name: "Increase After hour" }),
-        );
-
+        expect(hour).toHaveValue("23");
         expect(onTimeSelectionChange).toHaveBeenLastCalledWith({
             state: "selected",
             value: {
                 timeRange: {
-                    startTime: "01:00",
+                    startTime: "23:00",
                 },
             },
         });
