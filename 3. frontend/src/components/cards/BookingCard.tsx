@@ -54,6 +54,13 @@ export default function BookingCard({
                 <div className="booking-card__content">
                     <h2>{eventName}</h2>
 
+                    <div className="booking-card__image">
+                        <EventImage
+                            imageUrl={booking.image_url}
+                            alt={eventName}
+                        />
+                    </div>
+
                     <div className="booking-card__details">
                         <div className="booking-card__detail">
                             <span className="booking-card__detail-label">
@@ -92,12 +99,6 @@ export default function BookingCard({
                     </div>
                 </div>
 
-                <div className="booking-card__image">
-                    <EventImage
-                        imageUrl={booking.image_url}
-                        alt={eventName}
-                    />
-                </div>
             </div>
 
             <div className="booking-card__actions">

@@ -8,12 +8,9 @@
     margin: 0.25rem 0;
 }
 
-/* Two independent columns: details and event image */
+/* Keep booking content in the same single-column flow as other cards */
 .booking-card__layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: start;
-    gap: 1.5rem;
+    display: block;
 }
 
 .booking-card__content {
@@ -56,34 +53,38 @@
 .booking-card__image {
     width: 100%;
     max-width: 100%;
-    justify-self: end;
-    align-self: start;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    border-radius: 8px;
 }
 
 .booking-card__image .event-image {
     display: block;
     width: 100%;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 16 / 9;
     object-fit: cover;
     margin: 0;
-    border-radius: 8px;
 }
 
 .booking-card__image .event-image-fallback {
     width: 100%;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 16 / 9;
     margin: 0;
-    border-radius: 8px;
 }
 
 /* Booking creation time is secondary to the event schedule */
 .booking-card__booking-meta {
     display: flex;
+    flex-wrap: wrap;
     align-items: baseline;
     gap: 0.25rem;
     margin-top: 1rem;
     padding-top: 0.75rem;
     border-top: 1px solid var(--border);
+}
+
+.booking-card__booking-meta .booking-card__detail-label {
+    white-space: nowrap;
 }
 
 .booking-card__booking-meta .booking-card__detail-value {
@@ -95,27 +96,10 @@
 }
 
 
-@media (max-width: 600px) {
-    .booking-card__layout {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 1.25rem;
-    }
-
-    .booking-card__detail,
-    .booking-card__booking-meta {
+@media (max-width: 480px) {
+    .booking-card__detail {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.1rem;
-    }
-
-    .booking-card__image {
-        width: 100%;
-        max-width: 100%;
-        justify-self: stretch;
-    }
-
-    .booking-card__image .event-image,
-    .booking-card__image .event-image-fallback {
-        aspect-ratio: 16 / 9;
     }
 }
