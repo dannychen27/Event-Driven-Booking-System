@@ -31,6 +31,18 @@ const defaultProps = {
     onBookingCreated: vi.fn(),
 };
 
+const expectEventMetadata = (label: string, value: string) => {
+    const labelElement = screen.getByText(label, {
+        selector: ".event-card-info-label__label",
+    });
+
+    const valueElement = screen.getByText(value, {
+        selector: ".event-card-info-label__value",
+    });
+
+    expect(labelElement.parentElement).toBe(valueElement.parentElement);
+};
+
 describe("EventCard", () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -47,9 +59,9 @@ describe("EventCard", () => {
             screen.getByText("A practical event for testing the booking experience."),
         ).toBeInTheDocument();
 
-        expect(screen.getByText("Venue: E2E Test Venue")).toBeInTheDocument();
-        expect(screen.getByText("Location: 123 Test Street")).toBeInTheDocument();
-        expect(screen.getByText("Attendance: 1 / 10 attendees")).toBeInTheDocument();
+        expectEventMetadata("Venue", "E2E Test Venue");
+        expectEventMetadata("Location", "123 Test Street");
+        expectEventMetadata("Attendance", "1 / 10 attendees");
         expect(screen.queryByText(/Event Id:/)).not.toBeInTheDocument();
 
         expect(
@@ -69,7 +81,7 @@ describe("EventCard", () => {
             />,
         );
 
-        expect(screen.getByText("Attendance: 1 / 1 attendee")).toBeInTheDocument();
+        expectEventMetadata("Attendance", "1 / 1 attendee");
     });
 
     it("displays zero confirmed attendees for an event with no bookings", () => {
@@ -83,7 +95,7 @@ describe("EventCard", () => {
             />,
         );
 
-        expect(screen.getByText("Attendance: 0 / 10 attendees")).toBeInTheDocument();
+        expectEventMetadata("Attendance", "0 / 10 attendees");
     });
 
     describe("attendance fallback values", () => {
@@ -98,7 +110,7 @@ describe("EventCard", () => {
                 />,
             );
 
-            expect(screen.getByText("Attendance: Unknown / 10 attendees")).toBeInTheDocument();
+            expectEventMetadata("Attendance", "Unknown / 10 attendees");
         });
 
         it("shows Unknown when event capacity is missing", () => {
@@ -112,7 +124,7 @@ describe("EventCard", () => {
                 />,
             );
 
-            expect(screen.getByText("Attendance: 1 / Unknown attendees")).toBeInTheDocument();
+            expectEventMetadata("Attendance", "1 / Unknown attendees");
         });
 
         it("shows Unknown when both attendance values are missing", () => {
@@ -127,7 +139,7 @@ describe("EventCard", () => {
                 />,
             );
 
-            expect(screen.getByText("Attendance: Unknown / Unknown attendees")).toBeInTheDocument();
+            expectEventMetadata("Attendance", "Unknown / Unknown attendees");
         });
     });
 
@@ -148,13 +160,9 @@ describe("EventCard", () => {
             screen.queryByText("A practical event for testing the booking experience."),
         ).not.toBeInTheDocument();
 
-        expect(
-            screen.getByText("Venue: Venue details unavailable"),
-        ).toBeInTheDocument();
+        expectEventMetadata("Venue", "Venue details unavailable");
 
-        expect(
-            screen.getByText("Location: Location to be announced"),
-        ).toBeInTheDocument();
+        expectEventMetadata("Location", "Location to be announced");
     });
 
     it("opens the booking form when booking status is ready and the event is unbooked", async () => {
@@ -339,6 +347,29 @@ describe("EventCard", () => {
         expect(
             await screen.findByText("Booking created successfully."),
         ).toBeInTheDocument();
+    });
+
+    it("renders event metadata labels and values in separate elements", () => {
+        render(<EventCard {...defaultProps} />);
+
+        const venueLabel = screen.getByText("Venue", {
+            selector: ".event-card-info-label__label",
+        });
+
+        const venueValue = screen.getByText("E2E Test Venue", {
+            selector: ".event-card-info-label__value",
+        });
+
+        const locationLabel = screen.getByText("Location", {
+            selector: ".event-card-info-label__label",
+        });
+
+        const locationValue = screen.getByText("123 Test Street", {
+            selector: ".event-card-info-label__value",
+        });
+
+        expect(venueLabel.parentElement).toBe(venueValue.parentElement);
+        expect(locationLabel.parentElement).toBe(locationValue.parentElement);
     });
 });
 

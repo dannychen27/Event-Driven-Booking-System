@@ -10,7 +10,6 @@ import "../../styles/shared/card-buttons.css";
 import "../../styles/errors/error-message.css";
 import "../../styles/errors/success-message.css";
 import "../../styles/errors/status-message.css";
-import { InfoLabel } from "../ui/labels/InfoLabel.tsx";
 import { DateLabel } from "../ui/labels/DateLabel.tsx";
 import { BOOKING_USER_ID } from "../../constants/bookings/booking.ts";
 import Button from "../ui/buttons/Button";
@@ -19,6 +18,25 @@ import { ImageLightbox } from "../ui/ImageLightbox.tsx";
 import { Modal } from "../modals/Modal.tsx";
 import BookingForm from "../forms/BookingForm.tsx";
 import { getErrorMessage } from "../../helpers/shared/Errors.ts";
+
+function EventCardInfoLabel({
+    label,
+    value,
+}: {
+    label: string;
+    value: string;
+}) {
+    return (
+        <p className="event-card-info-label">
+            <span className="event-card-info-label__label">
+                {label}
+            </span>
+            <span className="event-card-info-label__value">
+                {value}
+            </span>
+        </p>
+    );
+}
 
 export default function EventCard({
     event,
@@ -119,11 +137,11 @@ export default function EventCard({
             )}
 
             <div className="event-card-details">
-                <InfoLabel
+                <EventCardInfoLabel
                     label="Venue"
                     value={event.venue_name?.trim() || "Venue details unavailable"}
                 />
-                <InfoLabel
+                <EventCardInfoLabel
                     label="Location"
                     value={event.venue_address?.trim() || "Location to be announced"}
                 />
@@ -135,7 +153,7 @@ export default function EventCard({
                 endDateTime={event.end_time}
             />
 
-            <InfoLabel
+            <EventCardInfoLabel
                 label="Attendance"
                 value={`${attendeeCount ?? "Unknown"} / ${capacity ?? "Unknown"} ${capacity === 1 ? "attendee" : "attendees"}`}
             />
