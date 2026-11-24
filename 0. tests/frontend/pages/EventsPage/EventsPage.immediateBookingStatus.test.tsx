@@ -40,7 +40,10 @@ beforeEach(() => {
     vi.clearAllMocks();
 
     vi.mocked(getEvents).mockResolvedValue([
-        initialRenderEventFixture[0]!,
+        {
+            ...initialRenderEventFixture[0]!,
+            attendee_count: 0,
+        },
     ]);
 
     vi.mocked(getBookingHistory).mockResolvedValue([]);
@@ -55,10 +58,11 @@ describe("EventsPage immediate booking status", () => {
 
         render(<EventsPage />);
 
-        // The event initially appears as available.
-        expect(await screen.findByRole("button", { name: "Create Booking" }) ).toBeEnabled();
+        // The event initially appears as available with zero attendees.
+        expect(await screen.findByRole("button", { name: "Create Booking" })).toBeEnabled();
 
-        expect(screen.getByRole("heading", { name: event.name }) ).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: event.name })).toBeInTheDocument();
+        expect(screen.getByText("0 / 10 attendees")).toBeInTheDocument();
 
         // Open the booking form and confirm the booking.
         await user.click(screen.getByRole("button", { name: "Create Booking" }) );
@@ -72,10 +76,36 @@ describe("EventsPage immediate booking status", () => {
         expect(screen.queryByRole("button", { name: "Create Booking" })).not.toBeInTheDocument();
         expect(screen.getByText("You've already booked this event.")).toBeInTheDocument();
         expect(screen.getByText("Booking created successfully.")).toBeInTheDocument();
+        expect(screen.getByText("1 / 10 attendees")).toBeInTheDocument();
+        expect(screen.queryByText("0 / 10 attendees")).not.toBeInTheDocument();
 
         // Verify the booking API was called and history was not refetched.
         expect(createBooking).toHaveBeenCalledOnce();
         expect(createBooking).toHaveBeenCalledWith(1, event.id);
         expect(getBookingHistory).toHaveBeenCalledOnce();
+    });
+
+    it("does not increment attendance when booking creation fails", async () => {
+        const user = userEvent.setup();
+        const event = initialRenderEventFixture[0]!;
+
+        vi.mocked(createBooking).mockRejectedValueOnce(
+            new Error("Temporary booking failure."),
+        );
+
+        render(<EventsPage />);
+
+        expect(await screen.findByText("0 / 10 attendees")).toBeInTheDocument();
+
+        await user.click(screen.getByRole("button", { name: "Create Booking" }));
+        await user.click(screen.getByRole("button", { name: "Mock Confirm Booking" }));
+
+        expect(await screen.findByText("Temporary booking failure.")).toBeInTheDocument();
+        expect(screen.getByText("0 / 10 attendees")).toBeInTheDocument();
+        expect(screen.queryByText("1 / 10 attendees")).not.toBeInTheDocument();
+        expect(screen.queryByText("Already booked")).not.toBeInTheDocument();
+
+        expect(createBooking).toHaveBeenCalledOnce();
+        expect(createBooking).toHaveBeenCalledWith(1, event.id);
     });
 });

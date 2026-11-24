@@ -187,7 +187,7 @@ Prepare a clean, representative dataset for the portfolio demonstration while pr
 - [x] Verify the Venues page displays the intended showcase data.
 - [x] Verify the Booking History page displays the intended demo bookings.
 - [x] Confirm development seed fixtures still cover useful edge cases.
-- [ ] Review data consistency across Events, Venues, and Booking History.
+- [x] Review data consistency across Events, Venues, and Booking History.
 - [ ] Ensure the dataset supports a realistic end-to-end booking demonstration.
 
 #### End-to-End Demonstration
@@ -763,14 +763,14 @@ Prioritize meaningful behavioural coverage rather than pursuing an arbitrary per
 
 ### 4.17 Booking Success Feedback and Attendance Updates
 
-**Status:** Planned — functional verification first; visual polish afterward.
+**Status:** In Progress — functional correctness complete; visual polish and animation remain.
 
 #### Functional Correctness — High Priority
-- [ ] Update the affected event's displayed attendance count immediately after a successful booking, without requiring a page refresh.
-- [ ] Keep the booking-success state and displayed attendance count synchronized.
-- [ ] Preserve correct attendance counts after navigation and page refresh.
-- [ ] Add regression coverage verifying the attendance count updates immediately after successful booking.
-- [ ] Ensure failed bookings never display a successful attendance update.
+- [x] Update the affected event's displayed attendance count immediately after a successful booking, without requiring a page refresh.
+- [x] Keep the booking-success state and displayed attendance count synchronized.
+- [x] Preserve correct attendance counts after navigation and page refresh.
+- [x] Add regression coverage verifying the attendance count updates immediately after successful booking.
+- [x] Ensure failed bookings never display a successful attendance update.
 
 #### Booking Success Message — Medium Priority
 - [ ] Improve the inline booking-success message with a visually distinct green success treatment.
@@ -787,6 +787,15 @@ Prioritize meaningful behavioural coverage rather than pursuing an arbitrary per
 - [ ] Do not animate initial page loads, ordinary refreshes, or failed booking attempts.
 - [ ] Respect the user's reduced-motion preference.
 - [ ] Add tests covering the animation trigger conditions and final displayed count.
+
+#### Completion Notes — Functional Correctness
+
+- Updated `EventsPage` to increment the matching event's attendance count immediately after successful booking creation.
+- Added regression tests covering initial attendance (`0 / 10`), successful booking (`1 / 10`), and failed booking (attendance remains `0 / 10`).
+- Verified cancellation decrements attendance and restores booking availability.
+- Manually verified attendance remains correct after navigation and page refresh.
+- Passed all 273 frontend tests across 36 test files.
+- Passed TypeScript compilation and the Vite production build.
 
 **Scope:** Booking success feedback and attendance presentation. No changes to booking lifecycle semantics, database schema, or API contract unless investigation identifies a necessary correctness fix.
 

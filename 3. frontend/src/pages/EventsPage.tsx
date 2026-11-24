@@ -232,6 +232,14 @@ export default function EventsPage() {
             updated.add(eventId);
             return updated;
         });
+
+        setEvents((current) =>
+            current.map((event) =>
+                event.id === eventId
+                    ? { ...event, attendee_count: event.attendee_count + 1 }
+                    : event,
+            ),
+        );
     }
 
     function retryEvents() {
