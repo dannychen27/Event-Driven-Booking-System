@@ -147,7 +147,15 @@
     .venue-card__events-link {
         box-sizing: border-box;
         max-width: 100%;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+    }
+
+    .venue-card__events-link > span:first-child {
+        min-width: 0;
         overflow-wrap: anywhere;
+    }
+
+    .venue-card__events-link > span:last-child {
+        flex-shrink: 0;
     }
 }
