@@ -187,17 +187,16 @@ Prepare a clean, representative dataset for the portfolio demonstration while pr
 - [x] Verify the Venues page displays the intended showcase data.
 - [x] Verify the Booking History page displays the intended demo bookings.
 - [x] Confirm development seed fixtures still cover useful edge cases.
-- [ ] **Deferred:** Add booking-hold E2E tests covering acquisition, explicit cancellation, expiration and capacity release after inactivity, confirmation into a booking, and rejection of confirmation after expiration.
 - [ ] Review data consistency across Events, Venues, and Booking History.
 - [ ] Ensure the dataset supports a realistic end-to-end booking demonstration.
 
 #### End-to-End Demonstration
 
 - [x] Demonstrate browsing events and venues.
-- [ ] Demonstrate searching and filtering events.
-- [ ] Demonstrate creating and confirming a booking.
-- [ ] Demonstrate cancellation and the resulting booking status.
-- [ ] Verify booking history reflects the expected changes.
+- [x] Demonstrate searching and filtering events.
+- [x] Demonstrate creating and confirming a booking.
+- [x] Demonstrate cancellation and the resulting booking status.
+- [x] Verify booking history reflects the expected changes.
 - [ ] Resolve any issues discovered during the demonstration.
 
 #### Data Safety Constraints
@@ -734,8 +733,6 @@ Explore an Angular frontend as a separate implementation while preserving the ex
 - Keep the React implementation available and functional.
 - Do not rewrite backend-only tests merely to accommodate a frontend migration.
 
----
-
 ### 4.16 Code Coverage Improvements
 
 **Status:** Planned
@@ -763,6 +760,40 @@ Improve automated test coverage across all four test categories. Track each cate
 - [ ] Add E2E tests for uncovered application workflows and critical failure scenarios.
 
 Prioritize meaningful behavioural coverage rather than pursuing an arbitrary percentage target. Keep the four test categories independently tracked and report their coverage separately.
+
+### 4.17 Booking Success Feedback and Attendance Updates
+
+**Status:** Planned — functional verification first; visual polish afterward.
+
+#### Functional Correctness — High Priority
+- [ ] Update the affected event's displayed attendance count immediately after a successful booking, without requiring a page refresh.
+- [ ] Keep the booking-success state and displayed attendance count synchronized.
+- [ ] Preserve correct attendance counts after navigation and page refresh.
+- [ ] Add regression coverage verifying the attendance count updates immediately after successful booking.
+- [ ] Ensure failed bookings never display a successful attendance update.
+
+#### Booking Success Message — Medium Priority
+- [ ] Improve the inline booking-success message with a visually distinct green success treatment.
+- [ ] Add a checkmark icon to make successful booking feedback easier to recognize.
+- [ ] Ensure sufficient text/background contrast in light and dark themes.
+- [ ] Preserve the existing message and booking behavior.
+- [ ] Verify the styling at desktop and mobile widths.
+
+#### Odometer-Style Attendance Animation — Low Priority
+- [ ] Implement a reusable attendance-count animation component.
+- [ ] Animate an incrementing digit vertically, like a mechanical odometer (e.g. 0 → 1).
+- [ ] Use a short, restrained animation with easing and a brief green highlight when the digit settles.
+- [ ] Trigger the animation only after a successful booking and confirmation of the updated attendance count.
+- [ ] Do not animate initial page loads, ordinary refreshes, or failed booking attempts.
+- [ ] Respect the user's reduced-motion preference.
+- [ ] Add tests covering the animation trigger conditions and final displayed count.
+
+**Scope:** Booking success feedback and attendance presentation. No changes to booking lifecycle semantics, database schema, or API contract unless investigation identifies a necessary correctness fix.
+
+
+### 4.18 Booking-Hold E2E Test Coverage
+
+- [ ] Add booking-hold E2E tests covering acquisition, explicit cancellation, expiration and capacity release after inactivity, confirmation into a booking, and rejection of confirmation after expiration.
 
 ---
 
