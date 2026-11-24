@@ -186,7 +186,8 @@ Prepare a clean, representative dataset for the portfolio demonstration while pr
 - [x] Verify migration and update behavior against the showcase database.
 - [x] Verify the Venues page displays the intended showcase data.
 - [x] Verify the Booking History page displays the intended demo bookings.
-- [ ] Confirm development seed fixtures still cover useful edge cases.
+- [x] Confirm development seed fixtures still cover useful edge cases.
+- [ ] **Deferred:** Add booking-hold E2E tests covering acquisition, explicit cancellation, expiration and capacity release after inactivity, confirmation into a booking, and rejection of confirmation after expiration.
 - [ ] Review data consistency across Events, Venues, and Booking History.
 - [ ] Ensure the dataset supports a realistic end-to-end booking demonstration.
 

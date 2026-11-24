@@ -33,11 +33,20 @@ VALUES
     '2026-08-08 18:00:00-04:00',
     '2026-08-08 20:00:00-04:00',
     1,
-     'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80');
+     'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80'),
+
+    (3, 'Practical TypeScript',
+     'A small workshop exploring practical TypeScript techniques.',
+     2,
+     '2026-08-09 18:00:00-04:00',
+     '2026-08-09 20:00:00-04:00',
+     10,
+     NULL);
 
 
 -- BOOKINGS
 INSERT INTO bookings (id, user_id, event_id)
 VALUES
     (1, 1, 1),
-    (2, 2, 2);
+    (2, 2, 2),
+    (3, 1, 3);
