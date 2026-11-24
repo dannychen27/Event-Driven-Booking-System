@@ -179,7 +179,14 @@ describe("EventCard", () => {
             />,
         );
 
-        expect(screen.getByText("Already booked")).toBeInTheDocument();
+        const bookedBadge = screen.getByText("Already booked");
+        expect(bookedBadge).toBeInTheDocument();
+        expect(
+            bookedBadge.closest(".event-card__image-wrapper"),
+        ).not.toBeNull();
+        expect(
+            bookedBadge.closest(".event-card-header"),
+        ).toBeNull();
         expect(screen.queryByRole("button", { name: "Already booked" }) ).not.toBeInTheDocument();
         expect(screen.queryByRole("button", { name: "Create Booking" }) ).not.toBeInTheDocument();
         expect(screen.getByText("You've already booked this event.")).toBeInTheDocument();

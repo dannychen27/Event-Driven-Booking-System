@@ -84,13 +84,11 @@ export default function EventCard({
 
     return (
         <div className="card event-card">
-            <EventImage
-                imageUrl={event.image_url}
-                alt={event.name}
-            />
-
-            <div className="event-card-header">
-                <h2>{event.name}</h2>
+            <div className="event-card__image-wrapper">
+                <EventImage
+                    imageUrl={event.image_url}
+                    alt={event.name}
+                />
 
                 {isBooked && (
                     <span className="event-booked-badge">
@@ -98,6 +96,10 @@ export default function EventCard({
                         Already booked
                     </span>
                 )}
+            </div>
+
+            <div className="event-card-header">
+                <h2>{event.name}</h2>
             </div>
 
             {event.description?.trim() && (

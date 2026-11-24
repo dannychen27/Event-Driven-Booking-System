@@ -156,7 +156,7 @@ export default function CalendarSearchControls({
             <summary>
                 <span>Date &amp; time filters</span>
                 <span className="calendar-search-disclosure__status">
-                    {hasDateFilter || hasTimeFilter ? "Filters active" : "Optional"}
+                    {hasDateFilter || hasTimeFilter ? "Filters active" : "No filters applied"}
                 </span>
             </summary>
 

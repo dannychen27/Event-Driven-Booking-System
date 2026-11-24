@@ -2,20 +2,20 @@
 
 .event-card-skeleton__image {
     aspect-ratio: 16 / 9;
-    margin-bottom: 1rem;
+    margin-bottom: 0;
 }
 
-.event-card-skeleton .event-card-header {
-    align-items: center;
+.event-card-skeleton__booked-badge {
+    position: absolute;
+    top: 0.65rem;
+    right: 0.65rem;
+    z-index: 1;
+    border-radius: 999px;
 }
 
-.event-card-skeleton .event-card-header > .skeleton:first-child {
-    flex: 1 1 auto;
+.event-card-skeleton .event-card-skeleton__header {
     min-width: 0;
-}
-
-.event-card-skeleton .event-card-header > .skeleton:last-child {
-    flex: 0 0 6rem;
+    margin-bottom: 0.5rem;
 }
 
 .event-card-skeleton__metadata {

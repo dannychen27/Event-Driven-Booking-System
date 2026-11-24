@@ -7,22 +7,25 @@ import Skeleton from "../Skeleton";
 export default function EventCardSkeleton() {
     return (
         <div className="card event-card event-card-skeleton">
-            <Skeleton
-                width="100%"
-                height="auto"
-                className="event-image event-card-skeleton__image"
-            />
+            <div className="event-card__image-wrapper">
+                <Skeleton
+                    width="100%"
+                    height="auto"
+                    className="event-image event-card-skeleton__image"
+                />
+                <Skeleton
+                    width="6rem"
+                    height="1.5rem"
+                    className="event-card-skeleton__booked-badge"
+                    variant="rectangular"
+                />
+            </div>
 
             <div className="event-card-skeleton__header">
                 <Skeleton
                     width="65%"
                     height="1.5rem"
                     variant="text"
-                />
-                <Skeleton
-                    width="6rem"
-                    height="1.5rem"
-                    variant="rectangular"
                 />
             </div>
 

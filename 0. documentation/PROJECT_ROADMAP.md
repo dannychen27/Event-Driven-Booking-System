@@ -67,17 +67,23 @@ Complete the information and presentation of event, venue, and booking cards so 
 
 Complete the remaining card-level responsive improvements before redesigning the page layouts. This establishes a reliable card foundation before changing the available space and number of cards per row.
 
-1. Complete Responsive Card Design.
-2. Implement the Events and Venues page layout redesign.
-3. Add EventCard and VenueCard image lightboxes.
-4. Evaluate and improve the Booking History layout.
-5. Investigate pagination for Events and Venues.
-6. Complete the remaining Content Consistency review.
-7. Complete responsive and functional regression testing.
+1. [ ] Complete Responsive Card Design.
+2. [x] Implement the Events page layout redesign.
+3. [ ] Add EventCard and VenueCard image lightboxes.
+4. [ ] Evaluate and improve the Booking History layout.
+5. [ ] Investigate pagination for Events and Venues.
+6. [ ] Complete the remaining Content Consistency review.
+7. [ ] Complete responsive and functional regression testing.
 
 Regression testing should also be performed incrementally after individual implementation batches where appropriate.
 
 #### Responsive Card Design
+
+##### Completed EventCard Improvements
+
+- [x] Prevent EventCard vertical stretching across wider Events grid layouts.
+- [x] Position the already-booked badge on the event image.
+- [x] Keep the EventCard loading skeleton consistent with the revised layout.
 
 ##### Outstanding Viewport-Specific Improvements
 
@@ -96,7 +102,7 @@ Regression testing should also be performed incrementally after individual imple
 
 #### Responsive Page Layout and Results Discovery
 
-**Status:** Planned
+**Status:** In Progress
 
 Improve the Events and Venues page layouts so users can browse more content efficiently while preserving existing functionality.
 
@@ -104,9 +110,10 @@ Improve the Events and Venues page layouts so users can browse more content effi
 
 - [x] Implement a responsive multi-column CSS grid for the Events page.
 - [ ] Redesign the Venues page card layout; it currently retains its single-column layout.
-- [ ] Display filters in a dedicated left sidebar on wider screens.
-- [ ] Keep search and sorting controls above the results.
-- [ ] Make the filter sidebar and search/filter toolbar sticky where appropriate.
+- [x] Display search and calendar filters in a dedicated left sidebar on wider screens.
+- [ ] Keep search and sorting controls above the results where appropriate.
+- [x] Make the Events filter sidebar sticky on desktop while keeping it independently scrollable.
+- [x] Stack the sidebar above event results on tablet and mobile.
 - [x] Adjust the number of Events cards per row based on available width and card readability, with a maximum of five columns.
 - [x] Preserve a usable single-column Events layout on narrow mobile screens.
 - [ ] Maintain consistent presentation across light and dark themes.
@@ -387,7 +394,7 @@ Verify that the application's existing responsive layouts behave correctly acros
 
 #### Responsive Viewports
 
-Use the following viewport sizes for manual browser testing:
+Use the following representative viewport sizes for application-wide manual browser testing:
 
 | Device category | Viewport widths |
 |---|---|
@@ -395,7 +402,9 @@ Use the following viewport sizes for manual browser testing:
 | Tablet | 768px, 1024px |
 | Desktop | 1366px, 1920px |
 
-Test additional intermediate widths only when a breakpoint or layout issue warrants it.
+For the responsive Events page layout, additional focused manual verification has been completed at 375px, 430px, 520px, 600px, 768px, 900px, 1000px, 1001px, 1024px, 1152px, and 1280px. This includes checking the transition between the stacked layout and desktop sidebar at 1000px/1001px.
+
+Test additional intermediate widths when a breakpoint or layout issue warrants it.
 
 #### Reusable Error States and Recovery
 
@@ -481,15 +490,20 @@ Evaluate improvements to the navigation bar's visual presentation and layout.
 
 - [ ] Reduce the vertical space occupied by the regular keyword search bar.
 - [ ] Make the AI-powered natural-language search bar more compact.
-- [ ] Evaluate collapsible sections for the regular search, AI search, and date/time filters.
+- [ ] Make the regular keyword search section independently collapsible.
+- [ ] Make the AI-powered natural-language search section independently collapsible.
+- [ ] Keep both search sections collapsible at all viewport sizes.
 - [ ] Keep frequently used search controls readily accessible while reducing the page's initial vertical footprint.
 - [x] Group date and time filters into a more compact, collapsible interface.
-- [ ] Preserve search queries when search sections are collapsed or expanded.
+- [ ] Preserve keyword and AI search queries when their respective sections are collapsed or expanded.
 - [x] Preserve selected calendar filter values and the time-display preference when the date/time section is collapsed or expanded.
-- [ ] Provide clear expand/collapse labels and accessible expanded-state semantics.
+- [ ] Provide clear expand/collapse labels and accessible expanded-state semantics for both search sections.
 - [ ] Verify keyboard navigation, screen-reader accessibility, and visible focus states.
 - [ ] Preserve existing keyword search, AI search, calendar, and filtering behavior.
-- [x] Add regression tests for collapse/expand interactions and state preservation.
+- [x] Add regression tests for calendar collapse/expand interactions and state preservation.
+- [ ] Add regression tests for independent keyword/AI search collapse behavior and query preservation.
+
+The planned keyword and AI search disclosures must remain independent of the existing date/time filter disclosure. Collapsing a search section must not clear its query or alter calendar filter state.
 
 ### 4.7 Accessibility Improvements
 
@@ -923,6 +937,44 @@ This section records completed work for historical reference. New work should be
 - [x] `git diff --check` passed.
 
 **Scope:** Frontend presentation, responsive CSS, calendar controls, component organization, loading skeletons, tests, and documentation. No backend API, database schema, search semantics, or booking lifecycle changes.
+
+### 5.16 Responsive Events Page Layout and Card Improvements
+
+**Status:** Implemented and manually verified; ready to commit.
+
+#### Events Page Layout
+
+- [x] Introduce a two-column desktop layout with a dedicated search/filter sidebar and event results area.
+- [x] Keep the desktop sidebar sticky and independently scrollable.
+- [x] Stack the sidebar above event results on tablet and mobile.
+- [x] Keep search forms and calendar controls within the available sidebar width.
+- [x] Preserve existing keyword search, AI search, calendar filtering, and booking behavior.
+- [x] Verify the layout at 375px, 430px, 520px, 600px, 768px, 900px, 1000px, 1001px, 1024px, 1152px, and 1280px.
+- [x] Verify the layout transition across the 1000px/1001px breakpoint.
+
+#### Event Card Presentation
+
+- [x] Prevent event cards from stretching unnecessarily in wider grid layouts.
+- [x] Move the already-booked badge from the card header onto the event image.
+- [x] Keep the badge positioned within the image without obscuring or competing with the event title.
+- [x] Update the EventCard loading skeleton to match the revised image and badge structure.
+- [x] Add regression coverage for booked badge placement.
+
+#### Validation
+
+- [x] EventCard regression tests passed (14/14).
+- [x] Frontend production build passed.
+- [x] Manually verify card sizing, image proportions, badge placement, search controls, and calendar controls across the tested viewport widths.
+- [ ] Run final `git diff --check` before committing.
+- [ ] Review the complete diff and confirm no unrelated changes are included.
+
+#### Remaining Calendar Filter Status Correction
+
+- [ ] Ensure the calendar disclosure displays exactly one status: "Filters active" when date or time filters are selected, and "No filters applied" otherwise.
+
+The calendar status correction remains outstanding until the duplicate conditional rendering in `CalendarSearchControls.tsx` is removed and verified.
+
+**Scope:** Events page layout, responsive CSS, event-card presentation, loading skeleton presentation, and focused regression coverage. No backend API, database schema, search semantics, or booking lifecycle changes.
 
 ## 6. Technical Decisions and Constraints
 

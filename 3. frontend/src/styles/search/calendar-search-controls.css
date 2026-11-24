@@ -1,7 +1,6 @@
 
 .calendar-search-disclosure {
     width: 100%;
-    max-width: 1000px;
     box-sizing: border-box;
     margin: 1rem 0;
     border: 1px solid var(--border);
@@ -869,19 +868,5 @@
     .calendar-search-controls .calendar-search-section--time .calendar-time-clear {
         flex-shrink: 0;
         margin-left: auto;
-    }
-}
-
-/* Tablet filter width */
-@media (min-width: 600px) and (max-width: 900px) {
-    .calendar-search-disclosure {
-        max-width: 600px;
-    }
-}
-
-/* Mobile filter uses all available parent width */
-@media (max-width: 599px) {
-    .calendar-search-disclosure {
-        max-width: 100%;
     }
 }

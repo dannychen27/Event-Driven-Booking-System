@@ -470,108 +470,121 @@ export default function EventsPage() {
                 </section>
             )}
 
-            <EventSearchForm
-                keyword={keyword}
-                searching={searching}
-                onKeywordChange={(value) => {
-                    setKeyword(value);
-                    setSearchError("");
-                    clearClarification();
-                }}
-                onSearch={(event) =>
-                    handleSearch(event, {
-                        query: keyword,
-                        dateSelection,
-                        timeSelection,
-                        searchRequestId,
-                        setEvents,
-                        setSearching,
-                        setSearchError,
-                        setIsSearchActive,
-                    })
-                }
-                onClearQuery={() =>
-                    void handleClearSearch({
-                        searchRequestId,
-                        setEvents,
-                        setSearching,
-                        setSearchError,
-                        setIsSearchActive,
-                        setKeyword,
-                        setNaturalLanguageQuery,
-                        setClarificationConflicts,
-                        setDateSelection,
-                        setTimeSelection,
-                    }).then(clearClarification)
-                }
-            />
+            <div className="events-page__layout">
+                <aside
+                    className="events-page__sidebar"
+                    aria-label="Event search and filters"
+                >
+                    <div className="events-page__search">
+                <EventSearchForm
+                    keyword={keyword}
+                    searching={searching}
+                    onKeywordChange={(value) => {
+                        setKeyword(value);
+                        setSearchError("");
+                        clearClarification();
+                    }}
+                    onSearch={(event) =>
+                        handleSearch(event, {
+                            query: keyword,
+                            dateSelection,
+                            timeSelection,
+                            searchRequestId,
+                            setEvents,
+                            setSearching,
+                            setSearchError,
+                            setIsSearchActive,
+                        })
+                    }
+                    onClearQuery={() =>
+                        void handleClearSearch({
+                            searchRequestId,
+                            setEvents,
+                            setSearching,
+                            setSearchError,
+                            setIsSearchActive,
+                            setKeyword,
+                            setNaturalLanguageQuery,
+                            setClarificationConflicts,
+                            setDateSelection,
+                            setTimeSelection,
+                        }).then(clearClarification)
+                    }
+                />
 
-            <AiSearchForm
-                prompt={naturalLanguageQuery}
-                searching={searching}
-                onQueryChange={(value) => {
-                    setNaturalLanguageQuery(value);
-                    setSearchError("");
-                    clearClarification();
-                }}
-                onSearch={(event) =>
-                    handleNaturalLanguageSearch(event, {
-                        query: naturalLanguageQuery,
-                        dateSelection,
-                        timeSelection,
-                        searchRequestId,
-                        setEvents,
-                        setSearching,
-                        setSearchError,
-                        setIsSearchActive,
-                        setClarificationConflicts: updateClarificationConflicts,
-                    })
-                }
-                onClearQuery={() =>
-                    void handleClearSearch({
-                        searchRequestId,
-                        setEvents,
-                        setSearching,
-                        setSearchError,
-                        setIsSearchActive,
-                        setKeyword,
-                        setNaturalLanguageQuery,
-                        setClarificationConflicts,
-                        setDateSelection,
-                        setTimeSelection,
-                    }).then(clearClarification)
-                }
-            />
+                <AiSearchForm
+                    prompt={naturalLanguageQuery}
+                    searching={searching}
+                    onQueryChange={(value) => {
+                        setNaturalLanguageQuery(value);
+                        setSearchError("");
+                        clearClarification();
+                    }}
+                    onSearch={(event) =>
+                        handleNaturalLanguageSearch(event, {
+                            query: naturalLanguageQuery,
+                            dateSelection,
+                            timeSelection,
+                            searchRequestId,
+                            setEvents,
+                            setSearching,
+                            setSearchError,
+                            setIsSearchActive,
+                            setClarificationConflicts: updateClarificationConflicts,
+                        })
+                    }
+                    onClearQuery={() =>
+                        void handleClearSearch({
+                            searchRequestId,
+                            setEvents,
+                            setSearching,
+                            setSearchError,
+                            setIsSearchActive,
+                            setKeyword,
+                            setNaturalLanguageQuery,
+                            setClarificationConflicts,
+                            setDateSelection,
+                            setTimeSelection,
+                        }).then(clearClarification)
+                    }
+                />
 
-            <CalendarSearchControls
-                dateSelection={dateSelection}
-                timeSelection={timeSelection}
-                disabled={searching}
-                onDateSelectionChange={(selection) => {
-                    setDateSelection(selection);
-                    setSearchError("");
-                    clearClarification();
-                }}
-                onTimeSelectionChange={(selection) => {
-                    setTimeSelection(selection);
-                    setSearchError("");
-                    clearClarification();
-                }}
-                onApplyFilters={() =>
-                    void handleApplyCalendarFilters({
-                        query: naturalLanguageQuery,
-                        dateSelection,
-                        timeSelection,
-                        searchRequestId,
-                        setEvents,
-                        setSearching,
-                        setSearchError,
-                        setIsSearchActive,
-                        setClarificationConflicts: updateClarificationConflicts,
-                    })
-                }
-            />
+                <CalendarSearchControls
+                    dateSelection={dateSelection}
+                    timeSelection={timeSelection}
+                    disabled={searching}
+                    onDateSelectionChange={(selection) => {
+                        setDateSelection(selection);
+                        setSearchError("");
+                        clearClarification();
+                    }}
+                    onTimeSelectionChange={(selection) => {
+                        setTimeSelection(selection);
+                        setSearchError("");
+                        clearClarification();
+                    }}
+                    onApplyFilters={() =>
+                        void handleApplyCalendarFilters({
+                            query: naturalLanguageQuery,
+                            dateSelection,
+                            timeSelection,
+                            searchRequestId,
+                            setEvents,
+                            setSearching,
+                            setSearchError,
+                            setIsSearchActive,
+                            setClarificationConflicts: updateClarificationConflicts,
+                        })
+                    }
+                />
 
+                    </div>
+                </aside>
+
+                <section
+                    className="events-page__results"
+                    aria-label="Event results"
+                >
             {clarificationConflicts && (
                 <SearchFilterClarification
                     conflicts={clarificationConflicts}
@@ -643,6 +656,8 @@ export default function EventsPage() {
                     bookingHistoryStatus,
                     handleBookingCreated,
                 )}
+                </section>
+            </div>
         </div>
     );
 }
