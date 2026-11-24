@@ -476,7 +476,9 @@ export default function EventsPage() {
                     aria-label="Event search and filters"
                 >
                     <div className="events-page__search">
-                <EventSearchForm
+                <details className="events-search-disclosure" open>
+                    <summary>Keyword search</summary>
+                    <EventSearchForm
                     keyword={keyword}
                     searching={searching}
                     onKeywordChange={(value) => {
@@ -511,8 +513,11 @@ export default function EventsPage() {
                         }).then(clearClarification)
                     }
                 />
+                </details>
 
-                <AiSearchForm
+                <details className="events-search-disclosure" open>
+                    <summary>Search with AI</summary>
+                    <AiSearchForm
                     prompt={naturalLanguageQuery}
                     searching={searching}
                     onQueryChange={(value) => {
@@ -548,6 +553,7 @@ export default function EventsPage() {
                         }).then(clearClarification)
                     }
                 />
+                </details>
 
                 <CalendarSearchControls
                     dateSelection={dateSelection}

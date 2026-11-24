@@ -305,3 +305,82 @@ describe("Booking history loading and recovery", () => {
         expect(getEvents).toHaveBeenCalledOnce();
     });
 });
+
+describe("Independent search disclosures", () => {
+    it("allows keyword and AI search to collapse independently", async () => {
+        vi.mocked(getEvents).mockResolvedValue(initialRenderEventFixture);
+
+        const user = userEvent.setup();
+        const { container } = render(<EventsPage />);
+
+        expect(
+            await screen.findByText("Mock Event Card: Test Event 1"),
+        ).toBeInTheDocument();
+
+        const disclosures = container.querySelectorAll(
+            ".events-search-disclosure",
+        );
+
+        expect(disclosures).toHaveLength(2);
+        expect(disclosures[0]).toHaveAttribute("open");
+        expect(disclosures[1]).toHaveAttribute("open");
+
+        const calendarDisclosure = container.querySelector(
+            ".calendar-search-disclosure",
+        );
+
+        expect(calendarDisclosure).not.toHaveAttribute("open");
+
+        await user.click(screen.getByText("Keyword search"));
+
+        expect(disclosures[0]).not.toHaveAttribute("open");
+        expect(disclosures[1]).toHaveAttribute("open");
+        expect(calendarDisclosure).not.toHaveAttribute("open");
+
+        await user.click(screen.getByText("Search with AI", { selector: "summary" }));
+
+        expect(disclosures[0]).not.toHaveAttribute("open");
+        expect(disclosures[1]).not.toHaveAttribute("open");
+        expect(calendarDisclosure).not.toHaveAttribute("open");
+    });
+
+    it("preserves keyword and AI queries when their disclosures collapse", async () => {
+        vi.mocked(getEvents).mockResolvedValue(initialRenderEventFixture);
+
+        const user = userEvent.setup();
+        const { container } = render(<EventsPage />);
+
+        expect(
+            await screen.findByText("Mock Event Card: Test Event 1"),
+        ).toBeInTheDocument();
+
+        const keywordInput = screen.getByRole("textbox", {
+            name: "Search events",
+        });
+
+        const aiInput = screen.getByRole("textbox", {
+            name: "Search with AI",
+        });
+
+        await user.type(keywordInput, "Meet and Greet");
+        await user.type(aiInput, "Events this weekend");
+
+        const disclosures = container.querySelectorAll(
+            ".events-search-disclosure",
+        );
+
+        await user.click(screen.getByText("Keyword search"));
+        await user.click(screen.getByText("Search with AI", { selector: "summary" }));
+
+        expect(keywordInput).toHaveValue("Meet and Greet");
+        expect(aiInput).toHaveValue("Events this weekend");
+
+        await user.click(screen.getByText("Keyword search"));
+        await user.click(screen.getByText("Search with AI", { selector: "summary" }));
+
+        expect(disclosures[0]).toHaveAttribute("open");
+        expect(disclosures[1]).toHaveAttribute("open");
+        expect(keywordInput).toHaveValue("Meet and Greet");
+        expect(aiInput).toHaveValue("Events this weekend");
+    });
+});

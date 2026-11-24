@@ -490,18 +490,18 @@ Evaluate improvements to the navigation bar's visual presentation and layout.
 
 - [ ] Reduce the vertical space occupied by the regular keyword search bar.
 - [ ] Make the AI-powered natural-language search bar more compact.
-- [ ] Make the regular keyword search section independently collapsible.
-- [ ] Make the AI-powered natural-language search section independently collapsible.
-- [ ] Keep both search sections collapsible at all viewport sizes.
-- [ ] Keep frequently used search controls readily accessible while reducing the page's initial vertical footprint.
+- [x] Make the regular keyword search section independently collapsible.
+- [x] Make the AI-powered natural-language search section independently collapsible.
+- [x] Keep both search sections collapsible at all viewport sizes.
+- [x] Keep frequently used search controls readily accessible while reducing the page's initial vertical footprint.
 - [x] Group date and time filters into a more compact, collapsible interface.
-- [ ] Preserve keyword and AI search queries when their respective sections are collapsed or expanded.
+- [x] Preserve keyword and AI search queries when their respective sections are collapsed or expanded.
 - [x] Preserve selected calendar filter values and the time-display preference when the date/time section is collapsed or expanded.
-- [ ] Provide clear expand/collapse labels and accessible expanded-state semantics for both search sections.
+- [x] Provide clear expand/collapse labels and accessible expanded-state semantics for both search sections.
 - [ ] Verify keyboard navigation, screen-reader accessibility, and visible focus states.
-- [ ] Preserve existing keyword search, AI search, calendar, and filtering behavior.
+- [x] Preserve existing keyword search, AI search, calendar, and filtering behavior.
 - [x] Add regression tests for calendar collapse/expand interactions and state preservation.
-- [ ] Add regression tests for independent keyword/AI search collapse behavior and query preservation.
+- [x] Add regression tests for independent keyword/AI search collapse behavior and query preservation.
 
 The planned keyword and AI search disclosures must remain independent of the existing date/time filter disclosure. Collapsing a search section must not clear its query or alter calendar filter state.
 
@@ -975,6 +975,31 @@ This section records completed work for historical reference. New work should be
 The calendar status correction remains outstanding until the duplicate conditional rendering in `CalendarSearchControls.tsx` is removed and verified.
 
 **Scope:** Events page layout, responsive CSS, event-card presentation, loading skeleton presentation, and focused regression coverage. No backend API, database schema, search semantics, or booking lifecycle changes.
+
+### 5.17 Independent Keyword and AI Search Disclosures
+
+**Status:** Implemented and manually verified; ready to commit.
+
+#### Implementation
+- [x] Wrap keyword search in its own independently collapsible disclosure.
+- [x] Wrap AI-powered natural-language search in its own independently collapsible disclosure.
+- [x] Keep both disclosures expanded by default and collapsible at every viewport size.
+- [x] Keep the calendar date/time disclosure independent.
+- [x] Preserve keyword and AI queries when their sections are collapsed and reopened.
+- [x] Style disclosure headings consistently with the calendar disclosure.
+- [x] Keep the AI search form visually integrated without nested or duplicate borders.
+- [x] Reduce sidebar height when either search section is collapsed.
+
+#### Validation
+- [x] Verify independent collapse and expansion behavior.
+- [x] Verify query preservation after collapse and expansion.
+- [x] Verify calendar disclosure remains independent.
+- [x] EventsPage regression tests passed (13/13).
+- [x] Frontend production build passed.
+- [x] Manually verify the appearance at 375px and 1280px.
+- [x] `git diff --check` passed.
+
+**Scope:** Events page search disclosure presentation, responsive styling, and focused frontend regression tests. No changes to search semantics, calendar filtering logic, backend APIs, database schema, or booking lifecycle.
 
 ## 6. Technical Decisions and Constraints
 

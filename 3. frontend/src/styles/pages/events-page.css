@@ -176,3 +176,58 @@
         margin-bottom: 0.5rem;
     }
 }
+
+/* Independent keyword and AI search disclosures */
+.events-search-disclosure {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 0 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+}
+
+.events-search-disclosure > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 44px;
+    padding: 0.65rem 1rem;
+    color: var(--text);
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+}
+
+.events-search-disclosure > summary::-webkit-details-marker {
+    display: none;
+}
+
+.events-search-disclosure > summary::after {
+    content: "+";
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.events-search-disclosure[open] > summary::after {
+    content: "−";
+}
+
+.events-search-disclosure > summary:focus-visible {
+    outline: 2px solid #22c55e;
+    outline-offset: 3px;
+    border-radius: 6px;
+}
+
+.events-search-disclosure > .search-form {
+    margin: 0;
+    padding: 1rem;
+}
+
+.events-search-disclosure > .ai-search-form {
+    border: 0;
+    border-top: 1px solid var(--border);
+    border-radius: 0;
+    background: transparent;
+}
