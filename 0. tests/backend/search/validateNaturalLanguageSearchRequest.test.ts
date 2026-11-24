@@ -161,6 +161,60 @@ describe('validateNaturalLanguageSearchRequest', () => {
             });
         });
 
+        it('should accept an explicitly cleared date without a query', () => {
+            expect(validateNaturalLanguageSearchRequest({
+                filters: {
+                    date: {
+                        state: 'cleared',
+                    },
+                },
+            })).toEqual({
+                filters: {
+                    date: {
+                        state: 'cleared',
+                    },
+                },
+            });
+        });
+
+        it('should accept an explicitly cleared time without a query', () => {
+            expect(validateNaturalLanguageSearchRequest({
+                filters: {
+                    time: {
+                        state: 'cleared',
+                    },
+                },
+            })).toEqual({
+                filters: {
+                    time: {
+                        state: 'cleared',
+                    },
+                },
+            });
+        });
+
+        it('should accept explicitly cleared date and time filters without a query', () => {
+            expect(validateNaturalLanguageSearchRequest({
+                filters: {
+                    date: {
+                        state: 'cleared',
+                    },
+                    time: {
+                        state: 'cleared',
+                    },
+                },
+            })).toEqual({
+                filters: {
+                    date: {
+                        state: 'cleared',
+                    },
+                    time: {
+                        state: 'cleared',
+                    },
+                },
+            });
+        });
+
         it('should accept a cleared filter alongside another selected filter', () => {
             expect(validateNaturalLanguageSearchRequest({
                 filters: {
@@ -248,16 +302,6 @@ describe('validateNaturalLanguageSearchRequest', () => {
             expect(() => validateNaturalLanguageSearchRequest({
                 query: 'concerts',
                 sql: 'DROP TABLE events',
-            })).toThrow(BadRequestException);
-        });
-
-        it('should reject cleared-only filters without a query', () => {
-            expect(() => validateNaturalLanguageSearchRequest({
-                filters: {
-                    date: {
-                        state: 'cleared',
-                    },
-                },
             })).toThrow(BadRequestException);
         });
 

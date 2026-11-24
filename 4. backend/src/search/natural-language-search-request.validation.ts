@@ -274,13 +274,14 @@ export function validateNaturalLanguageSearchRequest(
 
     const resolutions = validateResolutions(fields.resolutions, filters);
 
-    const hasSelectedFilter = Object.values(filters ?? {}).some(
-        (selection) => selection?.state === 'selected',
+    const hasExplicitFilterChange = Object.values(filters ?? {}).some(
+        (selection) => selection?.state === 'selected'
+            || selection?.state === 'cleared',
     );
 
-    if (query === undefined && !hasSelectedFilter) {
+    if (query === undefined && !hasExplicitFilterChange) {
         throw new BadRequestException(
-            'A query or at least one selected date/time filter is required',
+            'A query or at least one explicit date/time filter change is required',
         );
     }
 

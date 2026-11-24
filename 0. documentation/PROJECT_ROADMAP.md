@@ -1110,24 +1110,46 @@ The calendar status correction remains outstanding until the duplicate condition
 
 ### 5.19 Calendar Filter Clearing and Search State Reliability
 
-**Status:** Implemented, tested, and ready to commit.
+**Status:** Implemented and tested; backend fix ready to commit.
 
-#### Implementation
+#### Frontend Implementation
 - [x] Track pending calendar filter changes independently of selected filter values.
 - [x] Allow users to apply explicitly cleared date and time filters, including when clearing the final active filter.
 - [x] Send explicit cleared filter selections to the natural-language search endpoint.
 - [x] Reset pending filter-change state after successful keyword searches, natural-language searches, and search clearing.
 - [x] Preserve existing search and calendar filtering behavior.
 
+#### Backend Validation
+- [x] Accept explicitly cleared date and time filters as valid search requests without requiring a query.
+- [x] Recognize both `selected` and `cleared` filter states as explicit filter changes.
+- [x] Preserve rejection of empty requests and empty filter objects.
+- [x] Update the validation error message to describe the explicit filter-change requirement.
+- [x] Add regression tests for cleared date, time, and combined date/time selections.
+
 #### Regression Testing
+
+**Frontend**
 - [x] Add component tests for Apply button behavior with explicitly cleared date and time selections.
 - [x] Add EventsPage regression coverage verifying cleared date and time filters are submitted together.
 - [x] Verify pending state resets after a successful search.
 - [x] Run the complete frontend test suite (272/272 tests passed).
 - [x] Verify the frontend TypeScript and production build.
-- [x] Pass `git diff --check`.
 
-**Scope:** Frontend calendar filter state, search orchestration, and regression coverage. No backend API, database schema, or booking lifecycle changes.
+**Backend**
+- [x] Run the complete backend test suite (465/465 tests passed across 38 suites).
+- [x] Run focused request-validator tests after the final changes (35/35 passed).
+- [x] Verify the backend production build.
+- [x] Verify request validation coverage (96.1% statements, 93.9% branches, 100% functions).
+
+**Final Checks**
+- [x] Pass `git diff --check`.
+- [x] Confirm changes are limited to the intended backend files.
+- [ ] Commit and push the backend fix.
+- [ ] Complete browser verification against the showcase database after the backend fix is committed and pushed.
+
+**Scope:** Frontend calendar filter state, search orchestration, backend request validation, and regression coverage. No API contract, database schema, or booking lifecycle changes.
+
+**Remaining:** Verify that clearing both date and time filters in the running showcase application returns the unfiltered event list without a validation error.
 
 ## 6. Technical Decisions and Constraints
 
@@ -1249,4 +1271,4 @@ Follow-up work from this audit is tracked in Section 3:
 
 ---
 
-**Last Updated:** November 23, 2026
+**Last Updated:** November 24, 2026
