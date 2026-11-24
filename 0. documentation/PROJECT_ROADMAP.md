@@ -193,7 +193,7 @@ Prepare a clean, representative dataset for the portfolio demonstration while pr
 
 #### End-to-End Demonstration
 
-- [ ] Demonstrate browsing events and venues.
+- [x] Demonstrate browsing events and venues.
 - [ ] Demonstrate searching and filtering events.
 - [ ] Demonstrate creating and confirming a booking.
 - [ ] Demonstrate cancellation and the resulting booking status.
@@ -1107,6 +1107,27 @@ The calendar status correction remains outstanding until the duplicate condition
 - [x] `git diff --check` passed.
 
 **Scope:** Reusable frontend image lightbox, EventCard and VenueCard image interactions, responsive styling, accessibility, and focused regression tests. No changes to backend APIs, database schema, search behavior, or booking lifecycle.
+
+### 5.19 Calendar Filter Clearing and Search State Reliability
+
+**Status:** Implemented, tested, and ready to commit.
+
+#### Implementation
+- [x] Track pending calendar filter changes independently of selected filter values.
+- [x] Allow users to apply explicitly cleared date and time filters, including when clearing the final active filter.
+- [x] Send explicit cleared filter selections to the natural-language search endpoint.
+- [x] Reset pending filter-change state after successful keyword searches, natural-language searches, and search clearing.
+- [x] Preserve existing search and calendar filtering behavior.
+
+#### Regression Testing
+- [x] Add component tests for Apply button behavior with explicitly cleared date and time selections.
+- [x] Add EventsPage regression coverage verifying cleared date and time filters are submitted together.
+- [x] Verify pending state resets after a successful search.
+- [x] Run the complete frontend test suite (272/272 tests passed).
+- [x] Verify the frontend TypeScript and production build.
+- [x] Pass `git diff --check`.
+
+**Scope:** Frontend calendar filter state, search orchestration, and regression coverage. No backend API, database schema, or booking lifecycle changes.
 
 ## 6. Technical Decisions and Constraints
 

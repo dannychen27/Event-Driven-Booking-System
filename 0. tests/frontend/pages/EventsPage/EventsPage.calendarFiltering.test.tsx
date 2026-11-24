@@ -158,6 +158,65 @@ describe("Calendar filtering", () => {
         });
     });
 
+    it("applies explicitly cleared date and time filters to restore unfiltered results", async () => {
+        vi.mocked(searchEventsNaturalLanguage).mockResolvedValue(
+            successfulResponse([]),
+        );
+
+        await renderEventsPageWithNoInitialEvents();
+
+        fireEvent.change(screen.getByLabelText("From"), {
+            target: { value: "2026-11-10" },
+        });
+
+        fireEvent.click(
+            screen.getByRole("button", {
+                name: "Morning (8 AM–12 PM)",
+            }),
+        );
+
+        fireEvent.click(
+            screen.getByRole("button", { name: "Apply filters" }),
+        );
+
+        expect(
+            await screen.findByText("No matching events found."),
+        ).toBeInTheDocument();
+
+        fireEvent.click(
+            screen.getByRole("button", { name: "Clear date" }),
+        );
+
+        fireEvent.click(
+            screen.getByRole("button", { name: "Clear time" }),
+        );
+
+        const applyButton = screen.getByRole("button", {
+            name: "Apply filters",
+        });
+
+        expect(applyButton).toBeEnabled();
+
+        fireEvent.click(applyButton);
+
+        await vi.waitFor(() => {
+            expect(searchEventsNaturalLanguage).toHaveBeenCalledTimes(2);
+        });
+
+        expect(searchEventsNaturalLanguage).toHaveBeenNthCalledWith(2, {
+            filters: {
+                date: { state: "cleared" },
+                time: { state: "cleared" },
+            },
+        });
+
+        expect(searchEvents).not.toHaveBeenCalled();
+
+        await vi.waitFor(() => {
+            expect(applyButton).toBeDisabled();
+        });
+    });
+
     describe("Calendar filtering through Ask AI", () => {
         it("applies date filters through Ask AI without a search query", async () => {
             vi.mocked(searchEventsNaturalLanguage).mockResolvedValue(

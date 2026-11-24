@@ -67,6 +67,7 @@ async function executeSearch(
         if (requestId !== dependencies.searchRequestId.current) return;
 
         dependencies.setEvents(results);
+        dependencies.setHasPendingCalendarFilterChanges?.(false);
     } catch (error) {
         if (requestId !== dependencies.searchRequestId.current) return;
 
@@ -137,6 +138,7 @@ async function executeNaturalLanguageSearch(
 
         dependencies.setEvents(response.events);
         dependencies.setClarificationConflicts(null);
+        dependencies.setHasPendingCalendarFilterChanges?.(false);
     } catch (error) {
         if (requestId !== dependencies.searchRequestId.current) return;
 
@@ -194,7 +196,12 @@ export async function handleApplyCalendarFilters(
             dependencies.timeSelection.value.timeRange?.endTime,
         );
 
-    if (!hasSelectedDate && !hasSelectedTime) {
+    const hasPendingClear =
+        dependencies.hasPendingCalendarFilterChanges === true &&
+        (dependencies.dateSelection?.state === "cleared" ||
+            dependencies.timeSelection?.state === "cleared");
+
+    if (!hasSelectedDate && !hasSelectedTime && !hasPendingClear) {
         dependencies.setSearchError("Select at least one date or time filter.");
         return;
     }
@@ -238,6 +245,7 @@ export async function handleClearSearch(
     dependencies.setClarificationConflicts(null);
     dependencies.setDateSelection?.(undefined);
     dependencies.setTimeSelection?.(undefined);
+    dependencies.setHasPendingCalendarFilterChanges?.(false);
 
     try {
         const results = await getEvents();

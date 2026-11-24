@@ -20,11 +20,13 @@ describe("CalendarSearchControls", () => {
         dateSelection,
         timeSelection,
         disabled = false,
+        hasPendingChanges = false,
         open = true,
     }: {
         dateSelection?: ExplicitSelection<CalendarDateRange>;
         timeSelection?: ExplicitSelection<CalendarTimeSelection>;
         disabled?: boolean;
+        hasPendingChanges?: boolean;
         open?: boolean;
     } = {}) {
         const result = render(
@@ -32,6 +34,7 @@ describe("CalendarSearchControls", () => {
                 dateSelection={dateSelection}
                 timeSelection={timeSelection}
                 disabled={disabled}
+                hasPendingChanges={hasPendingChanges}
                 onDateSelectionChange={onDateSelectionChange}
                 onTimeSelectionChange={onTimeSelectionChange}
                 onApplyFilters={onApplyFilters}
@@ -689,6 +692,59 @@ describe("CalendarSearchControls", () => {
 
         expect(
             screen.getByRole("button", { name: "Clear time" }),
+        ).toBeDisabled();
+    });
+
+    it("enables Apply filters when the date selection is explicitly cleared", () => {
+        renderControls({
+            dateSelection: { state: "cleared" },
+            hasPendingChanges: true,
+        });
+
+        expect(
+            screen.getByRole("button", { name: "Apply filters" }),
+        ).toBeEnabled();
+    });
+
+    it("enables Apply filters when the time selection is explicitly cleared", () => {
+        renderControls({
+            timeSelection: { state: "cleared" },
+            hasPendingChanges: true,
+        });
+
+        expect(
+            screen.getByRole("button", { name: "Apply filters" }),
+        ).toBeEnabled();
+    });
+
+    it("enables Apply filters when both selections are explicitly cleared", () => {
+        renderControls({
+            dateSelection: { state: "cleared" },
+            timeSelection: { state: "cleared" },
+            hasPendingChanges: true,
+        });
+
+        expect(
+            screen.getByRole("button", { name: "Apply filters" }),
+        ).toBeEnabled();
+    });
+
+    it("keeps Apply filters disabled for cleared selections without pending changes", () => {
+        renderControls({
+            dateSelection: { state: "cleared" },
+            timeSelection: { state: "cleared" },
+        });
+
+        expect(
+            screen.getByRole("button", { name: "Apply filters" }),
+        ).toBeDisabled();
+    });
+
+    it("keeps Apply filters disabled when no filters are selected or cleared", () => {
+        renderControls();
+
+        expect(
+            screen.getByRole("button", { name: "Apply filters" }),
         ).toBeDisabled();
     });
 

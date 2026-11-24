@@ -21,6 +21,7 @@ interface CalendarSearchControlsProps {
     dateSelection: ExplicitSelection<CalendarDateRange> | undefined;
     timeSelection: ExplicitSelection<CalendarTimeSelection> | undefined;
     disabled: boolean;
+    hasPendingChanges?: boolean;
     onDateSelectionChange: (
         selection: ExplicitSelection<CalendarDateRange> | undefined,
     ) => void;
@@ -31,9 +32,10 @@ interface CalendarSearchControlsProps {
 }
 
 export default function CalendarSearchControls({
-   dateSelection,
-   timeSelection,
-   disabled,
+    dateSelection,
+    timeSelection,
+    disabled,
+    hasPendingChanges = false,
    onDateSelectionChange,
    onTimeSelectionChange,
    onApplyFilters,
@@ -354,7 +356,10 @@ export default function CalendarSearchControls({
                 <button
                     type="button"
                     className="calendar-search-apply"
-                    disabled={disabled || (!hasDateFilter && !hasTimeFilter)}
+                    disabled={
+                        disabled ||
+                        (!hasDateFilter && !hasTimeFilter && !hasPendingChanges)
+                    }
                     onClick={onApplyFilters}
                 >
                     Apply filters

@@ -16,6 +16,7 @@ export interface SearchHandlerDependencies {
     setSearching: (searching: boolean) => void;
     setSearchError: (error: string) => void;
     setIsSearchActive: (active: boolean) => void;
+    setHasPendingCalendarFilterChanges?: (pending: boolean) => void;
 }
 
 export interface NaturalLanguageSearchHandlerDependencies
@@ -23,6 +24,7 @@ export interface NaturalLanguageSearchHandlerDependencies
     setClarificationConflicts: (
         conflicts: SearchFilterConflict[] | null,
     ) => void;
+    hasPendingCalendarFilterChanges?: boolean;
 }
 
 export interface NaturalLanguageSearchResolutionDependencies
@@ -48,4 +50,5 @@ export interface ClearSearchDependencies {
     setTimeSelection?: (
         selection: ExplicitSelection<CalendarTimeSelection> | undefined,
     ) => void;
+    setHasPendingCalendarFilterChanges?: (pending: boolean) => void;
 }

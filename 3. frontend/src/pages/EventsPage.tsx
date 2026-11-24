@@ -85,6 +85,9 @@ export default function EventsPage() {
         ExplicitSelection<CalendarTimeSelection> | undefined
     >(undefined);
 
+    const [hasPendingCalendarFilterChanges, setHasPendingCalendarFilterChanges] =
+        useState(false);
+
     const searchRequestId = useRef(0);
 
     function clearClarification() {
@@ -496,6 +499,7 @@ export default function EventsPage() {
                             setSearching,
                             setSearchError,
                             setIsSearchActive,
+                            setHasPendingCalendarFilterChanges,
                         })
                     }
                     onClearQuery={() =>
@@ -510,6 +514,7 @@ export default function EventsPage() {
                             setClarificationConflicts,
                             setDateSelection,
                             setTimeSelection,
+                            setHasPendingCalendarFilterChanges,
                         }).then(clearClarification)
                     }
                 />
@@ -536,6 +541,7 @@ export default function EventsPage() {
                             setSearchError,
                             setIsSearchActive,
                             setClarificationConflicts: updateClarificationConflicts,
+                            setHasPendingCalendarFilterChanges,
                         })
                     }
                     onClearQuery={() =>
@@ -550,6 +556,7 @@ export default function EventsPage() {
                             setClarificationConflicts,
                             setDateSelection,
                             setTimeSelection,
+                            setHasPendingCalendarFilterChanges,
                         }).then(clearClarification)
                     }
                 />
@@ -559,13 +566,16 @@ export default function EventsPage() {
                     dateSelection={dateSelection}
                     timeSelection={timeSelection}
                     disabled={searching}
+                    hasPendingChanges={hasPendingCalendarFilterChanges}
                     onDateSelectionChange={(selection) => {
                         setDateSelection(selection);
+                        setHasPendingCalendarFilterChanges(true);
                         setSearchError("");
                         clearClarification();
                     }}
                     onTimeSelectionChange={(selection) => {
                         setTimeSelection(selection);
+                        setHasPendingCalendarFilterChanges(true);
                         setSearchError("");
                         clearClarification();
                     }}
@@ -580,6 +590,8 @@ export default function EventsPage() {
                             setSearchError,
                             setIsSearchActive,
                             setClarificationConflicts: updateClarificationConflicts,
+                            hasPendingCalendarFilterChanges,
+                            setHasPendingCalendarFilterChanges,
                         })
                     }
                 />
@@ -610,6 +622,7 @@ export default function EventsPage() {
                             setSearchError,
                             setIsSearchActive,
                             setClarificationConflicts: updateClarificationConflicts,
+                            setHasPendingCalendarFilterChanges,
                         })
                     }
                 />
