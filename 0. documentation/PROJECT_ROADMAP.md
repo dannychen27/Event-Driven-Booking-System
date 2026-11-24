@@ -362,6 +362,84 @@ Review the natural-language search pipeline for prompt-injection and malformed-o
 - [ ] Add tests for requests within and beyond the configured limit.
 - [ ] Ensure rate limiting does not interfere with ordinary keyword or calendar-based search.
 
+### 3.6 Booking Hold Workflow
+
+**Status:** Planned
+
+Implement a user-facing booking hold workflow using the existing backend hold-management logic. The current frontend booking modal offers a direct booking decision, but does not expose hold acquisition or the existing hold confirmation and cancellation operations.
+
+#### Backend API
+
+- [ ] Add an HTTP endpoint for acquiring a booking hold.
+- [ ] Reuse the existing `BookingsService.createHold()` implementation.
+- [ ] Preserve existing capacity, duplicate-hold, booking-conflict, and concurrency protections.
+- [ ] Return the hold expiration timestamp to the frontend.
+- [ ] Review request validation and error responses for hold-related endpoints.
+
+#### Frontend Booking Workflow
+
+- [ ] Evaluate and implement a hold-based booking flow in the existing booking modal.
+- [ ] Allow users to acquire a temporary hold before confirming a booking.
+- [ ] Display the hold expiration time and remaining time where appropriate.
+- [ ] Allow users to explicitly confirm or cancel an active hold.
+- [ ] Handle expired holds and communicate when the user must restart the booking process.
+- [ ] Keep the displayed booking status consistent with backend state.
+- [ ] Preserve the existing direct-booking behavior where appropriate, or deliberately replace it with the hold-based workflow.
+
+#### End-to-End Verification
+
+- [ ] Add E2E coverage for acquiring a hold through the HTTP API.
+- [ ] Verify explicit hold cancellation.
+- [ ] Verify expiration and capacity release after inactivity.
+- [ ] Verify successful confirmation creates a booking.
+- [ ] Verify confirmation after expiration is rejected.
+- [ ] Verify another user cannot confirm or cancel someone else's hold.
+- [ ] Verify capacity and conflicting-booking constraints remain enforced.
+- [ ] Use deterministic expiration setup rather than waiting for the full hold duration.
+- [ ] Run the complete E2E, integration, and database-safety test suites.
+
+**Implementation constraint:** Complete the actual API and frontend workflow before treating hold E2E coverage as a standalone deliverable. Reuse existing service logic and tests rather than duplicating business rules.
+
+### 3.7 Stripe Payments and Saved Payment Methods
+
+**Status:** Deferred
+
+Explore payment support for paid events using Stripe. This should be a separate enhancement after the core booking and hold workflows are reliable.
+
+#### Payment Processing
+
+- [ ] Evaluate Stripe Checkout versus PaymentIntents for the intended booking experience.
+- [ ] Design how paid events differ from free events.
+- [ ] Integrate payment confirmation with the booking lifecycle.
+- [ ] Ensure a booking is not marked as paid or confirmed solely because the frontend reports payment success.
+- [ ] Handle asynchronous payment results and Stripe webhook events.
+- [ ] Make payment processing idempotent and resilient to retries.
+- [ ] Define how payment failures, abandoned checkouts, and expired booking holds are handled.
+- [ ] Evaluate refund and cancellation behavior.
+
+#### Saved Payment Methods
+
+- [ ] Evaluate allowing users to save payment methods for future bookings.
+- [ ] Use Stripe-supported customer and payment-method management.
+- [ ] Allow users to view and remove saved payment methods where appropriate.
+- [ ] Keep payment credentials and sensitive card data within Stripe's supported payment flows.
+
+#### Security and Testing
+
+- [ ] Keep Stripe secret keys and privileged operations on the backend.
+- [ ] Verify webhook signatures.
+- [ ] Avoid storing raw card details in the application database.
+- [ ] Add backend tests for payment creation, confirmation, failures, and duplicate webhook delivery.
+- [ ] Add integration and E2E coverage for paid and free booking workflows.
+- [ ] Document required Stripe configuration and environment variables.
+- [ ] Verify the application continues to support free events without requiring payment.
+
+**Implementation constraints:**
+- Do not introduce payment processing merely for résumé keywords.
+- Keep free-event booking behavior intact.
+- Use Stripe-hosted or Stripe-approved payment collection rather than handling raw card details.
+- Coordinate payment authorization and confirmation with booking-hold expiration and capacity protections.
+
 ---
 
 ## 4. Follow-up Work and Deferred Ideas
