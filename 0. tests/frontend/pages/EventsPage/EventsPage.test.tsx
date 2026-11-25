@@ -124,7 +124,7 @@ describe("Initial loading and rendering", () => {
         vi.mocked(getEvents).mockResolvedValue(initialRenderEventFixture);
 
         vi.mocked(getBookingHistory).mockResolvedValue([
-            { event_id: 1 } as Booking,
+            { event_id: 1, status: "confirmed" } as Booking,
         ]);
 
         render(<EventsPage />);
@@ -135,6 +135,28 @@ describe("Initial loading and rendering", () => {
 
         expect(screen.getByTestId("booking-state-1")).toHaveTextContent(
             "booked:ready",
+        );
+
+        expect(screen.getByTestId("booking-state-2")).toHaveTextContent(
+            "not-booked:ready",
+        );
+    });
+
+    it("does not mark events as booked when their booking history is cancelled", async () => {
+        vi.mocked(getEvents).mockResolvedValue(initialRenderEventFixture);
+
+        vi.mocked(getBookingHistory).mockResolvedValue([
+            { event_id: 1, status: "cancelled" } as Booking,
+        ]);
+
+        render(<EventsPage />);
+
+        expect(
+            await screen.findByText("Mock Event Card: Test Event 1"),
+        ).toBeInTheDocument();
+
+        expect(screen.getByTestId("booking-state-1")).toHaveTextContent(
+            "not-booked:ready",
         );
 
         expect(screen.getByTestId("booking-state-2")).toHaveTextContent(

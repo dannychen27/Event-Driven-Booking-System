@@ -158,7 +158,11 @@ export default function EventsPage() {
 
                 if (isActive) {
                     setBookedEventIds(
-                        new Set(bookings.map((booking) => booking.event_id)),
+                        new Set(
+                            bookings
+                                .filter((booking) => booking.status === "confirmed")
+                                .map((booking) => booking.event_id),
+                        ),
                     );
                     setBookingHistoryStatus("ready");
                 }

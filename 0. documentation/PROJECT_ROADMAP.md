@@ -38,21 +38,21 @@ Do not introduce additional features or redesign completed interfaces merely to 
 
 **Priority:** High
 
-**Status:** In Progress — implementation, automated regression coverage, and the showcase-data demonstration are complete. Final manual verification remains.
+**Status:** In Progress — implementation, automated regression coverage, showcase-data demonstration, and booking-history lifecycle verification are complete. Cross-page, responsive/visual, and remaining functional verification are outstanding.
 
 Close the remaining gaps between the implemented features and a dependable portfolio demonstration. Focus on the existing booking lifecycle and the Events, Venues, and My Bookings experience.
 
 #### Booking History Lifecycle Verification
 
-- [ ] Manually verify the All booking-history view.
-- [ ] Manually verify the Upcoming booking-history view.
-- [ ] Manually verify the Happening Now booking-history view.
-- [ ] Manually verify the Past booking-history view.
-- [ ] Manually verify the Cancelled booking-history view.
-- [ ] Verify cancellation updates the relevant booking-history view.
-- [ ] Verify a cancelled booking remains represented in history.
-- [ ] Verify the user can book the same event again after cancellation.
-- [ ] Refresh the application and verify the resulting booking state persists.
+- [x] Manually verify the All booking-history view.
+- [x] Manually verify the Upcoming booking-history view.
+- [x] Manually verify the Happening Now booking-history view.
+- [x] Manually verify the Past booking-history view.
+- [x] Manually verify the Cancelled booking-history view.
+- [x] Verify cancellation updates the relevant booking-history view.
+- [x] Verify a cancelled booking remains represented in history.
+- [x] Verify the user can book the same event again after cancellation.
+- [x] Refresh the application and verify the resulting booking state persists.
 
 #### Cross-Page Demonstration
 
@@ -98,7 +98,7 @@ Close the remaining gaps between the implemented features and a dependable portf
 #### Definition of Done
 
 - [ ] All five My Bookings views have been manually verified.
-- [ ] Cancellation and rebooking have been verified, including persistence after refresh.
+- [x] Cancellation and rebooking have been verified, including persistence after refresh.
 - [ ] The complete Events → booking → My Bookings → cancellation journey works.
 - [ ] Representative responsive layouts and light/dark themes have been checked.
 - [ ] Any actual defects discovered during verification have been resolved and retested.
