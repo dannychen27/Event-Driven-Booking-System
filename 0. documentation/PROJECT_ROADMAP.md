@@ -77,6 +77,17 @@ Complete the remaining card-level responsive improvements before redesigning the
 
 Regression testing should also be performed incrementally after individual implementation batches where appropriate.
 
+#### Remaining Implementation Order
+
+Complete the remaining work in the following sequence:
+
+1. [ ] Implement My Bookings filtering, beginning with an API and data-model review.
+2. [ ] Redesign the Booking History layout around the new booking views and filters.
+3. [ ] Redesign the Venues page with relevant search, filtering, sorting, and a responsive multi-column card grid.
+4. [ ] Complete the remaining responsive, visual-consistency, and functional regression work across all three pages.
+
+Pagination for Events and Venues remains a separate investigation. Defer implementation until existing API behavior and result volumes establish a need.
+
 #### Responsive Card Design
 
 ##### Completed EventCard Improvements
@@ -110,6 +121,8 @@ Improve the Events and Venues page layouts so users can browse more content effi
 
 - [x] Implement a responsive multi-column CSS grid for the Events page.
 - [ ] Redesign the Venues page card layout; it currently retains its single-column layout.
+- [ ] Introduce venue search, category and location filters where supported by the existing data.
+- [ ] Add relevant venue sorting options.
 - [x] Display search and calendar filters in a dedicated left sidebar on wider screens.
 - [ ] Keep search and sorting controls above the results where appropriate.
 - [x] Make the Events filter sidebar sticky on desktop while keeping it independently scrollable.
@@ -119,6 +132,7 @@ Improve the Events and Venues page layouts so users can browse more content effi
 - [ ] Maintain consistent presentation across light and dark themes.
 - [ ] Prevent the Events search placeholder from clipping at 320px.
 - [ ] Improve the horizontal distribution and compactness of Events filters on desktop.
+- [ ] Reuse the Events sidebar-and-results layout pattern for Venues where appropriate.
 
 ##### Interactive Card Images
 
@@ -132,6 +146,14 @@ Improve the Events and Venues page layouts so users can browse more content effi
 
 ##### Booking History Layout
 
+- [ ] Inspect the booking-history API response to confirm cancelled bookings, event start/end dates, and booking status are available.
+- [ ] Determine whether booking filtering can be handled client-side or requires backend support.
+- [ ] Add booking status and event-date filtering.
+- [ ] Introduce All, Upcoming, Past, and Cancelled views.
+- [ ] Define booking categorization using both event dates and booking status.
+- [ ] Preserve cancelled bookings in booking history, regardless of event date.
+- [ ] Provide appropriate empty states for each view.
+- [ ] Ensure cancelling a booking immediately updates the displayed results.
 - [ ] Evaluate a responsive multi-column Booking History card layout.
 - [ ] Preserve readability of booking metadata and available actions.
 
@@ -146,7 +168,9 @@ Improve the Events and Venues page layouts so users can browse more content effi
 - [ ] Verify responsive layouts across representative phone, tablet, laptop, and desktop widths.
 - [ ] Verify sticky controls do not obscure page content.
 - [x] Verify image viewer interactions, including keyboard and mobile behavior.
-- [ ] Verify existing search, filtering, sorting, and booking workflows remain functional.
+- [ ] Verify Events, Venues, and My Bookings search, filtering, and sorting workflows.
+- [ ] Verify booking creation and cancellation still work across the redesigned My Bookings views.
+- [ ] Verify responsive and functional behavior across the Events, Venues, and My Bookings pages.
 
 #### Content Consistency
 
