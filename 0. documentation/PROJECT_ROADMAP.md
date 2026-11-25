@@ -22,326 +22,94 @@ Focus on completing the user-facing experience and preparing a convincing, relia
 
 ## 2. Active Milestones
 
-### Happening Now — Booking History Lifecycle
+Prioritize work according to its impact on the quality, accessibility, and credibility of the portfolio deliverable.
 
-**Status:** In Progress — lifecycle implementation, UI styling, automated regression verification, and final code review are complete; manual verification remains.
+The execution order is:
 
-Implement booking cancellation as a persistent lifecycle state rather than deleting booking records. Extend the backend, database constraints, booking-history UI, and regression coverage together.
+1. **High — Demo Readiness and Final Verification:** Close remaining verification gaps and resolve demonstrated defects.
+2. **High — Deployment and Production Readiness:** Make the application publicly accessible and verify the deployed system.
+3. **Medium — Final Portfolio Presentation:** Prepare the README and screenshots around the working application.
+4. **Low — Deferred UI and Discovery Enhancements:** Retain worthwhile improvements without delaying the portfolio deliverable.
+5. **Completed Work:** Preserve implementation and verification records for finished milestones.
 
-#### Implemented
+Do not introduce additional features or redesign completed interfaces merely to clear roadmap checkboxes. Prefer focused verification and evidence-based fixes.
 
-- [x] Add `confirmed` and `cancelled` booking statuses.
-- [x] Preserve cancelled bookings in the database instead of deleting them.
-- [x] Add migration `004_add_booking_cancellation_status.sql` and a partial unique index allowing a user to rebook an event after cancellation.
-- [x] Return booking status in booking-history and booking-creation responses.
-- [x] Restrict capacity, attendee counts, duplicate-booking checks, and booking conflicts to confirmed bookings.
-- [x] Keep cancellation safe under concurrent requests and preserve existing idempotency behavior.
-- [x] Add All, Upcoming, Happening Now, Past, and Cancelled booking-history filters.
-- [x] Categorize Upcoming using event start times, Happening Now using `start_time <= now < end_time`, and Past using event end times.
-- [x] Keep cancelled cards visible in history and update their status immediately after cancellation.
-- [x] Add backend, frontend, and integration regression coverage for the lifecycle changes.
-- [x] Apply the migration to the local showcase database and verify existing bookings were preserved.
+### 2.1 Demo Readiness and Final Verification
 
-#### Remaining
+**Priority:** High
 
-- [x] Fix the Cancelled filter's visibility in dark mode.
-- [x] Fix the outdated Upcoming-filter test fixture and verify BookingCard status labels remain accessible and exact.
-- [x] Review the BookingCard status badge and Booking History filter styling in light and dark themes.
-- [x] Run the complete frontend test suite after the final UI changes.
-- [x] Re-run relevant backend, integration, and database-safety validation.
-- [x] Review the complete database schema, index, seed-data, migration, and test changes for consistency.
-- [x] Complete `git diff --check` and a final review of all changed files.
-- [ ] Manually verify All, Upcoming, Happening Now, Past, and Cancelled views, including cancellation and rebooking.
+**Status:** In Progress — implementation, automated regression coverage, and the showcase-data demonstration are complete. Final manual verification remains.
 
-#### Completion Notes — Booking History Lifecycle
+Close the remaining gaps between the implemented features and a dependable portfolio demonstration. Focus on the existing booking lifecycle and the Events, Venues, and My Bookings experience.
 
-- Added persistent `confirmed` and `cancelled` booking statuses, retaining cancelled records in booking history.
-- Added migration `004_add_booking_cancellation_status.sql` and a partial unique index that permits rebooking after cancellation.
-- Updated capacity, attendee counts, duplicate-booking checks, and booking conflicts to consider confirmed bookings only.
-- Preserved concurrent cancellation protections and existing idempotency behavior.
-- Updated BookingCard status presentation and cancellation interactions, including immediate status updates after cancellation.
-- Implemented All, Upcoming, Happening Now, Past, and Cancelled filters.
-- Defined lifecycle boundaries using event timestamps: Upcoming starts after the current time; Happening Now includes the start boundary but excludes the end boundary; Past begins at the end boundary.
-- Kept cancelled bookings visible independently of event dates and excluded invalid timestamps from date-based filters.
-- Added regression coverage for lifecycle filtering and boundary conditions.
-- Applied the migration to the local showcase database and verified existing bookings were preserved.
-- Successfully built the frontend after the UI styling changes.
-- Verified the complete automated test suites after the final lifecycle and UI changes:
-  - Backend: 465/465 tests passed across 38 suites.
-  - Frontend: 284/284 tests passed across 37 files.
-  - End-to-end: 17/17 tests passed across 3 suites.
-  - Integration: 62/62 tests passed across 6 suites.
-  - Database safety: 49/49 checks passed.
-- Frontend production build passed.
-- E2E regression coverage now verifies that cancelled bookings remain in booking history with `status: "cancelled"`.
+#### Booking History Lifecycle Verification
 
-**Important:** The lifecycle implementation has been committed and pushed. Five final documentation and regression-test updates across the roadmap, conceptual data model documents, and test files remain uncommitted and are intended to be included by amending that feature commit. The local showcase database migration has been applied; do not reset or reseed the showcase database as part of this work.
+- [ ] Manually verify the All booking-history view.
+- [ ] Manually verify the Upcoming booking-history view.
+- [ ] Manually verify the Happening Now booking-history view.
+- [ ] Manually verify the Past booking-history view.
+- [ ] Manually verify the Cancelled booking-history view.
+- [ ] Verify cancellation updates the relevant booking-history view.
+- [ ] Verify a cancelled booking remains represented in history.
+- [ ] Verify the user can book the same event again after cancellation.
+- [ ] Refresh the application and verify the resulting booking state persists.
 
-**Scope:** Booking lifecycle semantics, PostgreSQL schema and migration, backend booking and attendance queries, Booking History filtering and presentation, and regression tests. This work does not introduce a new booking-hold workflow or payment processing.
+#### Cross-Page Demonstration
 
-### 2.1 Portfolio-Ready UI and Presentation
+- [ ] Browse Events and inspect an event's details.
+- [ ] Create a booking through the Events page.
+- [ ] Verify the booking appears in My Bookings.
+- [ ] Cancel the booking through the existing booking workflow.
+- [ ] Verify the resulting cancelled state in My Bookings.
+- [ ] Refresh the relevant pages and verify the persisted state.
+- [ ] Confirm event attendance reflects the active booking state.
 
-**Status:** In Progress
+#### Responsive and Visual Regression
 
-Complete the information and presentation of event, venue, and booking cards so users can understand important details without needing to open a separate detail page. Ensure card layouts adapt appropriately to different screen sizes.
-
-#### EventCard
-
-- [x] Display event title and description.
-- [x] Display event date and time.
-- [x] Display venue information.
-- [x] Display confirmed attendee counts.
-- [x] Display booking status where applicable.
-- [x] Improve content hierarchy and readability.
-- [x] Handle missing or optional event information.
-- [x] Ensure card content remains useful across different event types.
-
-#### VenueCard
-
-- [x] Display venue name and description.
-- [x] Display venue images with appropriate fallbacks.
-- [x] Display venue address.
-- [x] Improve the presentation of venue metadata.
-- [ ] Review whether additional details should be displayed.
-- [x] Ensure venue information is consistent with the venue detail and event views.
-
-#### Booking History Cards
-
-- [x] Display event and venue information.
-- [x] Display booking date and relevant booking details.
-- [x] Distinguish confirmed and cancelled bookings.
-- [x] Handle missing event or venue information.
-- [x] Improve card readability and information hierarchy.
-
-#### Venue-to-Events Navigation
-
-- [x] Allow users to navigate from a venue to its associated events.
-- [x] Ensure navigation uses the correct venue identifier.
-- [x] Handle venues without associated events.
-- [x] Verify navigation behavior.
-
-#### Implementation Order
-
-Complete the remaining card-level responsive improvements before redesigning the page layouts. This establishes a reliable card foundation before changing the available space and number of cards per row.
-
-1. [ ] Complete Responsive Card Design.
-2. [x] Implement the Events page layout redesign.
-3. [x] Add EventCard, VenueCard, and BookingCard image lightboxes.
-4. [x] Evaluate and improve the Booking History layout.
-5. [ ] Investigate pagination for Events and Venues.
-6. [ ] Complete the remaining Content Consistency review.
-7. [ ] Complete responsive and functional regression testing.
-
-Regression testing should also be performed incrementally after individual implementation batches where appropriate.
-
-#### Remaining Implementation Order
-
-Complete the remaining work in the following sequence:
-
-1. [x] Implement My Bookings filtering following an API and data-model review.
-2. [x] Redesign the Venues page with regular keyword search, venue-type and location filters, and a responsive multi-column card grid.
-3. [x] Redesign the Booking History layout around the new booking views and filters.
-4. [ ] Complete the remaining responsive, visual-consistency, and functional regression work across all three pages.
-
-Pagination for Events and Venues remains a separate investigation. Defer implementation until existing API behavior and result volumes establish a need.
-
-#### Responsive Card Design
-
-##### Completed EventCard Improvements
-
-- [x] Prevent EventCard vertical stretching across wider Events grid layouts.
-- [x] Position the already-booked badge on the event image.
-- [x] Keep the EventCard loading skeleton consistent with the revised layout.
-
-##### Outstanding Viewport-Specific Improvements
-
-- [x] EventCard: Improve metadata spacing and stack labels and values vertically on narrow mobile screens.
-- [x] VenueCard: Keep the events-navigation link and arrow together at narrow widths.
-- [x] VenueCard: Improve category-label visibility in dark mode.
-- [x] BookingCard: Align the responsive layout with EventCard and VenueCard, using a full-width 16:9 image and preserving the booking metadata divider.
-- [x] BookingCard: Improve spacing between venue and location information on narrow screens.
-- [x] BookingCard: Keep the "Booked at" label together at tablet widths and improve metadata indentation.
-
-- [ ] Ensure EventCard, VenueCard, and BookingCard adapt to different screen sizes.
-- [ ] Adjust card layouts, spacing, and content hierarchy for smaller viewports.
-- [ ] Prevent text overflow, cramped layouts, and unnecessary horizontal scrolling.
-- [ ] Ensure card images and actions scale appropriately across viewport sizes.
-- [ ] Maintain consistent presentation across light and dark themes.
-
-#### Responsive Page Layout and Results Discovery
-
-**Status:** In Progress
-
-Improve the Events and Venues page layouts so users can browse more content efficiently while preserving existing functionality.
-
-##### Events and Venues Page Layout
-
-- [x] Implement a responsive multi-column CSS grid for the Events page.
-- [x] Redesign the Venues page card layout with a responsive multi-column grid.
-- [x] Introduce regular venue keyword search, venue-type filtering, and location filtering using the existing venue data.
-- [ ] Add relevant venue sorting options.
-- [x] Display search and calendar filters in a dedicated left sidebar on wider screens.
-- [ ] Keep search and sorting controls above the results where appropriate.
-- [x] Make the Events filter sidebar sticky on desktop while keeping it independently scrollable.
-- [x] Stack the sidebar above event results on tablet and mobile.
-- [x] Adjust the number of Events cards per row based on available width and card readability, with a maximum of five columns.
-- [x] Preserve a usable single-column Events layout on narrow mobile screens.
-- [ ] Maintain consistent presentation across light and dark themes.
-- [ ] Prevent the Events search placeholder from clipping at 320px.
-- [ ] Improve the horizontal distribution and compactness of Events filters on desktop.
-- [x] Reuse the Events sidebar-and-results layout pattern for Venues where appropriate.
-
-**Venues implementation notes:**
-
-- The regular keyword search is submit-based and searches venue name, description, address, and venue type.
-- Venue-type and address/location filters apply immediately and combine with the submitted keyword search.
-- Keyword clearing and filter clearing remain independent.
-- Venue types are derived dynamically from the fetched venue data.
-- Dedicated `VenueSearchForm` and `VenueFilters` components keep the search and filter responsibilities separate.
-- The layout uses a desktop sidebar-and-results arrangement and stacks the sidebar above results at narrower widths.
-- Loading, API error, retry, no-venues, and no-filtered-results states are preserved or covered.
-- AI-powered venue search and venue sorting are not implemented. Keep them as separate future work rather than implying they are part of this redesign.
-- VenuesPage regression tests passed (10/10).
-- Frontend TypeScript compilation and production build passed.
-
-##### Interactive Card Images
-
-- [x] Allow users to click EventCard images to view a larger version.
-- [x] Allow users to click VenueCard images to view a larger version.
-- [x] Allow users to click BookingCard images to view a larger version.
-- [x] Display enlarged images in an overlay/lightbox.
-- [x] Support closing the image viewer using a close button, Escape, or clicking outside the image.
-- [x] Preserve image aspect ratios and avoid unnecessary cropping.
-- [x] Ensure the image viewer works on mobile, tablet, and desktop.
-- [x] Provide accessible keyboard interaction and meaningful image descriptions.
-- [x] Keep missing or failed card images as non-interactive fallbacks.
-- [x] Match the BookingCard loading skeleton image ratio to its actual 16:9 layout.
-
-**BookingCard extension — November 25, 2026:**
-- Added BookingCard lightbox support using the shared ImageLightbox component.
-- Added regression tests for opening the image, closing via the close button and Escape, and keeping missing-image fallbacks non-interactive.
-- Focused lightbox and BookingCard tests passed (19/19).
-- BookingCard skeleton regression tests passed (2/2).
-- Frontend production build passed; `git diff --check` passed.
-
-##### Booking History Layout
-
-- [x] Inspect the booking-history API response to confirm cancelled bookings, event start/end dates, and booking status are available.
-- [x] Determine whether booking filtering can be handled client-side or requires backend support.
-- [x] Add booking status and event-date filtering.
-- [x] Introduce All, Upcoming, Happening Now, Past, and Cancelled views.
-- [x] Define booking categorization using event start times, event end times, and booking status.
-- [x] Preserve cancelled bookings in booking history, regardless of event date.
-- [x] Provide appropriate empty states for each view.
-- [x] Ensure cancelling a booking immediately updates the displayed results.
-- [x] Implement the agreed two-column Booking History card layout on desktop.
-- [x] Stack Booking History cards into a single column on smaller screens.
-- [x] Preserve the five existing filters: All, Upcoming, Happening Now, Past, and Cancelled.
-- [x] Preserve booking-card content, status badges, cancellation actions, and existing lifecycle behavior.
-- [x] Preserve readability of booking metadata and available actions.
-
-**Implementation complete:** Extracted the five booking filters into a dedicated `BookingFilters` component. Booking results and loading skeletons now share a two-column desktop grid and single-column layout at widths of 760px and below. Existing booking-card content, filter behavior, status badges, cancellation actions, and lifecycle logic remain unchanged.
-
-**Automated verification (November 25, 2026):**
-- Booking History regression tests: 11/11 passed.
-- Frontend TypeScript check and production build passed.
-- `git diff --check` passed.
-
-**Manual browser verification (November 25, 2026):**
-- Verified the populated and loading layouts at desktop, tablet, and mobile widths.
-- Confirmed the responsive grid, filter wrapping, and booking-card readability.
-- Visual verification passed.
-
-This implementation remains separate from the completed Venues page work.
-
-##### Results Navigation
-
-- [ ] Evaluate pagination for Events and Venues.
-- [ ] Inspect existing API response behavior before deciding between client-side and server-side pagination.
-- [ ] Preserve existing search, filtering, sorting, calendar, and AI-search functionality.
-
-##### Regression Testing
-
-- [ ] Verify responsive layouts across representative phone, tablet, laptop, and desktop widths.
-- [ ] Verify sticky controls do not obscure page content.
-- [x] Verify image viewer interactions, including keyboard and mobile behavior.
-- [ ] Verify Events, Venues, and My Bookings search, filtering, and sorting workflows.
-- [ ] Verify booking creation and cancellation still work across the redesigned My Bookings views.
-- [ ] Verify responsive and functional behavior across the Events, Venues, and My Bookings pages.
-
-#### Content Consistency
-
+- [ ] Verify the Events, Venues, and My Bookings layouts at representative phone, tablet, laptop, and desktop widths.
+- [ ] Verify sticky controls do not obscure page content or prevent access to results.
+- [ ] Check for text overflow, cramped layouts, and unnecessary horizontal scrolling.
+- [ ] Verify card images, metadata, and actions remain usable at narrower widths.
+- [ ] Check visual consistency across light and dark themes.
+- [ ] Investigate the Events search placeholder clipping at 320px.
+- [ ] Review the horizontal distribution and compactness of Events filters on desktop.
 - [ ] Investigate the capitalization of the Venue page's LOCATION label.
-- [ ] Review date, time, status, and metadata consistency across all card types.
-- [x] Remove unnecessary technical labels from user-facing content.
-- [x] Add regression coverage for card content and presentation.
+- [ ] Review date, time, status, and metadata consistency across card types.
 
-### 2.2 Showcase Data and Booking Workflow Verification
+#### Functional Regression
 
-**Status:** Complete
+- [ ] Verify Events keyword search, calendar filtering, venue filtering, and search clearing.
+- [ ] Verify Venues keyword search, venue-type filtering, location filtering, and independent clearing.
+- [ ] Verify My Bookings filters and cancellation behavior.
+- [ ] Verify loading, empty, error, retry, and no-results states where applicable.
+- [x] Verify card image viewer interactions, including keyboard and mobile behavior.
+- [x] Verify booking creation, cancellation, error handling, and duplicate-request prevention through existing automated tests.
+- [x] Verify persistent booking cancellation through backend E2E coverage.
 
-Prepare a clean, representative dataset for the portfolio demonstration while preserving useful development fixtures and edge cases.
+#### Verification Constraints
 
-#### Showcase Database
+- Prefer existing automated coverage over duplicating tests for already-covered behavior.
+- The existing backend E2E suite verifies booking creation, history retrieval, cancellation, and the persisted cancelled status.
+- Existing frontend tests cover booking interactions and page-level behavior.
+- Use manual browser verification for the complete cross-page demonstration rather than introducing a browser automation framework solely to connect existing test layers.
+- Add regression tests when verification reveals a concrete uncovered behavior or defect.
+- Preserve the local `booking_system_showcase` database. Do not reset or reseed it during verification.
 
-- [x] Inspect duplicate Bahen Centre records and their associated events and bookings.
-- [x] Identify canonical Bahen Centre venue ID `6`.
-- [x] Preserve existing development fixtures, including venue IDs `1` and `3`, in `seed data/seed.sql`.
-- [x] Keep duplicate development records available for testing rather than deleting useful fixtures.
-- [x] Create a focused showcase seed separate from the general development seed.
-- [x] Inspect foreign-key relationships and seed ordering.
-- [x] Create an isolated, create-only showcase database initialization script.
-- [x] Verify the showcase database contains:
-  - [x] 4 venues.
-  - [x] 8 events.
-  - [x] 1 demo user.
-  - [x] 4 confirmed bookings.
-  - [x] 0 active booking holds.
-- [x] Verify development-only records such as Moss Park Espresso and Meet and Greet are absent from the showcase database.
-- [x] Verify repeated showcase seeding is idempotent.
-- [x] Confirm Alice and Bob's development bookings remain intact in `booking_system`.
-- [x] Run the database safety test suite successfully (49 tests).
+#### Definition of Done
 
-#### Remaining Data Verification
+- [ ] All five My Bookings views have been manually verified.
+- [ ] Cancellation and rebooking have been verified, including persistence after refresh.
+- [ ] The complete Events → booking → My Bookings → cancellation journey works.
+- [ ] Representative responsive layouts and light/dark themes have been checked.
+- [ ] Any actual defects discovered during verification have been resolved and retested.
 
-- [x] Verify migration and update behavior against the showcase database.
-- [x] Verify the Venues page displays the intended showcase data.
-- [x] Verify the Booking History page displays the intended demo bookings.
-- [x] Confirm development seed fixtures still cover useful edge cases.
-- [x] Review data consistency across Events, Venues, and Booking History.
-- [x] Ensure the dataset supports a realistic end-to-end booking demonstration.
+### 2.2 Deployment and Production Readiness
 
-#### End-to-End Demonstration
-
-- [x] Demonstrate browsing events and venues.
-- [x] Demonstrate searching and filtering events.
-- [x] Demonstrate creating and confirming a booking.
-- [x] Demonstrate cancellation and the resulting booking status.
-- [x] Verify booking history reflects the expected changes.
-- [x] Review and resolve any issues discovered during the demonstration.
-
-**Manual demonstration verified (November 24, 2026):**
-
-- Searched for Creative Writing Workshop: Finding Your Voice.
-- Confirmed all eight showcase events returned after clearing the search.
-- Verified both Toronto Reference Library events through venue filtering.
-- Created a booking and confirmed attendance increased from 0/24 to 1/24.
-- Verified the booking appeared in My Bookings.
-- Cancelled the booking and confirmed it disappeared from My Bookings.
-- Refreshed both pages and confirmed attendance returned to 0/24 and the cancellation persisted.
-
-#### Data Safety Constraints
-
-- Preserve useful development records and edge-case fixtures.
-- Do not change venue IDs or relationships without checking dependent records.
-- Keep development fixtures and portfolio showcase data separate.
-- Do not use destructive database initialization or reset behavior for showcase setup.
-
-### 2.3 Deployment and Production Readiness
+**Priority:** High
 
 **Status:** Not Started
 
-Deploy the application so that recruiters and other viewers can access a working demonstration without running the project locally.
+Deploy the application so recruiters and other viewers can access a working demonstration without running the project locally.
 
 #### Deployment Planning
 
@@ -372,15 +140,15 @@ Deploy the application so that recruiters and other viewers can access a working
 
 - [ ] Verify Events, Venues, and Booking History pages.
 - [ ] Verify keyword search and Gemini-powered natural-language search.
-- [ ] Verify booking creation, confirmation, cancellation, and history.
+- [ ] Verify booking creation, cancellation, and history.
 - [ ] Verify backend validation and concurrency-sensitive booking behavior.
 - [ ] Verify loading, empty, and error states.
 - [ ] Verify behavior when the Gemini API key is missing or the provider is unavailable.
-- [ ] Verify existing showcase data and bookings persist across backend restarts and redeployments.
+- [ ] Verify showcase data and bookings persist across backend restarts and redeployments.
 - [ ] Verify responsive layouts and light/dark themes.
 - [ ] Inspect browser console output and backend logs.
 - [ ] Confirm the application works without local development dependencies.
-- [ ] Add the public application URL and deployment instructions to the README.
+- [ ] Record the public application URL and deployment instructions in the README.
 
 #### Deployment Constraints
 
@@ -391,11 +159,20 @@ Deploy the application so that recruiters and other viewers can access a working
 - Keep deployment reproducible and document the required configuration.
 - Avoid introducing infrastructure solely to add résumé keywords.
 
-### 2.4 Final Portfolio Presentation
+#### Definition of Done
+
+- [ ] The frontend and backend are publicly accessible.
+- [ ] The deployed application uses the intended production database and showcase data.
+- [ ] Core browsing, search, booking, cancellation, and persistence workflows pass production smoke testing.
+- [ ] Production configuration and deployment instructions are documented.
+
+### 2.3 Final Portfolio Presentation
+
+**Priority:** Medium
 
 **Status:** Not Started
 
-Prepare the project for external review and ensure the README and screenshots communicate the implemented functionality accurately.
+Make the project easy to understand and evaluate. Present the implemented functionality accurately and direct reviewers to the deployed application.
 
 #### Screenshots
 
@@ -410,12 +187,106 @@ Prepare the project for external review and ensure the README and screenshots co
 
 - [ ] Verify the README accurately describes implemented functionality.
 - [ ] Ensure architecture and technology descriptions do not imply unimplemented features.
-- [ ] Include the deployed application URL once available.
+- [ ] Include the deployed application URL.
 - [ ] Include clear setup and deployment instructions.
 - [ ] Present screenshots of the strongest implemented features.
 - [ ] Ensure the README and roadmap agree on project status.
 
----
+#### Definition of Done
+
+- [ ] The README links to the working public application.
+- [ ] Screenshots communicate the main user workflows and responsive presentation.
+- [ ] Architecture, technology, and feature descriptions accurately reflect the implementation.
+
+### 2.4 Deferred UI and Discovery Enhancements
+
+**Priority:** Low
+
+**Status:** Deferred — revisit only after the public demonstration is dependable, or when actual usability evidence establishes a need.
+
+Keep potential improvements visible without allowing incremental polish or speculative features to delay the portfolio deliverable.
+
+#### Results Discovery
+
+- [ ] Investigate relevant venue sorting options.
+- [ ] Evaluate pagination for Events and Venues.
+- [ ] Inspect existing API response behavior before deciding between client-side and server-side pagination.
+- [ ] Preserve existing search, filtering, calendar, and AI-search functionality if pagination is introduced.
+
+#### Optional Presentation Improvements
+
+- [ ] Review whether VenueCard should display additional details.
+- [ ] Consider further card, filter, and layout polish only when a concrete usability problem exists.
+- [ ] Revisit minor content-consistency improvements not identified as demo blockers.
+
+#### Deferred Scope
+
+- Venue sorting is not implemented.
+- AI-powered venue search is not implemented.
+- Pagination has not been established as necessary.
+- Do not introduce new functionality merely to clear these roadmap items.
+- Do not rework already-verified card layouts without a specific defect or usability justification.
+
+### 2.5 Completed — Showcase Data and Booking Workflow
+
+**Status:** Complete
+
+Prepare and preserve a representative dataset for the portfolio demonstration while keeping development fixtures and edge cases separate.
+
+#### Showcase Database
+
+- [x] Inspect duplicate Bahen Centre records and their associated events and bookings.
+- [x] Identify canonical Bahen Centre venue ID `6`.
+- [x] Preserve existing development fixtures, including venue IDs `1` and `3`, in `seed data/seed.sql`.
+- [x] Keep duplicate development records available for testing rather than deleting useful fixtures.
+- [x] Create a focused showcase seed separate from the general development seed.
+- [x] Inspect foreign-key relationships and seed ordering.
+- [x] Create an isolated, create-only showcase database initialization script.
+- [x] Verify the showcase database contains:
+  - [x] 4 venues.
+  - [x] 8 events.
+  - [x] 1 demo user.
+  - [x] 4 confirmed bookings.
+  - [x] 0 active booking holds.
+- [x] Verify development-only records such as Moss Park Espresso and Meet and Greet are absent from the showcase database.
+- [x] Verify repeated showcase seeding is idempotent.
+- [x] Confirm Alice and Bob's development bookings remain intact in `booking_system`.
+- [x] Run the database safety test suite successfully (49 tests).
+
+#### Data Verification
+
+- [x] Verify migration and update behavior against the showcase database.
+- [x] Verify the Venues page displays the intended showcase data.
+- [x] Verify the Booking History page displays the intended demo bookings.
+- [x] Confirm development seed fixtures still cover useful edge cases.
+- [x] Review data consistency across Events, Venues, and Booking History.
+- [x] Ensure the dataset supports a realistic end-to-end booking demonstration.
+
+#### End-to-End Demonstration
+
+- [x] Demonstrate browsing events and venues.
+- [x] Demonstrate searching and filtering events.
+- [x] Demonstrate creating and confirming a booking.
+- [x] Demonstrate cancellation and the resulting booking status.
+- [x] Verify booking history reflects the expected changes.
+- [x] Review and resolve issues discovered during the demonstration.
+
+**Manual demonstration verified (November 24, 2026):**
+
+- Searched for Creative Writing Workshop: Finding Your Voice.
+- Confirmed all eight showcase events returned after clearing the search.
+- Verified both Toronto Reference Library events through venue filtering.
+- Created a booking and confirmed attendance increased from 0/24 to 1/24.
+- Verified the booking appeared in My Bookings.
+- Cancelled the booking and confirmed it disappeared from My Bookings.
+- Refreshed both pages and confirmed attendance returned to 0/24 and the cancellation persisted.
+
+#### Data Safety Constraints
+
+- Preserve useful development records and edge-case fixtures.
+- Do not change venue IDs or relationships without checking dependent records.
+- Keep development fixtures and portfolio showcase data separate.
+- Do not use destructive database initialization or reset behavior for showcase setup.
 
 ## 3. Planned Improvements
 
