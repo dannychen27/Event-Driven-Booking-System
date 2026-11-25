@@ -64,6 +64,129 @@ describe("VenuesPage", () => {
         });
     });
 
+    describe("Venue filtering", () => {
+        it("applies keyword search when submitted", async () => {
+            vi.mocked(getVenues).mockResolvedValue(venueListFixture);
+
+            render(<VenuesPage />);
+
+            expect(await screen.findByText("Mock Venue Card: Test Venue 1"))
+                .toBeInTheDocument();
+
+            const searchInput = screen.getByRole("textbox", {
+                name: "Search venues",
+            });
+
+            fireEvent.change(searchInput, {
+                target: { value: "venue 2" },
+            });
+
+            // Typing alone does not apply the search.
+            expect(screen.getByText("Mock Venue Card: Test Venue 1"))
+                .toBeInTheDocument();
+
+            fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+            expect(screen.getByText("Mock Venue Card: Test Venue 2"))
+                .toBeInTheDocument();
+            expect(screen.queryByText("Mock Venue Card: Test Venue 1"))
+                .not.toBeInTheDocument();
+        });
+
+        it("filters by venue type and location", async () => {
+            const typedVenues: Venue[] = [
+                { ...venueListFixture[0], venue_type: "Library" },
+                { ...venueListFixture[1], venue_type: "Community Centre" },
+            ];
+            vi.mocked(getVenues).mockResolvedValue(typedVenues);
+
+            render(<VenuesPage />);
+
+            expect(await screen.findByText("Mock Venue Card: Test Venue 1"))
+                .toBeInTheDocument();
+
+            fireEvent.change(screen.getByLabelText("Venue type"), {
+                target: { value: "Library" },
+            });
+
+            expect(screen.getByText("Mock Venue Card: Test Venue 1"))
+                .toBeInTheDocument();
+            expect(screen.queryByText("Mock Venue Card: Test Venue 2"))
+                .not.toBeInTheDocument();
+
+            fireEvent.change(screen.getByRole("searchbox", { name: "Location" }), {
+                target: { value: "456 Test Avenue" },
+            });
+
+            expect(screen.getByText("No venues match your filters."))
+                .toBeInTheDocument();
+        });
+
+        it("clears all active filters", async () => {
+            const typedVenues: Venue[] = [
+                { ...venueListFixture[0], venue_type: "Library" },
+                { ...venueListFixture[1], venue_type: "Community Centre" },
+            ];
+            vi.mocked(getVenues).mockResolvedValue(typedVenues);
+
+            render(<VenuesPage />);
+
+            expect(await screen.findByText("Mock Venue Card: Test Venue 1"))
+                .toBeInTheDocument();
+
+            fireEvent.change(screen.getByRole("textbox", {
+                name: "Search venues",
+            }), {
+                target: { value: "venue 1" },
+            });
+            fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+            fireEvent.change(screen.getByLabelText("Venue type"), {
+                target: { value: "Library" },
+            });
+            fireEvent.change(screen.getByRole("searchbox", { name: "Location" }), {
+                target: { value: "123 Test Street" },
+            });
+
+            fireEvent.click(screen.getByRole("button", { name: "Clear query" }));
+
+            expect(screen.getByRole("textbox", { name: "Search venues" }))
+                .toHaveValue("");
+            expect(screen.getByLabelText("Venue type")).toHaveValue("Library");
+            expect(screen.getByRole("searchbox", { name: "Location" }))
+                .toHaveValue("123 Test Street");
+
+            fireEvent.click(screen.getByRole("button", { name: "Clear filters" }));
+
+            expect(screen.getByLabelText("Venue type")).toHaveValue("");
+            expect(screen.getByRole("searchbox", { name: "Location" }))
+                .toHaveValue("");
+            expect(screen.getByText("Mock Venue Card: Test Venue 2"))
+                .toBeInTheDocument();
+        });
+
+        it("shows a filtered empty state when no venues match", async () => {
+            vi.mocked(getVenues).mockResolvedValue(venueListFixture);
+
+            render(<VenuesPage />);
+
+            expect(await screen.findByText("Mock Venue Card: Test Venue 1"))
+                .toBeInTheDocument();
+
+            fireEvent.change(screen.getByRole("textbox", {
+                name: "Search venues",
+            }), {
+                target: { value: "no such venue" },
+            });
+            fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+            expect(screen.getByText("No venues match your filters."))
+                .toBeInTheDocument();
+            expect(screen.getByRole("button", { name: "Clear query" }))
+                .toBeEnabled();
+        });
+    });
+
     describe("Venues API failure and recovery", () => {
         it("shows a full-page error state when fetching venues fails", async () => {
             vi.mocked(getVenues).mockRejectedValue(

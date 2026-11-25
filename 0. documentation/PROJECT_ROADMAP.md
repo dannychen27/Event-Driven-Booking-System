@@ -139,8 +139,8 @@ Regression testing should also be performed incrementally after individual imple
 Complete the remaining work in the following sequence:
 
 1. [x] Implement My Bookings filtering following an API and data-model review.
-2. [ ] Redesign the Booking History layout around the new booking views and filters.
-3. [ ] Redesign the Venues page with relevant search, filtering, sorting, and a responsive multi-column card grid.
+2. [x] Redesign the Venues page with regular keyword search, venue-type and location filters, and a responsive multi-column card grid.
+3. [ ] Redesign the Booking History layout around the new booking views and filters.
 4. [ ] Complete the remaining responsive, visual-consistency, and functional regression work across all three pages.
 
 Pagination for Events and Venues remains a separate investigation. Defer implementation until existing API behavior and result volumes establish a need.
@@ -177,8 +177,8 @@ Improve the Events and Venues page layouts so users can browse more content effi
 ##### Events and Venues Page Layout
 
 - [x] Implement a responsive multi-column CSS grid for the Events page.
-- [ ] Redesign the Venues page card layout; it currently retains its single-column layout.
-- [ ] Introduce venue search, category and location filters where supported by the existing data.
+- [x] Redesign the Venues page card layout with a responsive multi-column grid.
+- [x] Introduce regular venue keyword search, venue-type filtering, and location filtering using the existing venue data.
 - [ ] Add relevant venue sorting options.
 - [x] Display search and calendar filters in a dedicated left sidebar on wider screens.
 - [ ] Keep search and sorting controls above the results where appropriate.
@@ -189,7 +189,20 @@ Improve the Events and Venues page layouts so users can browse more content effi
 - [ ] Maintain consistent presentation across light and dark themes.
 - [ ] Prevent the Events search placeholder from clipping at 320px.
 - [ ] Improve the horizontal distribution and compactness of Events filters on desktop.
-- [ ] Reuse the Events sidebar-and-results layout pattern for Venues where appropriate.
+- [x] Reuse the Events sidebar-and-results layout pattern for Venues where appropriate.
+
+**Venues implementation notes:**
+
+- The regular keyword search is submit-based and searches venue name, description, address, and venue type.
+- Venue-type and address/location filters apply immediately and combine with the submitted keyword search.
+- Keyword clearing and filter clearing remain independent.
+- Venue types are derived dynamically from the fetched venue data.
+- Dedicated `VenueSearchForm` and `VenueFilters` components keep the search and filter responsibilities separate.
+- The layout uses a desktop sidebar-and-results arrangement and stacks the sidebar above results at narrower widths.
+- Loading, API error, retry, no-venues, and no-filtered-results states are preserved or covered.
+- AI-powered venue search and venue sorting are not implemented. Keep them as separate future work rather than implying they are part of this redesign.
+- VenuesPage regression tests passed (10/10).
+- Frontend TypeScript compilation and production build passed.
 
 ##### Interactive Card Images
 
@@ -211,8 +224,13 @@ Improve the Events and Venues page layouts so users can browse more content effi
 - [x] Preserve cancelled bookings in booking history, regardless of event date.
 - [x] Provide appropriate empty states for each view.
 - [x] Ensure cancelling a booking immediately updates the displayed results.
-- [ ] Evaluate a responsive multi-column Booking History card layout.
+- [ ] Implement the agreed two-column Booking History card layout on desktop.
+- [ ] Stack Booking History cards into a single column on smaller screens.
+- [ ] Preserve the five existing filters: All, Upcoming, Happening Now, Past, and Cancelled.
+- [ ] Preserve booking-card content, status badges, cancellation actions, and existing lifecycle behavior.
 - [ ] Preserve readability of booking metadata and available actions.
+
+**Next implementation:** Redesign the Booking History layout using a dedicated filter component, keeping the existing lifecycle and cancellation behavior intact. This work is intentionally separate from the completed Venues page implementation.
 
 ##### Results Navigation
 
@@ -1466,4 +1484,4 @@ Follow-up work from this audit is tracked in Section 3:
 
 ---
 
-**Last Updated:** November 24, 2026
+**Last Updated:** November 25, 2026

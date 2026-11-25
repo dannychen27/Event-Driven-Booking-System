@@ -1,10 +1,132 @@
 .venues-page {
-    width: 80%;
+    width: 100%;
+    max-width: 1900px;
     margin: 0 auto;
-    padding: 3%;
+    padding: clamp(1rem, 2.5vw, 2.5rem);
     box-sizing: border-box;
 }
 
 .venues-page h1 {
     margin-bottom: 1.5rem;
+}
+
+.venues-page__layout {
+    display: grid;
+    grid-template-columns: minmax(260px, 300px) minmax(0, 1fr);
+    align-items: start;
+    gap: 1.5rem;
+    min-width: 0;
+}
+
+.venues-page__sidebar {
+    position: sticky;
+    top: 1rem;
+    align-self: start;
+    min-width: 0;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 1rem;
+    border: 1px solid var(--border-color, var(--border));
+    border-radius: 0.75rem;
+    background: var(--surface);
+    box-sizing: border-box;
+}
+
+.venues-page__results {
+    min-width: 0;
+}
+
+.venues-page__grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(min(100%, 330px), 1fr)
+    );
+    gap: 1.25rem;
+    align-items: start;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.venues-page__grid > .venue-card {
+    min-width: 0;
+    margin-bottom: 0;
+}
+
+@media (max-width: 1000px) {
+    .venues-page__layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .venues-page__sidebar {
+        position: static;
+        max-height: none;
+        overflow: visible;
+        margin-bottom: 0.5rem;
+    }
+}
+
+
+/* Regular keyword search disclosure, matching the Events page. */
+.venues-search-disclosure {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 0 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+}
+
+.venues-search-disclosure > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 44px;
+    padding: 0.65rem 1rem;
+    color: var(--text);
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+}
+
+.venues-search-disclosure > summary::-webkit-details-marker {
+    display: none;
+}
+
+.venues-search-disclosure > summary::after {
+    content: "+";
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.venues-search-disclosure[open] > summary::after {
+    content: "−";
+}
+
+.venues-search-disclosure > summary:focus-visible {
+    outline: 2px solid #22c55e;
+    outline-offset: 3px;
+    border-radius: 6px;
+}
+
+.venues-search-disclosure > .search-form {
+    margin: 0;
+    padding: 1rem;
+}
+
+/* Stack controls vertically in the narrow desktop sidebar. */
+.venues-page__sidebar .search-form .search-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+    gap: 0.5rem;
+}
+
+.venues-page__sidebar .search-form .search-controls > input,
+.venues-page__sidebar .search-form .search-controls > button {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
