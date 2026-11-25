@@ -10,6 +10,7 @@ import "../../styles/shared/card-buttons.css";
 import "../../styles/errors/error-message.css";
 import { cancelBooking } from "../../api/bookings.ts";
 import { EventImage } from "../ui/EventImage.tsx";
+import { ImageLightbox } from "../ui/ImageLightbox.tsx";
 import { Modal } from "../modals/Modal.tsx";
 import Button from "../ui/buttons/Button";
 import { formatBookingDate } from "../../helpers/shared/DatesHelpers.ts";
@@ -22,6 +23,7 @@ export default function BookingCard({
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [cancellationError, setCancellationError] = useState("");
     const [isCancelling, setIsCancelling] = useState(false);
+    const [showImageLightbox, setShowImageLightbox] = useState(false);
 
     async function handleCancellation() {
         if (isCancelling) {
@@ -60,6 +62,7 @@ export default function BookingCard({
                         <EventImage
                             imageUrl={booking.image_url}
                             alt={eventName}
+                            onImageClick={() => setShowImageLightbox(true)}
                         />
                         <span
                             className={`booking-card__status booking-card__status--${booking.status}`}
@@ -67,6 +70,13 @@ export default function BookingCard({
                             {booking.status === "cancelled" ? "Cancelled" : "Confirmed"}
                         </span>
                     </div>
+
+                    <ImageLightbox
+                        imageUrl={booking.image_url}
+                        alt={eventName}
+                        isOpen={showImageLightbox}
+                        onClose={() => setShowImageLightbox(false)}
+                    />
 
                     <div className="booking-card__details">
                         <div className="booking-card__detail">

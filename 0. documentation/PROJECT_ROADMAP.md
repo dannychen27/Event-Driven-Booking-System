@@ -126,7 +126,7 @@ Complete the remaining card-level responsive improvements before redesigning the
 
 1. [ ] Complete Responsive Card Design.
 2. [x] Implement the Events page layout redesign.
-3. [x] Add EventCard and VenueCard image lightboxes.
+3. [x] Add EventCard, VenueCard, and BookingCard image lightboxes.
 4. [x] Evaluate and improve the Booking History layout.
 5. [ ] Investigate pagination for Events and Venues.
 6. [ ] Complete the remaining Content Consistency review.
@@ -208,11 +208,21 @@ Improve the Events and Venues page layouts so users can browse more content effi
 
 - [x] Allow users to click EventCard images to view a larger version.
 - [x] Allow users to click VenueCard images to view a larger version.
+- [x] Allow users to click BookingCard images to view a larger version.
 - [x] Display enlarged images in an overlay/lightbox.
 - [x] Support closing the image viewer using a close button, Escape, or clicking outside the image.
 - [x] Preserve image aspect ratios and avoid unnecessary cropping.
 - [x] Ensure the image viewer works on mobile, tablet, and desktop.
 - [x] Provide accessible keyboard interaction and meaningful image descriptions.
+- [x] Keep missing or failed card images as non-interactive fallbacks.
+- [x] Match the BookingCard loading skeleton image ratio to its actual 16:9 layout.
+
+**BookingCard extension — November 25, 2026:**
+- Added BookingCard lightbox support using the shared ImageLightbox component.
+- Added regression tests for opening the image, closing via the close button and Escape, and keeping missing-image fallbacks non-interactive.
+- Focused lightbox and BookingCard tests passed (19/19).
+- BookingCard skeleton regression tests passed (2/2).
+- Frontend production build passed; `git diff --check` passed.
 
 ##### Booking History Layout
 

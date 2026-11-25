@@ -16,8 +16,10 @@ import userEvent from "@testing-library/user-event";
 
 import EventCard from "../../../../3. frontend/src/components/cards/EventCard";
 import VenueCard from "../../../../3. frontend/src/components/cards/VenueCard";
+import BookingCard from "../../../../3. frontend/src/components/cards/BookingCard";
 import { eventCardFixture } from "../../fixtures/events/eventFixtures";
 import { venueCardFixture } from "../../fixtures/venues/venueFixtures";
+import { bookingCardFixture } from "../../fixtures/bookings/bookingFixtures";
 
 const originalShowModal = Object.getOwnPropertyDescriptor(
     HTMLDialogElement.prototype,
@@ -236,4 +238,100 @@ describe("Card image lightboxes", () => {
             expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
         });
     });
+
+    describe("BookingCard", () => {
+        it("opens the enlarged booking image and closes it with the close button", async () => {
+            const user = userEvent.setup();
+
+            render(
+                <BookingCard
+                    booking={{
+                        ...bookingCardFixture,
+                        image_url: "https://example.com/booking.jpg",
+                    }}
+                    onBookingCancelled={vi.fn()}
+                />,
+            );
+
+            await user.click(
+                screen.getByRole("button", {
+                    name: "Enlarge Toronto Tech Meetup image",
+                }),
+            );
+
+            const dialog = screen.getByRole("dialog", {
+                name: "Toronto Tech Meetup — enlarged image",
+            });
+
+            expect(dialog).toHaveAttribute("open");
+            expect(
+                within(dialog).getByRole("img", {
+                    name: "Toronto Tech Meetup",
+                }),
+            ).toHaveAttribute("src", "https://example.com/booking.jpg");
+
+            await user.click(
+                within(dialog).getByRole("button", {
+                    name: "Close image viewer",
+                }),
+            );
+
+            expect(dialog).not.toHaveAttribute("open");
+        });
+
+        it("closes the booking image viewer when Escape triggers the dialog cancel event", async () => {
+            const user = userEvent.setup();
+
+            render(
+                <BookingCard
+                    booking={{
+                        ...bookingCardFixture,
+                        image_url: "https://example.com/booking.jpg",
+                    }}
+                    onBookingCancelled={vi.fn()}
+                />,
+            );
+
+            await user.click(
+                screen.getByRole("button", {
+                    name: "Enlarge Toronto Tech Meetup image",
+                }),
+            );
+
+            const dialog = screen.getByRole("dialog", {
+                name: "Toronto Tech Meetup — enlarged image",
+            });
+
+            fireEvent(dialog, new Event("cancel", { cancelable: true }));
+
+            expect(dialog).not.toHaveAttribute("open");
+        });
+
+        it("does not make the fallback image interactive when the booking image is missing", () => {
+            render(
+                <BookingCard
+                    booking={{
+                        ...bookingCardFixture,
+                        image_url: null,
+                    }}
+                    onBookingCancelled={vi.fn()}
+                />,
+            );
+
+            expect(
+                screen.getByRole("img", {
+                    name: "Toronto Tech Meetup image unavailable",
+                }),
+            ).toBeInTheDocument();
+
+            expect(
+                screen.queryByRole("button", {
+                    name: "Enlarge Toronto Tech Meetup image",
+                }),
+            ).not.toBeInTheDocument();
+
+            expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+        });
+    });
+
 });
