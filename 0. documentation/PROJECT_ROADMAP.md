@@ -188,7 +188,7 @@ Prepare a clean, representative dataset for the portfolio demonstration while pr
 - [x] Verify the Booking History page displays the intended demo bookings.
 - [x] Confirm development seed fixtures still cover useful edge cases.
 - [x] Review data consistency across Events, Venues, and Booking History.
-- [ ] Ensure the dataset supports a realistic end-to-end booking demonstration.
+- [x] Ensure the dataset supports a realistic end-to-end booking demonstration.
 
 #### End-to-End Demonstration
 
@@ -197,7 +197,17 @@ Prepare a clean, representative dataset for the portfolio demonstration while pr
 - [x] Demonstrate creating and confirming a booking.
 - [x] Demonstrate cancellation and the resulting booking status.
 - [x] Verify booking history reflects the expected changes.
-- [ ] Resolve any issues discovered during the demonstration.
+- [x] Review and resolve any issues discovered during the demonstration.
+
+**Manual demonstration verified (November 24, 2026):**
+
+- Searched for Creative Writing Workshop: Finding Your Voice.
+- Confirmed all eight showcase events returned after clearing the search.
+- Verified both Toronto Reference Library events through venue filtering.
+- Created a booking and confirmed attendance increased from 0/24 to 1/24.
+- Verified the booking appeared in My Bookings.
+- Cancelled the booking and confirmed it disappeared from My Bookings.
+- Refreshed both pages and confirmed attendance returned to 0/24 and the cancellation persisted.
 
 #### Data Safety Constraints
 
