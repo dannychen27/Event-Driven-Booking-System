@@ -127,7 +127,7 @@ Complete the remaining card-level responsive improvements before redesigning the
 1. [ ] Complete Responsive Card Design.
 2. [x] Implement the Events page layout redesign.
 3. [x] Add EventCard and VenueCard image lightboxes.
-4. [ ] Evaluate and improve the Booking History layout.
+4. [x] Evaluate and improve the Booking History layout.
 5. [ ] Investigate pagination for Events and Venues.
 6. [ ] Complete the remaining Content Consistency review.
 7. [ ] Complete responsive and functional regression testing.
@@ -140,7 +140,7 @@ Complete the remaining work in the following sequence:
 
 1. [x] Implement My Bookings filtering following an API and data-model review.
 2. [x] Redesign the Venues page with regular keyword search, venue-type and location filters, and a responsive multi-column card grid.
-3. [ ] Redesign the Booking History layout around the new booking views and filters.
+3. [x] Redesign the Booking History layout around the new booking views and filters.
 4. [ ] Complete the remaining responsive, visual-consistency, and functional regression work across all three pages.
 
 Pagination for Events and Venues remains a separate investigation. Defer implementation until existing API behavior and result volumes establish a need.
@@ -224,13 +224,25 @@ Improve the Events and Venues page layouts so users can browse more content effi
 - [x] Preserve cancelled bookings in booking history, regardless of event date.
 - [x] Provide appropriate empty states for each view.
 - [x] Ensure cancelling a booking immediately updates the displayed results.
-- [ ] Implement the agreed two-column Booking History card layout on desktop.
-- [ ] Stack Booking History cards into a single column on smaller screens.
-- [ ] Preserve the five existing filters: All, Upcoming, Happening Now, Past, and Cancelled.
-- [ ] Preserve booking-card content, status badges, cancellation actions, and existing lifecycle behavior.
-- [ ] Preserve readability of booking metadata and available actions.
+- [x] Implement the agreed two-column Booking History card layout on desktop.
+- [x] Stack Booking History cards into a single column on smaller screens.
+- [x] Preserve the five existing filters: All, Upcoming, Happening Now, Past, and Cancelled.
+- [x] Preserve booking-card content, status badges, cancellation actions, and existing lifecycle behavior.
+- [x] Preserve readability of booking metadata and available actions.
 
-**Next implementation:** Redesign the Booking History layout using a dedicated filter component, keeping the existing lifecycle and cancellation behavior intact. This work is intentionally separate from the completed Venues page implementation.
+**Implementation complete:** Extracted the five booking filters into a dedicated `BookingFilters` component. Booking results and loading skeletons now share a two-column desktop grid and single-column layout at widths of 760px and below. Existing booking-card content, filter behavior, status badges, cancellation actions, and lifecycle logic remain unchanged.
+
+**Automated verification (November 25, 2026):**
+- Booking History regression tests: 11/11 passed.
+- Frontend TypeScript check and production build passed.
+- `git diff --check` passed.
+
+**Manual browser verification (November 25, 2026):**
+- Verified the populated and loading layouts at desktop, tablet, and mobile widths.
+- Confirmed the responsive grid, filter wrapping, and booking-card readability.
+- Visual verification passed.
+
+This implementation remains separate from the completed Venues page work.
 
 ##### Results Navigation
 

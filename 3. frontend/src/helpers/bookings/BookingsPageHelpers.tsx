@@ -84,7 +84,7 @@ export function displayAllBookings(
     onBookingCancelled: (id: number, status: BookingStatus) => void,
 ) {
     return (
-        <div className="bookings-list">
+        <div className="bookings-list" role="region" aria-label="Booking results">
             {bookings.map((booking) => (
                 <BookingCard
                     key={booking.id}

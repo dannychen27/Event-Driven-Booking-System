@@ -169,6 +169,47 @@ describe("BookingsPage", () => {
     });
 
     describe("Booking filters", () => {
+        it("renders all five filters with All selected initially", async () => {
+            vi.mocked(getBookingHistory).mockResolvedValue(bookingHistoryFixture);
+
+            render(<BookingsPage />);
+
+            await screen.findByText("Mock Booking Card: 1");
+
+            const filterNames = [
+                "All",
+                "Upcoming",
+                "Happening Now",
+                "Past",
+                "Cancelled",
+            ];
+
+            for (const name of filterNames) {
+                expect(screen.getByRole("button", { name })).toBeInTheDocument();
+            }
+
+            expect(screen.getByRole("button", { name: "All" }))
+                .toHaveAttribute("aria-pressed", "true");
+
+            for (const name of filterNames.slice(1)) {
+                expect(screen.getByRole("button", { name }))
+                    .toHaveAttribute("aria-pressed", "false");
+            }
+        });
+
+        it("renders booking results inside the responsive grid container", async () => {
+            vi.mocked(getBookingHistory).mockResolvedValue(bookingHistoryFixture);
+
+            const { container } = render(<BookingsPage />);
+
+            await screen.findByText("Mock Booking Card: 1");
+
+            const results = container.querySelector(".bookings-list");
+
+            expect(results).toBeInTheDocument();
+            expect(results?.children).toHaveLength(2);
+        });
+
         it("shows confirmed bookings with future end times under Upcoming", async () => {
             const futureBooking = {
                 ...bookingHistoryFixture[0],

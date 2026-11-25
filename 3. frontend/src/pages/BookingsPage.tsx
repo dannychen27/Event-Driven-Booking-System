@@ -8,20 +8,13 @@ import ErrorState from "../components/ui/ErrorState";
 import LoadingState from "../components/ui/LoadingState";
 import Skeleton from "../components/ui/Skeleton";
 import BookingCardSkeleton from "../components/ui/skeletons/BookingCardSkeleton";
+import BookingFilters from "../components/forms/BookingFilters";
 import {
     displayAllBookings,
     displayNoBookings,
     filterBookings,
     type BookingFilter,
 } from "../helpers/bookings/BookingsPageHelpers.tsx";
-
-const BOOKING_FILTERS: { value: BookingFilter; label: string }[] = [
-    { value: "all", label: "All" },
-    { value: "upcoming", label: "Upcoming" },
-    { value: "happening-now", label: "Happening Now" },
-    { value: "past", label: "Past" },
-    { value: "cancelled", label: "Cancelled" },
-];
 
 export default function BookingsPage() {
     const [bookings, setBookings] = useState<Booking[]>([]);
@@ -132,19 +125,10 @@ export default function BookingsPage() {
                 displayNoBookings()
             ) : (
                 <>
-                    <div className="booking-filters" role="group" aria-label="Booking filters">
-                        {BOOKING_FILTERS.map(({ value, label }) => (
-                            <button
-                                key={value}
-                                type="button"
-                                className={`booking-filters__button booking-filters__button--${value}${activeFilter === value ? " booking-filters__button--active" : ""}`}
-                                aria-pressed={activeFilter === value}
-                                onClick={() => setActiveFilter(value)}
-                            >
-                                {label}
-                            </button>
-                        ))}
-                    </div>
+                    <BookingFilters
+                        activeFilter={activeFilter}
+                        onFilterChange={setActiveFilter}
+                    />
 
                     {visibleBookings.length === 0
                         ? displayNoBookings(activeFilter)
