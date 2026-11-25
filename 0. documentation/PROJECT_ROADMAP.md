@@ -38,7 +38,7 @@ Do not introduce additional features or redesign completed interfaces merely to 
 
 **Priority:** High
 
-**Status:** In Progress — implementation, automated regression coverage, showcase-data demonstration, and booking-history lifecycle verification are complete. Cross-page, responsive/visual, and remaining functional verification are outstanding.
+**Status:** In Progress — implementation, automated regression coverage, showcase-data demonstration, booking-history lifecycle verification, and cross-page demonstration are complete. Responsive/visual and remaining functional verification are outstanding.
 
 Close the remaining gaps between the implemented features and a dependable portfolio demonstration. Focus on the existing booking lifecycle and the Events, Venues, and My Bookings experience.
 
@@ -56,13 +56,13 @@ Close the remaining gaps between the implemented features and a dependable portf
 
 #### Cross-Page Demonstration
 
-- [ ] Browse Events and inspect an event's details.
-- [ ] Create a booking through the Events page.
-- [ ] Verify the booking appears in My Bookings.
-- [ ] Cancel the booking through the existing booking workflow.
-- [ ] Verify the resulting cancelled state in My Bookings.
-- [ ] Refresh the relevant pages and verify the persisted state.
-- [ ] Confirm event attendance reflects the active booking state.
+- [x] Browse Events and inspect an event's details.
+- [x] Create a booking through the Events page.
+- [x] Verify the booking appears in My Bookings.
+- [x] Cancel the booking through the existing booking workflow.
+- [x] Verify the resulting cancelled state in My Bookings.
+- [x] Refresh the relevant pages and verify the persisted state.
+- [x] Confirm event attendance reflects the active booking state.
 
 #### Responsive and Visual Regression
 
@@ -99,7 +99,7 @@ Close the remaining gaps between the implemented features and a dependable portf
 
 - [ ] All five My Bookings views have been manually verified.
 - [x] Cancellation and rebooking have been verified, including persistence after refresh.
-- [ ] The complete Events → booking → My Bookings → cancellation journey works.
+- [x] The complete Events → booking → My Bookings → cancellation journey works.
 - [ ] Representative responsive layouts and light/dark themes have been checked.
 - [ ] Any actual defects discovered during verification have been resolved and retested.
 
