@@ -22,6 +22,63 @@ Focus on completing the user-facing experience and preparing a convincing, relia
 
 ## 2. Active Milestones
 
+### Happening Now — Booking History Lifecycle
+
+**Status:** In Progress — lifecycle implementation, UI styling, automated regression verification, and final code review are complete; manual verification remains.
+
+Implement booking cancellation as a persistent lifecycle state rather than deleting booking records. Extend the backend, database constraints, booking-history UI, and regression coverage together.
+
+#### Implemented
+
+- [x] Add `confirmed` and `cancelled` booking statuses.
+- [x] Preserve cancelled bookings in the database instead of deleting them.
+- [x] Add migration `004_add_booking_cancellation_status.sql` and a partial unique index allowing a user to rebook an event after cancellation.
+- [x] Return booking status in booking-history and booking-creation responses.
+- [x] Restrict capacity, attendee counts, duplicate-booking checks, and booking conflicts to confirmed bookings.
+- [x] Keep cancellation safe under concurrent requests and preserve existing idempotency behavior.
+- [x] Add All, Upcoming, Happening Now, Past, and Cancelled booking-history filters.
+- [x] Categorize Upcoming using event start times, Happening Now using `start_time <= now < end_time`, and Past using event end times.
+- [x] Keep cancelled cards visible in history and update their status immediately after cancellation.
+- [x] Add backend, frontend, and integration regression coverage for the lifecycle changes.
+- [x] Apply the migration to the local showcase database and verify existing bookings were preserved.
+
+#### Remaining
+
+- [x] Fix the Cancelled filter's visibility in dark mode.
+- [x] Fix the outdated Upcoming-filter test fixture and verify BookingCard status labels remain accessible and exact.
+- [x] Review the BookingCard status badge and Booking History filter styling in light and dark themes.
+- [x] Run the complete frontend test suite after the final UI changes.
+- [x] Re-run relevant backend, integration, and database-safety validation.
+- [x] Review the complete database schema, index, seed-data, migration, and test changes for consistency.
+- [x] Complete `git diff --check` and a final review of all changed files.
+- [ ] Manually verify All, Upcoming, Happening Now, Past, and Cancelled views, including cancellation and rebooking.
+
+#### Completion Notes — Booking History Lifecycle
+
+- Added persistent `confirmed` and `cancelled` booking statuses, retaining cancelled records in booking history.
+- Added migration `004_add_booking_cancellation_status.sql` and a partial unique index that permits rebooking after cancellation.
+- Updated capacity, attendee counts, duplicate-booking checks, and booking conflicts to consider confirmed bookings only.
+- Preserved concurrent cancellation protections and existing idempotency behavior.
+- Updated BookingCard status presentation and cancellation interactions, including immediate status updates after cancellation.
+- Implemented All, Upcoming, Happening Now, Past, and Cancelled filters.
+- Defined lifecycle boundaries using event timestamps: Upcoming starts after the current time; Happening Now includes the start boundary but excludes the end boundary; Past begins at the end boundary.
+- Kept cancelled bookings visible independently of event dates and excluded invalid timestamps from date-based filters.
+- Added regression coverage for lifecycle filtering and boundary conditions.
+- Applied the migration to the local showcase database and verified existing bookings were preserved.
+- Successfully built the frontend after the UI styling changes.
+- Verified the complete automated test suites after the final lifecycle and UI changes:
+  - Backend: 465/465 tests passed across 38 suites.
+  - Frontend: 284/284 tests passed across 37 files.
+  - End-to-end: 17/17 tests passed across 3 suites.
+  - Integration: 62/62 tests passed across 6 suites.
+  - Database safety: 49/49 checks passed.
+- Frontend production build passed.
+- E2E regression coverage now verifies that cancelled bookings remain in booking history with `status: "cancelled"`.
+
+**Important:** The lifecycle implementation has been committed and pushed. Five final documentation and regression-test updates across the roadmap, conceptual data model documents, and test files remain uncommitted and are intended to be included by amending that feature commit. The local showcase database migration has been applied; do not reset or reseed the showcase database as part of this work.
+
+**Scope:** Booking lifecycle semantics, PostgreSQL schema and migration, backend booking and attendance queries, Booking History filtering and presentation, and regression tests. This work does not introduce a new booking-hold workflow or payment processing.
+
 ### 2.1 Portfolio-Ready UI and Presentation
 
 **Status:** In Progress
@@ -81,7 +138,7 @@ Regression testing should also be performed incrementally after individual imple
 
 Complete the remaining work in the following sequence:
 
-1. [ ] Implement My Bookings filtering, beginning with an API and data-model review.
+1. [x] Implement My Bookings filtering following an API and data-model review.
 2. [ ] Redesign the Booking History layout around the new booking views and filters.
 3. [ ] Redesign the Venues page with relevant search, filtering, sorting, and a responsive multi-column card grid.
 4. [ ] Complete the remaining responsive, visual-consistency, and functional regression work across all three pages.
@@ -146,14 +203,14 @@ Improve the Events and Venues page layouts so users can browse more content effi
 
 ##### Booking History Layout
 
-- [ ] Inspect the booking-history API response to confirm cancelled bookings, event start/end dates, and booking status are available.
-- [ ] Determine whether booking filtering can be handled client-side or requires backend support.
-- [ ] Add booking status and event-date filtering.
-- [ ] Introduce All, Upcoming, Past, and Cancelled views.
-- [ ] Define booking categorization using both event dates and booking status.
-- [ ] Preserve cancelled bookings in booking history, regardless of event date.
-- [ ] Provide appropriate empty states for each view.
-- [ ] Ensure cancelling a booking immediately updates the displayed results.
+- [x] Inspect the booking-history API response to confirm cancelled bookings, event start/end dates, and booking status are available.
+- [x] Determine whether booking filtering can be handled client-side or requires backend support.
+- [x] Add booking status and event-date filtering.
+- [x] Introduce All, Upcoming, Happening Now, Past, and Cancelled views.
+- [x] Define booking categorization using event start times, event end times, and booking status.
+- [x] Preserve cancelled bookings in booking history, regardless of event date.
+- [x] Provide appropriate empty states for each view.
+- [x] Ensure cancelling a booking immediately updates the displayed results.
 - [ ] Evaluate a responsive multi-column Booking History card layout.
 - [ ] Preserve readability of booking metadata and available actions.
 
@@ -839,6 +896,72 @@ Prioritize meaningful behavioural coverage rather than pursuing an arbitrary per
 - [ ] Add booking-hold E2E tests covering acquisition, explicit cancellation, expiration and capacity release after inactivity, confirmation into a booking, and rejection of confirmation after expiration.
 
 ---
+
+### 4.19 Waitlist Management
+
+**Status:** Deferred
+
+Explore allowing users to join a waitlist when an event reaches capacity. Waitlist functionality should build on the existing booking lifecycle while remaining separate from confirmed bookings.
+
+#### Waitlist Enrollment and Ordering
+
+- [ ] Allow users to join a waitlist when an event has reached capacity.
+- [ ] Store waitlist entries separately from confirmed bookings.
+- [ ] Implement FIFO ordering so the earliest eligible waitlist entry receives the first available spot.
+- [ ] Define waitlist entry states, including `waitlisted`, `offered`, `accepted`, `declined`, and `expired`.
+- [ ] Ensure accepting an offer creates a normal confirmed booking rather than treating the waitlist entry itself as a booking.
+- [ ] Prevent users from creating duplicate active waitlist entries for the same event.
+- [ ] Define how users can leave a waitlist.
+
+#### Waitlist Promotion and Invitations
+
+- [ ] Automatically offer available spots after confirmed bookings are cancelled.
+- [ ] Allow attendees to accept or decline an available-spot invitation.
+- [ ] Add an expiration period for invitations and offer expired spots to the next eligible attendee.
+- [ ] Ensure waitlist promotion is concurrency-safe and cannot exceed event capacity.
+- [ ] Handle increased event capacity by offering newly available spots to waitlisted attendees.
+- [ ] Define how waitlists behave when an event is cancelled or its details change.
+- [ ] Provide appropriate waitlist status and management interfaces for attendees and event creators.
+
+#### Implementation Considerations
+
+- Keep waitlist entries separate from booking records; joining a waitlist must not count as a confirmed booking.
+- Preserve existing booking cancellation, capacity, and idempotency guarantees.
+- Use database transactions and appropriate row locking when promoting waitlisted attendees.
+- Ensure multiple simultaneous cancellations or capacity changes cannot generate duplicate offers or overbook an event.
+- Consider notifications for invitations, expirations, event changes, and waitlist position updates.
+
+#### Suggested Implementation Order
+
+1. [ ] Implement waitlist persistence, enrollment, and FIFO ordering.
+2. [ ] Implement automatic promotion after confirmed booking cancellations.
+3. [ ] Add invitation acceptance, expiration, and concurrency protection.
+4. [ ] Integrate capacity increases with waitlist promotion.
+5. [ ] Define behavior for event cancellations and important event changes.
+6. [ ] Complete attendee and event-creator interfaces, notifications, and regression testing.
+
+### 4.20 Event Management and Editing
+
+**Status:** Planned — implementation has not started.
+
+Allow event creators to manage their own published events while preserving existing booking and data-integrity guarantees.
+
+#### Event Management and Editing
+
+- [ ] Allow event creators to edit their own published events.
+- [ ] Add an Edit Event interface for updating event information.
+- [ ] Support editing event titles, descriptions, prices, venues, dates, times, images, and capacity.
+- [ ] Enforce event ownership and authorization in the backend, not just the frontend.
+- [ ] Validate event updates and preserve existing data integrity constraints.
+- [ ] Prevent capacity from being reduced below the number of currently confirmed bookings.
+- [ ] Preserve existing bookings when event details are edited.
+- [ ] Consider how attendees should be informed when important event details change.
+- [ ] Handle concurrent event edits without silently overwriting another organizer's changes.
+
+#### Suggested Implementation Order
+
+1. [ ] Implement event editing, ownership authorization, and validation.
+2. [ ] Add capacity-update safeguards and concurrent-edit protection.
 
 ## 5. Completed Milestones
 

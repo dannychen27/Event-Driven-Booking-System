@@ -23,12 +23,13 @@ vi.mock("../../../../3. frontend/src/components/cards/BookingCard.tsx", () => (
                 onBookingCancelled,
             }: {
                 booking: Booking;
-                onBookingCancelled: () => void;
+                onBookingCancelled: (result: { id: number; status: "cancelled" }) => void;
             }
         ) => (
             <div>
                 <p>Mock Booking Card: {booking.id}</p>
-                <Button onClick={onBookingCancelled}>
+                <p>Mock Booking Status: {booking.status}</p>
+                <Button onClick={() => onBookingCancelled({ id: booking.id, status: "cancelled" })}>
                     Cancel Booking {booking.id}
                 </Button>
             </div>
@@ -167,8 +168,43 @@ describe("BookingsPage", () => {
         });
     });
 
+    describe("Booking filters", () => {
+        it("shows confirmed bookings with future end times under Upcoming", async () => {
+            const futureBooking = {
+                ...bookingHistoryFixture[0],
+                start_time: "2099-09-10T18:00:00Z",
+                end_time: "2099-09-10T20:00:00Z",
+            };
+            vi.mocked(getBookingHistory).mockResolvedValue([futureBooking]);
+
+            const user = userEvent.setup();
+            render(<BookingsPage />);
+
+            expect(await screen.findByText("Mock Booking Card: 2"))
+                .toBeInTheDocument();
+
+            await user.click(screen.getByRole("button", { name: "Upcoming" }));
+
+            expect(screen.getByText("Mock Booking Card: 2"))
+                .toBeInTheDocument();
+        });
+
+        it("shows the filter-specific empty state", async () => {
+            vi.mocked(getBookingHistory).mockResolvedValue(bookingHistoryFixture);
+
+            const user = userEvent.setup();
+            render(<BookingsPage />);
+
+            await screen.findByText("Mock Booking Card: 1");
+            await user.click(screen.getByRole("button", { name: "Upcoming" }));
+
+            expect(screen.getByText("No upcoming bookings."))
+                .toBeInTheDocument();
+        });
+    });
+
     describe("Booking cancellation", () => {
-        it("removes a booking when it is cancelled", async () => {
+        it("retains a booking and updates its status when it is cancelled", async () => {
             vi.mocked(getBookingHistory).mockResolvedValue(bookingHistoryFixture);
 
             const user = userEvent.setup();
@@ -186,10 +222,19 @@ describe("BookingsPage", () => {
                 }),
             );
 
-            expect(screen.queryByText("Mock Booking Card: 1"))
-                .not.toBeInTheDocument();
+            expect(screen.getByText("Mock Booking Card: 1"))
+                .toBeInTheDocument();
+            expect(screen.getByText("Mock Booking Status: cancelled"))
+                .toBeInTheDocument();
             expect(screen.getByText("Mock Booking Card: 2"))
                 .toBeInTheDocument();
+
+            await user.click(screen.getByRole("button", { name: "Cancelled" }));
+
+            expect(screen.getByText("Mock Booking Card: 1"))
+                .toBeInTheDocument();
+            expect(screen.queryByText("Mock Booking Card: 2"))
+                .not.toBeInTheDocument();
         });
     });
 });

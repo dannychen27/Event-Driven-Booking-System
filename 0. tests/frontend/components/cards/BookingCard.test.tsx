@@ -29,6 +29,9 @@ describe("BookingCard", () => {
                 }),
             ).toBeInTheDocument();
 
+            expect(screen.getByText("Confirmed", { exact: true }))
+                .toBeInTheDocument();
+
             expect(screen.getByText("Venue:", { exact: true })).toBeInTheDocument();
             expect(screen.getByText("Innovation Hub", { exact: true })).toBeInTheDocument();
             expect(screen.getByText("Location:", { exact: true })).toBeInTheDocument();
@@ -42,6 +45,20 @@ describe("BookingCard", () => {
             expect(
                 screen.getByRole("button", { name: "Cancel Booking" }),
             ).toBeInTheDocument();
+        });
+
+        it("shows cancelled status without offering another cancellation", () => {
+            render(
+                <BookingCard
+                    booking={{ ...bookingCardFixture, status: "cancelled" }}
+                    onBookingCancelled={() => {}}
+                />,
+            );
+
+            expect(screen.getByText("Cancelled", { exact: true }))
+                .toBeInTheDocument();
+            expect(screen.queryByRole("button", { name: "Cancel Booking" }))
+                .not.toBeInTheDocument();
         });
 
         it("does not expose internal booking, event, or user identifiers", () => {
@@ -186,10 +203,10 @@ describe("BookingCard", () => {
         });
 
         it("prevents duplicate cancellation requests while one is pending", async () => {
-            let resolveCancellation!: (value: undefined) => void;
+            let resolveCancellation!: (value: { id: number; status: "cancelled" }) => void;
 
             vi.mocked(cancelBooking).mockReturnValue(
-                new Promise<undefined>((resolve) => {
+                new Promise<{ id: number; status: "cancelled" }>((resolve) => {
                     resolveCancellation = resolve;
                 }),
             );
@@ -221,7 +238,7 @@ describe("BookingCard", () => {
 
             expect(cancelBooking).toHaveBeenCalledTimes(1);
 
-            resolveCancellation(undefined);
+            resolveCancellation({ id: bookingCardFixture.id, status: "cancelled" });
 
             expect(
                 await screen.findByRole("button", { name: "Cancel Booking" }),
@@ -231,7 +248,10 @@ describe("BookingCard", () => {
         });
 
         it("successfully cancels the booking", async () => {
-            vi.mocked(cancelBooking).mockResolvedValue(undefined);
+            vi.mocked(cancelBooking).mockResolvedValue({
+                id: bookingCardFixture.id,
+                status: "cancelled",
+            });
 
             const onBookingCancelled = vi.fn();
             const user = userEvent.setup();

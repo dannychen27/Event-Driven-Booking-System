@@ -89,8 +89,12 @@ additional comments:
     └── Waitlist promotion after cancellation
 
 
-- if one user should only be able to book an event once:
-    UNIQUE (user_id, event_id)
+- if one user should have at most one confirmed booking for an event:
+    CREATE UNIQUE INDEX idx_bookings_one_confirmed_per_user_event
+        ON bookings(user_id, event_id)
+        WHERE status = 'confirmed';
+
+Cancelled bookings remain in history and do not prevent rebooking.
 
 multiple events can absolutely have the same venue_id:
 

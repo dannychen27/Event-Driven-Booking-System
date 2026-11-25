@@ -69,7 +69,8 @@ export class BookingsService {
             SELECT id
             FROM bookings
             WHERE user_id = $1
-              AND event_id = $2;
+              AND event_id = $2
+              AND status = 'confirmed';
         `,
             [user_id, event_id],
         );
@@ -113,7 +114,7 @@ export class BookingsService {
             `
             INSERT INTO bookings (user_id, event_id)
             VALUES ($1, $2)
-            RETURNING id, user_id, event_id, created_at;
+            RETURNING id, user_id, event_id, created_at, status;
         `,
             [user_id, event_id],
         );
@@ -152,7 +153,8 @@ export class BookingsService {
                 SELECT id
                 FROM bookings
                 WHERE user_id = $1
-                  AND event_id = $2;
+                  AND event_id = $2
+                  AND status = 'confirmed';
               `,
                 [user_id, event_id],
             );
@@ -346,7 +348,7 @@ export class BookingsService {
             `
           INSERT INTO bookings (user_id, event_id)
           VALUES ($1, $2)
-          RETURNING id, user_id, event_id, created_at;
+          RETURNING id, user_id, event_id, created_at, status;
         `,
             [user_id, hold.event_id],
         );
@@ -472,7 +474,7 @@ export class BookingsService {
       // Check if booking exists.
       const bookingResult = await client.query<Booking>(
         `
-                SELECT id, user_id, event_id, created_at
+                SELECT id, user_id, event_id, created_at, status
                 FROM bookings
                 WHERE id = $1;
             `,
@@ -494,20 +496,22 @@ export class BookingsService {
       const event_id = bookingResult.rows[0].event_id;
       await lockEvent(client, event_id);
 
-      // Delete booking.
-      const oldBookingResult = await client.query<Booking>(
+      // Preserve booking history by marking the booking as cancelled.
+      const cancelledBookingResult = await client.query<Booking>(
         `
-                DELETE FROM bookings
+                UPDATE bookings
+                SET status = 'cancelled'
                 WHERE id = $1
-                RETURNING *;
+                  AND status = 'confirmed'
+                RETURNING id, user_id, event_id, created_at, status;
             `,
         [booking_id],
       );
 
-      if (oldBookingResult.rows.length === 0) {
+      if (cancelledBookingResult.rows.length === 0) {
         throw new NotFoundException(`Booking ${booking_id} not found`);
       }
-      return oldBookingResult.rows[0];
+      return cancelledBookingResult.rows[0];
     });
   }
 
@@ -535,6 +539,7 @@ export class BookingsService {
             b.user_id,
             b.event_id,
             b.created_at,
+            b.status,
             e.name AS event_name,
             e.start_time,
             e.end_time,

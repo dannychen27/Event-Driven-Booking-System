@@ -123,7 +123,7 @@ describe("EventsService.searchEvents", () => {
         expect(db.query).toHaveBeenCalledTimes(1);
 
         const sql = db.query.mock.calls[0][0] as string;
-        expect(sql).not.toContain('WHERE');
+        expect(sql).toMatch(/FROM bookings\s+WHERE status = 'confirmed'/i);
         expect(sql).not.toContain('ILIKE');
     });
 
@@ -194,7 +194,7 @@ describe("EventsService.searchEvents", () => {
 
         const sql = db.query.mock.calls[0][0] as string;
         expect(sql).not.toContain("statement_timestamp()");
-        expect(sql).not.toContain("WHERE");
+        expect(sql).toMatch(/FROM bookings\s+WHERE status = 'confirmed'/i);
     });
 
     it("should filter by time of day using Toronto local time", async () => {

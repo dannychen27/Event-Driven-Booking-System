@@ -16,6 +16,7 @@ export const apiBookingFixture = {
     id: 10,
     user_id: 1,
     event_id: 2,
+    status: "confirmed" as const,
 };
 
 export const bookingCardFixture: Booking = {

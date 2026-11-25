@@ -163,9 +163,21 @@ INSERT INTO bookings (id, user_id, event_id)
 VALUES
     (3, 1, 99);
 
--- c. duplicate (user_id, event_id) i.e. double booking
--- should FAIL: UNIQUE constraint
+-- c. duplicate confirmed (user_id, event_id) i.e. double booking
+-- should FAIL: partial UNIQUE index
 INSERT INTO bookings (id, user_id, event_id)
 VALUES
     (4, 1, 1);
+
+-- d. cancelled historical booking for an existing user/event pair
+-- should SUCCEED: cancelled bookings do not participate in the unique index
+INSERT INTO bookings (id, user_id, event_id, status)
+VALUES
+    (14, 1, 1, 'cancelled');
+
+-- e. invalid booking status
+-- should FAIL: CHECK constraint
+INSERT INTO bookings (id, user_id, event_id, status)
+VALUES
+    (15, 1, 2, 'pending');
 

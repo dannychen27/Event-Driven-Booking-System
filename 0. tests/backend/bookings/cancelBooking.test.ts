@@ -6,7 +6,7 @@ import {
 import { BOOKING_RESULT_FIXTURE } from "../fixtures/shared/sharedTestFixtures"
 import {
     mockBookingExists, mockBookingDoesNotExist,
-    mockDeletedBooking
+    mockCancelledBooking
 } from "../helpers/bookingTestHelpers";
 import { mockUserDoesNotExist, mockUserExists } from "../helpers/usersTestHelpers";
 import { mockEventExists, mockEventDoesNotExist } from "../helpers/eventsTestHelpers";
@@ -32,11 +32,11 @@ describe("BookingsService.cancelBooking", () => {
         mockUserExists(client, 1);
         mockBookingExists(client, 123, 1, 1);
         mockEventExists(client, 1);
-        mockDeletedBooking(client, 123, 1, 1);
+        mockCancelledBooking(client, 123, 1, 1);
 
         const result = await service.cancelBooking(1, 123);
 
-        expect(result).toEqual(BOOKING_RESULT_FIXTURE);
+        expect(result).toEqual({ ...BOOKING_RESULT_FIXTURE, status: "cancelled" });
 
         expect(db.transaction).toHaveBeenCalledTimes(1);
         expect(client.query).toHaveBeenCalledTimes(4);
@@ -52,8 +52,8 @@ describe("BookingsService.cancelBooking", () => {
         expectNthQuery(client, 3, "FROM events", [1]);
         expectNthQuery(client, 3, "FOR UPDATE", [1]);
 
-        // Check booking deletion
-        expectNthQuery(client, 4, "DELETE FROM bookings", [123]);
+        // Check booking cancellation
+        expectNthQuery(client, 4, "UPDATE bookings", [123]);
     });
 
     it("should reject the cancellation when the booking does not exist", async () => {
@@ -118,19 +118,19 @@ describe("BookingsService.cancelBooking", () => {
         ).toBe(false);
     });
 
-    it("should reject when the booking disappears before deletion", async () => {
+    it("should reject when the booking is no longer confirmed", async () => {
         mockUserExists(client, 1);
         mockBookingExists(client, 123, 1, 1);
         mockEventExists(client, 1);
 
-        // Simulate DELETE ... RETURNING affecting zero rows.
+        // Simulate UPDATE ... RETURNING affecting zero rows.
         client.query.mockResolvedValueOnce({ rows: [] });
 
         await expect(service.cancelBooking(1, 123))
             .rejects.toThrow("Booking 123 not found");
 
         expect(client.query).toHaveBeenCalledTimes(4);
-        expectNthQuery(client, 4, "DELETE FROM bookings", [123]);
+        expectNthQuery(client, 4, "UPDATE bookings", [123]);
     });
 });
 

@@ -26,6 +26,7 @@ export class EventsService {
       LEFT JOIN (
         SELECT event_id, COUNT(*)::int AS attendee_count
         FROM bookings
+        WHERE status = 'confirmed'
         GROUP BY event_id
       ) booking_counts ON booking_counts.event_id = e.id;
     `);
@@ -59,6 +60,7 @@ export class EventsService {
                  LEFT JOIN (
             SELECT event_id, COUNT(*)::int AS booking_count
             FROM bookings
+            WHERE status = 'confirmed'
             GROUP BY event_id
           ) b ON b.event_id = e.id
                  LEFT JOIN (
@@ -127,6 +129,7 @@ export class EventsService {
             LEFT JOIN (
                 SELECT event_id, COUNT(*)::int AS attendee_count
                 FROM bookings
+                WHERE status = 'confirmed'
                 GROUP BY event_id
             ) booking_counts ON booking_counts.event_id = e.id
                 ${whereClause}
@@ -176,6 +179,7 @@ export class EventsService {
         LEFT JOIN (
           SELECT event_id, COUNT(*)::int AS attendee_count
           FROM bookings
+          WHERE status = 'confirmed'
           GROUP BY event_id
         ) booking_counts ON booking_counts.event_id = e.id
         ${whereClause}

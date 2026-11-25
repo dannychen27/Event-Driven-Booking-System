@@ -78,6 +78,7 @@ export async function assertEventHasCapacity(
                 SELECT COUNT(*)
                 FROM bookings
                 WHERE event_id = $1
+                  AND status = 'confirmed'
             ) AS booking_count,
             (
                 SELECT COUNT(*)
@@ -110,6 +111,7 @@ export async function assertNoBookingConflict(
         FROM bookings b
         JOIN events e ON e.id = b.event_id
         WHERE b.user_id = $1
+          AND b.status = 'confirmed'
           AND e.start_time < $2
           AND e.end_time > $3
         LIMIT 1;

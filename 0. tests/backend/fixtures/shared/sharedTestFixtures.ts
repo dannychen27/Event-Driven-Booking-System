@@ -3,6 +3,7 @@ export const BOOKING_RESULT_FIXTURE = {
     user_id: 1,
     event_id: 1,
     created_at: "2026-09-05T20:00:00Z",
+    status: "confirmed",
 };
 
 export const RANKED_EVENT_CANDIDATES_FIXTURE = [

@@ -166,10 +166,16 @@ UPDATE bookings
 SET event_id = 999
 WHERE id = 1;
 
--- h. duplicate (user_id, event_id)
--- should FAIL: UNIQUE constraint
+-- h. duplicate confirmed (user_id, event_id)
+-- should FAIL: partial UNIQUE index
 UPDATE bookings
 SET user_id = 1, event_id = 1
 WHERE id = 2;
--- provided another booking already has (1,1).
+-- provided another confirmed booking already has (1,1).
+
+-- i. invalid booking status
+-- should FAIL: CHECK constraint
+UPDATE bookings
+SET status = 'pending'
+WHERE id = 1;
 

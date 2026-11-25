@@ -64,7 +64,12 @@ bookings
   user_id       NOT NULL REFERENCES (foreign key) venues(id) (index)
   event_id      NOT NULL REFERENCES (foreign key) events(id) (index)
   created_at    NOT NULL
-UNIQUE (user_id, event_id)
+  status        NOT NULL DEFAULT 'confirmed'
+                CHECK (status IN ('confirmed', 'cancelled'))
+
+CREATE UNIQUE INDEX idx_bookings_one_confirmed_per_user_event
+    ON bookings(user_id, event_id)
+    WHERE status = 'confirmed';
 
 
 REDUNDANT TABLES:

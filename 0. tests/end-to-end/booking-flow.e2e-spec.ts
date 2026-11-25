@@ -75,10 +75,13 @@ describe("Booking flow (E2E)", () => {
             .get(`/users/${user.id}/bookings`)
             .expect(200);
 
-        expect(finalHistoryResponse.body).not.toEqual(
+        expect(finalHistoryResponse.body).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
                     id: booking.id,
+                    user_id: user.id,
+                    event_id: event.id,
+                    status: "cancelled",
                 }),
             ]),
         );

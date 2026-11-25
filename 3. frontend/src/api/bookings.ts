@@ -1,4 +1,7 @@
-import type { Booking } from "../types/bookings/Booking.ts"
+import type {
+    Booking,
+    BookingCancellationResult,
+} from "../types/bookings/Booking.ts";
 import { API_BASE_URL } from "./apiBaseUrl.ts";
 import { apiRequest } from "./apiRequest.ts";
 
@@ -62,8 +65,8 @@ export async function createBooking(user_id: number, event_id: number): Promise<
 export async function cancelBooking(
     user_id: number,
     booking_id: number,
-): Promise<Booking> {
-    return apiRequest<Booking>(
+): Promise<BookingCancellationResult> {
+    return apiRequest<BookingCancellationResult>(
         `${API_BASE_URL}/bookings/${booking_id}`,
         "Failed to cancel booking",
         {

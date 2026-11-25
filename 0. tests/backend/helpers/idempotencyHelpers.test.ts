@@ -18,6 +18,7 @@ describe('Idempotency helpers', () => {
         user_id: 1,
         event_id: 1,
         created_at: '2026-09-05T20:00:00Z',
+        status: 'confirmed',
     };
 
     const operation: IdempotencyOperation = 'create_booking';

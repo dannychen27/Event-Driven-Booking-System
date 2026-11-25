@@ -2,11 +2,14 @@ export type BookingId = {
   id: number;
 };
 
+export type BookingStatus = 'confirmed' | 'cancelled';
+
 export type Booking = {
   id: number;
   user_id: number;
   event_id: number;
   created_at: string | Date;
+  status: BookingStatus;
 };
 
 export type EventBookingCount = {

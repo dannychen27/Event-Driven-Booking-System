@@ -1,6 +1,9 @@
-import type { Booking } from "./Booking.ts";
+import type {
+    Booking,
+    BookingCancellationResult,
+} from "./Booking.ts";
 
 export interface BookingCardProps {
     booking: Booking;
-    onBookingCancelled: () => void;
+    onBookingCancelled: (result: BookingCancellationResult) => void;
 }

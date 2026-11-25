@@ -101,6 +101,7 @@ WHERE NOT EXISTS (
     FROM bookings b
     WHERE b.user_id = 1
       AND b.event_id = e.id
+      AND b.status = 'confirmed'
 );
 
 SELECT setval(
@@ -116,7 +117,8 @@ BEGIN
     SELECT COUNT(*)
     INTO demo_booking_count
     FROM bookings
-    WHERE user_id = 1;
+    WHERE user_id = 1
+      AND status = 'confirmed';
 
     IF demo_booking_count <> 4 THEN
         RAISE EXCEPTION

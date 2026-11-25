@@ -45,7 +45,8 @@ CREATE TABLE bookings (
     user_id     INT             NOT NULL REFERENCES users(id),
     event_id    INT             NOT NULL REFERENCES events(id),
     created_at  TIMESTAMPTZ     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (user_id, event_id)
+    status      VARCHAR(20)     NOT NULL DEFAULT 'confirmed'
+                CHECK (status IN ('confirmed', 'cancelled'))
 );
 
 

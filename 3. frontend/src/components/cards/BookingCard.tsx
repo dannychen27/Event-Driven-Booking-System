@@ -32,9 +32,9 @@ export default function BookingCard({
         setCancellationError("");
 
         try {
-            await cancelBooking(booking.user_id, booking.id);
+            const cancelledBooking = await cancelBooking(booking.user_id, booking.id);
             setShowCancelModal(false);
-            onBookingCancelled();
+            onBookingCancelled(cancelledBooking);
         } catch (error) {
             setCancellationError(
                 getErrorMessage(error, "Failed to cancel booking.")
@@ -52,13 +52,20 @@ export default function BookingCard({
         <div className="card booking-card">
             <div className="booking-card__layout">
                 <div className="booking-card__content">
-                    <h2>{eventName}</h2>
+                    <div className="booking-card__heading">
+                        <h2>{eventName}</h2>
+                    </div>
 
                     <div className="booking-card__image">
                         <EventImage
                             imageUrl={booking.image_url}
                             alt={eventName}
                         />
+                        <span
+                            className={`booking-card__status booking-card__status--${booking.status}`}
+                        >
+                            {booking.status === "cancelled" ? "Cancelled" : "Confirmed"}
+                        </span>
                     </div>
 
                     <div className="booking-card__details">
@@ -98,21 +105,22 @@ export default function BookingCard({
                         </span>
                     </div>
                 </div>
-
             </div>
 
-            <div className="booking-card__actions">
-                <Button
-                    variant="danger"
-                    disabled={isCancelling}
-                    onClick={() => {
-                        setCancellationError("");
-                        setShowCancelModal(true);
-                    }}
-                >
-                    Cancel Booking
-                </Button>
-            </div>
+            {booking.status === "confirmed" && (
+                <div className="booking-card__actions">
+                    <Button
+                        variant="danger"
+                        disabled={isCancelling}
+                        onClick={() => {
+                            setCancellationError("");
+                            setShowCancelModal(true);
+                        }}
+                    >
+                        Cancel Booking
+                    </Button>
+                </div>
+            )}
 
             {showCancelModal && (
                 <Modal

@@ -40,7 +40,7 @@ describe("EventsService.getAvailability", () => {
 
         // Bookings and holds must be aggregated independently.
         expect(availabilityQuery).toMatch(
-            /SELECT event_id, COUNT\(\*\)::int AS booking_count\s+FROM bookings\s+GROUP BY event_id/i,
+            /SELECT event_id, COUNT\(\*\)::int AS booking_count\s+FROM bookings\s+WHERE status = 'confirmed'\s+GROUP BY event_id/i,
         );
 
         expect(availabilityQuery).toMatch(

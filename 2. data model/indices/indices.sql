@@ -21,3 +21,9 @@ CREATE INDEX idx_booking_holds_event_expiration
 CREATE INDEX idx_booking_holds_expiration
     ON booking_holds(expires_at, id)
     WHERE status = 'active';
+
+-- Enforce one confirmed booking per user per event.
+-- Cancelled bookings remain available as booking history.
+CREATE UNIQUE INDEX idx_bookings_one_confirmed_per_user_event
+    ON bookings(user_id, event_id)
+    WHERE status = 'confirmed';

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Booking } from "../types/bookings/Booking.ts";
+import type { Booking, BookingStatus } from "../types/bookings/Booking.ts";
 import { getBookingHistory } from "../api/bookings.ts";
 import { BOOKING_USER_ID } from "../constants/bookings/booking.ts";
 import "../styles/pages/booking-page.css";
@@ -11,10 +11,21 @@ import BookingCardSkeleton from "../components/ui/skeletons/BookingCardSkeleton"
 import {
     displayAllBookings,
     displayNoBookings,
+    filterBookings,
+    type BookingFilter,
 } from "../helpers/bookings/BookingsPageHelpers.tsx";
+
+const BOOKING_FILTERS: { value: BookingFilter; label: string }[] = [
+    { value: "all", label: "All" },
+    { value: "upcoming", label: "Upcoming" },
+    { value: "happening-now", label: "Happening Now" },
+    { value: "past", label: "Past" },
+    { value: "cancelled", label: "Cancelled" },
+];
 
 export default function BookingsPage() {
     const [bookings, setBookings] = useState<Booking[]>([]);
+    const [activeFilter, setActiveFilter] = useState<BookingFilter>("all");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [bookingsRetry, setBookingsRetry] = useState(0);
@@ -56,6 +67,16 @@ export default function BookingsPage() {
         setError("");
         setLoading(true);
         setBookingsRetry((current) => current + 1);
+    }
+
+    function updateBookingStatus(id: number, status: BookingStatus) {
+        setBookings((currentBookings) =>
+            currentBookings.map((booking) =>
+                booking.id === id
+                    ? { ...booking, status }
+                    : booking
+            )
+        );
     }
 
     if (loading) {
@@ -101,13 +122,35 @@ export default function BookingsPage() {
         );
     }
 
+    const visibleBookings = filterBookings(bookings, activeFilter);
+
     return (
         <div className="bookings-page">
             <h1>Booking History</h1>
-            {bookings.length === 0
-                ? displayNoBookings()
-                : displayAllBookings(bookings, setBookings)
-            }
+
+            {bookings.length === 0 ? (
+                displayNoBookings()
+            ) : (
+                <>
+                    <div className="booking-filters" role="group" aria-label="Booking filters">
+                        {BOOKING_FILTERS.map(({ value, label }) => (
+                            <button
+                                key={value}
+                                type="button"
+                                className={`booking-filters__button booking-filters__button--${value}${activeFilter === value ? " booking-filters__button--active" : ""}`}
+                                aria-pressed={activeFilter === value}
+                                onClick={() => setActiveFilter(value)}
+                            >
+                                {label}
+                            </button>
+                        ))}
+                    </div>
+
+                    {visibleBookings.length === 0
+                        ? displayNoBookings(activeFilter)
+                        : displayAllBookings(visibleBookings, updateBookingStatus)}
+                </>
+            )}
         </div>
     );
 }

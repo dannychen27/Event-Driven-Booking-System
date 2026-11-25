@@ -497,7 +497,7 @@ describe("booking operations", () => {
         });
 
         const result = await db.query(
-            `SELECT id FROM bookings WHERE event_id = $1`,
+            `SELECT id FROM bookings WHERE event_id = $1 AND status = 'confirmed'`,
             [eventId],
         );
 
@@ -525,11 +525,13 @@ describe("booking operations", () => {
             );
 
         const result = await db.query(
-            `SELECT id FROM bookings WHERE id = $1`,
+            `SELECT id, status FROM bookings WHERE id = $1`,
             [booking.id],
         );
 
-        expect(result.rows).toHaveLength(0);
+        expect(result.rows).toEqual([
+            { id: booking.id, status: "cancelled" },
+        ]);
     });
 
 
@@ -576,7 +578,8 @@ describe("booking operations", () => {
             SELECT id, user_id, event_id
             FROM bookings
             WHERE user_id = $1
-              AND event_id = ANY($2::int[]);
+              AND event_id = ANY($2::int[])
+              AND status = 'confirmed';
         `,
             [userId, [eventA.id, eventB.id]],
         );

@@ -7,6 +7,7 @@ const createBookingRow = (
     user_id: userId,
     event_id: eventId,
     created_at: "2026-09-05T20:00:00Z",
+    status: "confirmed",
 });
 
 export const mockBookingExists = (
@@ -102,14 +103,17 @@ export const mockInsertedBooking = (
 };
 
 
-export const mockDeletedBooking = (
+export const mockCancelledBooking = (
     client: any,
     bookingId: number,
     userId: number,
     eventId: number,
 ) => {
     client.query.mockResolvedValueOnce({
-        rows: [createBookingRow(bookingId, userId, eventId)],
+        rows: [{
+            ...createBookingRow(bookingId, userId, eventId),
+            status: "cancelled",
+        }],
     });
 };
 
