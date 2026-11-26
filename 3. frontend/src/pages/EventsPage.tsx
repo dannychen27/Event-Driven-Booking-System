@@ -89,6 +89,38 @@ export default function EventsPage() {
         useState(false);
 
     const searchRequestId = useRef(0);
+    const searchRowRef = useRef<HTMLDivElement>(null);
+    const sidebarRef = useRef<HTMLElement>(null);
+
+    useEffect(() => {
+        const searchRow = searchRowRef.current;
+        const sidebar = sidebarRef.current;
+
+        if (!searchRow || !sidebar) {
+            return;
+        }
+
+        const updateStickyOffset = () => {
+            sidebar.style.setProperty(
+                "--events-search-row-height",
+                `${searchRow.getBoundingClientRect().height}px`,
+            );
+        };
+
+        updateStickyOffset();
+
+        const resizeObserver =
+            typeof ResizeObserver !== "undefined"
+                ? new ResizeObserver(updateStickyOffset)
+                : null;
+
+        resizeObserver?.observe(searchRow);
+
+        return () => {
+            resizeObserver?.disconnect();
+            sidebar.style.removeProperty("--events-search-row-height");
+        };
+    }, [loading]);
 
     function clearClarification() {
         setClarificationConflicts(null);
@@ -485,12 +517,10 @@ export default function EventsPage() {
                 </section>
             )}
 
-            <div className="events-page__layout">
-                <aside
-                    className="events-page__sidebar"
-                    aria-label="Event search and filters"
-                >
-                    <div className="events-page__search">
+            <div
+                className="events-page__search-row"
+                ref={searchRowRef}
+            >
                 <details className="events-search-disclosure" open>
                     <summary>Keyword search</summary>
                     <EventSearchForm
@@ -573,7 +603,16 @@ export default function EventsPage() {
                     }
                 />
                 </details>
+            </div>
 
+            <div className="events-page__layout">
+                <aside
+                    className="events-page__sidebar"
+                    ref={sidebarRef}
+                    aria-label="Event search and filters"
+                >
+                    <div className="events-page__search">
+                        <div className="events-page__calendar-row">
                 <CalendarSearchControls
                     dateSelection={dateSelection}
                     timeSelection={timeSelection}
@@ -607,7 +646,7 @@ export default function EventsPage() {
                         })
                     }
                 />
-
+                        </div>
                     </div>
                 </aside>
 

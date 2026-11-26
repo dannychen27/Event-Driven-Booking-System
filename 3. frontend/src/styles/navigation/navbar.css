@@ -1,4 +1,12 @@
+/* Shared height estimate used by the Events page sticky controls. */
+#app {
+    --navbar-height: 4.1rem;
+}
+
 nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
     background: var(--surface);
     color: var(--text);
 

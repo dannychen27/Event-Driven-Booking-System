@@ -81,7 +81,42 @@
     margin-bottom: 0;
 }
 
-/* Desktop layout: sticky search sidebar and event results */
+/* Full-width search row above the filters and event results */
+.events-page__search-row {
+    position: sticky;
+    top: var(--navbar-height, 4.1rem);
+    z-index: 90;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 1rem;
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 1.5rem;
+}
+
+.events-page__search-row > .events-search-disclosure {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+}
+
+/* Keep each search form readable and prevent horizontal overflow. */
+.events-page__search-row .search-form .search-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+    gap: 0.5rem;
+}
+
+.events-page__search-row .search-form .search-controls > input,
+.events-page__search-row .search-form .search-controls > button {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* Desktop: sticky filter sidebar beside a full-width results column. */
 .events-page__layout {
     display: grid;
     grid-template-columns: minmax(260px, 300px) minmax(0, 1fr);
@@ -92,12 +127,13 @@
 
 .events-page__sidebar {
     position: sticky;
-    top: 1rem;
+    top: calc(
+        var(--navbar-height, 4.1rem) +
+        var(--events-search-row-height, 0px) +
+        1.5rem
+    );
     align-self: start;
     min-width: 0;
-    max-height: calc(100vh - 2rem);
-    overflow-y: auto;
-    overscroll-behavior: contain;
     padding: 1rem;
     border: 1px solid var(--border-color, var(--border));
     border-radius: 0.75rem;
@@ -110,70 +146,56 @@
     max-width: none;
 }
 
-.events-page__search > .search-form,
-.events-page__search > .calendar-search-disclosure {
-    width: 100%;
-}
-
-/* Give each search control its own row in the narrow desktop sidebar */
-.events-page__sidebar .search-form .search-controls {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    align-items: stretch;
-    gap: 0.5rem;
-}
-
-.events-page__sidebar .search-form .search-controls > input,
-.events-page__sidebar .search-form .search-controls > button {
-    width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-}
-
+.events-page__calendar-row,
 .events-page__results {
+    width: 100%;
     min-width: 0;
 }
 
-/* Fit calendar controls inside the narrower desktop sidebar */
-@media (min-width: 1001px) {
-    .events-page__sidebar .calendar-search-controls {
-        grid-template-columns: minmax(0, 1fr);
-    }
-
-    .events-page__sidebar .calendar-date-calendars {
-        display: none;
-    }
-
-    .events-page__sidebar .calendar-date-fields--native {
-        display: flex;
-    }
-
-    .events-page__sidebar .calendar-date-fields > div {
-        flex: 1 1 100%;
-    }
-
-    .events-page__sidebar .calendar-search-section--time .calendar-time-range {
-        grid-template-columns: minmax(0, 1fr);
-        width: 100%;
-    }
-
-    .events-page__sidebar .calendar-time-picker {
-        width: 100%;
-        min-width: 0;
-    }
+/* Stack Date and Time vertically inside the sidebar disclosure. */
+.events-page__sidebar .calendar-search-controls {
+    grid-template-columns: minmax(0, 1fr);
 }
 
-/* Stack search and results on tablet and mobile */
+.events-page__sidebar .calendar-date-calendars {
+    display: none;
+}
+
+.events-page__sidebar .calendar-date-fields--native {
+    display: flex;
+}
+
+.events-page__sidebar .calendar-date-fields > div {
+    flex: 1 1 100%;
+}
+
+.events-page__sidebar .calendar-search-section--time .calendar-time-range {
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+}
+
+.events-page__sidebar .calendar-time-picker {
+    width: 100%;
+    min-width: 0;
+}
+
+/* Tablet and mobile: stack the search, filters, and results; disable stickiness. */
 @media (max-width: 1000px) {
+    .events-page__search-row {
+        position: static;
+        z-index: auto;
+        grid-template-columns: minmax(0, 1fr);
+        margin-bottom: 1rem;
+    }
+
     .events-page__layout {
         grid-template-columns: minmax(0, 1fr);
+        gap: 1rem;
     }
 
     .events-page__sidebar {
         position: static;
-        max-height: none;
-        overflow: visible;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0;
     }
 }
 
