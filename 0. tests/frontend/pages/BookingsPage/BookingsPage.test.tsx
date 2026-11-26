@@ -245,6 +245,47 @@ describe("BookingsPage", () => {
     });
 
     describe("Booking cancellation", () => {
+        it("moves a cancelled booking from Upcoming to Cancelled without refetching", async () => {
+            const futureBooking: Booking = {
+                ...bookingHistoryFixture[0],
+                id: 10,
+                status: "confirmed",
+                start_time: "2099-09-10T18:00:00Z",
+                end_time: "2099-09-10T20:00:00Z",
+            };
+
+            vi.mocked(getBookingHistory).mockResolvedValue([futureBooking]);
+
+            const user = userEvent.setup();
+            render(<BookingsPage />);
+
+            expect(await screen.findByText("Mock Booking Card: 10"))
+                .toBeInTheDocument();
+
+            await user.click(screen.getByRole("button", { name: "Upcoming" }));
+
+            expect(screen.getByText("Mock Booking Card: 10"))
+                .toBeInTheDocument();
+
+            await user.click(screen.getByRole("button", {
+                name: "Cancel Booking 10",
+            }));
+
+            expect(screen.queryByText("Mock Booking Card: 10"))
+                .not.toBeInTheDocument();
+            expect(screen.getByText("No upcoming bookings."))
+                .toBeInTheDocument();
+
+            await user.click(screen.getByRole("button", { name: "Cancelled" }));
+
+            expect(screen.getByText("Mock Booking Card: 10"))
+                .toBeInTheDocument();
+            expect(screen.getByText("Mock Booking Status: cancelled"))
+                .toBeInTheDocument();
+
+            expect(getBookingHistory).toHaveBeenCalledOnce();
+        });
+
         it("retains a booking and updates its status when it is cancelled", async () => {
             vi.mocked(getBookingHistory).mockResolvedValue(bookingHistoryFixture);
 
