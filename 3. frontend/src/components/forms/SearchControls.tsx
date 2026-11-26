@@ -5,6 +5,7 @@ import type { SearchControlsProps } from "../../types/search/SearchControls.type
 
 export default function SearchControls({
     inputId,
+    inputLabel,
     query,
     searching,
     placeholder,
@@ -26,6 +27,7 @@ export default function SearchControls({
                 value={query}
                 onChange={handleInputChange}
                 placeholder={placeholder}
+                aria-label={inputLabel}
             />
 
             <Button type="submit" disabled={searching}>

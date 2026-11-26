@@ -14,7 +14,8 @@ describe("AiSearchForm", () => {
     it("renders the AI search form and example queries", () => {
         renderAiSearchForm();
 
-        expect(screen.getByLabelText("Search with AI")).toBeInTheDocument();
+        expect(screen.queryByText("Search with AI")).not.toBeInTheDocument();
+        expect(screen.getByLabelText("Describe events to search for")).toBeInTheDocument();
         expect(
             screen.getByText(
                 "Describe the events you’re looking for in plain English.",
@@ -45,7 +46,7 @@ describe("AiSearchForm", () => {
         expect(screen.getByRole("button", { name: "Clear query" }))
             .toBeDisabled();
 
-        expect(screen.getByLabelText("Search with AI"))
+        expect(screen.getByLabelText("Describe events to search for"))
             .toHaveAttribute(
                 "placeholder",
                 "e.g. Find events happening this weekend",
@@ -67,7 +68,7 @@ describe("AiSearchForm", () => {
 
         const { unmount } = renderAiSearchForm();
 
-        expect(screen.getByLabelText("Search with AI"))
+        expect(screen.getByLabelText("Describe events to search for"))
             .toHaveAttribute(
                 "placeholder",
                 "e.g., Friday outdoor events",
@@ -89,7 +90,7 @@ describe("AiSearchForm", () => {
     it("notifies the parent when typing or selecting an example without submitting", () => {
         const { onQueryChange, onSearch } = renderAiSearchForm();
 
-        fireEvent.change(screen.getByLabelText("Search with AI"), {
+        fireEvent.change(screen.getByLabelText("Describe events to search for"), {
             target: { value: "Find concerts" },
         });
 

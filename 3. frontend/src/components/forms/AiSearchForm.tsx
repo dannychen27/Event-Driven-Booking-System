@@ -43,10 +43,6 @@ export default function AiSearchForm({
             className="search-form ai-search-form"
             onSubmit={onSearch}
         >
-            <label htmlFor="natural-language-search">
-                Search with AI
-            </label>
-
             <p className="ai-search-help">
                 Describe the events you’re looking for in plain English.
             </p>
@@ -59,6 +55,7 @@ export default function AiSearchForm({
 
             <SearchControls
                 inputId="natural-language-search"
+                inputLabel="Describe events to search for"
                 query={prompt}
                 searching={searching}
                 placeholder={

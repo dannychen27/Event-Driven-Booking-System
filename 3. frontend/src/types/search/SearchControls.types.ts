@@ -1,5 +1,6 @@
 export interface SearchControlsProps {
     inputId: string;
+    inputLabel?: string;
     query: string;
     searching: boolean;
     placeholder: string;
