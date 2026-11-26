@@ -88,7 +88,7 @@ Close the remaining gaps between the implemented features and a dependable portf
 - [ ] Verify My Bookings filters and cancellation behavior.
 - [ ] Verify loading, empty, error, retry, and no-results states where applicable.
 - [x] Verify card image viewer interactions, including keyboard and mobile behavior.
-- [x] Verify booking creation, cancellation, error handling, and duplicate-request prevention through existing automated tests.
+- [x] Verify booking creation, cancellation, error handling, and duplicate-request prevention through existing automated tests, including cancellation state updates across active booking filters without refetching.
 - [x] Verify persistent booking cancellation through backend E2E coverage.
 
 #### Verification Constraints
