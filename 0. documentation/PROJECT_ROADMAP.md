@@ -38,7 +38,7 @@ Do not introduce additional features or redesign completed interfaces merely to 
 
 **Priority:** High
 
-**Status:** In Progress — implementation, automated regression coverage, showcase-data demonstration, booking-history lifecycle verification, and cross-page demonstration are complete. The Events page's desktop sticky layout, dynamic sidebar offset, and mobile/tablet stacking have also been manually verified. Remaining cross-page responsive/visual and functional verification are outstanding.
+**Status:** In Progress — implementation, automated regression coverage, showcase-data demonstration, booking-history lifecycle verification, and cross-page demonstration are complete. The Events page's desktop sticky layout, dynamic sidebar offset, opaque sticky search-row background, and mobile/tablet stacking have also been manually verified. Remaining cross-page responsive/visual and functional verification are outstanding.
 
 Close the remaining gaps between the implemented features and a dependable portfolio demonstration. Focus on the existing booking lifecycle and the Events, Venues, and My Bookings experience.
 
@@ -67,7 +67,7 @@ Close the remaining gaps between the implemented features and a dependable portf
 #### Responsive and Visual Regression
 
 - [ ] Verify the Events, Venues, and My Bookings layouts at representative phone, tablet, laptop, and desktop widths.
-- [x] Verify the Events desktop search row and filter sidebar remain sticky, with the sidebar positioned beneath the search row.
+- [x] Verify the Events desktop search row and filter sidebar remain sticky, with the sidebar positioned beneath the search row and an opaque background preventing event cards from showing through its gaps.
 - [x] Verify the Events sidebar's sticky offset updates when AI Search expands and collapses.
 - [x] Verify the Events search row and sidebar stack and scroll normally at mobile/tablet widths.
 - [ ] Verify sticky controls across pages do not obscure page content or prevent access to results.
@@ -104,7 +104,7 @@ Close the remaining gaps between the implemented features and a dependable portf
 - [x] Cancellation and rebooking have been verified, including persistence after refresh.
 - [x] The complete Events → booking → My Bookings → cancellation journey works.
 - [ ] Representative responsive layouts and light/dark themes have been checked.
-- [ ] Any actual defects discovered during verification have been resolved and retested.
+- [x] Any actual defects discovered during verification have been resolved and retested.
 
 ### 2.2 Deployment and Production Readiness
 

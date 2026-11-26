@@ -92,7 +92,11 @@
     gap: 1rem;
     width: 100%;
     min-width: 0;
+    box-sizing: border-box;
+    padding: 0.5rem;
     margin-bottom: 1.5rem;
+    border-radius: 0.75rem;
+    background: var(--background);
 }
 
 .events-page__search-row > .events-search-disclosure {
@@ -185,7 +189,10 @@
         position: static;
         z-index: auto;
         grid-template-columns: minmax(0, 1fr);
+        padding: 0;
         margin-bottom: 1rem;
+        border-radius: 0;
+        background: transparent;
     }
 
     .events-page__layout {
