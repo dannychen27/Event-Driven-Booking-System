@@ -1,11 +1,14 @@
 import { fireEvent, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { renderAiSearchForm, } from "../../helpers/aiSearchFormTestHelpers";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { renderAiSearchForm } from "../../helpers/aiSearchFormTestHelpers";
 
 describe("AiSearchForm", () => {
-
     beforeEach(() => {
         vi.clearAllMocks();
+    });
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
     });
 
     it("renders the AI search form and example queries", () => {
@@ -41,6 +44,46 @@ describe("AiSearchForm", () => {
 
         expect(screen.getByRole("button", { name: "Clear query" }))
             .toBeDisabled();
+
+        expect(screen.getByLabelText("Search with AI"))
+            .toHaveAttribute(
+                "placeholder",
+                "e.g. Find events happening this weekend",
+            );
+    });
+
+    it("uses the shorter placeholder on mobile", () => {
+        const addEventListener = vi.fn();
+        const removeEventListener = vi.fn();
+
+        vi.stubGlobal(
+            "matchMedia",
+            vi.fn().mockReturnValue({
+                matches: true,
+                addEventListener,
+                removeEventListener,
+            }),
+        );
+
+        const { unmount } = renderAiSearchForm();
+
+        expect(screen.getByLabelText("Search with AI"))
+            .toHaveAttribute(
+                "placeholder",
+                "e.g., Friday outdoor events",
+            );
+
+        expect(addEventListener).toHaveBeenCalledWith(
+            "change",
+            expect.any(Function),
+        );
+
+        unmount();
+
+        expect(removeEventListener).toHaveBeenCalledWith(
+            "change",
+            expect.any(Function),
+        );
     });
 
     it("notifies the parent when typing or selecting an example without submitting", () => {
@@ -65,7 +108,7 @@ describe("AiSearchForm", () => {
     });
 
     it("calls the clear callback without submitting the form", () => {
-        const { onClearQuery, onSearch } = renderAiSearchForm({ query: "Find concerts", });
+        const { onClearQuery, onSearch } = renderAiSearchForm({ query: "Find concerts" });
 
         fireEvent.click(screen.getByRole("button", { name: "Clear query" }));
 

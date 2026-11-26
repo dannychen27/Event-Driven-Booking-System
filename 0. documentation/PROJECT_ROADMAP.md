@@ -74,7 +74,7 @@ Close the remaining gaps between the implemented features and a dependable portf
 - [ ] Check for text overflow, cramped layouts, and unnecessary horizontal scrolling.
 - [ ] Verify card images, metadata, and actions remain usable at narrower widths.
 - [ ] Check visual consistency across light and dark themes.
-- [ ] Investigate the Events search placeholder clipping at 320px.
+- [x] Investigate the Events search placeholder clipping at 320px.
 - [ ] Review the horizontal distribution and compactness of Events filters on desktop.
 - [ ] Investigate the capitalization of the Venue page's LOCATION label.
 - [ ] Review date, time, status, and metadata consistency across card types.

@@ -1,9 +1,12 @@
+import { useEffect, useState } from "react";
 import "../../styles/search/ai-search-form.css";
 import "../../styles/shared/search-bar-shared.css";
 import type { AiSearchFormProps } from "../../types/search/AiSearchForm.types.ts";
 import { SEARCH_EXAMPLES } from "../../constants/search/aiSearch.ts";
 import AiSearchExamples from "./AiSearchExamples.tsx";
 import SearchControls from "./SearchControls.tsx";
+
+const MOBILE_BREAKPOINT_QUERY = "(max-width: 520px)";
 
 export default function AiSearchForm({
     prompt,
@@ -12,6 +15,29 @@ export default function AiSearchForm({
     onSearch,
     onClearQuery,
 }: AiSearchFormProps) {
+    const [isMobile, setIsMobile] = useState(
+        () => window.matchMedia?.(MOBILE_BREAKPOINT_QUERY).matches ?? false,
+    );
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia?.(MOBILE_BREAKPOINT_QUERY);
+
+        if (!mediaQuery) {
+            return;
+        }
+
+        const handleBreakpointChange = (event: MediaQueryListEvent) => {
+            setIsMobile(event.matches);
+        };
+
+        setIsMobile(mediaQuery.matches);
+        mediaQuery.addEventListener("change", handleBreakpointChange);
+
+        return () => {
+            mediaQuery.removeEventListener("change", handleBreakpointChange);
+        };
+    }, []);
+
     return (
         <form
             className="search-form ai-search-form"
@@ -35,7 +61,11 @@ export default function AiSearchForm({
                 inputId="natural-language-search"
                 query={prompt}
                 searching={searching}
-                placeholder="e.g. Find events happening this weekend"
+                placeholder={
+                    isMobile
+                        ? "e.g., Friday outdoor events"
+                        : "e.g. Find events happening this weekend"
+                }
                 submitLabel="Ask AI"
                 onQueryChange={onQueryChange}
                 onClearQuery={onClearQuery}
