@@ -38,7 +38,7 @@ Do not introduce additional features or redesign completed interfaces merely to 
 
 **Priority:** High
 
-**Status:** In Progress — implementation, automated regression coverage, showcase-data demonstration, booking-history lifecycle verification, and cross-page demonstration are complete. Representative responsive layouts and light/dark themes have now been manually verified across Events, Venues, and My Bookings. The Events desktop sticky layout, dynamic sidebar offset, and opaque sticky search-row background have also been verified. Remaining cross-page visual-consistency and functional verification are outstanding.
+**Status:** In Progress — implementation, automated regression coverage, showcase-data demonstration, booking-history lifecycle verification, and cross-page demonstration are complete. Representative responsive layouts and light/dark themes have now been manually verified across Events, Venues, and My Bookings. The Events desktop sticky layout, dynamic sidebar offset, and opaque sticky search-row background have also been verified. The Venue card Location label capitalization has also been corrected and visually verified. Remaining cross-page visual-consistency and functional verification are outstanding.
 
 Close the remaining gaps between the implemented features and a dependable portfolio demonstration. Focus on the existing booking lifecycle and the Events, Venues, and My Bookings experience.
 
@@ -77,7 +77,7 @@ Close the remaining gaps between the implemented features and a dependable portf
 - [x] Verify the Venues Location search-clear control remains visible in red in both light and dark themes.
 - [x] Investigate the Events search placeholder clipping at 320px.
 - [ ] Review the horizontal distribution and compactness of Events filters on desktop.
-- [ ] Investigate the capitalization of the Venue page's LOCATION label.
+- [x] Investigate the capitalization of the Venue page's LOCATION label.
 - [ ] Review date, time, status, and metadata consistency across card types.
 
 #### Functional Regression
