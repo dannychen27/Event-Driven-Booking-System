@@ -100,7 +100,7 @@ Close the remaining gaps between the implemented features and a dependable portf
 
 #### Definition of Done
 
-- [ ] All five My Bookings views have been manually verified.
+- [x] All five My Bookings views have been manually verified.
 - [x] Cancellation and rebooking have been verified, including persistence after refresh.
 - [x] The complete Events → booking → My Bookings → cancellation journey works.
 - [ ] Representative responsive layouts and light/dark themes have been checked.
