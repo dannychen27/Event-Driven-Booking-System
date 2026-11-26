@@ -3,6 +3,7 @@ import type { Booking, BookingStatus } from "../types/bookings/Booking.ts";
 import { getBookingHistory } from "../api/bookings.ts";
 import { BOOKING_USER_ID } from "../constants/bookings/booking.ts";
 import "../styles/pages/booking-page.css";
+import TimeFormatToggle from "../components/ui/TimeFormatToggle.tsx";
 import "../styles/errors/empty-state-message.css";
 import ErrorState from "../components/ui/ErrorState";
 import LoadingState from "../components/ui/LoadingState";
@@ -121,20 +122,22 @@ export default function BookingsPage() {
         <div className="bookings-page">
             <h1>Booking History</h1>
 
-            {bookings.length === 0 ? (
-                displayNoBookings()
-            ) : (
-                <>
+            <div className="bookings-page__toolbar">
+                {bookings.length > 0 && (
                     <BookingFilters
                         activeFilter={activeFilter}
                         onFilterChange={setActiveFilter}
                     />
+                )}
 
-                    {visibleBookings.length === 0
-                        ? displayNoBookings(activeFilter)
-                        : displayAllBookings(visibleBookings, updateBookingStatus)}
-                </>
-            )}
+                <TimeFormatToggle className="bookings-page__time-format" />
+            </div>
+
+            {bookings.length === 0
+                ? displayNoBookings()
+                : visibleBookings.length === 0
+                    ? displayNoBookings(activeFilter)
+                    : displayAllBookings(visibleBookings, updateBookingStatus)}
         </div>
     );
 }

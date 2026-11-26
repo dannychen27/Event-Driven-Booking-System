@@ -9,6 +9,7 @@ import {
 const DATE_FORMAT = {
     dateStyle: "medium",
     timeStyle: "short",
+    is12HourFormat: true,
 } as const;
 
 const startDate = "2026-11-10T14:30:00Z";

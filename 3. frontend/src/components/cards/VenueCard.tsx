@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import type { VenueCardProps } from "../../types/venues/VenueCard.types.ts";
 import { getVenueTypeColorClass } from "../../helpers/venues/venueTypeColor.ts";
 import { EventImage } from "../ui/EventImage.tsx";
@@ -53,13 +54,13 @@ export default function VenueCard({ venue }: VenueCardProps) {
                     <span>{venueAddress}</span>
                 </address>
 
-                <a
+                <Link
                     className="venue-card__events-link"
-                    href={`/events?venueId=${venue.id}`}
+                    to={`/events?venueId=${venue.id}`}
                 >
                     <span>View events at this venue</span>
                     <span aria-hidden="true">→</span>
-                </a>
+                </Link>
             </div>
         </div>
     );

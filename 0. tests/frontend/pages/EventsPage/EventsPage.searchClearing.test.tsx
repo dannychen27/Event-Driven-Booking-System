@@ -43,7 +43,7 @@ describe("Clearing search", () => {
 
         render(<EventsPage />);
 
-        const input = await screen.findByLabelText("Search with AI");
+        const input = await screen.findByLabelText("Describe events to search for");
 
         fireEvent.change(input, {
             target: { value: "Find coffee events" }
@@ -81,7 +81,7 @@ describe("Clearing search", () => {
         fireEvent.change(screen.getByLabelText("Search events"), {
             target: { value: "Coffee" }
         });
-        fireEvent.change(screen.getByLabelText("Search with AI"), {
+        fireEvent.change(screen.getByLabelText("Describe events to search for"), {
             target: { value: "Find coffee events this weekend" }
         });
 
@@ -98,7 +98,7 @@ describe("Clearing search", () => {
             await screen.findByText("Mock Event Card: Initial Event")
         ).toBeInTheDocument();
         expect(screen.getByLabelText("Search events")).toHaveValue("");
-        expect(screen.getByLabelText("Search with AI")).toHaveValue("");
+        expect(screen.getByLabelText("Describe events to search for")).toHaveValue("");
     });
 
     it("shows an error when clearing search fails to reload events", async () => {

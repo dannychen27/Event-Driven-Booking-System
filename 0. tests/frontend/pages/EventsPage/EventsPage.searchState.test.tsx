@@ -69,7 +69,7 @@ describe("Search error handling and result consistency", () => {
 
         await renderEventsPageWithNoInitialEvents();
 
-        const input = screen.getByLabelText("Search with AI");
+        const input = screen.getByLabelText("Describe events to search for");
 
         fireEvent.change(input, {
             target: { value: "Find coffee events" }
@@ -103,7 +103,7 @@ describe("Search error handling and result consistency", () => {
             "Failed to search events"
         );
 
-        fireEvent.change(screen.getByLabelText("Search with AI"), {
+        fireEvent.change(screen.getByLabelText("Describe events to search for"), {
             target: { value: "Find music events" }
         });
 

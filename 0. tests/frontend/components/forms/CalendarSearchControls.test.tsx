@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import CalendarSearchControls from "../../../../3. frontend/src/components/forms/CalendarSearchControls";
+import { TimeFormatProvider } from "../../../../3. frontend/src/contexts/TimeFormatContext";
 import type {
     CalendarDateRange,
     CalendarTimeSelection,
@@ -30,15 +31,17 @@ describe("CalendarSearchControls", () => {
         open?: boolean;
     } = {}) {
         const result = render(
-            <CalendarSearchControls
-                dateSelection={dateSelection}
-                timeSelection={timeSelection}
-                disabled={disabled}
-                hasPendingChanges={hasPendingChanges}
-                onDateSelectionChange={onDateSelectionChange}
-                onTimeSelectionChange={onTimeSelectionChange}
-                onApplyFilters={onApplyFilters}
-            />,
+            <TimeFormatProvider>
+                <CalendarSearchControls
+                    dateSelection={dateSelection}
+                    timeSelection={timeSelection}
+                    disabled={disabled}
+                    hasPendingChanges={hasPendingChanges}
+                    onDateSelectionChange={onDateSelectionChange}
+                    onTimeSelectionChange={onTimeSelectionChange}
+                    onApplyFilters={onApplyFilters}
+                />
+            </TimeFormatProvider>,
         );
 
         if (open) {

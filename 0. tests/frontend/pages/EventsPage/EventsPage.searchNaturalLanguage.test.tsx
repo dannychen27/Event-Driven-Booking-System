@@ -47,7 +47,7 @@ describe("Natural-language search", () => {
 
         await renderEventsPageWithNoInitialEvents();
 
-        fireEvent.change(screen.getByLabelText("Search with AI"), {
+        fireEvent.change(screen.getByLabelText("Describe events to search for"), {
             target: { value: "  Find coffee events this weekend  " },
         });
         fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
@@ -74,7 +74,7 @@ describe("Natural-language search", () => {
 
         await renderEventsPageWithNoInitialEvents();
 
-        fireEvent.change(screen.getByLabelText("Search with AI"), {
+        fireEvent.change(screen.getByLabelText("Describe events to search for"), {
             target: { value: "Find coffee events" },
         });
         fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
@@ -113,7 +113,7 @@ describe("Natural-language search", () => {
 
         await renderEventsPageWithNoInitialEvents();
 
-        fireEvent.change(screen.getByLabelText("Search with AI"), {
+        fireEvent.change(screen.getByLabelText("Describe events to search for"), {
             target: {
                 value: "Find events about underwater basket weaving",
             },
@@ -128,7 +128,7 @@ describe("Natural-language search", () => {
     it("does not run natural-language search when the query is empty or whitespace", async () => {
         await renderEventsPageWithNoInitialEvents();
 
-        fireEvent.change(screen.getByLabelText("Search with AI"), {
+        fireEvent.change(screen.getByLabelText("Describe events to search for"), {
             target: { value: "   " },
         });
         fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
@@ -146,7 +146,7 @@ describe("Natural-language search", () => {
 
         await renderEventsPageWithNoInitialEvents();
 
-        fireEvent.change(screen.getByLabelText("Search with AI"), {
+        fireEvent.change(screen.getByLabelText("Describe events to search for"), {
             target: { value: "Find coffee events" },
         });
         fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
@@ -172,7 +172,7 @@ describe("Natural-language search", () => {
 
         await renderEventsPageWithNoInitialEvents();
 
-        fireEvent.change(screen.getByLabelText("Search with AI"), {
+        fireEvent.change(screen.getByLabelText("Describe events to search for"), {
             target: { value: "Find coffee events" },
         });
         fireEvent.click(screen.getByRole("button", { name: "Ask AI" }));
@@ -181,7 +181,7 @@ describe("Natural-language search", () => {
             "Failed to search events with natural language",
         );
 
-        fireEvent.change(screen.getByLabelText("Search with AI"), {
+        fireEvent.change(screen.getByLabelText("Describe events to search for"), {
             target: { value: "Find coffee meetups" },
         });
 
@@ -198,7 +198,7 @@ describe("Natural-language search", () => {
     it("fills the AI input from an example without submitting a search", async () => {
         await renderEventsPageWithNoInitialEvents();
 
-        const input = screen.getByLabelText("Search with AI");
+        const input = screen.getByLabelText("Describe events to search for");
 
         fireEvent.click(
             screen.getByRole("button", {
@@ -233,7 +233,7 @@ describe("Natural-language search", () => {
 
         await renderEventsPageWithNoInitialEvents();
 
-        fireEvent.change(screen.getByLabelText("Search with AI"), {
+        fireEvent.change(screen.getByLabelText("Describe events to search for"), {
             target: { value: "Find evening events tomorrow" },
         });
 
@@ -334,7 +334,7 @@ describe("Natural-language search", () => {
 
         await renderEventsPageWithNoInitialEvents();
 
-        fireEvent.change(screen.getByLabelText("Search with AI"), {
+        fireEvent.change(screen.getByLabelText("Describe events to search for"), {
             target: { value: "Find interesting events" },
         });
 

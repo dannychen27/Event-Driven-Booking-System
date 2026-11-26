@@ -1,5 +1,5 @@
-import { useState } from "react";
 import CompactTimePicker from "./CompactTimePicker.tsx";
+import { useTimeFormat } from "../../contexts/TimeFormatContext.tsx";
 import type {
     CalendarDateRange,
     CalendarTimeSelection,
@@ -7,15 +7,13 @@ import type {
     TimeOfDay,
 } from "../../types/search/NaturalLanguageSearch.types.ts";
 import "../../styles/search/calendar-search-controls.css";
+import TimeFormatToggle from "../ui/TimeFormatToggle.tsx";
 import { getTimeOfDayOptions } from "../../helpers/search/TimeOfDayOptions.ts";
 import DateCalendar, {
     getCurrentMonth,
     getMonthForDate,
     shiftMonth,
 } from "./DateCalendar.tsx";
-
-
-type TimeFormat = "12h" | "24h";
 
 interface CalendarSearchControlsProps {
     dateSelection: ExplicitSelection<CalendarDateRange> | undefined;
@@ -36,12 +34,11 @@ export default function CalendarSearchControls({
     timeSelection,
     disabled,
     hasPendingChanges = false,
-   onDateSelectionChange,
-   onTimeSelectionChange,
-   onApplyFilters,
+    onDateSelectionChange,
+    onTimeSelectionChange,
+    onApplyFilters,
 }: CalendarSearchControlsProps) {
-    const [timeFormat, setTimeFormat] = useState<TimeFormat>("12h");
-
+    const { timeFormat } = useTimeFormat();
     const selectedDate =
         dateSelection?.state === "selected"
             ? dateSelection.value
@@ -166,205 +163,183 @@ export default function CalendarSearchControls({
                 className="calendar-search-controls"
                 aria-label="Date and time filters"
             >
-            <div className="calendar-search-section">
-                <div className="calendar-search-section-heading">
-                    <h3>Date</h3>
-                    <button
-                        type="button"
-                        className="calendar-search-clear"
-                        disabled={disabled || !hasDateFilter}
-                        onClick={() =>
-                            onDateSelectionChange({ state: "cleared" })
-                        }
-                    >
-                        Clear date
-                    </button>
-                </div>
+                <div className="calendar-search-section">
+                    <div className="calendar-search-section-heading">
+                        <h3>Date</h3>
+                        <button
+                            type="button"
+                            className="calendar-search-clear"
+                            disabled={disabled || !hasDateFilter}
+                            onClick={() =>
+                                onDateSelectionChange({ state: "cleared" })
+                            }
+                        >
+                            Clear date
+                        </button>
+                    </div>
 
-                <div className="calendar-date-calendars">
-                    <DateCalendar
-                        label="After"
-                        initialMonth={getMonthForDate(
-                            selectedDate?.startDate,
-                            getCurrentMonth(),
-                        )}
-                        value={selectedDate?.startDate}
-                        maxDate={selectedDate?.endDate}
-                        disabled={disabled}
-                        onChange={(date) =>
-                            updateDateRange(
-                                date,
-                                selectedDate?.endDate ?? "",
-                            )
-                        }
-                    />
-
-                    <DateCalendar
-                        label="Before"
-                        initialMonth={getMonthForDate(
-                            selectedDate?.endDate,
-                            shiftMonth(getCurrentMonth(), 1),
-                        )}
-                        value={selectedDate?.endDate}
-                        minDate={selectedDate?.startDate}
-                        disabled={disabled}
-                        onChange={(date) =>
-                            updateDateRange(
-                                selectedDate?.startDate ?? "",
-                                date,
-                            )
-                        }
-                    />
-                </div>
-
-                <div className="calendar-search-fields calendar-date-fields calendar-date-fields--native">
-                    <div>
-                        <label htmlFor="search-start-date">From</label>
-                        <input
-                            id="search-start-date"
-                            type="date"
-                            value={selectedDate?.startDate ?? ""}
+                    <div className="calendar-date-calendars">
+                        <DateCalendar
+                            label="After"
+                            initialMonth={getMonthForDate(
+                                selectedDate?.startDate,
+                                getCurrentMonth(),
+                            )}
+                            value={selectedDate?.startDate}
+                            maxDate={selectedDate?.endDate}
                             disabled={disabled}
-                            max={selectedDate?.endDate}
-                            onChange={(event) =>
+                            onChange={(date) =>
                                 updateDateRange(
-                                    event.target.value,
+                                    date,
                                     selectedDate?.endDate ?? "",
                                 )
                             }
                         />
-                    </div>
 
-                    <div>
-                        <label htmlFor="search-end-date">To</label>
-                        <input
-                            id="search-end-date"
-                            type="date"
-                            value={selectedDate?.endDate ?? ""}
+                        <DateCalendar
+                            label="Before"
+                            initialMonth={getMonthForDate(
+                                selectedDate?.endDate,
+                                shiftMonth(getCurrentMonth(), 1),
+                            )}
+                            value={selectedDate?.endDate}
+                            minDate={selectedDate?.startDate}
                             disabled={disabled}
-                            min={selectedDate?.startDate}
-                            onChange={(event) =>
+                            onChange={(date) =>
                                 updateDateRange(
                                     selectedDate?.startDate ?? "",
-                                    event.target.value,
+                                    date,
                                 )
                             }
                         />
                     </div>
+
+                    <div className="calendar-search-fields calendar-date-fields calendar-date-fields--native">
+                        <div>
+                            <label htmlFor="search-start-date">From</label>
+                            <input
+                                id="search-start-date"
+                                type="date"
+                                value={selectedDate?.startDate ?? ""}
+                                disabled={disabled}
+                                max={selectedDate?.endDate}
+                                onChange={(event) =>
+                                    updateDateRange(
+                                        event.target.value,
+                                        selectedDate?.endDate ?? "",
+                                    )
+                                }
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="search-end-date">To</label>
+                            <input
+                                id="search-end-date"
+                                type="date"
+                                value={selectedDate?.endDate ?? ""}
+                                disabled={disabled}
+                                min={selectedDate?.startDate}
+                                onChange={(event) =>
+                                    updateDateRange(
+                                        selectedDate?.startDate ?? "",
+                                        event.target.value,
+                                    )
+                                }
+                            />
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <div className="calendar-search-section calendar-search-section--time">
-                <div className="calendar-search-section-heading">
-                    <div className="calendar-time-heading">
-                        <h3>Time</h3>
+                <div className="calendar-search-section calendar-search-section--time">
+                    <div className="calendar-search-section-heading">
+                        <div className="calendar-time-heading">
+                            <h3>Time</h3>
 
-                        <div
-                            className="calendar-time-format"
-                            role="group"
-                            aria-label="Time format"
+                            <TimeFormatToggle disabled={disabled} />
+                        </div>
+
+                        <button
+                            type="button"
+                            className="calendar-search-clear"
+                            disabled={disabled || !hasTimeFilter}
+                            onClick={() =>
+                                onTimeSelectionChange({ state: "cleared" })
+                            }
                         >
-                            <button
-                                type="button"
-                                aria-pressed={timeFormat === "12h"}
-                                disabled={disabled}
-                                onClick={() => setTimeFormat("12h")}
-                            >
-                                12h
-                            </button>
+                            Clear time
+                        </button>
+                    </div>
 
-                            <button
-                                type="button"
-                                aria-pressed={timeFormat === "24h"}
-                                disabled={disabled}
-                                onClick={() => setTimeFormat("24h")}
-                            >
-                                24h
-                            </button>
+                    <div
+                        className="calendar-time-of-day"
+                        role="group"
+                        aria-label="Time of day"
+                    >
+                        <span className="calendar-time-of-day-legend">
+                            Time of day
+                        </span>
+
+                        <div className="calendar-time-of-day-options">
+                            {getTimeOfDayOptions(timeFormat).map((option) => {
+                                const selected =
+                                    selectedTime?.timeOfDay?.includes(option.value) ??
+                                    false;
+
+                                return (
+                                    <button
+                                        key={option.value}
+                                        type="button"
+                                        className="calendar-time-of-day-option"
+                                        aria-pressed={selected}
+                                        disabled={disabled}
+                                        onClick={() =>
+                                            toggleTimeOfDay(option.value, !selected)
+                                        }
+                                    >
+                                        {option.label}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 
-                    <button
-                        type="button"
-                        className="calendar-search-clear"
-                        disabled={disabled || !hasTimeFilter}
-                        onClick={() =>
-                            onTimeSelectionChange({ state: "cleared" })
-                        }
-                    >
-                        Clear time
-                    </button>
-                </div>
+                    <div className="calendar-time-range">
+                        <CompactTimePicker
+                            label="After"
+                            value={selectedTime?.timeRange?.startTime}
+                            format={timeFormat}
+                            disabled={disabled}
+                            onChange={(value) =>
+                                updateTimeBound("startTime", value)
+                            }
+                        />
 
-                <div
-                    className="calendar-time-of-day"
-                    role="group"
-                    aria-label="Time of day"
-                >
-                    <span className="calendar-time-of-day-legend">
-                        Time of day
-                    </span>
-
-                    <div className="calendar-time-of-day-options">
-                        {getTimeOfDayOptions(timeFormat).map((option) => {
-                            const selected =
-                                selectedTime?.timeOfDay?.includes(option.value) ??
-                                false;
-
-                            return (
-                                <button
-                                    key={option.value}
-                                    type="button"
-                                    className="calendar-time-of-day-option"
-                                    aria-pressed={selected}
-                                    disabled={disabled}
-                                    onClick={() =>
-                                        toggleTimeOfDay(option.value, !selected)
-                                    }
-                                >
-                                    {option.label}
-                                </button>
-                            );
-                        })}
+                        <CompactTimePicker
+                            label="Before"
+                            value={selectedTime?.timeRange?.endTime}
+                            format={timeFormat}
+                            disabled={disabled}
+                            onChange={(value) =>
+                                updateTimeBound("endTime", value)
+                            }
+                        />
                     </div>
                 </div>
 
-                <div className="calendar-time-range">
-                    <CompactTimePicker
-                        label="After"
-                        value={selectedTime?.timeRange?.startTime}
-                        format={timeFormat}
-                        disabled={disabled}
-                        onChange={(value) =>
-                            updateTimeBound("startTime", value)
+                <div className="calendar-search-actions">
+                    <button
+                        type="button"
+                        className="calendar-search-apply"
+                        disabled={
+                            disabled ||
+                            (!hasDateFilter && !hasTimeFilter && !hasPendingChanges)
                         }
-                    />
-
-                    <CompactTimePicker
-                        label="Before"
-                        value={selectedTime?.timeRange?.endTime}
-                        format={timeFormat}
-                        disabled={disabled}
-                        onChange={(value) =>
-                            updateTimeBound("endTime", value)
-                        }
-                    />
+                        onClick={onApplyFilters}
+                    >
+                        Apply filters
+                    </button>
                 </div>
-            </div>
-
-            <div className="calendar-search-actions">
-                <button
-                    type="button"
-                    className="calendar-search-apply"
-                    disabled={
-                        disabled ||
-                        (!hasDateFilter && !hasTimeFilter && !hasPendingChanges)
-                    }
-                    onClick={onApplyFilters}
-                >
-                    Apply filters
-                </button>
-            </div>
             </section>
         </details>
     );

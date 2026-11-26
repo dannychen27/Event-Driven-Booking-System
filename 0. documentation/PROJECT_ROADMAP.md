@@ -38,7 +38,7 @@ Do not introduce additional features or redesign completed interfaces merely to 
 
 **Priority:** High
 
-**Status:** In Progress — implementation, automated regression coverage, showcase-data demonstration, booking-history lifecycle verification, and cross-page demonstration are complete. Representative responsive layouts and light/dark themes have now been manually verified across Events, Venues, and My Bookings. The Events desktop sticky layout, dynamic sidebar offset, and opaque sticky search-row background have also been verified. The Venue card Location label capitalization has also been corrected and visually verified. Remaining cross-page visual-consistency and functional verification are outstanding.
+**Status:** In Progress — implementation, automated regression coverage, showcase-data demonstration, booking-history lifecycle verification, and cross-page demonstration are complete. Representative responsive layouts and light/dark themes have been manually verified across Events, Venues, and My Bookings. The Events desktop sticky layout, dynamic sidebar offset, and opaque sticky search-row background have also been verified. The Venue card Location label capitalization has been corrected and visually verified. The shared 12-hour/24-hour display preference is now managed through an app-wide React context, keeping the Events and My Bookings toggles synchronized across client-side navigation. A reusable TimeFormatToggle component provides the shared control, while event and booking date displays respond to the selected format. The default remains 12-hour; underlying time values remain 24-hour, and the existing 24-hour Booked at display is preserved. The full frontend suite passed 296 tests, including a focused test verifying synchronized toggle state. Remaining cross-page visual-consistency and functional verification are outstanding.
 
 Close the remaining gaps between the implemented features and a dependable portfolio demonstration. Focus on the existing booking lifecycle and the Events, Venues, and My Bookings experience.
 
@@ -83,6 +83,7 @@ Close the remaining gaps between the implemented features and a dependable portf
 #### Functional Regression
 
 - [ ] Verify Events keyword search, calendar filtering, venue filtering, and search clearing.
+- [x] Implement and regression-test the shared 12-hour/24-hour display preference across Events and My Bookings, including venue-to-Events client-side navigation, preserving 24-hour underlying values and the existing 24-hour Booked at display.
 - [ ] Verify Venues keyword search, venue-type filtering, location filtering, and independent clearing.
 - [ ] Verify My Bookings filters and cancellation behavior.
 - [ ] Verify loading, empty, error, retry, and no-results states where applicable.
@@ -1295,7 +1296,7 @@ This section records project-wide implementation decisions that should guide fut
 ### 6.4 Calendar Controls, Compact Time Picker, and Legacy Implementation
 
 - `DateCalendar` is extracted into `3. frontend/src/components/forms/DateCalendar.tsx`, separating calendar rendering and month-navigation helpers from the parent filter component.
-- `CalendarSearchControls` retains ownership of calendar selection state, date-range coordination, and the 12-hour / 24-hour display preference.
+- The app-wide `TimeFormatContext` owns the 12-hour / 24-hour display preference, keeping it synchronized across Events and My Bookings. `CalendarSearchControls` retains ownership of calendar selection state and date-range coordination.
 - `CompactTimePicker` is the active time-picker component used by `CalendarSearchControls`; the parent passes the display preference to both active picker instances.
 - Time values remain stored in canonical `HH:mm` format regardless of the selected display format.
 - The active picker converts between 12-hour display values (hour plus AM/PM) and 24-hour values without changing the underlying selected time.

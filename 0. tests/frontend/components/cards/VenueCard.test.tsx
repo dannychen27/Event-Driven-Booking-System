@@ -1,8 +1,20 @@
-import { render, screen } from "@testing-library/react";
+import { render as rtlRender, screen, fireEvent } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
 
 
 import VenueCard from "../../../../3. frontend/src/components/cards/VenueCard";
+import { TimeFormatProvider, useTimeFormat } from "../../../../3. frontend/src/contexts/TimeFormatContext";
+import TimeFormatToggle from "../../../../3. frontend/src/components/ui/TimeFormatToggle";
+
+function render(ui: React.ReactNode) {
+    return rtlRender(<MemoryRouter>{ui}</MemoryRouter>);
+}
+
+function CurrentTimeFormat() {
+    const { timeFormat } = useTimeFormat();
+    return <output>{timeFormat}</output>;
+}
 import { venueCardFixture } from "../../fixtures/venues/venueFixtures";
 import { getVenueTypeColorClass } from "../../../../3. frontend/src/helpers/venues/venueTypeColor";
 
@@ -167,6 +179,44 @@ describe("VenueCard", () => {
                     name: "View events at this venue",
                 }),
             ).toHaveAttribute("href", `/events?venueId=${venueCardFixture.id}`);
+        });
+
+        it("uses client-side navigation to preserve app-wide time format state", () => {
+            rtlRender(
+                <TimeFormatProvider>
+                    <MemoryRouter initialEntries={["/venues"]}>
+                        <Routes>
+                            <Route
+                                path="/venues"
+                                element={
+                                    <>
+                                        <VenueCard venue={venueCardFixture} />
+                                        <TimeFormatToggle />
+                                    </>
+                                }
+                            />
+                            <Route
+                                path="/events"
+                                element={<CurrentTimeFormat />}
+                            />
+                        </Routes>
+                    </MemoryRouter>
+                </TimeFormatProvider>,
+            );
+
+            fireEvent.click(screen.getByRole("button", { name: "24h" }));
+
+            expect(
+                screen.getByRole("button", { name: "24h" }),
+            ).toHaveAttribute("aria-pressed", "true");
+
+            fireEvent.click(
+                screen.getByRole("link", {
+                    name: "View events at this venue",
+                }),
+            );
+
+            expect(screen.getByText("24h")).toBeInTheDocument();
         });
     });
 });

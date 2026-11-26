@@ -1,0 +1,41 @@
+.calendar-time-format {
+    display: flex;
+    gap: 2px;
+}
+
+.calendar-time-format button {
+    min-height: 32px;
+    padding: 0.3rem 0.55rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.calendar-time-format button:first-child {
+    border-radius: 6px 0 0 6px;
+}
+
+.calendar-time-format button:last-child {
+    border-radius: 0 6px 6px 0;
+}
+
+.calendar-time-format button[aria-pressed="true"] {
+    border-color: #166534;
+    background: #15803d;
+    color: #fff;
+    font-weight: 600;
+}
+
+.calendar-time-format button:focus-visible {
+    outline: 2px solid #22c55e;
+    outline-offset: 2px;
+}
+
+.calendar-time-format button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+

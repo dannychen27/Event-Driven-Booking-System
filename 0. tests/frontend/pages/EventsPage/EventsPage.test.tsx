@@ -381,7 +381,7 @@ describe("Independent search disclosures", () => {
         });
 
         const aiInput = screen.getByRole("textbox", {
-            name: "Search with AI",
+            name: "Describe events to search for",
         });
 
         await user.type(keywordInput, "Meet and Greet");
