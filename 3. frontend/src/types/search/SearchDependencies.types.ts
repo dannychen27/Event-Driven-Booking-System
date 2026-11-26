@@ -9,6 +9,8 @@ import type {
 
 export interface SearchHandlerDependencies {
     query: string;
+    submittedKeyword?: string;
+    setSubmittedKeyword?: (keyword: string) => void;
     searchRequestId: { current: number };
     dateSelection?: ExplicitSelection<CalendarDateRange>;
     timeSelection?: ExplicitSelection<CalendarTimeSelection>;
@@ -40,6 +42,7 @@ export interface ClearSearchDependencies {
     setSearchError: (error: string) => void;
     setIsSearchActive: (active: boolean) => void;
     setKeyword: (keyword: string) => void;
+    setSubmittedKeyword?: (keyword: string) => void;
     setNaturalLanguageQuery: (query: string) => void;
     setClarificationConflicts: (
         conflicts: SearchFilterConflict[] | null,

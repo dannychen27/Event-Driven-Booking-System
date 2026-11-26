@@ -58,6 +58,7 @@ export default function EventsPage() {
     const [error, setError] = useState("");
     const [eventsRetry, setEventsRetry] = useState(0);
     const [keyword, setKeyword] = useState("");
+    const [submittedKeyword, setSubmittedKeyword] = useState("");
     const [searching, setSearching] = useState(false);
     const [searchError, setSearchError] = useState("");
     const [isSearchActive, setIsSearchActive] = useState(false);
@@ -521,7 +522,7 @@ export default function EventsPage() {
                 className="events-page__search-row"
                 ref={searchRowRef}
             >
-                <details className="events-search-disclosure" open>
+                <details className="events-search-disclosure">
                     <summary>Keyword search</summary>
                     <EventSearchForm
                     keyword={keyword}
@@ -534,6 +535,7 @@ export default function EventsPage() {
                     onSearch={(event) =>
                         handleSearch(event, {
                             query: keyword,
+                            setSubmittedKeyword,
                             dateSelection,
                             timeSelection,
                             searchRequestId,
@@ -552,6 +554,7 @@ export default function EventsPage() {
                             setSearchError,
                             setIsSearchActive,
                             setKeyword,
+                            setSubmittedKeyword,
                             setNaturalLanguageQuery,
                             setClarificationConflicts,
                             setDateSelection,
@@ -562,7 +565,7 @@ export default function EventsPage() {
                 />
                 </details>
 
-                <details className="events-search-disclosure" open>
+                <details className="events-search-disclosure">
                     <summary>Search with AI</summary>
                     <AiSearchForm
                     prompt={naturalLanguageQuery}
@@ -575,6 +578,7 @@ export default function EventsPage() {
                     onSearch={(event) =>
                         handleNaturalLanguageSearch(event, {
                             query: naturalLanguageQuery,
+                            setSubmittedKeyword,
                             dateSelection,
                             timeSelection,
                             searchRequestId,
@@ -594,6 +598,7 @@ export default function EventsPage() {
                             setSearchError,
                             setIsSearchActive,
                             setKeyword,
+                            setSubmittedKeyword,
                             setNaturalLanguageQuery,
                             setClarificationConflicts,
                             setDateSelection,
@@ -633,6 +638,8 @@ export default function EventsPage() {
                     onApplyFilters={() =>
                         void handleApplyCalendarFilters({
                             query: naturalLanguageQuery,
+                            submittedKeyword,
+                            setSubmittedKeyword,
                             dateSelection,
                             timeSelection,
                             searchRequestId,
@@ -663,6 +670,7 @@ export default function EventsPage() {
                     onApply={() =>
                         void handleResolveNaturalLanguageSearch({
                             query: naturalLanguageQuery,
+                            setSubmittedKeyword,
                             dateSelection,
                             timeSelection,
                             conflicts: clarificationConflicts,

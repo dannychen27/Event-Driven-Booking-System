@@ -118,6 +118,59 @@ describe("Keyword search", () => {
         expect(searchEventsNaturalLanguage).not.toHaveBeenCalled();
     });
 
+    it("preserves the submitted keyword when calendar filters are applied and cleared", async () => {
+        vi.mocked(searchEvents).mockResolvedValue([meetAndGreetSearchResultFixture]);
+
+        await renderEventsPageWithNoInitialEvents();
+
+        const keywordInput = screen.getByLabelText("Search events");
+
+        fireEvent.change(keywordInput, { target: { value: "Meet" } });
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+        expect(
+            await screen.findByText("Mock Event Card: Meet and Greet")
+        ).toBeInTheDocument();
+
+        // An unsubmitted edit must not replace the active keyword filter.
+        fireEvent.change(keywordInput, { target: { value: "Coffee" } });
+
+        fireEvent.change(screen.getByLabelText("From"), {
+            target: { value: "2026-11-10" },
+        });
+        fireEvent.click(screen.getByRole("button", { name: "Apply filters" }));
+
+        await vi.waitFor(() => {
+            expect(searchEvents).toHaveBeenCalledTimes(2);
+            expect(
+                screen.getByRole("button", { name: "Clear date" }),
+            ).toBeEnabled();
+        });
+
+        expect(searchEvents).toHaveBeenLastCalledWith("Meet", {
+            date: {
+                state: "selected",
+                value: {
+                    startDate: "2026-11-10",
+                    endDate: "2026-11-10",
+                },
+            },
+        });
+
+        fireEvent.click(screen.getByRole("button", { name: "Clear date" }));
+        fireEvent.click(screen.getByRole("button", { name: "Apply filters" }));
+
+        await vi.waitFor(() => {
+            expect(searchEvents).toHaveBeenCalledTimes(3);
+        });
+
+        expect(searchEvents).toHaveBeenLastCalledWith("Meet", {
+            date: { state: "cleared" },
+        });
+        expect(searchEventsNaturalLanguage).not.toHaveBeenCalled();
+        expect(keywordInput).toHaveValue("Coffee");
+    });
+
     it("shows a message when search returns no matching events", async () => {
         vi.mocked(searchEvents).mockResolvedValue([]);
 

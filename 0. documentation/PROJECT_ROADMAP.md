@@ -83,6 +83,7 @@ Close the remaining gaps between the implemented features and a dependable portf
 #### Functional Regression
 
 - [ ] Verify Events keyword search, calendar filtering, venue filtering, and search clearing.
+- [x] Add automated regression coverage for preserving the submitted Events keyword when calendar filters are applied or cleared; focused keyword-search and calendar-filtering suites pass (14/14 tests).
 - [x] Implement and regression-test the shared 12-hour/24-hour display preference across Events and My Bookings, including venue-to-Events client-side navigation, preserving 24-hour underlying values and the existing 24-hour Booked at display.
 - [ ] Verify Venues keyword search, venue-type filtering, location filtering, and independent clearing.
 - [ ] Verify My Bookings filters and cancellation behavior.

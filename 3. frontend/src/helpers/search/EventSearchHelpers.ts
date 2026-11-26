@@ -34,7 +34,7 @@ function buildCalendarSearchFilters(
 }
 
 async function executeSearch(
-    event: FormEvent<HTMLFormElement>,
+    event: FormEvent<HTMLFormElement> | undefined,
     dependencies: SearchHandlerDependencies,
     search: (
         query: string,
@@ -43,7 +43,7 @@ async function executeSearch(
     emptyQueryMessage: string,
     failureMessage: string,
 ) {
-    event.preventDefault();
+    event?.preventDefault();
 
     const query = dependencies.query.trim();
 
@@ -67,6 +67,7 @@ async function executeSearch(
         if (requestId !== dependencies.searchRequestId.current) return;
 
         dependencies.setEvents(results);
+        dependencies.setSubmittedKeyword?.(query);
         dependencies.setHasPendingCalendarFilterChanges?.(false);
     } catch (error) {
         if (requestId !== dependencies.searchRequestId.current) return;
@@ -137,6 +138,7 @@ async function executeNaturalLanguageSearch(
         }
 
         dependencies.setEvents(response.events);
+        dependencies.setSubmittedKeyword?.("");
         dependencies.setClarificationConflicts(null);
         dependencies.setHasPendingCalendarFilterChanges?.(false);
     } catch (error) {
@@ -208,8 +210,23 @@ export async function handleApplyCalendarFilters(
 
     dependencies.setClarificationConflicts(null);
 
-    // Deliberately suppress any AI prompt currently in the text box.
-    // This guarantees that applying filters never invokes Gemini.
+    // Reapply the last successfully submitted keyword without invoking AI.
+    // Unsubmitted edits in the input do not replace the active search.
+    if (dependencies.submittedKeyword?.trim()) {
+        await executeSearch(
+            undefined,
+            {
+                ...dependencies,
+                query: dependencies.submittedKeyword,
+            },
+            searchEvents,
+            "Enter a keyword to search.",
+            "Failed to search events",
+        );
+        return;
+    }
+
+    // Calendar-only filtering suppresses any unsubmitted AI prompt.
     await executeNaturalLanguageSearch({
         ...dependencies,
         query: "",
@@ -238,6 +255,7 @@ export async function handleClearSearch(
     const requestId = ++dependencies.searchRequestId.current;
 
     dependencies.setKeyword("");
+    dependencies.setSubmittedKeyword?.("");
     dependencies.setNaturalLanguageQuery("");
     dependencies.setSearchError("");
     dependencies.setSearching(false);
