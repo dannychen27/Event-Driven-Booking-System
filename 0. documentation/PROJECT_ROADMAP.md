@@ -38,7 +38,7 @@ Do not introduce additional features or redesign completed interfaces merely to 
 
 **Priority:** High
 
-**Status:** In Progress — implementation, automated regression coverage, showcase-data demonstration, booking-history lifecycle verification, and cross-page demonstration are complete. The Events page's desktop sticky layout, dynamic sidebar offset, opaque sticky search-row background, and mobile/tablet stacking have also been manually verified. Remaining cross-page responsive/visual and functional verification are outstanding.
+**Status:** In Progress — implementation, automated regression coverage, showcase-data demonstration, booking-history lifecycle verification, and cross-page demonstration are complete. Representative responsive layouts and light/dark themes have now been manually verified across Events, Venues, and My Bookings. The Events desktop sticky layout, dynamic sidebar offset, and opaque sticky search-row background have also been verified. Remaining cross-page visual-consistency and functional verification are outstanding.
 
 Close the remaining gaps between the implemented features and a dependable portfolio demonstration. Focus on the existing booking lifecycle and the Events, Venues, and My Bookings experience.
 
@@ -66,14 +66,15 @@ Close the remaining gaps between the implemented features and a dependable portf
 
 #### Responsive and Visual Regression
 
-- [ ] Verify the Events, Venues, and My Bookings layouts at representative phone, tablet, laptop, and desktop widths.
+- [x] Verify the Events, Venues, and My Bookings layouts at representative phone, tablet, laptop, and desktop widths.
 - [x] Verify the Events desktop search row and filter sidebar remain sticky, with the sidebar positioned beneath the search row and an opaque background preventing event cards from showing through its gaps.
 - [x] Verify the Events sidebar's sticky offset updates when AI Search expands and collapses.
 - [x] Verify the Events search row and sidebar stack and scroll normally at mobile/tablet widths.
 - [ ] Verify sticky controls across pages do not obscure page content or prevent access to results.
 - [ ] Check for text overflow, cramped layouts, and unnecessary horizontal scrolling.
 - [ ] Verify card images, metadata, and actions remain usable at narrower widths.
-- [ ] Check visual consistency across light and dark themes.
+- [x] Check visual consistency across light and dark themes.
+- [x] Verify the Venues Location search-clear control remains visible in red in both light and dark themes.
 - [x] Investigate the Events search placeholder clipping at 320px.
 - [ ] Review the horizontal distribution and compactness of Events filters on desktop.
 - [ ] Investigate the capitalization of the Venue page's LOCATION label.
@@ -103,7 +104,7 @@ Close the remaining gaps between the implemented features and a dependable portf
 - [x] All five My Bookings views have been manually verified.
 - [x] Cancellation and rebooking have been verified, including persistence after refresh.
 - [x] The complete Events → booking → My Bookings → cancellation journey works.
-- [ ] Representative responsive layouts and light/dark themes have been checked.
+- [x] Representative responsive layouts and light/dark themes have been checked.
 - [x] Any actual defects discovered during verification have been resolved and retested.
 
 ### 2.2 Deployment and Production Readiness

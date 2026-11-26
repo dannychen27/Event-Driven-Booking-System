@@ -30,6 +30,12 @@
     box-sizing: border-box;
 }
 
+#venue-location::-webkit-search-cancel-button {
+    filter: invert(26%) sepia(82%) saturate(2514%) hue-rotate(332deg)
+        brightness(89%) contrast(91%);
+    cursor: pointer;
+}
+
 .venue-filters__field input:focus-visible,
 .venue-filters__field select:focus-visible,
 .venue-filters__clear:focus-visible {
