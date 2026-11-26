@@ -13,6 +13,7 @@ import {
     within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
 
 import EventCard from "../../../../3. frontend/src/components/cards/EventCard";
 import VenueCard from "../../../../3. frontend/src/components/cards/VenueCard";
@@ -198,7 +199,11 @@ describe("Card image lightboxes", () => {
     describe("VenueCard", () => {
         it("opens the enlarged venue image", async () => {
             const user = userEvent.setup();
-            render(<VenueCard venue={venueCardFixture} />);
+            render(
+                <MemoryRouter>
+                    <VenueCard venue={venueCardFixture} />
+                </MemoryRouter>,
+            );
 
             await user.click(
                 screen.getByRole("button", {
@@ -218,9 +223,11 @@ describe("Card image lightboxes", () => {
 
         it("does not make the fallback image interactive when the venue image is missing", () => {
             render(
-                <VenueCard
-                    venue={{ ...venueCardFixture, image_url: null }}
-                />,
+                <MemoryRouter>
+                    <VenueCard
+                        venue={{ ...venueCardFixture, image_url: null }}
+                    />
+                </MemoryRouter>,
             );
 
             expect(
