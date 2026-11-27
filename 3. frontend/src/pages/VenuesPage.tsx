@@ -11,6 +11,7 @@ import Skeleton from "../components/ui/Skeleton";
 import VenueCardSkeleton from "../components/ui/skeletons/VenueCardSkeleton";
 import VenueFilters from "../components/forms/VenueFilters.tsx";
 import VenueSearchForm from "../components/forms/VenueSearchForm.tsx";
+import ActiveFilterSummary from "../components/ui/ActiveFilterSummary.tsx";
 import {
     displayAllVenues,
     displayNoVenues,
@@ -27,6 +28,7 @@ export default function VenuesPage() {
     const [submittedKeyword, setSubmittedKeyword] = useState("");
     const [venueType, setVenueType] = useState("");
     const [location, setLocation] = useState("");
+    const [submittedLocation, setSubmittedLocation] = useState("");
 
     useEffect(() => {
         let isActive = true;
@@ -63,9 +65,12 @@ export default function VenuesPage() {
         setVenuesRetry((current) => current + 1);
     }
 
-    function clearFilters() {
+    function clearAllFilters() {
+        setKeyword("");
+        setSubmittedKeyword("");
         setVenueType("");
         setLocation("");
+        setSubmittedLocation("");
     }
 
     if (loading) {
@@ -114,8 +119,41 @@ export default function VenuesPage() {
     const filteredVenues = filterVenues(venues, {
         keyword: submittedKeyword,
         venueType,
-        location,
+        location: submittedLocation,
     });
+
+    const activeFilters = [
+        ...(submittedKeyword.trim()
+            ? [{
+                id: "keyword",
+                label: "Keyword",
+                value: submittedKeyword.trim(),
+                onRemove: () => {
+                    setKeyword("");
+                    setSubmittedKeyword("");
+                },
+            }]
+            : []),
+        ...(venueType
+            ? [{
+                id: "venue-type",
+                label: "Venue type",
+                value: venueType,
+                onRemove: () => setVenueType(""),
+            }]
+            : []),
+        ...(submittedLocation.trim()
+            ? [{
+                id: "location",
+                label: "Location",
+                value: submittedLocation.trim(),
+                onRemove: () => {
+                    setLocation("");
+                    setSubmittedLocation("");
+                },
+            }]
+            : []),
+    ];
 
     return (
         <main className="venues-page">
@@ -151,7 +189,7 @@ export default function VenuesPage() {
                             venueTypes={getVenueTypes(venues)}
                             onVenueTypeChange={setVenueType}
                             onLocationChange={setLocation}
-                            onClear={clearFilters}
+                            onApplyLocation={() => setSubmittedLocation(location)}
                         />
                     </aside>
 
@@ -160,6 +198,14 @@ export default function VenuesPage() {
                         aria-label="Venue results"
                         aria-live="polite"
                     >
+                        <ActiveFilterSummary
+                            filters={activeFilters}
+                            resultCount={filteredVenues.length}
+                            resultNoun="venue"
+                            hint="Venue type updates automatically; keyword and location searches apply when submitted."
+                            onClearAll={clearAllFilters}
+                        />
+
                         {filteredVenues.length === 0 ? (
                             <p className="empty-state-message">
                                 No venues match your filters.

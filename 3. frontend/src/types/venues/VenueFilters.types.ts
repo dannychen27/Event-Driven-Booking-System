@@ -5,5 +5,5 @@ export interface VenueFiltersProps {
     venueTypes: string[];
     onVenueTypeChange: (value: string) => void;
     onLocationChange: (value: string) => void;
-    onClear: () => void;
+    onApplyLocation: () => void;
 }

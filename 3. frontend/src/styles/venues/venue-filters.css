@@ -31,22 +31,19 @@
 }
 
 #venue-location::-webkit-search-cancel-button {
-    filter: invert(26%) sepia(82%) saturate(2514%) hue-rotate(332deg)
-        brightness(89%) contrast(91%);
-    cursor: pointer;
+    display: none;
+    -webkit-appearance: none;
 }
 
-.venue-filters__field input:focus-visible,
-.venue-filters__field select:focus-visible,
-.venue-filters__clear:focus-visible {
-    outline: 2px solid var(--text);
-    outline-offset: 3px;
+.venue-filters__location-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-.venue-filters__clear {
-    align-self: flex-start;
-    min-height: 40px;
-    padding: 0.55rem 0.85rem;
+.venue-filters__location-form button {
+    min-height: 38px;
+    padding: 0.45rem 0.75rem;
     border: 1px solid var(--border);
     border-radius: 6px;
     background: var(--background);
@@ -56,17 +53,13 @@
     cursor: pointer;
 }
 
-.venue-filters__clear:hover:not(:disabled) {
-    background: var(--surface-secondary, var(--secondary-background));
+.venue-filters__location-form button:focus-visible {
+    outline: 2px solid var(--text);
+    outline-offset: 3px;
 }
 
-.venue-filters__clear:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-}
-
-@media (max-width: 520px) {
-    .venue-filters__clear {
-        width: 100%;
-    }
+.venue-filters__field input:focus-visible,
+.venue-filters__field select:focus-visible {
+    outline: 2px solid var(--text);
+    outline-offset: 3px;
 }

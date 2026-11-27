@@ -32,11 +32,47 @@ import EventCardSkeleton from "../components/ui/skeletons/EventCardSkeleton";
 import EventSearchForm from "../components/forms/EventSearchForm.tsx";
 import AiSearchForm from "../components/forms/AiSearchForm";
 import CalendarSearchControls from "../components/forms/CalendarSearchControls.tsx";
+import ActiveFilterSummary, {
+    type ActiveFilterSummaryItem,
+} from "../components/ui/ActiveFilterSummary.tsx";
 import SearchFilterClarification from "../components/forms/SearchFilterClarification.tsx";
 import {
     displayAllEvents,
     displayNoEvents,
 } from "../helpers/events/EventsPageHelpers.tsx";
+
+function formatDateFilter(date: CalendarDateRange): string {
+    const format = (value: string) =>
+        new Date(`${value}T00:00:00`).toLocaleDateString(undefined, {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+        });
+
+    if (date.startDate === date.endDate) return format(date.startDate);
+    return `${format(date.startDate)} – ${format(date.endDate)}`;
+}
+
+function formatTimeFilter(time: CalendarTimeSelection): string {
+    const labels: Record<string, string> = {
+        EARLY_MORNING: "Early morning",
+        MORNING: "Morning",
+        AFTERNOON: "Afternoon",
+        EVENING: "Evening",
+        NIGHT: "Night",
+    };
+
+    const parts = (time.timeOfDay ?? []).map((value) => labels[value]);
+    const range = time.timeRange;
+
+    if (range?.startTime || range?.endTime) {
+        parts.push(
+            `${range.startTime || "Any time"} – ${range.endTime || "Any time"}`,
+        );
+    }
+
+    return parts.join(", ");
+}
 
 function readSelectedVenueId(): number | null {
     const rawVenueId = new URLSearchParams(window.location.search).get(
@@ -88,6 +124,12 @@ export default function EventsPage() {
 
     const [hasPendingCalendarFilterChanges, setHasPendingCalendarFilterChanges] =
         useState(false);
+    const [appliedNaturalLanguageQuery, setAppliedNaturalLanguageQuery] =
+        useState("");
+    const [appliedDateSelection, setAppliedDateSelection] =
+        useState<CalendarDateRange | undefined>();
+    const [appliedTimeSelection, setAppliedTimeSelection] =
+        useState<CalendarTimeSelection | undefined>();
 
     const searchRequestId = useRef(0);
     const searchRowRef = useRef<HTMLDivElement>(null);
@@ -122,6 +164,29 @@ export default function EventsPage() {
             sidebar.style.removeProperty("--events-search-row-height");
         };
     }, [loading]);
+
+    function clearAppliedFilterSnapshot() {
+        setAppliedNaturalLanguageQuery("");
+        setAppliedDateSelection(undefined);
+        setAppliedTimeSelection(undefined);
+    }
+
+    function recordSuccessfulSearch(
+        query: string,
+        mode: "keyword" | "natural-language",
+        appliedDate?: ExplicitSelection<CalendarDateRange>,
+        appliedTime?: ExplicitSelection<CalendarTimeSelection>,
+    ) {
+        setAppliedNaturalLanguageQuery(
+            mode === "natural-language" ? query : "",
+        );
+        setAppliedDateSelection(
+            appliedDate?.state === "selected" ? appliedDate.value : undefined,
+        );
+        setAppliedTimeSelection(
+            appliedTime?.state === "selected" ? appliedTime.value : undefined,
+        );
+    }
 
     function clearClarification() {
         setClarificationConflicts(null);
@@ -308,13 +373,172 @@ export default function EventsPage() {
         setSelectedVenueName(null);
     }
 
+    async function removeActiveFilter(filterId: string) {
+        if (filterId === "venue") {
+            clearVenueFilter();
+            return;
+        }
+
+        let nextDate: ExplicitSelection<CalendarDateRange> = appliedDateSelection
+            ? { state: "selected", value: appliedDateSelection }
+            : { state: "cleared" };
+        let nextTime: ExplicitSelection<CalendarTimeSelection> = appliedTimeSelection
+            ? { state: "selected", value: appliedTimeSelection }
+            : { state: "cleared" };
+        let nextKeyword = submittedKeyword;
+        let nextAiQuery = appliedNaturalLanguageQuery;
+
+        if (filterId === "keyword") {
+            nextKeyword = "";
+            setKeyword("");
+            setSubmittedKeyword("");
+        } else if (filterId === "ai") {
+            nextAiQuery = "";
+            setNaturalLanguageQuery("");
+        } else if (filterId === "date") {
+            nextDate = { state: "cleared" };
+        } else if (filterId === "time") {
+            nextTime = { state: "cleared" };
+        }
+
+        // Explicit clears let the search API remove the final remaining filter.
+        if (
+            !nextKeyword &&
+            !nextAiQuery &&
+            nextDate?.state !== "selected" &&
+            nextTime?.state !== "selected"
+        ) {
+            nextDate = { state: "cleared" };
+            nextTime = { state: "cleared" };
+        }
+
+        const hasRemainingSearchFilters =
+            Boolean(nextKeyword?.trim()) ||
+            Boolean(nextAiQuery?.trim()) ||
+            nextDate?.state === "selected" ||
+            nextTime?.state === "selected";
+
+        if (!hasRemainingSearchFilters) {
+            clearAppliedFilterSnapshot();
+
+            await handleClearSearch({
+                searchRequestId,
+                setEvents,
+                setSearching,
+                setSearchError,
+                setIsSearchActive,
+                setKeyword,
+                setSubmittedKeyword,
+                setNaturalLanguageQuery,
+                setClarificationConflicts,
+                setDateSelection,
+                setTimeSelection,
+                setHasPendingCalendarFilterChanges,
+            });
+
+            clearClarification();
+            return;
+        }
+
+        setDateSelection(nextDate);
+        setTimeSelection(nextTime);
+        setHasPendingCalendarFilterChanges(true);
+        setSearchError("");
+        clearClarification();
+
+        await handleApplyCalendarFilters({
+            query: nextAiQuery,
+            submittedKeyword: nextKeyword,
+            setSubmittedKeyword,
+            dateSelection: nextDate,
+            timeSelection: nextTime,
+            searchRequestId,
+            setEvents,
+            setSearching,
+            setSearchError,
+            setIsSearchActive,
+            setClarificationConflicts: updateClarificationConflicts,
+            hasPendingCalendarFilterChanges: true,
+            setHasPendingCalendarFilterChanges,
+            appliedNaturalLanguageQuery: nextAiQuery,
+            onSearchSuccess: recordSuccessfulSearch,
+        });
+    }
+
+    function clearAllActiveFilters() {
+        clearAppliedFilterSnapshot();
+        clearVenueFilter();
+
+        void handleClearSearch({
+            searchRequestId,
+            setEvents,
+            setSearching,
+            setSearchError,
+            setIsSearchActive,
+            setKeyword,
+            setSubmittedKeyword,
+            setNaturalLanguageQuery,
+            setClarificationConflicts,
+            setDateSelection,
+            setTimeSelection,
+            setHasPendingCalendarFilterChanges,
+        }).then(clearClarification);
+    }
+
+    const displayedVenueName =
+        selectedVenueName || `Venue #${selectedVenueId}`;
+
+    const activeFilterItems: ActiveFilterSummaryItem[] = [];
+
+    if (submittedKeyword) {
+        activeFilterItems.push({
+            id: "keyword",
+            label: "Keyword",
+            value: submittedKeyword,
+            onRemove: () => void removeActiveFilter("keyword"),
+        });
+    }
+
+    if (appliedNaturalLanguageQuery) {
+        activeFilterItems.push({
+            id: "ai",
+            label: "AI search",
+            value: appliedNaturalLanguageQuery,
+            onRemove: () => void removeActiveFilter("ai"),
+        });
+    }
+
+    if (appliedDateSelection) {
+        activeFilterItems.push({
+            id: "date",
+            label: "Date",
+            value: formatDateFilter(appliedDateSelection),
+            onRemove: () => void removeActiveFilter("date"),
+        });
+    }
+
+    if (appliedTimeSelection) {
+        activeFilterItems.push({
+            id: "time",
+            label: "Time",
+            value: formatTimeFilter(appliedTimeSelection),
+            onRemove: () => void removeActiveFilter("time"),
+        });
+    }
+
+    if (selectedVenueId !== null) {
+        activeFilterItems.push({
+            id: "venue",
+            label: "Venue",
+            value: displayedVenueName,
+            onRemove: () => void removeActiveFilter("venue"),
+        });
+    }
+
     const displayedEvents =
         selectedVenueId === null
             ? events
             : events.filter((event) => event.venue_id === selectedVenueId);
-
-    const displayedVenueName =
-        selectedVenueName || `Venue #${selectedVenueId}`;
 
     if (loading) {
         return (
@@ -544,24 +768,14 @@ export default function EventsPage() {
                             setSearchError,
                             setIsSearchActive,
                             setHasPendingCalendarFilterChanges,
+                            onSearchSuccess: recordSuccessfulSearch,
                         })
                     }
-                    onClearQuery={() =>
-                        void handleClearSearch({
-                            searchRequestId,
-                            setEvents,
-                            setSearching,
-                            setSearchError,
-                            setIsSearchActive,
-                            setKeyword,
-                            setSubmittedKeyword,
-                            setNaturalLanguageQuery,
-                            setClarificationConflicts,
-                            setDateSelection,
-                            setTimeSelection,
-                            setHasPendingCalendarFilterChanges,
-                        }).then(clearClarification)
-                    }
+                    onClearQuery={() => {
+                        setKeyword("");
+                        setSearchError("");
+                        clearClarification();
+                    }}
                 />
                 </details>
 
@@ -588,24 +802,14 @@ export default function EventsPage() {
                             setIsSearchActive,
                             setClarificationConflicts: updateClarificationConflicts,
                             setHasPendingCalendarFilterChanges,
+                            onSearchSuccess: recordSuccessfulSearch,
                         })
                     }
-                    onClearQuery={() =>
-                        void handleClearSearch({
-                            searchRequestId,
-                            setEvents,
-                            setSearching,
-                            setSearchError,
-                            setIsSearchActive,
-                            setKeyword,
-                            setSubmittedKeyword,
-                            setNaturalLanguageQuery,
-                            setClarificationConflicts,
-                            setDateSelection,
-                            setTimeSelection,
-                            setHasPendingCalendarFilterChanges,
-                        }).then(clearClarification)
-                    }
+                    onClearQuery={() => {
+                        setNaturalLanguageQuery("");
+                        setSearchError("");
+                        clearClarification();
+                    }}
                 />
                 </details>
             </div>
@@ -650,6 +854,8 @@ export default function EventsPage() {
                             setClarificationConflicts: updateClarificationConflicts,
                             hasPendingCalendarFilterChanges,
                             setHasPendingCalendarFilterChanges,
+                            appliedNaturalLanguageQuery,
+                            onSearchSuccess: recordSuccessfulSearch,
                         })
                     }
                 />
@@ -661,6 +867,13 @@ export default function EventsPage() {
                     className="events-page__results"
                     aria-label="Event results"
                 >
+            <ActiveFilterSummary
+                filters={activeFilterItems}
+                resultCount={displayedEvents.length}
+                resultNoun="event"
+                hint="Filters reflect the last successful search. Calendar edits take effect when you apply them."
+                onClearAll={clearAllActiveFilters}
+            />
             {clarificationConflicts && (
                 <SearchFilterClarification
                     conflicts={clarificationConflicts}
@@ -682,6 +895,7 @@ export default function EventsPage() {
                             setIsSearchActive,
                             setClarificationConflicts: updateClarificationConflicts,
                             setHasPendingCalendarFilterChanges,
+                            onSearchSuccess: recordSuccessfulSearch,
                         })
                     }
                 />

@@ -44,9 +44,13 @@ describe("Clearing search", () => {
         render(<EventsPage />);
 
         const input = await screen.findByLabelText("Describe events to search for");
+        const keywordInput = screen.getByLabelText("Search events");
 
         fireEvent.change(input, {
-            target: { value: "Find coffee events" }
+            target: { value: "machine learning meetup" }
+        });
+        fireEvent.change(keywordInput, {
+            target: { value: "Toronto AI Builders Meetup" }
         });
 
         const aiForm = input.closest("form");
@@ -59,8 +63,13 @@ describe("Clearing search", () => {
         );
 
         expect(input).toHaveValue("");
+        expect(keywordInput).toHaveValue("Toronto AI Builders Meetup");
         expect(searchEventsNaturalLanguage).not.toHaveBeenCalled();
-        expect(getEvents).toHaveBeenCalledTimes(2);
+        expect(searchEvents).not.toHaveBeenCalled();
+        expect(getEvents).toHaveBeenCalledTimes(1);
+        expect(
+            screen.getByText("Mock Event Card: Coffee Meetup")
+        ).toBeInTheDocument();
     });
 
     it("clears both search inputs and restores all events", async () => {
@@ -88,17 +97,52 @@ describe("Clearing search", () => {
         fireEvent.click(screen.getByRole("button", { name: "Search" }));
         await screen.findByText("No matching events found.");
 
-        fireEvent.click(
-            within(
-                screen.getByLabelText("Search events").closest("form") as HTMLFormElement
-            ).getByRole("button", { name: "Clear query" })
-        );
+        fireEvent.click(screen.getByRole("button", { name: "Clear all" }));
 
         expect(
             await screen.findByText("Mock Event Card: Initial Event")
         ).toBeInTheDocument();
         expect(screen.getByLabelText("Search events")).toHaveValue("");
         expect(screen.getByLabelText("Describe events to search for")).toHaveValue("");
+    });
+
+    it("keeps the loading state visible until cleared events finish reloading", async () => {
+        let resolveReload!: (events: Event[]) => void;
+        const reloadPromise = new Promise<Event[]>((resolve) => {
+            resolveReload = resolve;
+        });
+
+        vi.mocked(getEvents)
+            .mockResolvedValueOnce([initialEventFixture])
+            .mockReturnValueOnce(reloadPromise);
+        vi.mocked(searchEvents).mockResolvedValue([]);
+
+        render(<EventsPage />);
+
+        expect(
+            await screen.findByText("Mock Event Card: Initial Event")
+        ).toBeInTheDocument();
+
+        fireEvent.change(screen.getByLabelText("Search events"), {
+            target: { value: "Coffee" }
+        });
+        fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+        expect(
+            await screen.findByText("No matching events found.")
+        ).toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole("button", { name: "Clear all" }));
+
+        expect(await screen.findByText("Searching events...")).toBeInTheDocument();
+        expect(screen.queryByText("No matching events found.")).not.toBeInTheDocument();
+
+        resolveReload([initialEventFixture]);
+
+        expect(
+            await screen.findByText("Mock Event Card: Initial Event")
+        ).toBeInTheDocument();
+        expect(screen.queryByText("Searching events...")).not.toBeInTheDocument();
     });
 
     it("shows an error when clearing search fails to reload events", async () => {
@@ -123,11 +167,7 @@ describe("Clearing search", () => {
             await screen.findByText("No matching events found.")
         ).toBeInTheDocument();
 
-        fireEvent.click(
-            within(
-                screen.getByLabelText("Search events").closest("form") as HTMLFormElement
-            ).getByRole("button", { name: "Clear query" })
-        );
+        fireEvent.click(screen.getByRole("button", { name: "Clear all" }));
 
         expect(await screen.findByRole("alert")).toHaveTextContent(
             "Failed to reload events"

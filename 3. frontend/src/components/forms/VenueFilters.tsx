@@ -6,10 +6,8 @@ export default function VenueFilters({
     venueTypes,
     onVenueTypeChange,
     onLocationChange,
-    onClear,
+    onApplyLocation,
 }: VenueFiltersProps) {
-    const hasActiveFilters = Boolean(venueType || location.trim());
-
     return (
         <div className="venue-filters">
             <div className="venue-filters__field">
@@ -28,23 +26,23 @@ export default function VenueFilters({
 
             <div className="venue-filters__field">
                 <label htmlFor="venue-location">Location</label>
-                <input
-                    id="venue-location"
-                    type="search"
-                    value={location}
-                    onChange={(event) => onLocationChange(event.target.value)}
-                    placeholder="Search venue addresses"
-                />
+                <form
+                    className="venue-filters__location-form"
+                    onSubmit={(event) => {
+                        event.preventDefault();
+                        onApplyLocation();
+                    }}
+                >
+                    <input
+                        id="venue-location"
+                        type="search"
+                        value={location}
+                        onChange={(event) => onLocationChange(event.target.value)}
+                        placeholder="Search venue addresses"
+                    />
+                    <button type="submit">Apply location</button>
+                </form>
             </div>
-
-            <button
-                type="button"
-                className="venue-filters__clear"
-                onClick={onClear}
-                disabled={!hasActiveFilters}
-            >
-                Clear filters
-            </button>
         </div>
     );
 }

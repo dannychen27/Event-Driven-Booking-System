@@ -19,6 +19,13 @@ export interface SearchHandlerDependencies {
     setSearchError: (error: string) => void;
     setIsSearchActive: (active: boolean) => void;
     setHasPendingCalendarFilterChanges?: (pending: boolean) => void;
+    appliedNaturalLanguageQuery?: string;
+    onSearchSuccess?: (
+        query: string,
+        mode: "keyword" | "natural-language",
+        dateSelection?: ExplicitSelection<CalendarDateRange>,
+        timeSelection?: ExplicitSelection<CalendarTimeSelection>,
+    ) => void;
 }
 
 export interface NaturalLanguageSearchHandlerDependencies

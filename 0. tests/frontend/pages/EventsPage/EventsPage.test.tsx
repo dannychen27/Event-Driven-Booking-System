@@ -329,7 +329,7 @@ describe("Booking history loading and recovery", () => {
 });
 
 describe("Independent search disclosures", () => {
-    it("allows keyword and AI search to collapse independently", async () => {
+    it("allows keyword and AI search to expand and collapse independently", async () => {
         vi.mocked(getEvents).mockResolvedValue(initialRenderEventFixture);
 
         const user = userEvent.setup();
@@ -344,8 +344,8 @@ describe("Independent search disclosures", () => {
         );
 
         expect(disclosures).toHaveLength(2);
-        expect(disclosures[0]).toHaveAttribute("open");
-        expect(disclosures[1]).toHaveAttribute("open");
+        expect(disclosures[0]).not.toHaveAttribute("open");
+        expect(disclosures[1]).not.toHaveAttribute("open");
 
         const calendarDisclosure = container.querySelector(
             ".calendar-search-disclosure",
@@ -355,9 +355,18 @@ describe("Independent search disclosures", () => {
 
         await user.click(screen.getByText("Keyword search"));
 
+        expect(disclosures[0]).toHaveAttribute("open");
+        expect(disclosures[1]).not.toHaveAttribute("open");
+
+        await user.click(screen.getByText("Search with AI", { selector: "summary" }));
+
+        expect(disclosures[0]).toHaveAttribute("open");
+        expect(disclosures[1]).toHaveAttribute("open");
+
+        await user.click(screen.getByText("Keyword search"));
+
         expect(disclosures[0]).not.toHaveAttribute("open");
         expect(disclosures[1]).toHaveAttribute("open");
-        expect(calendarDisclosure).not.toHaveAttribute("open");
 
         await user.click(screen.getByText("Search with AI", { selector: "summary" }));
 
@@ -376,6 +385,13 @@ describe("Independent search disclosures", () => {
             await screen.findByText("Mock Event Card: Test Event 1"),
         ).toBeInTheDocument();
 
+        const disclosures = container.querySelectorAll(
+            ".events-search-disclosure",
+        );
+
+        await user.click(screen.getByText("Keyword search"));
+        await user.click(screen.getByText("Search with AI", { selector: "summary" }));
+
         const keywordInput = screen.getByRole("textbox", {
             name: "Search events",
         });
@@ -387,13 +403,11 @@ describe("Independent search disclosures", () => {
         await user.type(keywordInput, "Meet and Greet");
         await user.type(aiInput, "Events this weekend");
 
-        const disclosures = container.querySelectorAll(
-            ".events-search-disclosure",
-        );
-
         await user.click(screen.getByText("Keyword search"));
         await user.click(screen.getByText("Search with AI", { selector: "summary" }));
 
+        expect(disclosures[0]).not.toHaveAttribute("open");
+        expect(disclosures[1]).not.toHaveAttribute("open");
         expect(keywordInput).toHaveValue("Meet and Greet");
         expect(aiInput).toHaveValue("Events this weekend");
 

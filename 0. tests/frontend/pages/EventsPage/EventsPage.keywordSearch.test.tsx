@@ -49,8 +49,10 @@ describe("Keyword search", () => {
         ).toBeInTheDocument();
 
         const input = screen.getByLabelText("Search events");
+        const aiInput = screen.getByLabelText("Describe events to search for");
 
-        fireEvent.change(input, { target: { value: "Coffee" } });
+        fireEvent.change(input, { target: { value: "Toronto AI Builders Meetup" } });
+        fireEvent.change(aiInput, { target: { value: "machine learning meetup" } });
 
         const keywordForm = input.closest("form");
         expect(keywordForm).not.toBeNull();
@@ -62,8 +64,10 @@ describe("Keyword search", () => {
         );
 
         expect(input).toHaveValue("");
+        expect(aiInput).toHaveValue("machine learning meetup");
         expect(searchEvents).not.toHaveBeenCalled();
-        expect(getEvents).toHaveBeenCalledTimes(2);
+        expect(searchEventsNaturalLanguage).not.toHaveBeenCalled();
+        expect(getEvents).toHaveBeenCalledTimes(1);
         expect(
             screen.getByText("Mock Event Card: Coffee Meetup")
         ).toBeInTheDocument();

@@ -38,7 +38,7 @@ Do not introduce additional features or redesign completed interfaces merely to 
 
 **Priority:** High
 
-**Status:** In Progress — implementation, automated regression coverage, showcase-data demonstration, booking-history lifecycle verification, and cross-page demonstration are complete. Representative responsive layouts and light/dark themes have been manually verified across Events, Venues, and My Bookings. The Events desktop sticky layout, dynamic sidebar offset, and opaque sticky search-row background have also been verified. The Venue card Location label capitalization has been corrected and visually verified. The shared 12-hour/24-hour display preference is now managed through an app-wide React context, keeping the Events and My Bookings toggles synchronized across client-side navigation. A reusable TimeFormatToggle component provides the shared control, while event and booking date displays respond to the selected format. The default remains 12-hour; underlying time values remain 24-hour, and the existing 24-hour Booked at display is preserved. The full frontend suite passed 296 tests, including a focused test verifying synchronized toggle state. Remaining cross-page visual-consistency and functional verification are outstanding.
+**Status:** In Progress — implementation, automated regression coverage, showcase-data demonstration, booking-history lifecycle verification, and cross-page demonstration are complete. Representative responsive layouts and light/dark themes have been manually verified across Events, Venues, and My Bookings. The Events desktop sticky layout, dynamic sidebar offset, and opaque sticky search-row background have also been verified. The Venue card Location label capitalization has been corrected and visually verified. The shared 12-hour/24-hour display preference is now managed through an app-wide React context, keeping the Events and My Bookings toggles synchronized across client-side navigation. A reusable TimeFormatToggle component provides the shared control, while event and booking date displays respond to the selected format. The default remains 12-hour; underlying time values remain 24-hour, and the existing 24-hour Booked at display is preserved. The full frontend suite passed 309 tests, including a focused test verifying synchronized toggle state. The shared Active Filter Summary has now been integrated into Events and Venues, with individual filter removal, Clear all behavior, and independent search-draft clearing implemented and verified. Remaining unrelated cross-page visual and functional QA items are tracked below.
 
 Close the remaining gaps between the implemented features and a dependable portfolio demonstration. Focus on the existing booking lifecycle and the Events, Venues, and My Bookings experience.
 
@@ -86,6 +86,25 @@ Close the remaining gaps between the implemented features and a dependable portf
 - [x] Add automated regression coverage for preserving the submitted Events keyword when calendar filters are applied or cleared; focused keyword-search and calendar-filtering suites pass (14/14 tests).
 - [x] Implement and regression-test the shared 12-hour/24-hour display preference across Events and My Bookings, including venue-to-Events client-side navigation, preserving 24-hour underlying values and the existing 24-hour Booked at display.
 - [x] Manually verify Venues keyword search, all four venue-type filters, location filtering (including no-results), and independent clearing of the venue-type and location filters.
+
+#### Shared Active Filter Summary and Filter Clearing
+
+- [x] Implement a reusable Active Filter Summary component shared by Events and Venues.
+- [x] Display active-filter chips, result counts, and a context-appropriate hint.
+- [x] Allow individual active-filter chips to be removed.
+- [x] Implement Clear all behavior for the active filters.
+- [x] Keep Events calendar draft selections separate from successfully applied filters.
+- [x] Preserve unrelated URL parameters and the URL hash when removing the Events venue filter.
+- [x] Make Venues location filtering submit-based, keeping draft input separate from the applied location.
+- [x] Remove the native location-input clear control while retaining removable-filter chip indicators.
+- [x] Ensure keyword and AI Clear query controls clear only their respective draft inputs without changing applied filters or results.
+- [x] Keep the Events loading indicator visible until unfiltered events finish reloading after Clear all.
+- [x] Add regression coverage for individual filter removal, final-filter removal, URL preservation, Clear all, independent search clearing, and loading-state transitions.
+- [x] Manually verify all 11 Active Filter Summary acceptance checks, including responsive layouts and light/dark themes.
+- [x] Pass the complete test pipeline against the latest changes: 465 backend, 309 frontend, 17 E2E, 62 integration, and 49 database-safety checks (902 total).
+- [x] Pass backend and frontend production builds against the latest changes.
+- [x] Pass `git diff --check`.
+
 - [ ] Verify My Bookings filters and cancellation behavior.
 - [ ] Verify loading, empty, error, retry, and no-results states where applicable.
 - [x] Verify card image viewer interactions, including keyboard and mobile behavior.

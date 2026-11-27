@@ -69,6 +69,12 @@ async function executeSearch(
         dependencies.setEvents(results);
         dependencies.setSubmittedKeyword?.(query);
         dependencies.setHasPendingCalendarFilterChanges?.(false);
+        dependencies.onSearchSuccess?.(
+            query,
+            "keyword",
+            dependencies.dateSelection,
+            dependencies.timeSelection,
+        );
     } catch (error) {
         if (requestId !== dependencies.searchRequestId.current) return;
 
@@ -141,6 +147,12 @@ async function executeNaturalLanguageSearch(
         dependencies.setSubmittedKeyword?.("");
         dependencies.setClarificationConflicts(null);
         dependencies.setHasPendingCalendarFilterChanges?.(false);
+        dependencies.onSearchSuccess?.(
+            dependencies.query.trim(),
+            "natural-language",
+            dependencies.dateSelection,
+            dependencies.timeSelection,
+        );
     } catch (error) {
         if (requestId !== dependencies.searchRequestId.current) return;
 
@@ -226,10 +238,10 @@ export async function handleApplyCalendarFilters(
         return;
     }
 
-    // Calendar-only filtering suppresses any unsubmitted AI prompt.
+    // Preserve an AI query only when it was part of the last successful search.
     await executeNaturalLanguageSearch({
         ...dependencies,
-        query: "",
+        query: dependencies.appliedNaturalLanguageQuery?.trim() ?? "",
     });
 }
 
@@ -258,7 +270,7 @@ export async function handleClearSearch(
     dependencies.setSubmittedKeyword?.("");
     dependencies.setNaturalLanguageQuery("");
     dependencies.setSearchError("");
-    dependencies.setSearching(false);
+    dependencies.setSearching(true);
     dependencies.setIsSearchActive(false);
     dependencies.setClarificationConflicts(null);
     dependencies.setDateSelection?.(undefined);
@@ -277,5 +289,9 @@ export async function handleClearSearch(
         dependencies.setSearchError(
             getErrorMessage(error, "Failed to reload events"),
         );
+    } finally {
+        if (requestId === dependencies.searchRequestId.current) {
+            dependencies.setSearching(false);
+        }
     }
 }

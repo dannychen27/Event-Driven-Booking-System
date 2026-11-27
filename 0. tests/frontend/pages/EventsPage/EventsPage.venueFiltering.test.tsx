@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import EventsPage from "../../../../3. frontend/src/pages/EventsPage";
 import { getEvents } from "../../../../3. frontend/src/api/events";
@@ -179,4 +179,72 @@ describe("Venue filtering", () => {
 
         expect(getVenues).not.toHaveBeenCalled();
     });
+
+    it("removes the venue chip while preserving unrelated URL parameters and the hash", async () => {
+        window.history.replaceState(
+            {},
+            "",
+            "/events?source=venues&venueId=1#results",
+        );
+
+        render(<EventsPage />);
+
+        fireEvent.click(
+            await screen.findByRole("button", {
+                name: "Remove Venue filter: Moss Park Espresso",
+            }),
+        );
+
+        expect(window.location.search).toBe("?source=venues");
+        expect(window.location.hash).toBe("#results");
+
+        expect(
+            screen.getByText("Mock Event Card: Moss Park Meetup"),
+        ).toBeInTheDocument();
+
+        expect(
+            screen.getByText("Mock Event Card: Bahen Workshop"),
+        ).toBeInTheDocument();
+
+        expect(
+            screen.queryByRole("region", { name: "Active filters" }),
+        ).not.toBeInTheDocument();
+    });
+
+    it("clears all active filters while preserving unrelated URL state", async () => {
+        window.history.replaceState(
+            {},
+            "",
+            "/events?source=venues&venueId=1#results",
+        );
+
+        render(<EventsPage />);
+
+        expect(
+            await screen.findByRole("button", {
+                name: "Remove Venue filter: Moss Park Espresso",
+            }),
+        ).toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole("button", { name: "Clear all" }));
+
+        await waitFor(() => {
+            expect(getEvents).toHaveBeenCalledTimes(2);
+            expect(
+                screen.queryByRole("region", { name: "Active filters" }),
+            ).not.toBeInTheDocument();
+        });
+
+        expect(window.location.search).toBe("?source=venues");
+        expect(window.location.hash).toBe("#results");
+
+        expect(
+            screen.getByText("Mock Event Card: Moss Park Meetup"),
+        ).toBeInTheDocument();
+
+        expect(
+            screen.getByText("Mock Event Card: Bahen Workshop"),
+        ).toBeInTheDocument();
+    });
+
 });
