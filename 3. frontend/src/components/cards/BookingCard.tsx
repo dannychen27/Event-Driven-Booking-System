@@ -4,8 +4,10 @@ import { getErrorMessage } from "../../helpers/shared/Errors.ts";
 import { getCancelModalButtons } from "../../helpers/bookings/BookingCardHelpers.ts";
 import { BookingCardModalBody } from "./BookingCardModalBody.tsx";
 import { DateLabel } from "../ui/labels/DateLabel.tsx";
+import { CardMetadataLabel } from "../ui/labels/CardMetadataLabel.tsx";
 import "../../styles/shared/card.css";
 import "../../styles/bookings/booking-card.css";
+import "../../styles/shared/card-metadata.css";
 import "../../styles/shared/card-buttons.css";
 import "../../styles/errors/error-message.css";
 import { cancelBooking } from "../../api/bookings.ts";
@@ -79,40 +81,27 @@ export default function BookingCard({
                     />
 
                     <div className="booking-card__details">
-                        <div className="booking-card__detail">
-                            <span className="booking-card__detail-label">
-                                Venue:
-                            </span>
-                            <span className="booking-card__detail-value">
-                                {venueName}
-                            </span>
-                        </div>
-
-                        <div className="booking-card__detail">
-                            <span className="booking-card__detail-label">
-                                Location:
-                            </span>
-                            <span className="booking-card__detail-value">
-                                {venueAddress}
-                            </span>
-                        </div>
-                    </div>
-
-                    <DateLabel
-                        label="Date & Time"
-                        startDateTime={booking.start_time}
-                        endDateTime={booking.end_time}
-                    />
-
-                    <div className="booking-card__booking-meta">
-                        <span className="booking-card__detail-label">
-                            Booked at:
-                        </span>
-                        <span className="booking-card__detail-value">
-                            {booking.created_at
-                                ? formatBookingDate(booking.created_at)
-                                : "Not set"}
-                        </span>
+                        <CardMetadataLabel
+                            label="Venue"
+                            value={venueName}
+                        />
+                        <CardMetadataLabel
+                            label="Location"
+                            value={venueAddress}
+                        />
+                        <DateLabel
+                            label="Date & Time"
+                            startDateTime={booking.start_time}
+                            endDateTime={booking.end_time}
+                        />
+                        <CardMetadataLabel
+                            label="Booked at"
+                            value={
+                                booking.created_at
+                                    ? formatBookingDate(booking.created_at)
+                                    : "Not set"
+                            }
+                        />
                     </div>
                 </div>
             </div>

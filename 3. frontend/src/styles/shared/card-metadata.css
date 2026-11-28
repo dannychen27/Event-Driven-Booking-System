@@ -1,0 +1,35 @@
+.card-metadata-label {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    min-width: 0;
+    margin: 0.25rem 0;
+}
+
+.card-metadata-label .card-metadata-label__label {
+    flex-shrink: 0;
+    color: var(--text);
+    font-weight: 600;
+}
+
+.card-metadata-label .card-metadata-label__value {
+    min-width: 0;
+    color: var(--secondary-text);
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+    .card-metadata-label {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.1rem;
+    }
+
+    .card-metadata-label .card-metadata-label__label {
+        font-size: 0.85rem;
+    }
+
+    .card-metadata-label .card-metadata-label__value {
+        width: 100%;
+    }
+}

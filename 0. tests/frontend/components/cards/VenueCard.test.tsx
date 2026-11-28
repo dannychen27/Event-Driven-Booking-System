@@ -4,6 +4,7 @@ import { MemoryRouter, Routes, Route } from "react-router-dom";
 
 
 import VenueCard from "../../../../3. frontend/src/components/cards/VenueCard";
+import { getVenueTypeColorClass } from "../../../../3. frontend/src/helpers/venues/venueTypeColor";
 import { TimeFormatProvider, useTimeFormat } from "../../../../3. frontend/src/contexts/TimeFormatContext";
 import TimeFormatToggle from "../../../../3. frontend/src/components/ui/TimeFormatToggle";
 
@@ -16,7 +17,6 @@ function CurrentTimeFormat() {
     return <output>{timeFormat}</output>;
 }
 import { venueCardFixture } from "../../fixtures/venues/venueFixtures";
-import { getVenueTypeColorClass } from "../../../../3. frontend/src/helpers/venues/venueTypeColor";
 
 
 describe("VenueCard", () => {
@@ -52,15 +52,17 @@ describe("VenueCard", () => {
             expect(
                 Array.from(content!.children).map(
                     (element) =>
-                        element.classList.contains("venue-card__type")
-                            ? "venue-card__type"
-                            : element.className || element.tagName.toLowerCase(),
+                        element.classList.contains("card-metadata-label")
+                            ? "card-metadata-label"
+                            : element.classList.contains("venue-card__type")
+                                ? "venue-card__type"
+                                : element.className || element.tagName.toLowerCase(),
                 ),
             ).toEqual([
                 "h2",
                 "venue-card__type",
                 "venue-card__description",
-                "venue-card__address",
+                "card-metadata-label",
                 "venue-card__events-link",
             ]);
         });

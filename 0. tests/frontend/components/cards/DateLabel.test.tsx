@@ -25,8 +25,16 @@ describe("DateLabel", () => {
             />
         );
 
-        expect(screen.getByText("Date & Time")).toBeInTheDocument();
-        expect(screen.getByText("Date to be announced")).toBeInTheDocument();
+        expect(
+            screen.getByText("Date & Time", {
+                selector: ".card-metadata-label__label",
+            }),
+        ).toBeInTheDocument();
+        expect(
+            screen.getByText("Date to be announced", {
+                selector: ".card-metadata-label__value",
+            }),
+        ).toBeInTheDocument();
     });
 
     it("shows Not set when the start date is missing", () => {
@@ -76,14 +84,30 @@ describe("DateLabel", () => {
     it("shows Not set when a single date is missing", () => {
         render(<DateLabel label="Booked at" dateTime={null} />);
 
-        expect(screen.getByText("Booked at: Not set")).toBeInTheDocument();
+        expect(
+            screen.getByText("Booked at", {
+                selector: ".card-metadata-label__label",
+            }),
+        ).toBeInTheDocument();
+        expect(
+            screen.getByText("Not set", {
+                selector: ".card-metadata-label__value",
+            }),
+        ).toBeInTheDocument();
     });
 
     it("formats a single date using the booking date format", () => {
         render(<DateLabel label="Booked at" dateTime={startDate} />);
 
         expect(
-            screen.getByText(`Booked at: ${formatBookingDate(startDate)}`)
+            screen.getByText("Booked at", {
+                selector: ".card-metadata-label__label",
+            }),
+        ).toBeInTheDocument();
+        expect(
+            screen.getByText(formatBookingDate(startDate), {
+                selector: ".card-metadata-label__value",
+            }),
         ).toBeInTheDocument();
     });
 });

@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import type { VenueCardProps } from "../../types/venues/VenueCard.types.ts";
-import { getVenueTypeColorClass } from "../../helpers/venues/venueTypeColor.ts";
 import { EventImage } from "../ui/EventImage.tsx";
 import { ImageLightbox } from "../ui/ImageLightbox.tsx";
 import "../../styles/shared/card.css";
 import "../../styles/venues/venue-card.css";
+import "../../styles/shared/card-metadata.css";
+import { getVenueTypeColorClass } from "../../helpers/venues/venueTypeColor.ts";
+import { CardMetadataLabel } from "../ui/labels/CardMetadataLabel.tsx";
 
 export default function VenueCard({ venue }: VenueCardProps) {
     const [showImageLightbox, setShowImageLightbox] = useState(false);
@@ -47,12 +49,10 @@ export default function VenueCard({ venue }: VenueCardProps) {
                     </p>
                 )}
 
-                <address className="venue-card__address">
-                    <span className="venue-card__address-label">
-                        Location
-                    </span>
-                    <span>{venueAddress}</span>
-                </address>
+                <CardMetadataLabel
+                    label="Location"
+                    value={venueAddress}
+                />
 
                 <Link
                     className="venue-card__events-link"

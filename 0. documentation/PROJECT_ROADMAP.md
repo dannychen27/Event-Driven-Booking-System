@@ -38,7 +38,29 @@ Do not introduce additional features or redesign completed interfaces merely to 
 
 **Priority:** High
 
-**Status:** In Progress — implementation, automated regression coverage, showcase-data demonstration, booking-history lifecycle verification, and cross-page demonstration are complete. Representative responsive layouts and light/dark themes have been manually verified across Events, Venues, and My Bookings. The Events desktop sticky layout, dynamic sidebar offset, and opaque sticky search-row background have also been verified. The Venue card Location label capitalization has been corrected and visually verified. The shared 12-hour/24-hour display preference is now managed through an app-wide React context, keeping the Events and My Bookings toggles synchronized across client-side navigation. A reusable TimeFormatToggle component provides the shared control, while event and booking date displays respond to the selected format. The default remains 12-hour; underlying time values remain 24-hour, and the existing 24-hour Booked at display is preserved. The full frontend suite passed 309 tests, including a focused test verifying synchronized toggle state. The shared Active Filter Summary has now been integrated into Events and Venues, with individual filter removal, Clear all behavior, and independent search-draft clearing implemented and verified. Remaining unrelated cross-page visual and functional QA items are tracked below.
+**Status:** Complete — all 58 Section 2.1 acceptance criteria have been verified.
+The booking-history lifecycle is complete across all five My Bookings views, including cancellation, 
+rebooking, and persistence after refresh.
+
+The full Events → booking → My Bookings → cancellation journey has been manually demonstrated, 
+including persisted booking state and event attendance updates.
+
+Responsive layouts, narrow-screen card usability, sticky controls, desktop filter layout, 
+and light/dark themes have been verified across Events, Venues, and My Bookings.
+
+Functional regression coverage includes Events and Venues filtering, synchronized 12-hour/24-hour
+display preferences, My Bookings filters and cancellation, and loading, empty, error, retry, and 
+no-results states.
+
+The reusable Active Filter Summary is implemented and verified across Events and Venues, including 
+individual filter removal, Clear all, independent search-draft clearing, and loading-state transitions.
+
+The complete test pipeline previously passed 902 checks (465 backend, 309 frontend, 17 E2E, 62 integration, 
+and 49 database-safety). Subsequent shared card-metadata refactoring passed all 310 frontend tests and 
+backend/frontend production builds.
+
+The final Venue Type badge restoration passed its focused VenueCard suite (9/9), and the final whitespace check passed.
+Section 2.1 is complete; remaining work proceeds under Section 2.2 Deployment.
 
 Close the remaining gaps between the implemented features and a dependable portfolio demonstration. Focus on the existing booking lifecycle and the Events, Venues, and My Bookings experience.
 
@@ -70,15 +92,15 @@ Close the remaining gaps between the implemented features and a dependable portf
 - [x] Verify the Events desktop search row and filter sidebar remain sticky, with the sidebar positioned beneath the search row and an opaque background preventing event cards from showing through its gaps.
 - [x] Verify the Events sidebar's sticky offset updates when AI Search expands and collapses.
 - [x] Verify the Events search row and sidebar stack and scroll normally at mobile/tablet widths.
-- [ ] Verify sticky controls across pages do not obscure page content or prevent access to results.
-- [ ] Check for text overflow, cramped layouts, and unnecessary horizontal scrolling.
-- [ ] Verify card images, metadata, and actions remain usable at narrower widths.
+- [x] Verify sticky controls across pages do not obscure page content or prevent access to results.
+- [x] Check for text overflow, cramped layouts, and unnecessary horizontal scrolling.
+- [x] Verify card images, metadata, and actions remain usable at narrower widths.
 - [x] Check visual consistency across light and dark themes.
 - [x] Verify the Venues Location search-clear control remains visible in red in both light and dark themes.
 - [x] Investigate the Events search placeholder clipping at 320px.
-- [ ] Review the horizontal distribution and compactness of Events filters on desktop.
+- [x] Review the horizontal distribution and compactness of Events filters on desktop.
 - [x] Investigate the capitalization of the Venue page's LOCATION label.
-- [ ] Review date, time, status, and metadata consistency across card types.
+- [x] Review date, time, status, and metadata consistency across card types.
 
 #### Functional Regression
 
@@ -105,8 +127,8 @@ Close the remaining gaps between the implemented features and a dependable portf
 - [x] Pass backend and frontend production builds against the latest changes.
 - [x] Pass `git diff --check`.
 
-- [ ] Verify My Bookings filters and cancellation behavior.
-- [ ] Verify loading, empty, error, retry, and no-results states where applicable.
+- [x] Verify My Bookings filters and cancellation behavior.
+- [x] Verify loading, empty, error, retry, and no-results states where applicable.
 - [x] Verify card image viewer interactions, including keyboard and mobile behavior.
 - [x] Verify booking creation, cancellation, error handling, and duplicate-request prevention through existing automated tests, including cancellation state updates across active booking filters without refetching.
 - [x] Verify persistent booking cancellation through backend E2E coverage.

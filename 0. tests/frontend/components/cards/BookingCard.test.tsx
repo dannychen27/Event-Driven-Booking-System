@@ -32,15 +32,31 @@ describe("BookingCard", () => {
             expect(screen.getByText("Confirmed", { exact: true }))
                 .toBeInTheDocument();
 
-            expect(screen.getByText("Venue:", { exact: true })).toBeInTheDocument();
+            expect(
+                screen.getByText("Venue", {
+                    selector: ".card-metadata-label__label",
+                }),
+            ).toBeInTheDocument();
             expect(screen.getByText("Innovation Hub", { exact: true })).toBeInTheDocument();
-            expect(screen.getByText("Location:", { exact: true })).toBeInTheDocument();
+            expect(
+                screen.getByText("Location", {
+                    selector: ".card-metadata-label__label",
+                }),
+            ).toBeInTheDocument();
             expect(
                 screen.getByText("100 King Street West", { exact: true }),
             ).toBeInTheDocument();
 
-            expect(screen.getByText(/^Date & Time/)).toBeInTheDocument();
-            expect(screen.getByText("Booked at:", { exact: true })).toBeInTheDocument();
+            expect(
+                screen.getByText("Date & Time", {
+                    selector: ".card-metadata-label__label",
+                }),
+            ).toBeInTheDocument();
+            expect(
+                screen.getByText("Booked at", {
+                    selector: ".card-metadata-label__label",
+                }),
+            ).toBeInTheDocument();
 
             expect(
                 screen.getByRole("button", { name: "Cancel Booking" }),

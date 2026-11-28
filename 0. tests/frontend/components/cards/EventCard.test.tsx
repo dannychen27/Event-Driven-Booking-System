@@ -40,11 +40,11 @@ const defaultProps = {
 
 const expectEventMetadata = (label: string, value: string) => {
     const labelElement = screen.getByText(label, {
-        selector: ".event-card-info-label__label",
+        selector: ".card-metadata-label__label",
     });
 
     const valueElement = screen.getByText(value, {
-        selector: ".event-card-info-label__value",
+        selector: ".card-metadata-label__value",
     });
 
     expect(labelElement.parentElement).toBe(valueElement.parentElement);
@@ -411,23 +411,38 @@ describe("EventCard", () => {
         ).toBeInTheDocument();
     });
 
+    it("renders Date & Time in the same inline metadata layout as other event details", () => {
+        render(<EventCard {...defaultProps} />);
+
+        const dateLabel = screen.getByText("Date & Time", {
+            selector: ".card-metadata-label__label",
+        });
+        const dateValue = dateLabel.parentElement?.querySelector(
+            ".card-metadata-label__value",
+        );
+
+        expect(dateLabel.parentElement).toHaveClass("card-metadata-label");
+        expect(dateValue).not.toBeNull();
+        expect(dateValue).not.toBeEmptyDOMElement();
+    });
+
     it("renders event metadata labels and values in separate elements", () => {
         render(<EventCard {...defaultProps} />);
 
         const venueLabel = screen.getByText("Venue", {
-            selector: ".event-card-info-label__label",
+            selector: ".card-metadata-label__label",
         });
 
         const venueValue = screen.getByText("E2E Test Venue", {
-            selector: ".event-card-info-label__value",
+            selector: ".card-metadata-label__value",
         });
 
         const locationLabel = screen.getByText("Location", {
-            selector: ".event-card-info-label__label",
+            selector: ".card-metadata-label__label",
         });
 
         const locationValue = screen.getByText("123 Test Street", {
-            selector: ".event-card-info-label__value",
+            selector: ".card-metadata-label__value",
         });
 
         expect(venueLabel.parentElement).toBe(venueValue.parentElement);
