@@ -195,7 +195,7 @@ export function resolveRelativeDateRange(
       break;
 
     default: {
-      throw new Error(`Unsupported relative date: ${relativeDate.kind}`);
+      throw new Error('Unsupported relative date range.');
     }
   }
 
