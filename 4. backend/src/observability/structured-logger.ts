@@ -1,6 +1,6 @@
 import type { LoggerService, LogLevel } from '@nestjs/common';
-import { ALL_LOG_LEVELS } from "./structured-logger.constants";
-import { LogEntry } from "./structured-logger.types";
+import { ALL_LOG_LEVELS } from './structured-logger.constants';
+import { LogEntry } from './structured-logger.types';
 
 export class StructuredLogger implements LoggerService {
   private enabledLevels = new Set<LogLevel>(ALL_LOG_LEVELS);
@@ -48,7 +48,11 @@ export class StructuredLogger implements LoggerService {
     this.enabledLevels = new Set(levels);
   }
 
-  private write(level: LogLevel, message: unknown, optionalParams: unknown[]): void {
+  private write(
+    level: LogLevel,
+    message: unknown,
+    optionalParams: unknown[],
+  ): void {
     if (!this.enabledLevels.has(level)) {
       return;
     }
@@ -80,7 +84,10 @@ export class StructuredLogger implements LoggerService {
     output.write(`${this.serializeEntry(entry)}\n`);
   }
 
-  private addStandardParameters(entry: LogEntry, optionalParams: unknown[]): void {
+  private addStandardParameters(
+    entry: LogEntry,
+    optionalParams: unknown[],
+  ): void {
     const [firstParam, ...remainingParams] = optionalParams;
 
     if (typeof firstParam === 'string') {

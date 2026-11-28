@@ -1,8 +1,14 @@
-import { BadRequestException, Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-import { EventsService } from './events.service';
 import {
-  validateEventSearchKeyword,
-} from '../helpers/search/event-search-validation.helpers';
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { EventsService } from './events.service';
+import { validateEventSearchKeyword } from '../helpers/search/event-search-validation.helpers';
 import { NaturalLanguageSearchService } from '../search/natural-language-search.service';
 
 @Controller('events')
@@ -30,17 +36,13 @@ export class EventsController {
       try {
         parsedFilters = JSON.parse(filters);
       } catch {
-        throw new BadRequestException(
-            'filters must contain valid JSON',
-        );
+        throw new BadRequestException('filters must contain valid JSON');
       }
     }
 
     return this.naturalLanguageSearchService.searchWithKeyword({
       ...(keyword !== undefined ? { query: keyword.trim() } : {}),
-      ...(parsedFilters !== undefined
-          ? { filters: parsedFilters }
-          : {}),
+      ...(parsedFilters !== undefined ? { filters: parsedFilters } : {}),
     });
   }
 

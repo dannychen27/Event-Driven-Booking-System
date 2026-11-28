@@ -3,12 +3,14 @@ import { DatabaseService } from '../database/database.service';
 import {
   EventAvailability,
   EventWithAttendeeCount,
-  EventWithVenue,
 } from '../types/events/events.types';
-import { TimeInterval, TimeOfDay, TimeRange } from '../types/search/time-range.types';
+import {
+  TimeInterval,
+  TimeOfDay,
+  TimeRange,
+} from '../types/search/time-range.types';
 import { buildEventDateRangeFilters } from './events.helpers';
 import { buildTimeOfDayIntervals } from '../search/time-of-day-intervals';
-
 
 @Injectable()
 export class EventsService {
@@ -103,7 +105,8 @@ export class EventsService {
       startBefore: filters.startBefore,
       includePastEvents: filters.includePastEvents,
       includeFutureEvents: filters.includeFutureEvents,
-      timeIntervals: filters.timeIntervals !== undefined
+      timeIntervals:
+        filters.timeIntervals !== undefined
           ? filters.timeIntervals
           : buildTimeOfDayIntervals(filters.timeOfDay),
       timeRange: filters.timeRange,
@@ -150,9 +153,10 @@ export class EventsService {
     timeRange?: TimeRange;
     timeIntervals?: TimeInterval[];
   }) {
-    const timeIntervals = filters.timeIntervals !== undefined
-      ? filters.timeIntervals
-      : buildTimeOfDayIntervals(filters.timeOfDay);
+    const timeIntervals =
+      filters.timeIntervals !== undefined
+        ? filters.timeIntervals
+        : buildTimeOfDayIntervals(filters.timeOfDay);
 
     const { conditions, params } = buildEventDateRangeFilters({
       startAfter: filters.startAfter,

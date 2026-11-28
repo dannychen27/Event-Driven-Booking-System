@@ -8,18 +8,17 @@ export function parseNaturalLanguageSearchPlan(
 ): NaturalLanguageSearchPlan {
   try {
     const parsed = parseGeminiJsonResponse(
-        response,
-        'Gemini returned invalid JSON',
+      response,
+      'Gemini returned invalid JSON',
     );
 
     return validateNaturalLanguageSearchPlan(parsed);
   } catch (error: unknown) {
-    const reason = error instanceof Error
-        ? error.message
-        : 'Unknown validation error';
+    const reason =
+      error instanceof Error ? error.message : 'Unknown validation error';
 
     throw new InvalidGeminiSearchPlanError(
-        `Gemini returned an invalid search plan: ${reason}`,
+      `Gemini returned an invalid search plan: ${reason}`,
     );
   }
 }

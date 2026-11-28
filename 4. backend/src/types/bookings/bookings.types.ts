@@ -30,10 +30,7 @@ export type BookingHoldId = {
 };
 
 export type BookingHoldStatus =
-    | 'active'
-    | 'confirmed'
-    | 'expired'
-    | 'cancelled';
+  'active' | 'confirmed' | 'expired' | 'cancelled';
 
 export type BookingHold = {
   id: number;

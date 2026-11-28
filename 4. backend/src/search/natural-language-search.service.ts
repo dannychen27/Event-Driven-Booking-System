@@ -1,11 +1,14 @@
 import {
   Injectable,
   ServiceUnavailableException,
-  BadGatewayException
+  BadGatewayException,
 } from '@nestjs/common';
 import { EventsService } from '../events/events.service';
 
-import { SearchFilters, NaturalLanguageSearchPlan } from '../types/search/natural-language-search.types';
+import {
+  SearchFilters,
+  NaturalLanguageSearchPlan,
+} from '../types/search/natural-language-search.types';
 import {
   NaturalLanguageSearchRequest,
   NaturalLanguageSearchResponse,
@@ -19,7 +22,6 @@ import { resolveRelativeDateRange } from './relative-date-range.resolver';
 import { GeminiEventSearchInterpreter } from '../events/search/gemini-event-search-interpreter';
 import { GeminiEventRanker } from '../events/search/gemini-event-ranker';
 import { InvalidGeminiSearchPlanError } from '../events/search/InvalidGeminiSearchPlanError';
-
 
 @Injectable()
 export class NaturalLanguageSearchService {
@@ -35,10 +37,10 @@ export class NaturalLanguageSearchService {
   }
 
   async searchNaturalLanguage(
-      input: unknown,
+    input: unknown,
   ): Promise<NaturalLanguageSearchResponse> {
     const request: NaturalLanguageSearchRequest =
-        validateNaturalLanguageSearchRequest(input);
+      validateNaturalLanguageSearchRequest(input);
 
     try {
       // Calendar-only searches do not need an AI interpretation.
@@ -49,9 +51,9 @@ export class NaturalLanguageSearchService {
       const aiDateRange = plan.relativeDate
         ? resolveRelativeDateRange(plan.relativeDate, new Date())
         : {
-          startAfter: plan.startAfter,
-          startBefore: plan.startBefore,
-        };
+            startAfter: plan.startAfter,
+            startBefore: plan.startBefore,
+          };
 
       const dateResult = reconcileDateFilter({
         aiRange: aiDateRange,
@@ -65,11 +67,6 @@ export class NaturalLanguageSearchService {
         selection: request.filters?.time,
         resolution: request.resolutions?.time,
       });
-
-      const conflicts = [
-        ...(dateResult.conflict ? [dateResult.conflict] : []),
-        ...(timeResult.conflict ? [timeResult.conflict] : []),
-      ];
 
       // Never retrieve or rank candidates while a conflict is unresolved.
       if (dateResult.conflict || timeResult.conflict) {
@@ -90,13 +87,9 @@ export class NaturalLanguageSearchService {
       };
 
       const candidates =
-          await this.eventsService.searchEventCandidates(appliedFilters);
+        await this.eventsService.searchEventCandidates(appliedFilters);
 
-      if (
-          !request.query ||
-          !plan.intent?.trim() ||
-          candidates.length === 0
-      ) {
+      if (!request.query || !plan.intent?.trim() || candidates.length === 0) {
         return {
           status: 'success',
           events: candidates,
@@ -126,7 +119,7 @@ export class NaturalLanguageSearchService {
     } catch (error: unknown) {
       if (error instanceof InvalidGeminiSearchPlanError) {
         throw new BadGatewayException(
-            'I couldn’t interpret that search correctly. Please try rephrasing your request.',
+          'I couldn’t interpret that search correctly. Please try rephrasing your request.',
         );
       }
 

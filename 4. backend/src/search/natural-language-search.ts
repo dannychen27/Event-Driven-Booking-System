@@ -93,22 +93,20 @@ const VALID_WEEKDAYS = new Set<Weekday>([
 const VALID_OCCURRENCES = new Set(['THIS', 'NEXT', 'LAST']);
 
 function validateExactKeys(
-    input: Record<string, unknown>,
-    expectedKeys: string[],
+  input: Record<string, unknown>,
+  expectedKeys: string[],
 ): void {
   const actualKeys = Object.keys(input);
 
   if (
-      actualKeys.length !== expectedKeys.length ||
-      actualKeys.some((key) => !expectedKeys.includes(key))
+    actualKeys.length !== expectedKeys.length ||
+    actualKeys.some((key) => !expectedKeys.includes(key))
   ) {
     throw new Error('Invalid fields in relative date range');
   }
 }
 
-function validateRelativeDateRange(
-    input: unknown,
-): RelativeDateRange {
+function validateRelativeDateRange(input: unknown): RelativeDateRange {
   if (typeof input !== 'object' || input === null || Array.isArray(input)) {
     throw new Error('relativeDate must be an object');
   }
@@ -137,12 +135,14 @@ function validateRelativeDateRange(
       validateExactKeys(value, ['kind', 'days']);
 
       if (
-          typeof value.days !== 'number' ||
-          !Number.isInteger(value.days) ||
-          value.days < 1 ||
-          value.days > 365
+        typeof value.days !== 'number' ||
+        !Number.isInteger(value.days) ||
+        value.days < 1 ||
+        value.days > 365
       ) {
-        throw new Error('relativeDate.days must be an integer between 1 and 365');
+        throw new Error(
+          'relativeDate.days must be an integer between 1 and 365',
+        );
       }
 
       return {
@@ -155,15 +155,15 @@ function validateRelativeDateRange(
       validateExactKeys(value, ['kind', 'weekday', 'occurrence']);
 
       if (
-          typeof value.weekday !== 'string' ||
-          !VALID_WEEKDAYS.has(value.weekday as Weekday)
+        typeof value.weekday !== 'string' ||
+        !VALID_WEEKDAYS.has(value.weekday as Weekday)
       ) {
         throw new Error('relativeDate.weekday is invalid');
       }
 
       if (
-          typeof value.occurrence !== 'string' ||
-          !VALID_OCCURRENCES.has(value.occurrence)
+        typeof value.occurrence !== 'string' ||
+        !VALID_OCCURRENCES.has(value.occurrence)
       ) {
         throw new Error('relativeDate.occurrence is invalid');
       }
@@ -223,8 +223,8 @@ export function validateNaturalLanguageSearchPlan(
   validateDateRange({ startAfter, startBefore });
 
   if (
-      relativeDate !== undefined &&
-      (startAfter !== undefined || startBefore !== undefined)
+    relativeDate !== undefined &&
+    (startAfter !== undefined || startBefore !== undefined)
   ) {
     throw new Error(
       'Cannot combine relativeDate with absolute date boundaries',

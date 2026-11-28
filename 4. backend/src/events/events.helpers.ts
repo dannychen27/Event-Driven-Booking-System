@@ -7,46 +7,41 @@ function formatMinuteOfDay(minute: number): string {
 }
 
 function buildTimeIntervalCondition(
-    intervals: TimeInterval[],
-    parameters: string[],
-    initialParamCount: number,
+  intervals: TimeInterval[],
+  parameters: string[],
+  initialParamCount: number,
 ): string {
-  const localEventTime =
-      "(e.start_time AT TIME ZONE 'America/Toronto')::time";
+  const localEventTime = "(e.start_time AT TIME ZONE 'America/Toronto')::time";
 
-  const intervalConditions = intervals.map(
-      ({ startMinute, endMinute }) => {
-        if (
-            !Number.isInteger(startMinute) ||
-            !Number.isInteger(endMinute) ||
-            startMinute < 0 ||
-            endMinute > 1440 ||
-            startMinute >= endMinute
-        ) {
-          throw new Error('Invalid normalized time interval');
-        }
+  const intervalConditions = intervals.map(({ startMinute, endMinute }) => {
+    if (
+      !Number.isInteger(startMinute) ||
+      !Number.isInteger(endMinute) ||
+      startMinute < 0 ||
+      endMinute > 1440 ||
+      startMinute >= endMinute
+    ) {
+      throw new Error('Invalid normalized time interval');
+    }
 
-        const conditions: string[] = [];
+    const conditions: string[] = [];
 
-        if (startMinute > 0) {
-          parameters.push(formatMinuteOfDay(startMinute));
-          conditions.push(
-              `${localEventTime} >= $${initialParamCount + parameters.length}::time`,
-          );
-        }
+    if (startMinute > 0) {
+      parameters.push(formatMinuteOfDay(startMinute));
+      conditions.push(
+        `${localEventTime} >= $${initialParamCount + parameters.length}::time`,
+      );
+    }
 
-        if (endMinute < 1440) {
-          parameters.push(formatMinuteOfDay(endMinute));
-          conditions.push(
-              `${localEventTime} < $${initialParamCount + parameters.length}::time`,
-          );
-        }
+    if (endMinute < 1440) {
+      parameters.push(formatMinuteOfDay(endMinute));
+      conditions.push(
+        `${localEventTime} < $${initialParamCount + parameters.length}::time`,
+      );
+    }
 
-        return conditions.length > 0
-            ? `(${conditions.join(' AND ')})`
-            : '(TRUE)';
-      },
-  );
+    return conditions.length > 0 ? `(${conditions.join(' AND ')})` : '(TRUE)';
+  });
 
   return intervalConditions.length === 1
     ? intervalConditions[0]
@@ -78,7 +73,9 @@ export function buildEventDateRangeFilters({
 
   if (startAfter) {
     parameters.push(startAfter);
-    conditions.push(`e.start_time >= $${initialParamCount + parameters.length}`);
+    conditions.push(
+      `e.start_time >= $${initialParamCount + parameters.length}`,
+    );
   }
 
   if (startBefore) {

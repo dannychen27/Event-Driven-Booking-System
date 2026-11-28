@@ -65,13 +65,7 @@ export const NATURAL_LANGUAGE_SEARCH_SCHEMA = {
       type: 'ARRAY',
       items: {
         type: 'STRING',
-        enum: [
-          'EARLY_MORNING',
-          'MORNING',
-          'AFTERNOON',
-          'EVENING',
-          'NIGHT',
-        ],
+        enum: ['EARLY_MORNING', 'MORNING', 'AFTERNOON', 'EVENING', 'NIGHT'],
       },
     },
     timeRange: {

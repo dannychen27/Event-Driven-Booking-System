@@ -1,10 +1,10 @@
-import type {LogLevel} from "@nestjs/common";
+import type { LogLevel } from '@nestjs/common';
 
 export const ALL_LOG_LEVELS: LogLevel[] = [
-    'log',
-    'error',
-    'warn',
-    'debug',
-    'verbose',
-    'fatal',
+  'log',
+  'error',
+  'warn',
+  'debug',
+  'verbose',
+  'fatal',
 ];

@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Headers, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 
 @Controller()
@@ -11,7 +19,11 @@ export class BookingsController {
     @Body() body: { user_id: number },
     @Headers('Idempotency-Key') idempotency_key?: string,
   ) {
-    return this.bookingsService.createBooking(body.user_id, Number(event_id), idempotency_key);
+    return this.bookingsService.createBooking(
+      body.user_id,
+      Number(event_id),
+      idempotency_key,
+    );
   }
 
   @Post('booking-holds/:id/confirm')
@@ -20,14 +32,15 @@ export class BookingsController {
     @Body() body: { user_id: number },
     @Headers('Idempotency-Key') idempotency_key?: string,
   ) {
-    return this.bookingsService.confirmHold(body.user_id, Number(hold_id), idempotency_key);
+    return this.bookingsService.confirmHold(
+      body.user_id,
+      Number(hold_id),
+      idempotency_key,
+    );
   }
 
   @Delete('booking-holds/:id')
-  cancelHold(
-    @Param('id') hold_id: string,
-    @Body() body: { user_id: number },
-  ) {
+  cancelHold(@Param('id') hold_id: string, @Body() body: { user_id: number }) {
     return this.bookingsService.cancelHold(body.user_id, Number(hold_id));
   }
 

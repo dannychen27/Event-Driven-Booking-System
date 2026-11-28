@@ -10,43 +10,39 @@ const REQUEST_ID_PATTERN = /^[A-Za-z0-9._:-]{1,128}$/;
 
 @Injectable()
 export class RequestIdMiddleware implements NestMiddleware {
-    constructor(
-        private readonly requestContext: RequestContextService,
-        private readonly logger: StructuredLogger,
-    ) {}
+  constructor(
+    private readonly requestContext: RequestContextService,
+    private readonly logger: StructuredLogger,
+  ) {}
 
-    use(
-        request: Request,
-        response: Response,
-        next: NextFunction,
-    ): void {
-        const incomingRequestId = request.get(REQUEST_ID_HEADER);
+  use(request: Request, response: Response, next: NextFunction): void {
+    const incomingRequestId = request.get(REQUEST_ID_HEADER);
 
-        const requestId =
-            incomingRequestId && REQUEST_ID_PATTERN.test(incomingRequestId)
-                ? incomingRequestId
-                : randomUUID();
+    const requestId =
+      incomingRequestId && REQUEST_ID_PATTERN.test(incomingRequestId)
+        ? incomingRequestId
+        : randomUUID();
 
-        const startTime = process.hrtime.bigint();
+    const startTime = process.hrtime.bigint();
 
-        response.setHeader(REQUEST_ID_HEADER, requestId);
+    response.setHeader(REQUEST_ID_HEADER, requestId);
 
-        this.requestContext.run(requestId, () => {
-            response.on('finish', () => {
-                const durationMs =
-                    Number(process.hrtime.bigint() - startTime) / 1_000_000;
+    this.requestContext.run(requestId, () => {
+      response.on('finish', () => {
+        const durationMs =
+          Number(process.hrtime.bigint() - startTime) / 1_000_000;
 
-                this.logger.log({
-                    event: 'http.request.completed',
-                    requestId,
-                    method: request.method,
-                    path: request.path,
-                    statusCode: response.statusCode,
-                    durationMs,
-                });
-            });
-
-            next();
+        this.logger.log({
+          event: 'http.request.completed',
+          requestId,
+          method: request.method,
+          path: request.path,
+          statusCode: response.statusCode,
+          durationMs,
         });
-    }
+      });
+
+      next();
+    });
+  }
 }

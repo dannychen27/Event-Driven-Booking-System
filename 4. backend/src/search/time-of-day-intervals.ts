@@ -1,31 +1,28 @@
 import {
-    getTimeOfDayIntervals,
-    type TimeOfDay,
-    type TimeInterval,
+  getTimeOfDayIntervals,
+  type TimeOfDay,
+  type TimeInterval,
 } from '../../../5. shared/src/time-of-day';
 
 function normalizeIntervals(intervals: TimeInterval[]): TimeInterval[] {
-    const sortedIntervals = [...intervals].sort(
-        (a, b) => a.startMinute - b.startMinute,
-    );
+  const sortedIntervals = [...intervals].sort(
+    (a, b) => a.startMinute - b.startMinute,
+  );
 
-    const normalized: TimeInterval[] = [];
+  const normalized: TimeInterval[] = [];
 
-    for (const interval of sortedIntervals) {
-        const previous = normalized[normalized.length - 1];
+  for (const interval of sortedIntervals) {
+    const previous = normalized[normalized.length - 1];
 
-        if (!previous || interval.startMinute > previous.endMinute) {
-            normalized.push({ ...interval });
-            continue;
-        }
-
-        previous.endMinute = Math.max(
-            previous.endMinute,
-            interval.endMinute,
-        );
+    if (!previous || interval.startMinute > previous.endMinute) {
+      normalized.push({ ...interval });
+      continue;
     }
 
-    return normalized;
+    previous.endMinute = Math.max(previous.endMinute, interval.endMinute);
+  }
+
+  return normalized;
 }
 
 /**
@@ -38,15 +35,15 @@ function normalizeIntervals(intervals: TimeInterval[]): TimeInterval[] {
  * Returns an empty array when an empty selection was supplied.
  */
 export function buildTimeOfDayIntervals(
-    timeOfDay?: TimeOfDay[],
+  timeOfDay?: TimeOfDay[],
 ): TimeInterval[] | undefined {
-    if (timeOfDay === undefined) {
-        return undefined;
-    }
+  if (timeOfDay === undefined) {
+    return undefined;
+  }
 
-    const intervals = timeOfDay.flatMap(
-        (period) => getTimeOfDayIntervals(period),
-    );
+  const intervals = timeOfDay.flatMap((period) =>
+    getTimeOfDayIntervals(period),
+  );
 
-    return normalizeIntervals(intervals);
+  return normalizeIntervals(intervals);
 }

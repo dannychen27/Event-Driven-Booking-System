@@ -3,55 +3,55 @@ import { SearchFilters } from './natural-language-search.types';
 import { TimeOfDay, TimeRange } from './time-range.types';
 
 export type ExplicitSelection<T> =
-    | {
-    state: 'selected';
-    value: T;
-}
-    | {
-    state: 'cleared';
-};
+  | {
+      state: 'selected';
+      value: T;
+    }
+  | {
+      state: 'cleared';
+    };
 
 export type CalendarDateRange = {
-    startDate: string;
-    endDate: string;
+  startDate: string;
+  endDate: string;
 };
 
 export type CalendarTimeSelection = {
-    timeOfDay?: TimeOfDay[];
-    timeRange?: TimeRange;
+  timeOfDay?: TimeOfDay[];
+  timeRange?: TimeRange;
 };
 
 export type NaturalLanguageSearchFilters = {
-    date?: ExplicitSelection<CalendarDateRange>;
-    time?: ExplicitSelection<CalendarTimeSelection>;
+  date?: ExplicitSelection<CalendarDateRange>;
+  time?: ExplicitSelection<CalendarTimeSelection>;
 };
 
 export type SearchFilterResolution = 'ai' | 'selection';
 
 export type NaturalLanguageSearchResolutions = {
-    date?: SearchFilterResolution;
-    time?: SearchFilterResolution;
+  date?: SearchFilterResolution;
+  time?: SearchFilterResolution;
 };
 
 export type NaturalLanguageSearchRequest = {
-    query?: string;
-    filters?: NaturalLanguageSearchFilters;
-    resolutions?: NaturalLanguageSearchResolutions;
+  query?: string;
+  filters?: NaturalLanguageSearchFilters;
+  resolutions?: NaturalLanguageSearchResolutions;
 };
 
 export type SearchFilterConflict = {
-    category: 'date' | 'time';
-    aiInterpretation: string;
-    userSelection: string;
+  category: 'date' | 'time';
+  aiInterpretation: string;
+  userSelection: string;
 };
 
 export type NaturalLanguageSearchResponse =
-    | {
-    status: 'success';
-    events: EventWithAttendeeCount[];
-    appliedFilters: SearchFilters;
-}
-    | {
-    status: 'clarification_required';
-    conflicts: SearchFilterConflict[];
-};
+  | {
+      status: 'success';
+      events: EventWithAttendeeCount[];
+      appliedFilters: SearchFilters;
+    }
+  | {
+      status: 'clarification_required';
+      conflicts: SearchFilterConflict[];
+    };
