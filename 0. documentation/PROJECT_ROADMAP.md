@@ -154,14 +154,14 @@ Close the remaining gaps between the implemented features and a dependable portf
 
 **Priority:** High
 
-**Status:** Not Started
+**Status:** In Progress
 
 Deploy the application so recruiters and other viewers can access a working demonstration without running the project locally.
 
 #### Deployment Planning
 
-- [ ] Evaluate hosting options for the React frontend, NestJS backend, and PostgreSQL database.
-- [ ] Select hosting based on cost, reliability, and operational simplicity.
+- [x] Evaluate hosting options for the React frontend, NestJS backend, and PostgreSQL database.
+- [x] Select hosting based on cost, reliability, and operational simplicity.
 - [ ] Identify required production environment variables.
 - [ ] Configure frontend API URLs and backend CORS settings.
 - [ ] Document the production architecture and configuration.
