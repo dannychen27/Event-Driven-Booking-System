@@ -3,7 +3,6 @@ import { AppModule } from './app.module';
 
 import { StructuredLogger } from './observability/structured-logger';
 
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
@@ -12,11 +11,17 @@ async function bootstrap() {
   app.useLogger(app.get(StructuredLogger));
   app.enableShutdownHooks();
 
-  // I configured CORS to allow requests specifically
-  // from the frontend's origin rather than
-  // allowing every origin.
+  const frontendOrigin =
+    process.env.FRONTEND_ORIGIN?.trim() || 'http://localhost:5173';
+
+  if (frontendOrigin === '*') {
+    throw new Error(
+      'FRONTEND_ORIGIN must specify an explicit origin. Wildcard CORS is not permitted.',
+    );
+  }
+
   app.enableCors({
-    origin: 'http://localhost:5173',
+    origin: frontendOrigin,
   });
 
   await app.listen(process.env.PORT ?? 3000);

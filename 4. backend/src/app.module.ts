@@ -11,6 +11,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { EventsModule } from './events/events.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { VenuesModule } from './venues/venues.module';
+import { HealthController } from './health/health.controller';
 
 import { RequestContextService } from './observability/request-context.service';
 import { RequestIdMiddleware } from './observability/request-id.middleware';
@@ -28,6 +29,7 @@ import { GlobalExceptionFilter } from './observability/global-exception.filter';
     BookingsModule,
     VenuesModule,
   ],
+  controllers: [HealthController],
   providers: [
     StructuredLogger,
     RequestContextService,
@@ -38,7 +40,6 @@ import { GlobalExceptionFilter } from './observability/global-exception.filter';
     },
   ],
 })
-
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {
     consumer

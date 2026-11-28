@@ -33,6 +33,9 @@ describe("DatabaseService", () => {
             DB_PORT: "5432",
             DB_USER: "test_user",
             DB_PASSWORD: "test_password",
+            DATABASE_URL: "",
+            DB_SSL: "false",
+            DB_POOL_MAX: "5",
         };
 
         mockClient = {
@@ -95,6 +98,8 @@ describe("DatabaseService", () => {
                 database: "booking_system_test",
                 user: "test_user",
                 password: "test_password",
+                max: 5,
+                ssl: undefined,
             });
 
             expect(service).toBeInstanceOf(DatabaseService);
@@ -113,7 +118,88 @@ describe("DatabaseService", () => {
                 database: "booking_system_test",
                 user: "test_user",
                 password: undefined,
+                max: 5,
+                ssl: undefined,
             });
+        });
+
+        it("should configure SSL when DB_SSL is enabled", () => {
+            process.env.DB_SSL = "true";
+
+            service = new DatabaseService();
+
+            expect(MockPool).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    ssl: { rejectUnauthorized: true },
+                }),
+            );
+        });
+
+        it("should use a configured pool size", () => {
+            process.env.DB_POOL_MAX = "3";
+
+            service = new DatabaseService();
+
+            expect(MockPool).toHaveBeenCalledWith(
+                expect.objectContaining({ max: 3 }),
+            );
+        });
+
+        it.each(["0", "21", "1.5", "invalid"])(
+            "should reject an invalid pool size: %s",
+            (poolMax) => {
+                process.env.DB_POOL_MAX = poolMax;
+
+                expect(() => new DatabaseService()).toThrow(
+                    "DB_POOL_MAX must be an integer between 1 and 20.",
+                );
+                expect(MockPool).not.toHaveBeenCalled();
+            },
+        );
+
+        it("should create a pool using a TLS PostgreSQL connection URL", () => {
+            const connectionString =
+                "postgresql://test_user:test_password@localhost:5432/booking_system_test?sslmode=require";
+
+            process.env.DATABASE_URL = connectionString;
+            delete process.env.DB_NAME;
+            delete process.env.DB_USER;
+
+            service = new DatabaseService();
+
+            expect(MockPool).toHaveBeenCalledWith({
+                connectionString,
+                max: 5,
+            });
+            expect(service).toBeInstanceOf(DatabaseService);
+        });
+
+        it("should reject a DATABASE_URL without an explicit TLS mode", () => {
+            process.env.DATABASE_URL =
+                "postgresql://test_user:test_password@localhost:5432/booking_system_test";
+
+            expect(() => new DatabaseService()).toThrow(
+                "DATABASE_URL must explicitly require TLS",
+            );
+            expect(MockPool).not.toHaveBeenCalled();
+        });
+
+        it("should reject a DATABASE_URL with an unsupported protocol", () => {
+            process.env.DATABASE_URL = "mysql://localhost/test";
+
+            expect(() => new DatabaseService()).toThrow(
+                "DATABASE_URL must be a valid PostgreSQL connection URL.",
+            );
+            expect(MockPool).not.toHaveBeenCalled();
+        });
+
+        it("should reject a malformed DATABASE_URL", () => {
+            process.env.DATABASE_URL = "not a valid URL";
+
+            expect(() => new DatabaseService()).toThrow(
+                "DATABASE_URL must be a valid PostgreSQL connection URL.",
+            );
+            expect(MockPool).not.toHaveBeenCalled();
         });
     });
 
